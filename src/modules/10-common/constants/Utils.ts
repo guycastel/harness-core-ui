@@ -128,7 +128,8 @@ export enum SettingType {
   STO_DEFAULT_BASELINE_REGEX_CONFIGURATION = 'sto_default_baseline_regex_configuration',
   DO_NOT_DELETE_PIPELINE_EXECUTION_DETAILS = 'do_not_delete_pipeline_execution_details',
   NATIVE_HELM_ENABLE_STEADY_STATE_FOR_JOBS = 'native_helm_enable_steady_state_for_jobs',
-  USE_BASE64_ENCODED_SECRETS_FOR_ATTESTATION = 'use_base64_encoded_secrets_for_attestation'
+  USE_BASE64_ENCODED_SECRETS_FOR_ATTESTATION = 'use_base64_encoded_secrets_for_attestation',
+  ENABLE_SSCA_AIRGAP = 'enable_ssca_airgap'
 }
 
 export const isValidYAMLFilePath = (filePath: string): boolean => {

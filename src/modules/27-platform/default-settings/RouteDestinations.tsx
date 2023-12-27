@@ -481,6 +481,13 @@ DefaultSettingsFactory.registerSettingHandler(SettingType.USE_BASE64_ENCODED_SEC
   settingCategory: 'SUPPLY_CHAIN_ASSURANCE'
 })
 
+DefaultSettingsFactory.registerSettingHandler(SettingType.ENABLE_SSCA_AIRGAP, {
+  label: 'ssca.enableAirgap',
+  settingRenderer: props => <DefaultSettingCheckBoxWithTrueAndFalse {...props} />,
+  yupValidation: Yup.boolean(),
+  settingCategory: 'SUPPLY_CHAIN_ASSURANCE'
+})
+
 AuditTrailFactory.registerResourceHandler('SETTING', {
   moduleIcon: {
     name: 'nav-settings'

@@ -9616,6 +9616,7 @@ export interface StringsMap {
   'sei.trellisScore': string
   'ssca.allowDenyList': string
   'ssca.components': string
+  'ssca.enableAirgap': string
   'ssca.enforcementStep.attestedImage': string
   'ssca.enforcementStep.policyConfiguration': string
   'ssca.enforcementStep.verifyAttestation': string

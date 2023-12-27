@@ -24,3 +24,4 @@ components: Components
 registryType: Registry Type
 useOpaPolicy: Use OPA Policy
 remediationTracker: Remediation Tracker
+enableAirgap: Enable SSCA Airgap
