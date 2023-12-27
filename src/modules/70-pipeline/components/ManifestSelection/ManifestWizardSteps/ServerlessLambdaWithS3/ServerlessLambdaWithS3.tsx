@@ -77,6 +77,9 @@ interface ServerlessLambdaWithS3Props {
   deploymentType?: string
   selectedManifest: ManifestTypes | null
   editManifestModePrevStepData?: ServerlessLambdaWithS3ManifestLastStepPrevStepData
+  enableFields?: {
+    [key: string]: boolean
+  }
 }
 
 export function ServerlessLambdaWithS3({
@@ -90,7 +93,8 @@ export function ServerlessLambdaWithS3({
   manifestIdsList,
   isReadonly = false,
   selectedManifest,
-  editManifestModePrevStepData
+  editManifestModePrevStepData,
+  enableFields
 }: StepProps<ConnectorConfigDTO> & ServerlessLambdaWithS3Props): React.ReactElement {
   const { accountId, projectIdentifier, orgIdentifier } = useParams<ProjectPathProps & AccountPathProps>()
   const { getString } = useStrings()
@@ -422,118 +426,124 @@ export function ServerlessLambdaWithS3({
                     />
                   </div>
                 }
-                <div
-                  className={cx(css.halfWidth, {
-                    [css.runtimeInput]: getMultiTypeFromValue(formik.values?.region) === MultiTypeInputType.RUNTIME
-                  })}
-                >
-                  <FormInput.MultiTypeInput
-                    name="region"
-                    selectItems={regions}
-                    useValue
-                    placeholder={getString('pipeline.regionPlaceholder')}
-                    multiTypeInputProps={{
-                      expressions,
-                      allowableTypes,
-                      newExpressionComponent: NG_EXPRESSIONS_NEW_INPUT_ELEMENT,
-                      onChange: selectedValue => {
-                        const selectedValueString =
-                          typeof selectedValue === 'string'
-                            ? selectedValue
-                            : ((selectedValue as SelectOption)?.value as string)
-                        const updatedValues = produce(formik.values, draft => {
-                          draft.region = selectedValueString
-                          if (getMultiTypeFromValue(formik.values.bucketName) === MultiTypeInputType.FIXED) {
-                            draft.bucketName = ''
-                          }
-                        })
-                        formik.setValues(updatedValues)
-                      }
-                    }}
-                    label={getString('regionLabel')}
-                  />
-                  {getMultiTypeFromValue(formik.values.region) === MultiTypeInputType.RUNTIME && (
-                    <SelectConfigureOptions
-                      options={regions}
-                      style={{ alignSelf: 'center', marginBottom: 3 }}
-                      value={formik.values?.region as string}
-                      type="String"
-                      variableName="region"
-                      showRequiredField={false}
-                      showDefaultField={false}
-                      onChange={value => {
-                        formik.setFieldValue('region', value)
+                {get(enableFields, 'region', true) && (
+                  <div
+                    className={cx(css.halfWidth, {
+                      [css.runtimeInput]: getMultiTypeFromValue(formik.values?.region) === MultiTypeInputType.RUNTIME
+                    })}
+                  >
+                    <FormInput.MultiTypeInput
+                      name="region"
+                      selectItems={regions}
+                      useValue
+                      placeholder={getString('pipeline.regionPlaceholder')}
+                      multiTypeInputProps={{
+                        expressions,
+                        allowableTypes,
+                        newExpressionComponent: NG_EXPRESSIONS_NEW_INPUT_ELEMENT,
+                        onChange: selectedValue => {
+                          const selectedValueString =
+                            typeof selectedValue === 'string'
+                              ? selectedValue
+                              : ((selectedValue as SelectOption)?.value as string)
+                          const updatedValues = produce(formik.values, draft => {
+                            draft.region = selectedValueString
+                            if (getMultiTypeFromValue(formik.values.bucketName) === MultiTypeInputType.FIXED) {
+                              draft.bucketName = ''
+                            }
+                          })
+                          formik.setValues(updatedValues)
+                        }
                       }}
-                      isReadonly={isReadonly}
+                      label={getString('regionLabel')}
                     />
-                  )}
-                </div>
+                    {getMultiTypeFromValue(formik.values.region) === MultiTypeInputType.RUNTIME && (
+                      <SelectConfigureOptions
+                        options={regions}
+                        style={{ alignSelf: 'center', marginBottom: 3 }}
+                        value={formik.values?.region as string}
+                        type="String"
+                        variableName="region"
+                        showRequiredField={false}
+                        showDefaultField={false}
+                        onChange={value => {
+                          formik.setFieldValue('region', value)
+                        }}
+                        isReadonly={isReadonly}
+                      />
+                    )}
+                  </div>
+                )}
 
-                {renderS3Bucket(formik)}
+                {get(enableFields, 'bucketName', true) && renderS3Bucket(formik)}
 
-                <div
-                  className={cx({
-                    [css.runtimeInput]: getMultiTypeFromValue(formik.values?.paths) === MultiTypeInputType.RUNTIME
-                  })}
-                >
-                  <DragnDropPaths
-                    formik={formik}
-                    expressions={expressions}
-                    allowableTypes={allowableTypes}
-                    fieldPath="paths"
-                    pathLabel={getString('fileFolderPathText')}
-                    placeholder={getString('pipeline.manifestType.manifestPathPlaceholder')}
-                    defaultValue={{ path: '', uuid: uuid('', nameSpace()) }}
-                    dragDropFieldWidth={filePathWidth}
-                    allowOnlyOneFilePath={true}
-                  />
-                  {getMultiTypeFromValue(formik.values.paths) === MultiTypeInputType.RUNTIME && (
-                    <ConfigureOptions
-                      style={{ alignSelf: 'center', marginBottom: 3 }}
-                      value={formik.values.paths}
-                      type={getString('string')}
-                      variableName={'paths'}
-                      showRequiredField={false}
-                      showDefaultField={false}
-                      onChange={val => formik.setFieldValue('paths', val)}
-                      isReadonly={isReadonly}
+                {get(enableFields, 'paths', true) && (
+                  <div
+                    className={cx({
+                      [css.runtimeInput]: getMultiTypeFromValue(formik.values?.paths) === MultiTypeInputType.RUNTIME
+                    })}
+                  >
+                    <DragnDropPaths
+                      formik={formik}
+                      expressions={expressions}
+                      allowableTypes={allowableTypes}
+                      fieldPath="paths"
+                      pathLabel={getString('fileFolderPathText')}
+                      placeholder={getString('pipeline.manifestType.manifestPathPlaceholder')}
+                      defaultValue={{ path: '', uuid: uuid('', nameSpace()) }}
+                      dragDropFieldWidth={filePathWidth}
+                      allowOnlyOneFilePath={true}
                     />
-                  )}
-                </div>
-                <Accordion className={css.advancedStepOpen}>
-                  <Accordion.Panel
-                    id={getString('advancedTitle')}
-                    addDomId={true}
-                    summary={getString('advancedTitle')}
-                    details={
-                      <div
-                        className={cx(css.halfWidth, {
-                          [css.runtimeInput]:
-                            getMultiTypeFromValue(formik.values.configOverridePath) === MultiTypeInputType.RUNTIME
-                        })}
-                      >
-                        <FormInput.MultiTextInput
-                          multiTextInputProps={{ expressions, allowableTypes }}
-                          label={getString('pipeline.manifestType.serverlessConfigFilePath')}
-                          placeholder={getString('pipeline.manifestType.serverlessConfigFilePathPlaceholder')}
-                          name="configOverridePath"
-                        />
-
-                        {getMultiTypeFromValue(formik.values.configOverridePath) === MultiTypeInputType.RUNTIME && (
-                          <ConfigureOptions
-                            value={formik.values.configOverridePath as string}
-                            type="String"
-                            variableName="configOverridePath"
-                            showRequiredField={false}
-                            showDefaultField={false}
-                            onChange={value => formik.setFieldValue('configOverridePath', value)}
-                            isReadonly={isReadonly}
+                    {getMultiTypeFromValue(formik.values.paths) === MultiTypeInputType.RUNTIME && (
+                      <ConfigureOptions
+                        style={{ alignSelf: 'center', marginBottom: 3 }}
+                        value={formik.values.paths}
+                        type={getString('string')}
+                        variableName={'paths'}
+                        showRequiredField={false}
+                        showDefaultField={false}
+                        onChange={val => formik.setFieldValue('paths', val)}
+                        isReadonly={isReadonly}
+                      />
+                    )}
+                  </div>
+                )}
+                {get(enableFields, 'configOverridePath', true) && (
+                  <Accordion className={css.advancedStepOpen}>
+                    <Accordion.Panel
+                      id={getString('advancedTitle')}
+                      addDomId={true}
+                      summary={getString('advancedTitle')}
+                      details={
+                        <div
+                          className={cx(css.halfWidth, {
+                            [css.runtimeInput]:
+                              getMultiTypeFromValue(formik.values.configOverridePath) === MultiTypeInputType.RUNTIME
+                          })}
+                        >
+                          <FormInput.MultiTextInput
+                            multiTextInputProps={{ expressions, allowableTypes }}
+                            label={getString('pipeline.manifestType.serverlessConfigFilePath')}
+                            placeholder={getString('pipeline.manifestType.serverlessConfigFilePathPlaceholder')}
+                            name="configOverridePath"
                           />
-                        )}
-                      </div>
-                    }
-                  />
-                </Accordion>
+
+                          {getMultiTypeFromValue(formik.values.configOverridePath) === MultiTypeInputType.RUNTIME && (
+                            <ConfigureOptions
+                              value={formik.values.configOverridePath as string}
+                              type="String"
+                              variableName="configOverridePath"
+                              showRequiredField={false}
+                              showDefaultField={false}
+                              onChange={value => formik.setFieldValue('configOverridePath', value)}
+                              isReadonly={isReadonly}
+                            />
+                          )}
+                        </div>
+                      }
+                    />
+                  </Accordion>
+                )}
               </div>
             </Layout.Vertical>
 

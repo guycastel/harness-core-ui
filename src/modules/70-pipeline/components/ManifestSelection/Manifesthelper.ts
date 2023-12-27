@@ -183,7 +183,8 @@ export const ManifestTypetoStoreMap: Record<ManifestTypes, ManifestStores[]> = {
     ManifestStoreMap.AzureRepo,
     ManifestStoreMap.InheritFromManifest,
     ManifestStoreMap.Harness,
-    ManifestStoreMap.CustomRemote
+    ManifestStoreMap.CustomRemote,
+    ManifestStoreMap.S3
   ],
   HelmChart: [
     ...gitStoreTypes,
@@ -237,17 +238,18 @@ export const getManifestStoresByDeploymentType = (
 ): ManifestStores[] => {
   const valuesManifestStores = ManifestTypetoStoreMap[selectedManifest as ManifestTypes]
   if (
-    selectedDeploymentType === ServiceDeploymentType.AwsSam ||
-    selectedDeploymentType === ServiceDeploymentType.ServerlessAwsLambda
-  ) {
-    return valuesManifestStores?.filter(manifestStore => isGitTypeManifestStore(manifestStore))
-  }
-  if (
     selectedDeploymentType === ServiceDeploymentType.TAS &&
     selectedManifest === ManifestDataType.TasManifest &&
     !featureFlagMap.CDS_ENABLE_TAS_ARTIFACT_AS_MANIFEST_SOURCE_NG
   ) {
     return valuesManifestStores?.filter(manifestStore => manifestStore !== ManifestStoreMap.ArtifactBundle)
+  }
+  if (
+    selectedDeploymentType === ServiceDeploymentType.ServerlessAwsLambda &&
+    [ManifestDataType.ServerlessAwsLambda, ManifestDataType.Values].includes(selectedManifest as ManifestTypes) &&
+    !featureFlagMap.CDS_CONTAINER_STEP_GROUP_AWS_S3_DOWNLOAD
+  ) {
+    return valuesManifestStores?.filter(manifestStore => manifestStore !== ManifestStoreMap.S3)
   }
   return valuesManifestStores
 }

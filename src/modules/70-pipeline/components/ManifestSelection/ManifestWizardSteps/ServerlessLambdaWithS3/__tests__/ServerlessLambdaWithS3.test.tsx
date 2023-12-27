@@ -438,4 +438,75 @@ describe('ServerlessLambdaWithS3 tests', () => {
       })
     })
   })
+
+  test('verify enableFields prop is optional and renders all fields if not provided', async () => {
+    const initialValues = {
+      identifier: 'test',
+      type: ManifestDataType.ServerlessAwsLambda,
+      spec: {
+        store: {
+          type: ManifestStoreMap.S3,
+          spec: {
+            connectorRef: 'testConnectorRef',
+            region: 'us-east-1',
+            bucketName: 'cdng-terraform-state',
+            paths: ['path1.yaml']
+          }
+        }
+      }
+    }
+
+    const { container, getByText } = render(
+      <TestWrapper>
+        <ServerlessLambdaWithS3 initialValues={initialValues as any} {...props} />
+      </TestWrapper>
+    )
+    const queryByNameAttribute = (name: string): HTMLElement | null => queryByAttribute('name', container, name)
+
+    expect(queryByNameAttribute('region')).toBeInTheDocument()
+    expect(queryByNameAttribute('bucketName')).toBeInTheDocument()
+    expect(queryByNameAttribute('paths[0].path')).toBeInTheDocument()
+    fireEvent.click(getByText('advancedTitle'))
+    expect(queryByNameAttribute('configOverridePath')).toBeInTheDocument()
+  })
+
+  test('verify enableFields prop can be used to show/hide fields', async () => {
+    const initialValues = {
+      identifier: 'test',
+      type: ManifestDataType.ServerlessAwsLambda,
+      spec: {
+        store: {
+          type: ManifestStoreMap.S3,
+          spec: {
+            connectorRef: 'testConnectorRef',
+            region: 'us-east-1',
+            bucketName: 'cdng-terraform-state',
+            paths: ['path1.yaml']
+          }
+        }
+      }
+    }
+
+    const { container, queryByText } = render(
+      <TestWrapper>
+        <ServerlessLambdaWithS3
+          initialValues={initialValues as any}
+          {...props}
+          enableFields={{
+            region: true,
+            bucketName: false,
+            paths: false,
+            configOverridePath: false
+          }}
+        />
+      </TestWrapper>
+    )
+    const queryByNameAttribute = (name: string): HTMLElement | null => queryByAttribute('name', container, name)
+
+    expect(queryByNameAttribute('region')).toBeInTheDocument()
+    expect(queryByNameAttribute('bucketName')).not.toBeInTheDocument()
+    expect(queryByNameAttribute('paths[0].path')).not.toBeInTheDocument()
+    expect(queryByText('advancedTitle')).not.toBeInTheDocument()
+    expect(queryByNameAttribute('configOverridePath')).not.toBeInTheDocument()
+  })
 })

@@ -183,7 +183,7 @@ function ManifestListView({
   const { getString } = useStrings()
   const { expressions } = useVariablesExpression()
 
-  const { CDS_ENABLE_TAS_ARTIFACT_AS_MANIFEST_SOURCE_NG } = useFeatureFlags()
+  const { CDS_ENABLE_TAS_ARTIFACT_AS_MANIFEST_SOURCE_NG, CDS_CONTAINER_STEP_GROUP_AWS_S3_DOWNLOAD } = useFeatureFlags()
 
   useEffect(() => {
     setIsManifestEditMode(manifestIndex < listOfManifests.length)
@@ -457,9 +457,14 @@ function ManifestListView({
           />
         )
         break
-      case selectedManifest === ManifestDataType.ServerlessAwsLambda && manifestStore === ManifestStoreMap.S3:
+      case [ManifestDataType.ServerlessAwsLambda, ManifestDataType.Values].includes(
+        selectedManifest as ManifestTypes
+      ) && manifestStore === ManifestStoreMap.S3:
         manifestDetailStep = (
           <ServerlessLambdaWithS3
+            enableFields={{
+              configOverridePath: [ManifestDataType.ServerlessAwsLambda].includes(selectedManifest as ManifestTypes)
+            }}
             {...lastStepProps()}
             {...((shouldPassPrevStepData()
               ? prevStepProps()
@@ -671,7 +676,8 @@ function ManifestListView({
           <ManifestWizard
             types={availableManifestTypes}
             manifestStoreTypes={getManifestStoresByDeploymentType(deploymentType, selectedManifest, {
-              CDS_ENABLE_TAS_ARTIFACT_AS_MANIFEST_SOURCE_NG
+              CDS_ENABLE_TAS_ARTIFACT_AS_MANIFEST_SOURCE_NG,
+              CDS_CONTAINER_STEP_GROUP_AWS_S3_DOWNLOAD
             })}
             labels={getLabels()}
             selectedManifest={selectedManifest}

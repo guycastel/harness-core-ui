@@ -1,3 +1,10 @@
+/*
+ * Copyright 2023 Harness Inc. All rights reserved.
+ * Use of this source code is governed by the PolyForm Shield 1.0.0 license
+ * that can be found in the licenses directory at the root of this repository, also available at
+ * https://polyformproject.org/wp-content/uploads/2020/06/PolyForm-Shield-1.0.0.txt.
+ */
+
 export const manifestsDefaultProps = {
   connectors: {
     totalPages: 1,
@@ -160,5 +167,143 @@ export const manifestsDefaultProps = {
     'OpenshiftParam',
     'Kustomize',
     'KustomizePatches'
+  ]
+}
+
+export const manifestsPropsForServerlessLambda = {
+  connectors: {
+    content: []
+  },
+  listOfManifests: [],
+  deploymentType: 'ServerlessAwsLambda',
+  isReadonly: false,
+  allowableTypes: ['FIXED', 'RUNTIME', 'EXPRESSION'],
+  allowOnlyOneManifest: false,
+  availableManifestTypes: ['ServerlessAwsLambda', 'Values']
+}
+
+export const manifestsPropsForServerlessLambdaWithExistingList = {
+  connectors: {
+    totalPages: 1,
+    totalItems: 1,
+    pageItemCount: 1,
+    pageSize: 10,
+    content: [
+      {
+        connector: {
+          name: 'asws_Account',
+          identifier: 'asws_Account',
+          description: '',
+          accountIdentifier: 'acc1',
+          orgIdentifier: 'org1',
+          projectIdentifier: 'p1',
+          tags: {},
+          type: 'Aws',
+          spec: {
+            credential: {
+              crossAccountAccess: null,
+              type: 'ManualConfig',
+              spec: {
+                accessKey: 'test',
+                accessKeyRef: null,
+                secretKeyRef: 'test'
+              },
+              region: null
+            },
+            awsSdkClientBackOffStrategyOverride: null,
+            delegateSelectors: [],
+            executeOnDelegate: true,
+            proxy: false
+          }
+        },
+        createdAt: 1691746395436,
+        lastModifiedAt: 1702017558923,
+        status: {
+          status: 'SUCCESS',
+          errorSummary: '',
+          testedAt: 1703126100137,
+          lastTestedAt: 0,
+          lastConnectedAt: 1703126100137
+        },
+        activityDetails: {
+          lastActivityTime: 1702017559051
+        },
+        harnessManaged: false,
+        gitDetails: {
+          objectId: '',
+          branch: '',
+          repoIdentifier: '',
+          rootFolder: '',
+          filePath: '',
+          repoName: '',
+          commitId: '',
+          fileUrl: '',
+          repoUrl: '',
+          parentEntityConnectorRef: '',
+          parentEntityRepoName: ''
+        },
+        entityValidityDetails: {
+          valid: true,
+          invalidYaml: ''
+        },
+        isFavorite: false
+      }
+    ],
+    pageIndex: 0,
+    empty: false,
+    pageToken: ''
+  },
+  isReadonly: false,
+  deploymentType: 'ServerlessAwsLambda',
+  listOfManifests: [
+    {
+      manifest: {
+        identifier: 'ServerlessAwsLambdaManifest',
+        type: 'ServerlessAwsLambda',
+        spec: {
+          store: {
+            type: 'S3',
+            spec: {
+              connectorRef: 'account.asws_Account',
+              region: 'us-east-1',
+              bucketName: 'my-first-serverless-proj-serverlessdeploymentbuck-pos1c8m0h4fh',
+              paths: ['path.zip']
+            }
+          },
+          configOverridePath: 'test/path.yaml'
+        }
+      }
+    },
+    {
+      manifest: {
+        identifier: 'ValuesManifest',
+        type: 'Values',
+        spec: {
+          store: {
+            type: 'S3',
+            spec: {
+              connectorRef: 'account.asws_Account',
+              region: 'us-east-1',
+              bucketName: 'my-first-serverless-proj-serverlessdeploymentbuck-pos1c8m0h4fh',
+              paths: ['path.zip']
+            }
+          }
+        }
+      }
+    }
+  ],
+  allowableTypes: ['FIXED', 'RUNTIME', 'EXPRESSION'],
+  allowOnlyOneManifest: false,
+  availableManifestTypes: ['ServerlessAwsLambda', 'Values']
+}
+
+export const dummyBucketListResponse = {
+  data: [{ bucketName: 'bucket1' }, { bucketName: 'my-first-serverless-proj-serverlessdeploymentbuck-pos1c8m0h4fh' }]
+}
+
+export const awsRegionListResponse = {
+  resource: [
+    { name: 'region1', value: 'region1' },
+    { name: 'us-east-1', value: 'us-east-1' }
   ]
 }

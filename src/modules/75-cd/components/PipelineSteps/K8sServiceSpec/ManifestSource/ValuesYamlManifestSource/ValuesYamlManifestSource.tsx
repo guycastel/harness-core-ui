@@ -6,8 +6,10 @@
  */
 
 import React from 'react'
+import { get } from 'lodash-es'
 import { ManifestSourceBase, ManifestSourceRenderProps } from '@cd/factory/ManifestSourceFactory/ManifestSourceBase'
-import { ManifestDataType } from '@pipeline/components/ManifestSelection/Manifesthelper'
+import { ManifestDataType, ManifestStoreMap } from '@pipeline/components/ManifestSelection/Manifesthelper'
+import { S3ManifestStoreRuntimeView } from '@cd/components/PipelineSteps/ECSServiceSpec/ManifestSource/S3ManifestStoreRuntimeView'
 import { FileUsage } from '@filestore/interfaces/FileStore'
 import { ManifestContent } from '../ManifestSourceRuntimeFields/ManifestContent'
 
@@ -16,6 +18,11 @@ export class ValuesYamlManifestSource extends ManifestSourceBase<ManifestSourceR
   renderContent(props: ManifestSourceRenderProps): JSX.Element | null {
     if (!props.isManifestsRuntime) {
       return null
+    }
+
+    const manifestStoreType = get(props.template, `${props.manifestPath}.spec.store.type`, null)
+    if (manifestStoreType === ManifestStoreMap.S3) {
+      return <S3ManifestStoreRuntimeView {...props} pathFieldlabel="fileFolderPathText" />
     }
 
     return <ManifestContent {...props} pathFieldlabel="common.git.filePath" fileUsage={FileUsage.MANIFEST_FILE} />
