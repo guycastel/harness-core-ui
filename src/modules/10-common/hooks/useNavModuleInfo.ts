@@ -310,7 +310,7 @@ export const moduleInfoMap: Record<NavModuleName, ModuleInfo> = {
         : routes.toSEI({ accountId }),
     featureFlagName: FeatureFlag.SEI_ENABLED,
     color: '--default-module-border',
-    shortLabel: 'common.purpose.sei.continuous',
+    shortLabel: 'common.purpose.sei.shortName',
     moduleIntro: 'common.moduleIntro.insights'
   }
 }
