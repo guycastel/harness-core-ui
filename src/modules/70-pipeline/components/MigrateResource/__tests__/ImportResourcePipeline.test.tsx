@@ -17,7 +17,7 @@ import { TestWrapper } from '@common/utils/testUtils'
 import ImportResource from '../ImportResource'
 
 jest.mock('services/pipeline-ng', () => ({
-  importPipelinePromise: jest.fn().mockImplementation(() => Promise.resolve({ status: 'SUCCESS' }))
+  importPipelineWithoutIdPromise: jest.fn().mockImplementation(() => Promise.resolve({ status: 'SUCCESS' }))
 }))
 
 const getGitConnector = jest.fn(() => Promise.resolve(gitConnectorMock))
@@ -100,12 +100,11 @@ describe('ImportResource - Pipeline', () => {
   })
 
   test('snapshot testing', () => {
-    const { container, getByText } = render(
+    const { container } = render(
       <TestWrapper path={TEST_PIPELINES_PATH} pathParams={TEST_PATH_PARAMS}>
         <ImportResource resourceType={ResourceType.PIPELINES} />
       </TestWrapper>
     )
-    expect(getByText('name')).toBeInTheDocument()
     expect(container).toMatchSnapshot()
   })
 
@@ -158,7 +157,7 @@ describe('ImportResource - Pipeline', () => {
   })
 
   test('when import throws error WITHOUT responseMessages', async () => {
-    jest.spyOn(pipelineNg, 'importPipelinePromise').mockImplementation((): any => {
+    jest.spyOn(pipelineNg, 'importPipelineWithoutIdPromise').mockImplementation((): any => {
       return Promise.reject({
         status: 'ERROR',
         code: 'INVALID_REQUEST',
@@ -188,7 +187,7 @@ describe('ImportResource - Pipeline', () => {
   })
 
   test('when import throws error WITHOUT message and responseMessages', async () => {
-    jest.spyOn(pipelineNg, 'importPipelinePromise').mockImplementation((): any => {
+    jest.spyOn(pipelineNg, 'importPipelineWithoutIdPromise').mockImplementation((): any => {
       return Promise.reject({
         status: 'ERROR'
       })
@@ -215,7 +214,7 @@ describe('ImportResource - Pipeline', () => {
   })
 
   test('when import throws error WITH responseMessages', async () => {
-    jest.spyOn(pipelineNg, 'importPipelinePromise').mockImplementation((): any => {
+    jest.spyOn(pipelineNg, 'importPipelineWithoutIdPromise').mockImplementation((): any => {
       return Promise.reject({
         status: 'ERROR',
         code: 'INVALID_REQUEST',
@@ -264,7 +263,7 @@ describe('ImportResource - Pipeline', () => {
   })
 
   test('when import succeeds with error WITHOUT responseMessages', async () => {
-    jest.spyOn(pipelineNg, 'importPipelinePromise').mockImplementation((): any => {
+    jest.spyOn(pipelineNg, 'importPipelineWithoutIdPromise').mockImplementation((): any => {
       return Promise.resolve({
         status: 'ERROR',
         code: 'INVALID_REQUEST',
@@ -293,7 +292,7 @@ describe('ImportResource - Pipeline', () => {
   })
 
   test('when import succeeds with error WITHOUT message and responseMessages', async () => {
-    jest.spyOn(pipelineNg, 'importPipelinePromise').mockImplementation((): any => {
+    jest.spyOn(pipelineNg, 'importPipelineWithoutIdPromise').mockImplementation((): any => {
       return Promise.resolve({
         status: 'ERROR'
       })
@@ -318,7 +317,7 @@ describe('ImportResource - Pipeline', () => {
   })
 
   test('when import succeeds with error WITH responseMessages', async () => {
-    jest.spyOn(pipelineNg, 'importPipelinePromise').mockImplementation((): any => {
+    jest.spyOn(pipelineNg, 'importPipelineWithoutIdPromise').mockImplementation((): any => {
       return Promise.resolve({
         status: 'ERROR',
         code: 'INVALID_REQUEST',

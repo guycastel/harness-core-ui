@@ -4643,6 +4643,15 @@ export interface PermissionCheck {
   resourceType?: string
 }
 
+export interface PerpetualTaskInfoForTriggers {
+  createdAt?: number
+  delegateHostName?: string
+  delegateId?: string
+  state?: string
+  taskDescription?: string
+  unassignedReason?: string
+}
+
 export type PersistentVolumeClaimYaml = CIVolume & {
   mountPath: string
   spec: PersistentVolumeClaimYamlSpec
@@ -5107,6 +5116,9 @@ export type PmsSlackChannel = PmsNotificationChannel & {
 }
 
 export type PmsWebhookChannel = PmsNotificationChannel & {
+  headers?: {
+    [key: string]: string
+  }
   webhookUrl?: string
 }
 
@@ -5136,6 +5148,7 @@ export interface PolledResponse {
 
 export interface PollingInfoForTriggers {
   perpetualTaskId?: string
+  perpetualTaskInfoForTriggers?: PerpetualTaskInfoForTriggers
   polledResponse?: PolledResponse
   pollingDocId?: string
 }
@@ -5372,6 +5385,7 @@ export interface ResourceDTO {
     | 'GITOPS_APPLICATION'
     | 'CODE_REPOSITORY'
     | 'MODULE_LICENSE'
+    | 'IDP_BACKSTAGE_CATALOG_ENTITY'
   uniqueId?: string
 }
 
@@ -7186,6 +7200,7 @@ export interface StepData {
     | 'TERRAGRUNT_DESTROY'
     | 'TERRAGRUNT_ROLLBACK'
     | 'SEI_MAX_NUMBER_OF_CONTRIBUTORS'
+    | 'IDP_ACTIVE_DEVELOPERS'
   name?: string
   type?: string
 }
@@ -7712,6 +7727,11 @@ export type WaitStepInfo = StepSpecType & {
   metadata?: string
 }
 
+export type WaitStepInfoV1 = StepSpecType & {
+  duration?: ParameterFieldString
+  metadata?: string
+}
+
 export interface WaitStepRequestDto {
   action?: 'MARK_AS_SUCCESS' | 'MARK_AS_FAIL'
 }
@@ -7870,6 +7890,8 @@ export type FilterPropertiesRequestBody = FilterProperties
 export type LandingDashboardRequestPMSRequestBody = LandingDashboardRequestPMS
 
 export type MergeInputSetRequestRequestBody = MergeInputSetRequest
+
+export type PipelineImportRequestRequestBody = PipelineImportRequest
 
 export type RunStageRequestDTORequestBody = RunStageRequestDTO
 
@@ -15104,6 +15126,90 @@ export const getExecutionNodePromise = (
     signal
   )
 
+export interface ImportPipelineWithoutIdQueryParams {
+  accountIdentifier: string
+  orgIdentifier: string
+  projectIdentifier: string
+  connectorRef?: string
+  repoName?: string
+  branch?: string
+  filePath?: string
+  isForceImport?: boolean
+}
+
+export type ImportPipelineWithoutIdProps = Omit<
+  MutateProps<
+    ResponsePipelineSaveResponse,
+    Failure | Error,
+    ImportPipelineWithoutIdQueryParams,
+    PipelineImportRequestRequestBody,
+    void
+  >,
+  'path' | 'verb'
+>
+
+/**
+ * Get Pipeline YAML from Git Repository without pipelineIdentifier
+ */
+export const ImportPipelineWithoutId = (props: ImportPipelineWithoutIdProps) => (
+  <Mutate<
+    ResponsePipelineSaveResponse,
+    Failure | Error,
+    ImportPipelineWithoutIdQueryParams,
+    PipelineImportRequestRequestBody,
+    void
+  >
+    verb="POST"
+    path={`/pipelines/import`}
+    base={getConfig('pipeline/api')}
+    {...props}
+  />
+)
+
+export type UseImportPipelineWithoutIdProps = Omit<
+  UseMutateProps<
+    ResponsePipelineSaveResponse,
+    Failure | Error,
+    ImportPipelineWithoutIdQueryParams,
+    PipelineImportRequestRequestBody,
+    void
+  >,
+  'path' | 'verb'
+>
+
+/**
+ * Get Pipeline YAML from Git Repository without pipelineIdentifier
+ */
+export const useImportPipelineWithoutId = (props: UseImportPipelineWithoutIdProps) =>
+  useMutate<
+    ResponsePipelineSaveResponse,
+    Failure | Error,
+    ImportPipelineWithoutIdQueryParams,
+    PipelineImportRequestRequestBody,
+    void
+  >('POST', `/pipelines/import`, { base: getConfig('pipeline/api'), ...props })
+
+/**
+ * Get Pipeline YAML from Git Repository without pipelineIdentifier
+ */
+export const importPipelineWithoutIdPromise = (
+  props: MutateUsingFetchProps<
+    ResponsePipelineSaveResponse,
+    Failure | Error,
+    ImportPipelineWithoutIdQueryParams,
+    PipelineImportRequestRequestBody,
+    void
+  >,
+  signal?: RequestInit['signal']
+) =>
+  mutateUsingFetch<
+    ResponsePipelineSaveResponse,
+    Failure | Error,
+    ImportPipelineWithoutIdQueryParams,
+    PipelineImportRequestRequestBody,
+    void
+  >('POST', getConfig('pipeline/api'), `/pipelines/import`, props, signal)
+
 export interface ImportPipelineQueryParams {
   accountIdentifier: string
   orgIdentifier: string
@@ -15124,7 +15230,7 @@ export type ImportPipelineProps = Omit<
     ResponsePipelineSaveResponse,
     Failure | Error,
     ImportPipelineQueryParams,
-    PipelineImportRequest,
+    PipelineImportRequestRequestBody,
     ImportPipelinePathParams
   >,
   'path' | 'verb'
@@ -15139,7 +15245,7 @@ export const ImportPipeline = ({ pipelineIdentifier, ...props }: ImportPipelineP
     ResponsePipelineSaveResponse,
     Failure | Error,
     ImportPipelineQueryParams,
-    PipelineImportRequest,
+    PipelineImportRequestRequestBody,
     ImportPipelinePathParams
   >
     verb="POST"
@@ -15154,7 +15260,7 @@ export type UseImportPipelineProps = Omit<
     ResponsePipelineSaveResponse,
     Failure | Error,
     ImportPipelineQueryParams,
-    PipelineImportRequest,
+    PipelineImportRequestRequestBody,
     ImportPipelinePathParams
   >,
   'path' | 'verb'
@@ -15169,7 +15275,7 @@ export const useImportPipeline = ({ pipelineIdentifier, ...props }: UseImportPip
     ResponsePipelineSaveResponse,
     Failure | Error,
     ImportPipelineQueryParams,
-    PipelineImportRequest,
+    PipelineImportRequestRequestBody,
     ImportPipelinePathParams
   >('POST', (paramsInPath: ImportPipelinePathParams) => `/pipelines/import/${paramsInPath.pipelineIdentifier}`, {
     base: getConfig('pipeline/api'),
@@ -15188,7 +15294,7 @@ export const importPipelinePromise = (
     ResponsePipelineSaveResponse,
     Failure | Error,
     ImportPipelineQueryParams,
-    PipelineImportRequest,
+    PipelineImportRequestRequestBody,
     ImportPipelinePathParams
   > & { pipelineIdentifier: string },
   signal?: RequestInit['signal']
@@ -15197,7 +15303,7 @@ export const importPipelinePromise = (
     ResponsePipelineSaveResponse,
     Failure | Error,
     ImportPipelineQueryParams,
-    PipelineImportRequest,
+    PipelineImportRequestRequestBody,
     ImportPipelinePathParams
   >('POST', getConfig('pipeline/api'), `/pipelines/import/${pipelineIdentifier}`, props, signal)
 

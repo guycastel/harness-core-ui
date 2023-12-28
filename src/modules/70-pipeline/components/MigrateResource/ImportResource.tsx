@@ -25,7 +25,12 @@ import type { HideModal } from '@harness/use-modal'
 
 import type { FormikProps } from 'formik'
 import { useStrings } from 'framework/strings'
-import { Error, importInputSetPromise, importPipelinePromise, ResponsePipelineSaveResponse } from 'services/pipeline-ng'
+import {
+  Error,
+  importInputSetPromise,
+  importPipelineWithoutIdPromise,
+  ResponsePipelineSaveResponse
+} from 'services/pipeline-ng'
 import { importTemplatePromise, ResponseTemplateImportSaveResponse } from 'services/template-ng'
 import { IdentifierSchema, NameSchema, TemplateVersionLabelSchema } from '@common/utils/Validation'
 import { GitSyncForm, gitSyncFormSchema } from '@gitsync/components/GitSyncForm/GitSyncForm'
@@ -143,10 +148,9 @@ export default function ImportResource({
   })
 
   const importPipeline = (formValues: ModifiedInitialValuesType): void => {
-    const { identifier, name, description, connectorRef, repo, branch, filePath } = formValues
+    const { description, connectorRef, repo, branch, filePath } = formValues
     setIsLoading(true)
-    importPipelinePromise({
-      pipelineIdentifier: identifier,
+    importPipelineWithoutIdPromise({
       queryParams: {
         accountIdentifier: accountId,
         orgIdentifier,
@@ -163,7 +167,6 @@ export default function ImportResource({
         }
       },
       body: {
-        pipelineName: name,
         pipelineDescription: description
       }
     })
@@ -251,12 +254,18 @@ export default function ImportResource({
         }
       : {}
 
-  const validationSchema = Yup.object().shape({
-    name: NameSchema(getString, { requiredErrorMsg: getString('createPipeline.pipelineNameRequired') }),
-    identifier: IdentifierSchema(getString),
-    ...getVersionLabelSchema,
-    ...gitSyncFormSchema(getString)
-  })
+  const validationSchema =
+    resourceType === ResourceType.PIPELINES
+      ? Yup.object().shape({
+          ...getVersionLabelSchema,
+          ...gitSyncFormSchema(getString)
+        })
+      : Yup.object().shape({
+          name: NameSchema(getString, { requiredErrorMsg: getString('createPipeline.pipelineNameRequired') }),
+          identifier: IdentifierSchema(getString),
+          ...getVersionLabelSchema,
+          ...gitSyncFormSchema(getString)
+        })
 
   const modifiedInitialValues = React.useMemo(() => {
     return {
@@ -280,7 +289,7 @@ export default function ImportResource({
               <PageSpinner message={getString('loading')} />
             ) : (
               <>
-                <NameId />
+                {resourceType !== ResourceType.PIPELINES && <NameId />}
                 {resourceType === ResourceType.TEMPLATE && (
                   <FormInput.Text
                     name="versionLabel"
