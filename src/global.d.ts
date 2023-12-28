@@ -312,6 +312,11 @@ declare module 'ssca/DriftDrawer' {
   export default ChildApp
 }
 
+declare module 'ssca/SBOMScoreSummary' {
+  const ChildApp: ChildAppComponent
+  export default ChildApp
+}
+
 declare module 'governance/App' {
   const ChildApp: ChildAppComponent
   export default ChildApp

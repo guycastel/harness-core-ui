@@ -7,10 +7,10 @@
  */
 
 import { Color, FontVariation } from '@harness/design-system'
-import { Button, ButtonSize, ButtonVariation, Icon, Layout, Text } from '@harness/uicore'
+import { Button, ButtonSize, ButtonVariation, Container, Icon, Layout, Text } from '@harness/uicore'
 import { useDownloadSbomQuery } from '@harnessio/react-ssca-manager-client'
 import { defaultTo, get } from 'lodash-es'
-import React, { FC } from 'react'
+import React, { FC, lazy } from 'react'
 import { useParams } from 'react-router-dom'
 import type { Cell, CellValue, ColumnInstance, Renderer, Row, TableInstance, UseTableCellProps } from 'react-table'
 import ExecutionStatusLabel from '@modules/70-pipeline/components/ExecutionStatusLabel/ExecutionStatusLabel'
@@ -19,8 +19,12 @@ import { StepType } from '@pipeline/components/PipelineSteps/PipelineStepInterfa
 import { EvaluationStatus } from '@pipeline/components/execution/StepDetails/common/ExecutionContent/PolicyEvaluationContent/EvaluationStatusLabel/EvaluationStatusLabel'
 import { useStrings } from 'framework/strings'
 import { ProjectPathProps } from '@common/interfaces/RouteInterfaces'
+import ChildComponentMounter from 'microfrontends/ChildComponentMounter'
 import type { Artifact, ArtifactsColumnActions } from './ArtifactsTable'
 import css from './ArtifactsTable.module.scss'
+
+// eslint-disable-next-line import/no-unresolved
+const SBOMScoreSummary = lazy(() => import('ssca/SBOMScoreSummary'))
 
 export function downloadBlob(content: string, filename: string): void {
   const url = URL.createObjectURL(new Blob([content], { type: 'text/json' }))
@@ -129,27 +133,37 @@ export const TypeCell: CellType = ({ row, column }) => {
 
   return (
     <Layout.Vertical spacing="tiny" flex={{ alignItems: 'start' }}>
-      {artifact.sbomName ? (
-        <Button
-          variation={ButtonVariation.LINK}
-          size={ButtonSize.SMALL}
-          onClick={() => query.refetch()}
-          loading={query.isFetching}
-          className={css.action}
-        >
-          <Layout.Horizontal spacing="small" flex={{ alignItems: 'center', justifyContent: 'start' }}>
-            <Text color={Color.PRIMARY_7} font={{ variation: FontVariation.SMALL }}>
-              {getString('common.sbom')}
-            </Text>
-            <Icon size={12} name="import" color={Color.PRIMARY_7} />
-          </Layout.Horizontal>
-        </Button>
-      ) : (
-        <Text font={{ variation: FontVariation.SMALL_SEMI }} margin={{ bottom: 'xsmall' }}>
-          {artifact.type}
-        </Text>
-      )}
-
+      <Layout.Horizontal spacing="xsmall">
+        {artifact.sbomName ? (
+          <Button
+            variation={ButtonVariation.LINK}
+            size={ButtonSize.SMALL}
+            onClick={() => query.refetch()}
+            loading={query.isFetching}
+            className={css.action}
+          >
+            <Layout.Horizontal spacing="small" flex={{ alignItems: 'center', justifyContent: 'start' }}>
+              <Text color={Color.PRIMARY_7} font={{ variation: FontVariation.SMALL }}>
+                {getString('common.sbom')}
+              </Text>
+              <Icon size={12} name="import" color={Color.PRIMARY_7} />
+            </Layout.Horizontal>
+          </Button>
+        ) : (
+          <Text font={{ variation: FontVariation.SMALL_SEMI }} margin={{ bottom: 'xsmall' }}>
+            {artifact.type}
+          </Text>
+        )}
+        {artifact.scorecard && (
+          <Container border={{ left: true }}>
+            <ChildComponentMounter
+              ChildComponent={SBOMScoreSummary}
+              orchestrationId={artifact.stepExecutionId}
+              scoreCard={artifact.scorecard}
+            />
+          </Container>
+        )}
+      </Layout.Horizontal>
       {artifact.drift && (
         <Button
           className={css.action}
