@@ -83,10 +83,11 @@ const ProjectSetupMenu: React.FC<ProjectSetupMenuProps> = ({ module, defaultExpa
   const isCV = module === 'cv'
   const isCHAOS = module === 'chaos'
   const isSTO = module === 'sto'
+  const isSSCA = module === 'ssca'
   const isCIorCD = isCI || isCD
   const isCIorCDorSTO = isCI || isCD || isSTO
   // we don't want to show Policies tab for modules that use this file and don't support it
-  let nonPolicyEngineModules = ['ssca', 'chaos', 'iacm']
+  let nonPolicyEngineModules = ['chaos', 'iacm']
   if (IACM_OPA_WORKSPACE_GOVERNANCE) {
     nonPolicyEngineModules = nonPolicyEngineModules.filter(_module => _module !== 'iacm')
   }
@@ -103,7 +104,7 @@ const ProjectSetupMenu: React.FC<ProjectSetupMenuProps> = ({ module, defaultExpa
     (USE_OLD_GIT_SYNC && (isCIorCDorSTO || !module) && !isGitSimplificationEnabled)
 
   const showTemplates = isCIorCDorSTO || !module
-  const showFileStore = isCIorCD || !module
+  const showFileStore = isCIorCD || isSSCA || !module
   // Add more modules as they keep on supporting service discovery feature
   const showDiscovery = (isCHAOS || !module) && PL_DISCOVERY_ENABLE
 

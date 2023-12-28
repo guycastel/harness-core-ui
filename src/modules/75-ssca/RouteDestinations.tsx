@@ -26,6 +26,8 @@ import { SecretRouteDestinations } from '@platform/secrets/RouteDestinations'
 import { AccessControlRouteDestinations } from '@rbac/RouteDestinations'
 import { DelegateRouteDestinations } from '@platform/delegates/RouteDestinations'
 import { VariableRouteDestinations } from '@platform/variables/RouteDestinations'
+import { FileStoreRouteDestinations } from '@modules/27-platform/filestore/RouteDestinations'
+import { GovernanceRouteDestinations } from '@modules/25-governance/RouteDestinations'
 import { useQueryParamsOptions } from '@common/hooks/useQueryParams'
 import { PolicyViolationsDrawer } from '@modules/70-pipeline/pages/execution/ExecutionArtifactsView/PolicyViolations/PolicyViolationsDrawer'
 import { SLSAVerification } from '@modules/70-pipeline/pages/execution/ExecutionArtifactsView/ArtifactsTable/ArtifactTableCells'
@@ -115,6 +117,11 @@ export default (
       <AccessControlRouteDestinations moduleParams={moduleParams} sidebarProps={SSCASideNavProps} />
       <DelegateRouteDestinations moduleParams={moduleParams} sidebarProps={SSCASideNavProps} />
       <DefaultSettingsRouteDestinations moduleParams={moduleParams} sidebarProps={SSCASideNavProps} />
+      <FileStoreRouteDestinations moduleParams={moduleParams} sidebarProps={SSCASideNavProps} />
+      <GovernanceRouteDestinations
+        sidebarProps={SSCASideNavProps}
+        pathProps={{ ...accountPathProps, ...projectPathProps, ...moduleParams }}
+      />
     </Route>
   </>
 )
