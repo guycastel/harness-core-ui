@@ -1268,7 +1268,11 @@ export function RightDrawer(): React.ReactElement {
             stageType,
             undefined,
             'Provisioner',
-            getFlattenedStages(pipeline).stages
+            getFlattenedStages(pipeline).stages,
+            defaultTo(
+              get(data, 'paletteData.entity.node.data.isContainerStepGroup'),
+              get(data, 'paletteData.entity.node.isContainerStepGroup')
+            )
           )}
           stageType={stageType as StageType}
           isProvisioner={true}

@@ -79,6 +79,19 @@ const stepPalettePayloadContainerStepGroup = [
   }
 ]
 
+const stepPalettePayloadContainerStepGroupInProvisioner = [
+  {
+    module: 'ci',
+    category: 'plugin',
+    shouldShowCommonSteps: false
+  },
+  {
+    module: 'cd',
+    category: 'AWS CDK',
+    shouldShowCommonSteps: false
+  }
+]
+
 export function getStepPaletteModuleInfosFromStage(
   stageType?: string,
   stage?: StageElementConfig,
@@ -229,7 +242,11 @@ export function getStepPaletteModuleInfosFromStage(
 
     case StageType.DEPLOY: {
       if (isContainerStepGroup) {
-        return stepPalettePayloadContainerStepGroup
+        if (initialCategory === 'Provisioner') {
+          return stepPalettePayloadContainerStepGroupInProvisioner
+        } else {
+          return stepPalettePayloadContainerStepGroup
+        }
       }
       const stepPalleteInfo =
         deploymentType === ServiceDeploymentType.CustomDeployment
@@ -257,7 +274,7 @@ export function getStepPaletteModuleInfosFromStage(
           : [
               {
                 module: 'cd',
-                category: category,
+                category: category ?? initialCategory,
                 shouldShowCommonSteps: true
               },
               {
