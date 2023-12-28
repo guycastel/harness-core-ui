@@ -24,6 +24,7 @@ interface MetricPacksProps {
   setSelectedMetricPacks: React.Dispatch<React.SetStateAction<TimeSeriesMetricPackDTO[]>>
   validationResultData?: MetricPackValidationResponse[]
   guid: string
+  connectorIdentifier?: string
   setValidationResultData: React.Dispatch<React.SetStateAction<MetricPackValidationResponse[] | undefined>>
   isTemplate?: boolean
   setInputType: (type: MultiTypeInputType) => void
@@ -46,7 +47,8 @@ export function MetricPacks({
   setValidationResultData,
   setInputType,
   isTemplate,
-  onValidate
+  onValidate,
+  connectorIdentifier
 }: MetricPacksProps): JSX.Element {
   const { getString } = useStrings()
 
@@ -103,6 +105,7 @@ export function MetricPacks({
             setSelectedMetricPacks={
               setSelectedMetricPacks as React.Dispatch<React.SetStateAction<TimeSeriesMetricPackDTO[]>>
             }
+            connectorIdentifier={connectorIdentifier}
             connector={HealthSoureSupportedConnectorTypes.NEW_RELIC}
             onChange={(metricPackIdentifier, updatedValue) =>
               handleMetricPackUpdate(

@@ -1666,6 +1666,7 @@ export interface EntityGitDetails {
   commitId?: string
   filePath?: string
   fileUrl?: string
+  isHarnessCodeRepo?: boolean
   objectId?: string
   parentEntityConnectorRef?: string
   parentEntityRepoName?: string
@@ -2093,6 +2094,7 @@ export interface Error {
     | 'ABORT_ALL_ALREADY_NG'
     | 'WEBHOOK_EXCEPTION'
     | 'INVALID_OIDC_CONFIGURATION'
+    | 'INVALID_CREDENTIALS'
   correlationId?: string
   detailedMessage?: string
   message?: string
@@ -2578,6 +2580,7 @@ export interface Failure {
     | 'ABORT_ALL_ALREADY_NG'
     | 'WEBHOOK_EXCEPTION'
     | 'INVALID_OIDC_CONFIGURATION'
+    | 'INVALID_CREDENTIALS'
   correlationId?: string
   errors?: ValidationError[]
   message?: string
@@ -2971,6 +2974,7 @@ export interface HealthSourceDTO {
     | 'STACKDRIVER_LOG'
     | 'KUBERNETES'
     | 'NEW_RELIC'
+    | 'NEW_RELIC_GRAPHQL'
     | 'PROMETHEUS'
     | 'DATADOG_METRICS'
     | 'DATADOG_LOG'
@@ -3070,6 +3074,7 @@ export interface HealthSourceRecordsRequest {
     | 'STACKDRIVER_LOG'
     | 'KUBERNETES'
     | 'NEW_RELIC'
+    | 'NEW_RELIC_GRAPHQL'
     | 'PROMETHEUS'
     | 'DATADOG_METRICS'
     | 'DATADOG_LOG'
@@ -3123,6 +3128,7 @@ export interface HealthSourceRecordsResponse {
     | 'STACKDRIVER_LOG'
     | 'KUBERNETES'
     | 'NEW_RELIC'
+    | 'NEW_RELIC_GRAPHQL'
     | 'PROMETHEUS'
     | 'DATADOG_METRICS'
     | 'DATADOG_LOG'
@@ -3874,6 +3880,7 @@ export interface MetricPack {
     | 'STACKDRIVER_LOG'
     | 'KUBERNETES'
     | 'NEW_RELIC'
+    | 'NEW_RELIC_GRAPHQL'
     | 'PROMETHEUS'
     | 'DATADOG_METRICS'
     | 'DATADOG_LOG'
@@ -3909,6 +3916,7 @@ export interface MetricPackDTO {
     | 'STACKDRIVER_LOG'
     | 'KUBERNETES'
     | 'NEW_RELIC'
+    | 'NEW_RELIC_GRAPHQL'
     | 'PROMETHEUS'
     | 'DATADOG_METRICS'
     | 'DATADOG_LOG'
@@ -4922,6 +4930,7 @@ export interface QueryRecordsRequest {
     | 'STACKDRIVER_LOG'
     | 'KUBERNETES'
     | 'NEW_RELIC'
+    | 'NEW_RELIC_GRAPHQL'
     | 'PROMETHEUS'
     | 'DATADOG_METRICS'
     | 'DATADOG_LOG'
@@ -5604,6 +5613,7 @@ export interface ResponseMessage {
     | 'ABORT_ALL_ALREADY_NG'
     | 'WEBHOOK_EXCEPTION'
     | 'INVALID_OIDC_CONFIGURATION'
+    | 'INVALID_CREDENTIALS'
   exception?: Throwable
   failureTypes?: (
     | 'EXPIRED'
@@ -7392,6 +7402,7 @@ export interface TimeSeriesMetricDataDTO {
     | 'STACKDRIVER_LOG'
     | 'KUBERNETES'
     | 'NEW_RELIC'
+    | 'NEW_RELIC_GRAPHQL'
     | 'PROMETHEUS'
     | 'DATADOG_METRICS'
     | 'DATADOG_LOG'
@@ -7530,6 +7541,7 @@ export interface TimeSeriesThreshold {
     | 'STACKDRIVER_LOG'
     | 'KUBERNETES'
     | 'NEW_RELIC'
+    | 'NEW_RELIC_GRAPHQL'
     | 'PROMETHEUS'
     | 'DATADOG_METRICS'
     | 'DATADOG_LOG'
@@ -7579,6 +7591,7 @@ export interface TimeSeriesThresholdDTO {
     | 'STACKDRIVER_LOG'
     | 'KUBERNETES'
     | 'NEW_RELIC'
+    | 'NEW_RELIC_GRAPHQL'
     | 'PROMETHEUS'
     | 'DATADOG_METRICS'
     | 'DATADOG_LOG'
@@ -7660,6 +7673,7 @@ export interface TransactionMetricInfo {
     | 'STACKDRIVER_LOG'
     | 'KUBERNETES'
     | 'NEW_RELIC'
+    | 'NEW_RELIC_GRAPHQL'
     | 'PROMETHEUS'
     | 'DATADOG_METRICS'
     | 'DATADOG_LOG'
@@ -13954,6 +13968,7 @@ export interface GetMetricPacksQueryParams {
   accountId: string
   orgIdentifier: string
   projectIdentifier: string
+  connectorIdentifier?: string
   dataSourceType:
     | 'APP_DYNAMICS'
     | 'SPLUNK'
@@ -13962,6 +13977,7 @@ export interface GetMetricPacksQueryParams {
     | 'STACKDRIVER_LOG'
     | 'KUBERNETES'
     | 'NEW_RELIC'
+    | 'NEW_RELIC_GRAPHQL'
     | 'PROMETHEUS'
     | 'DATADOG_METRICS'
     | 'DATADOG_LOG'
@@ -14036,6 +14052,7 @@ export interface SaveMetricPacksQueryParams {
     | 'STACKDRIVER_LOG'
     | 'KUBERNETES'
     | 'NEW_RELIC'
+    | 'NEW_RELIC_GRAPHQL'
     | 'PROMETHEUS'
     | 'DATADOG_METRICS'
     | 'DATADOG_LOG'
@@ -17359,6 +17376,7 @@ export interface GetLabelNamesQueryParams {
     | 'STACKDRIVER_LOG'
     | 'KUBERNETES'
     | 'NEW_RELIC'
+    | 'NEW_RELIC_GRAPHQL'
     | 'PROMETHEUS'
     | 'DATADOG_METRICS'
     | 'DATADOG_LOG'
@@ -17438,6 +17456,7 @@ export interface GetLabeValuesQueryParams {
     | 'STACKDRIVER_LOG'
     | 'KUBERNETES'
     | 'NEW_RELIC'
+    | 'NEW_RELIC_GRAPHQL'
     | 'PROMETHEUS'
     | 'DATADOG_METRICS'
     | 'DATADOG_LOG'
@@ -17517,6 +17536,7 @@ export interface GetMetricNamesQueryParams {
     | 'STACKDRIVER_LOG'
     | 'KUBERNETES'
     | 'NEW_RELIC'
+    | 'NEW_RELIC_GRAPHQL'
     | 'PROMETHEUS'
     | 'DATADOG_METRICS'
     | 'DATADOG_LOG'
@@ -17596,6 +17616,7 @@ export interface GetSampleDataQueryParams {
     | 'STACKDRIVER_LOG'
     | 'KUBERNETES'
     | 'NEW_RELIC'
+    | 'NEW_RELIC_GRAPHQL'
     | 'PROMETHEUS'
     | 'DATADOG_METRICS'
     | 'DATADOG_LOG'

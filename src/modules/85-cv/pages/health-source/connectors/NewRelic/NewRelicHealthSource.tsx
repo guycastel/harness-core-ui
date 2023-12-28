@@ -314,6 +314,7 @@ export default function NewRelicHealthSource({
               setInputType={setInputType}
               isTemplate={isTemplate}
               onValidate={onValidate}
+              connectorIdentifier={isConnectorRuntimeOrExpression ? undefined : connectorIdentifier}
             />
 
             {canShowApplicationId && (
