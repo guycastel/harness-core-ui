@@ -18,6 +18,7 @@ steps:
     undefinedType: Undefined deployment type
     enableKubernetesPruning: 'Enable Kubernetes Pruning'
     skipUnchangedManifest: 'Skip Deployment if Using the Manifest Used in the Previous Deployment'
+    asg: Auto Scaling Group
   commands:
     runTheCommands: Run the following commands
     addCommand: Add Command
@@ -595,6 +596,8 @@ infrastructure:
   delete: Delete Infrastructure
   deleteConfirmation: Are you sure you want to delete this Infrastructure?
   deleted: Successfully deleted Infrastructure {{ identifier }}
+  sshWinRmAws:
+    asgAutoCaling: Use ASG Autoscaling Group
   sshWinRmAzure:
     cloudProvider: Cloud Provider
     hostConnectionAttributes: Host Connection Attributes
@@ -1388,6 +1391,7 @@ samVersionLabel: SAM Version
 serverlessVersionLabel: Serverless Version
 encryptJsonOutput: Encrypt json output
 baseAsgLabel: Base Asg
+baseAsgName: Base Asg Name
 baseAsgPlaceholder: Select Base Asg
 asgPlaceholder: Enter ASG Name
 asgLoadBalancer: ASG Load Balancer

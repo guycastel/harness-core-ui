@@ -23,3 +23,21 @@ export const regionsResponse: UseGetReturnData<ResponseMapStringString> = {
     }
   }
 }
+
+export const autoScaling = {
+  status: 'SUCCESS',
+  data: ['AMI-BASE-ASG-TODOLIST', 'AMI-BASE-ASG-TODOLIST-NEW'],
+  metaData: null,
+  correlationId: 'b34as2d122f2-36dd-463d-be96-123'
+}
+
+export const vpcsMock = {
+  status: 'SUCCESS',
+  data: [
+    { id: '1', name: 'vpcs1' },
+    { id: '2', name: 'vpcs2' },
+    { id: '3', name: 'vpcs3' }
+  ],
+  metaData: null,
+  correlationId: 'corId123'
+}

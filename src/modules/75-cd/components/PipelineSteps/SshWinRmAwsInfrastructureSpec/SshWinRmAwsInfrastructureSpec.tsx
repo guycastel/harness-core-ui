@@ -23,7 +23,9 @@ import type { AllowedTypes } from '@harness/uicore'
 import { parse } from 'yaml'
 import * as Yup from 'yup'
 import { useParams } from 'react-router-dom'
-import { noop, isEmpty, get, debounce, set } from 'lodash-es'
+import { noop, isEmpty, get, debounce, set, defaultTo } from 'lodash-es'
+import type { IOptionProps } from '@blueprintjs/core'
+
 import type { FormikContextType, FormikErrors, FormikProps } from 'formik'
 import { CompletionItemKind } from 'vscode-languageserver-types'
 import { loggerFor } from 'framework/logging/logging'
@@ -37,7 +39,8 @@ import {
   SshWinRmAwsInfrastructure,
   useRegionsForAws,
   useTags,
-  ExecutionElementConfig
+  ExecutionElementConfig,
+  AwsInstanceFilter
 } from 'services/cd-ng'
 import { Connectors } from '@platform/connectors/constants'
 import type { VariableMergeServiceResponse } from 'services/pipeline-ng'
@@ -66,6 +69,9 @@ import ProvisionerField from '@pipeline/components/Provisioner/ProvisionerField'
 import { useFeatureFlags } from '@modules/10-common/hooks/useFeatureFlag'
 import { InfraDeploymentType, getValue } from '../PipelineStepsUtil'
 import { SshWimRmAwsInfrastructureSpecInputForm } from './SshWimRmAwsInfrastructureSpecInputForm'
+import VpcsList from './VpcsList'
+import AsgAutoScalingGroup from './AsgAutoScalingGroup'
+
 import css from './SshWinRmAwsInfrastructureSpec.module.scss'
 
 const logger = loggerFor(ModuleName.CD)
@@ -77,6 +83,11 @@ const hostConnectionTypeOptions = hostConnectionTypes.map(type => ({
   value: type,
   label: type
 }))
+
+export enum InstanceFilter {
+  AWS = 'Aws',
+  ASG = 'Asg'
+}
 
 export type SshWinRmAwsInfrastructureTemplate = { [key in keyof SshWinRmAwsInfrastructure]: string }
 
@@ -158,7 +169,7 @@ const SshWinRmAwsInfrastructureSpecEditable: React.FC<SshWinRmAwsInfrastructureS
       }
     }
     return initials
-  }, [initialValues.credentialsRef, initialValues.connectorRef, initialValues.region])
+  }, [initialValues])
 
   const { data: regionsData, loading: isRegionsLoading, error: regionsError } = useRegionsForAws({})
 
@@ -213,6 +224,17 @@ const SshWinRmAwsInfrastructureSpecEditable: React.FC<SshWinRmAwsInfrastructureS
     }
   }, [])
 
+  const instanceFilterItems: IOptionProps[] = [
+    {
+      label: getString('cd.steps.awsInfraStep.labels.useAutoScallingGroup'),
+      value: InstanceFilter.ASG
+    },
+    {
+      label: getString('cd.steps.awsInfraStep.labels.useAwsInstanceFilter'),
+      value: InstanceFilter.AWS
+    }
+  ]
+
   useEffect(() => {
     if (
       getMultiTypeFromValue(get(formikRef, 'current.values.region', undefined)) === MultiTypeInputType.FIXED &&
@@ -230,6 +252,19 @@ const SshWinRmAwsInfrastructureSpecEditable: React.FC<SshWinRmAwsInfrastructureS
           initialValues={parsedInitialValues as SshWinRmAwsInfrastructure}
           validationSchema={getValidationSchema(getString) as Partial<SshWinRmAwsInfrastructure>}
           validate={value => {
+            let awsInstanceFilterValue: AwsInstanceFilter | undefined = {}
+            let asgNameValue: string | undefined = ''
+            const existInstanceType = !!value?.instanceType
+            if (existInstanceType) {
+              if (value?.instanceType === InstanceFilter.ASG) {
+                awsInstanceFilterValue = undefined
+                asgNameValue = value?.asgName
+              } else {
+                awsInstanceFilterValue = value?.awsInstanceFilter
+                asgNameValue = undefined
+              }
+            }
+
             const data: Partial<SshWinRmAwsInfrastructure> = {
               connectorRef:
                 typeof value.connectorRef === 'string' ? value.connectorRef : get(value, 'connectorRef.value', ''),
@@ -238,10 +273,12 @@ const SshWinRmAwsInfrastructureSpecEditable: React.FC<SshWinRmAwsInfrastructureS
                   ? get(value, 'credentialsRef', '')
                   : get(value, 'credentialsRef.referenceString', ''),
               region: typeof value.region === 'string' ? value.region : get(value, 'region.value', ''),
-              awsInstanceFilter: value.awsInstanceFilter,
+              awsInstanceFilter: awsInstanceFilterValue,
               hostConnectionType: value.hostConnectionType,
               allowSimultaneousDeployments: value.allowSimultaneousDeployments,
-              provisioner: value?.provisioner
+              provisioner: value?.provisioner,
+              instanceType: defaultTo(value?.instanceType, undefined),
+              asgName: asgNameValue
             }
 
             delayedOnUpdate(data as SshWinRmAwsInfrastructure)
@@ -347,21 +384,7 @@ const SshWinRmAwsInfrastructureSpecEditable: React.FC<SshWinRmAwsInfrastructureS
                       </Container>
                     )}
                   </Layout.Vertical>
-                  <Layout.Vertical className={css.inputWidth} margin={{ bottom: 'medium' }}>
-                    <MultiTypeTagSelector
-                      name="awsInstanceFilter.tags"
-                      expressions={expressions}
-                      allowableTypes={
-                        canTagsHaveFixedValue
-                          ? [MultiTypeInputType.FIXED, MultiTypeInputType.RUNTIME, MultiTypeInputType.EXPRESSION]
-                          : [MultiTypeInputType.RUNTIME, MultiTypeInputType.EXPRESSION]
-                      }
-                      tags={tags}
-                      isLoadingTags={isTagsLoading}
-                      initialTags={initialValues?.awsInstanceFilter?.tags}
-                      errorMessage={get(tagsError, 'data.message', '')}
-                    />
-                  </Layout.Vertical>
+
                   <Layout.Vertical className={css.inputWidth}>
                     <MultiTypeSecretInput
                       name="credentialsRef"
@@ -386,7 +409,54 @@ const SshWinRmAwsInfrastructureSpecEditable: React.FC<SshWinRmAwsInfrastructureS
                       label={getString('cd.infrastructure.sshWinRmAzure.hostConnectionType')}
                     />
                   </Layout.Vertical>
+                  <Layout.Vertical>
+                    <FormInput.RadioGroup
+                      name="instanceType"
+                      items={instanceFilterItems}
+                      radioGroup={{ inline: true }}
+                      onChange={e => {
+                        const instanceValue = get(e.target, 'value')
+                        if (instanceValue === InstanceFilter.ASG) {
+                          formik.setFieldValue('awsInstanceFilter', undefined)
+                          formik.setFieldValue('asgName', '')
+                        } else {
+                          formik.setFieldValue('asgName', undefined)
+                          formik.setFieldValue('awsInstanceFilter', {
+                            vpcs: [],
+                            tags: {}
+                          })
+                        }
+                        formik.setFieldValue('instanceType', instanceValue)
+                      }}
+                    />
+                  </Layout.Vertical>
+                  {formik?.values?.instanceType === InstanceFilter.AWS && (
+                    <>
+                      <Layout.Vertical className={css.inputWidth}>
+                        <VpcsList name={'awsInstanceFilter.vpcs'} />
+                      </Layout.Vertical>
+                      <Layout.Vertical className={css.inputWidth} margin={{ bottom: 'medium' }}>
+                        <MultiTypeTagSelector
+                          name="awsInstanceFilter.tags"
+                          expressions={expressions}
+                          allowableTypes={
+                            canTagsHaveFixedValue
+                              ? [MultiTypeInputType.FIXED, MultiTypeInputType.RUNTIME, MultiTypeInputType.EXPRESSION]
+                              : [MultiTypeInputType.RUNTIME, MultiTypeInputType.EXPRESSION]
+                          }
+                          tags={tags}
+                          isLoadingTags={isTagsLoading}
+                          initialTags={initialValues?.awsInstanceFilter?.tags}
+                          errorMessage={get(tagsError, 'data.message', '')}
+                        />
+                      </Layout.Vertical>
+                    </>
+                  )}
+                  {formik?.values?.instanceType === InstanceFilter.ASG && (
+                    <AsgAutoScalingGroup name={'asgName'} allowableTypes={allowableTypes} />
+                  )}
                 </Layout.Vertical>
+
                 <Layout.Vertical className={css.simultaneousDeployment}>
                   <FormInput.CheckBox
                     tooltipProps={{
@@ -433,12 +503,12 @@ export class SshWinRmAwsInfrastructureSpec extends PipelineStep<SshWinRmAwsInfra
   protected type = StepType.SshWinRmAws
   /* istanbul ignore next */
   protected defaultValues: SshWinRmAwsInfrastructure = {
-    awsInstanceFilter: { tags: {}, vpcs: [] },
     connectorRef: '',
     credentialsRef: '',
     region: '',
     hostConnectionType: hostConnectionTypes[0],
-    allowSimultaneousDeployments: false
+    allowSimultaneousDeployments: false,
+    instanceType: ''
   }
 
   /* istanbul ignore next */

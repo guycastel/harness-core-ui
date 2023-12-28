@@ -24,6 +24,7 @@ import {
   isTASDeploymentType,
   isGoogleCloudFuctionsDeploymentType
 } from '@pipeline/utils/stageHelpers'
+import { InstanceFilter } from '../../PipelineSteps/SshWinRmAwsInfrastructureSpec/SshWinRmAwsInfrastructureSpec'
 
 const DEFAULT_RELEASE_NAME = 'release-<+INFRA_KEY_SHORT_ID>'
 
@@ -243,17 +244,30 @@ export const getInfrastructureDefaultValue = (
       }
     }
     case InfraDeploymentType.SshWinRmAws: {
-      const { credentialsRef, connectorRef, region, awsInstanceFilter, hostConnectionType, provisioner } =
-        infrastructure?.spec || {}
-      return {
+      const {
         credentialsRef,
         connectorRef,
         region,
         awsInstanceFilter,
+        hostConnectionType,
+        provisioner,
+        instanceType,
+        asgName
+      } = infrastructure?.spec || {}
+
+      const isAwsInstance = !!awsInstanceFilter
+      const defaultInstanceType = isAwsInstance ? InstanceFilter.AWS : InstanceFilter.ASG
+      return {
+        credentialsRef,
+        connectorRef,
+        region,
+        awsInstanceFilter: isAwsInstance ? awsInstanceFilter : undefined,
         serviceType,
         hostConnectionType,
         allowSimultaneousDeployments,
-        provisioner
+        provisioner,
+        instanceType: !instanceType ? InstanceFilter.AWS : defaultTo(instanceType, defaultInstanceType),
+        asgName: !isAwsInstance ? asgName : undefined
       }
     }
     case InfraDeploymentType.ECS: {

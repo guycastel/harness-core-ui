@@ -631,15 +631,18 @@ export default function DeployInfraDefinition(props: React.PropsWithChildren<Dep
             stepViewType={StepViewType.Edit}
             allowableTypes={allowableTypes}
             onUpdate={value => {
+              const isAwsInstance = !!value?.awsInstanceFilter
               onUpdateInfrastructureDefinition(
                 {
                   credentialsRef: value.credentialsRef,
                   connectorRef: value.connectorRef,
                   region: value.region,
-                  awsInstanceFilter: value.awsInstanceFilter,
+                  awsInstanceFilter: isAwsInstance ? value.awsInstanceFilter : undefined,
                   hostConnectionType: value.hostConnectionType,
                   allowSimultaneousDeployments: value.allowSimultaneousDeployments,
-                  provisioner: value?.provisioner || undefined
+                  provisioner: value?.provisioner || undefined,
+                  instanceType: value?.instanceType || undefined,
+                  asgName: !isAwsInstance ? value?.asgName : undefined
                 },
                 InfraDeploymentType.SshWinRmAws
               )

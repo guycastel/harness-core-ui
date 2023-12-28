@@ -32,6 +32,8 @@ import MultiTypeTagSelector from '@common/components/MultiTypeTagSelector/MultiT
 import { FormMultiTypeConnectorField } from '@platform/connectors/components/ConnectorReferenceField/FormMultiTypeConnectorField'
 import { useFeatureFlags } from '@modules/10-common/hooks/useFeatureFlag'
 import type { SshWinRmAwsInfrastructureTemplate } from './SshWinRmAwsInfrastructureSpec'
+import SelectVpcsList from './VpcsList'
+import AsgAutoScalingGroup from './AsgAutoScalingGroup'
 import css from './SshWinRmAwsInfrastructureSpec.module.scss'
 
 interface AwsInfrastructureSpecEditableProps {
@@ -210,6 +212,24 @@ export const SshWimRmAwsInfrastructureSpecInputForm: React.FC<AwsInfrastructureS
           errorMessage={get(tagsError, 'data.message', '')}
         />
       )}
+      {getMultiTypeFromValue(get(template, 'awsInstanceFilter.vpcs', '')) === MultiTypeInputType.RUNTIME && (
+        <SelectVpcsList
+          name={`${path}.awsInstanceFilter.vpcs`}
+          allowableTypes={allowableTypes}
+          envId={environmentRef}
+          infraId={infrastructureRef}
+        />
+      )}
+
+      {getMultiTypeFromValue(get(template, 'asgName', '')) === MultiTypeInputType.RUNTIME && (
+        <AsgAutoScalingGroup
+          name={`${path}.asgName`}
+          allowableTypes={allowableTypes}
+          envId={environmentRef}
+          infraId={infrastructureRef}
+        />
+      )}
+
       {getMultiTypeFromValue(get(template, 'credentialsRef', '')) === MultiTypeInputType.RUNTIME && (
         <MultiTypeSecretInput
           name={`${path}.credentialsRef`}

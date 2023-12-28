@@ -9,6 +9,7 @@
 declare const styles: {
   readonly formRow: string
   readonly inputWidth: string
+  readonly marginTop: string
   readonly radioGroup: string
   readonly regionConfig: string
   readonly regionInput: string

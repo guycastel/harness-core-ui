@@ -6362,6 +6362,7 @@ export interface StringsMap {
   'cd.backendConfigFileStoreTitle': string
   'cd.backendConfigurationFile': string
   'cd.baseAsgLabel': string
+  'cd.baseAsgName': string
   'cd.baseAsgPlaceholder': string
   'cd.cdLaunchText': string
   'cd.cdSwitchToFirstGen.description1': string
@@ -7006,6 +7007,7 @@ export interface StringsMap {
   'cd.infrastructure.infrastructureDefinitions': string
   'cd.infrastructure.infrastructureDetails': string
   'cd.infrastructure.noInfrastructureInEnvironment': string
+  'cd.infrastructure.sshWinRmAws.asgAutoCaling': string
   'cd.infrastructure.sshWinRmAzure.cloudProvider': string
   'cd.infrastructure.sshWinRmAzure.hostConnectionAttributes': string
   'cd.infrastructure.sshWinRmAzure.hostConnectionType': string
@@ -7391,6 +7393,7 @@ export interface StringsMap {
   'cd.steps.commands.validation.destinationPathRequired': string
   'cd.steps.commands.validation.sourceTypeRequired': string
   'cd.steps.commands.winRmConfig': string
+  'cd.steps.common.asg': string
   'cd.steps.common.clusterDetails': string
   'cd.steps.common.enableKubernetesPruning': string
   'cd.steps.common.releaseNamePlaceholder': string
