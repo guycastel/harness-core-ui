@@ -262,7 +262,7 @@ export default function FormikInputSetFormV1(props: FormikInputSetFormV1Props): 
                                     }
                                   : {}
                               }
-                              renderRepositoryLocationCard
+                              shouldRenderRepositoryLocationCard
                             ></GitSyncForm>
                           </Container>
                         )}

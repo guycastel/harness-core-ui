@@ -152,7 +152,7 @@ export function InputSetFormHeader(props: InputSetFormHeaderProps): React.ReactE
             {isEdit && inputSet.storeType === StoreType.REMOTE && (
               <Container className={cx(css.gitRemoteDetails, inputSet.cacheResponse ? '' : css.noCacheDetails)}>
                 <GitRemoteDetails
-                  gitProvider={
+                  gitProviderType={
                     isEmpty(inputSet.connectorRef)
                       ? getGitProviderCards(getString)[0].type
                       : getGitProviderCards(getString)[1].type

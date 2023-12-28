@@ -8,12 +8,12 @@
 import React, { useEffect, useState } from 'react'
 import { CardSelect, Container, Icon, IconName, IconProps, Layout, MultiTypeInputType, Text } from '@harness/uicore'
 import { FontVariation, Color } from '@harness/design-system'
-import { ConnectorType, Connectors } from '@modules/27-platform/connectors/constants'
 import { UseStringsReturn, useStrings } from 'framework/strings'
 import { AcceptableValue } from '@modules/70-pipeline/components/PipelineInputSetForm/CICodebaseInputSetForm'
+import { SourceCodeTypes } from '../AccessTokenOAuth/AccessTokenOAuth'
 
 export interface CardSelectInterface {
-  type: string
+  type: SourceCodeTypes | string
   title: string
   info: string
   icon: IconName
@@ -23,16 +23,16 @@ export interface CardSelectInterface {
 
 export function getGitProviderCards(
   getString: UseStringsReturn['getString'],
-  isDisabled?: (current: keyof ConnectorType | 'Others') => boolean
+  isDisabled?: (current: SourceCodeTypes | string) => boolean
 ): CardSelectInterface[] {
   return [
     {
-      type: Connectors.Harness,
+      type: SourceCodeTypes.HARNESS,
       title: getString('common.harnessCodeRepo'),
       info: getString('common.harnessCodeRepoInfo'),
       icon: 'code',
       size: 22,
-      disabled: isDisabled?.(Connectors.Harness) || false
+      disabled: isDisabled?.(SourceCodeTypes.HARNESS) || false
     },
     {
       type: getString('stepPalette.others'),
@@ -65,7 +65,7 @@ export const GitProviderSelect = ({
   branchFieldName?: string
   handleChange?: (value: AcceptableValue, type: MultiTypeInputType) => void
   className?: string
-  getCardDisabledStatus?(current: keyof ConnectorType | 'Others', selected: keyof ConnectorType | 'Others'): boolean
+  getCardDisabledStatus?(current: SourceCodeTypes | string, selected: SourceCodeTypes | string): boolean
   showDescription?: boolean
 }): JSX.Element => {
   const { getString } = useStrings()
@@ -73,7 +73,7 @@ export const GitProviderSelect = ({
   const getIconProps = (item: CardSelectInterface, isSelected: boolean): IconProps => ({
     name: item.icon as IconName,
     size: item.size,
-    ...(item.type !== Connectors.Harness ? { color: isSelected ? Color.PRIMARY_7 : Color.GREY_600 } : {})
+    ...(item.type !== SourceCodeTypes.HARNESS ? { color: isSelected ? Color.PRIMARY_7 : Color.GREY_600 } : {})
   })
   const cards = getGitProviderCards(getString, current => getCardDisabledStatus(current, selectedProvider.type))
   const disabledState: boolean = cards.some(card => card.disabled)
@@ -120,7 +120,7 @@ export const GitProviderSelect = ({
           setFieldValue(providerFieldName, value)
           setFieldValue(repoNameFieldName, '')
           branchFieldName && setFieldValue(branchFieldName, '')
-          if (value.type === Connectors.Harness) {
+          if (value.type === SourceCodeTypes.HARNESS) {
             setFieldValue(connectorFieldName, '')
             handleChange?.('', MultiTypeInputType.FIXED)
           }

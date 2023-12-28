@@ -38,6 +38,7 @@ import {
   getGitProviderCards
 } from '@modules/10-common/components/GitProviderSelect/GitProviderSelect'
 import { useListRepos } from 'services/code'
+import { isHarnessCodeRepoEntity } from '@modules/10-common/components/GitProviderSelect/GitProviderSelect.utils'
 import { CodebaseRuntimeInputsInterface } from '../RightBar/RightBarUtils'
 import { getConnectorWidth, getRepositoryOptions, runtimeInputGearWidth } from './CloneCodebaseForm.utils'
 import css from './CloneCodebaseForm.module.scss'
@@ -198,10 +199,10 @@ export default function CloneCodebaseForm({
           className={css.gitProviderSelect}
         />
       )}
-      {gitProvider.type !== Connectors.Harness && (
+      {!isHarnessCodeRepoEntity(gitProvider.type) && (
         <Container className={cx(css.bottomMargin3)}>{renderConnectorField()}</Container>
       )}
-      {gitProvider.type === Connectors.Harness ? (
+      {isHarnessCodeRepoEntity(gitProvider.type) ? (
         <FormInput.MultiTypeInput
           name="repositoryName"
           selectItems={repositoryOptions}

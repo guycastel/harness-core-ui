@@ -31,7 +31,7 @@ import { useStrings } from 'framework/strings'
 import { yamlStringify } from '@common/utils/YamlHelperMethods'
 import { clearNullUndefined } from '@pipeline/utils/inputSetUtils'
 import useRBACError from '@rbac/utils/useRBACError/useRBACError'
-import { Connectors } from '@modules/27-platform/connectors/constants'
+import { isHarnessCodeRepoEntity } from '@modules/10-common/components/GitProviderSelect/GitProviderSelect.utils'
 import { getUpdatedGitDetails } from './utils'
 
 interface UseSaveInputSetReturnType {
@@ -106,7 +106,7 @@ export function useSaveInputSet(inputSetInfo: InputSetInfo): UseSaveInputSetRetu
       conflictCommitId?: string
     }): CreateUpdateInputSetsReturnType => {
       let response: ResponseInputSetResponse | undefined = undefined
-      const inputSetYaml = yamlStringify({ inputSet: clearNullUndefined(omit(inputSetObj, 'provider')) })
+      const inputSetYaml = yamlStringify({ inputSet: clearNullUndefined(inputSetObj) })
       try {
         const updatedGitDetails = getUpdatedGitDetails(
           isEdit,
@@ -153,8 +153,7 @@ export function useSaveInputSet(inputSetInfo: InputSetInfo): UseSaveInputSetRetu
                   }
                 : {}),
               ...initialStoreMetadataPayload,
-              ...updatedGitDetails,
-              isHarnessCodeRepo: inputSetObj.provider?.type === Connectors.Harness
+              ...updatedGitDetails
             }
           })
         }
@@ -219,12 +218,17 @@ export function useSaveInputSet(inputSetInfo: InputSetInfo): UseSaveInputSetRetu
         inputSetObjWithGitInfo,
         'repo',
         'branch',
+        'provider',
         'connectorRef',
         'repoName',
         'filePath',
         'storeType',
         'cacheResponse'
       )
+      const updatedGitDetails = {
+        ...defaultTo(isEdit ? inputSetResponse?.data?.gitDetails : gitDetails, {}),
+        isHarnessCodeRepo: isHarnessCodeRepoEntity(inputSetObjWithGitInfo?.provider?.type)
+      }
 
       // This removes the pseudo fields set for handling multiple fields in the form at once
       set(
@@ -234,7 +238,7 @@ export function useSaveInputSet(inputSetInfo: InputSetInfo): UseSaveInputSetRetu
       )
 
       setSavedInputSetObj(inputSetObj)
-      setInitialGitDetails(defaultTo(isEdit ? inputSetResponse?.data?.gitDetails : gitDetails, {}))
+      setInitialGitDetails(defaultTo(updatedGitDetails, {}))
       setInitialStoreMetadata(defaultTo(storeMetadata, {}))
 
       if (inputSetObj) {
@@ -245,7 +249,7 @@ export function useSaveInputSet(inputSetInfo: InputSetInfo): UseSaveInputSetRetu
               type: 'InputSets',
               name: inputSetObj.name as string,
               identifier: inputSetObj.identifier as string,
-              gitDetails: isEdit ? inputSetResponse?.data?.gitDetails : gitDetails,
+              gitDetails: updatedGitDetails,
               storeMetadata: storeMetadata?.storeType === StoreType.REMOTE ? storeMetadata : undefined
             },
             payload: { inputSet: inputSetObj }

@@ -315,7 +315,7 @@ export function ClonePipelineFormInternal(props: ClonePipelineFormProps): React.
                         formikProps={formikProps as any}
                         isEdit={false}
                         initialValues={{}}
-                        renderRepositoryLocationCard
+                        shouldRenderRepositoryLocationCard
                       />
                       <div className={css.container}>
                         <FormInput.TextArea label={getString('common.git.commitMessage')} name="commitMsg" />

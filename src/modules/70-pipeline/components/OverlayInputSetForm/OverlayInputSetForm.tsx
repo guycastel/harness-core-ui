@@ -83,6 +83,7 @@ import {
   CardSelectInterface,
   getGitProviderCards
 } from '@modules/10-common/components/GitProviderSelect/GitProviderSelect'
+import { isHarnessCodeRepoEntity } from '@modules/10-common/components/GitProviderSelect/GitProviderSelect.utils'
 import { ErrorsStrip } from '../ErrorsStrip/ErrorsStrip'
 import { InputSetSelector, InputSetSelectorProps } from '../InputSetSelector/InputSetSelector'
 import {
@@ -502,7 +503,7 @@ export function OverlayInputSetForm({
   ): CreateUpdateInputSetsReturnType => {
     let response: ResponseOverlayInputSetResponse | null = null
     try {
-      const requestData = yamlStringify({ overlayInputSet: clearNullUndefined(omit(inputSetObj, 'provider')) })
+      const requestData = yamlStringify({ overlayInputSet: clearNullUndefined(inputSetObj) })
       const requestOptions = getCreateUpdateRequestBodyOptions({
         isEdit,
         initialGitDetails,
@@ -584,11 +585,16 @@ export function OverlayInputSetForm({
         inputSetObjWithGitInfo,
         'repo',
         'branch',
+        'provider',
         'connectorRef',
         'repoName',
         'filePath',
         'storeType'
       )
+      const updatedGitDetails = {
+        ...defaultTo(isEdit ? overlayInputSetResponse?.data?.gitDetails : gitDetails, {}),
+        isHarnessCodeRepo: isHarnessCodeRepoEntity(inputSetObjWithGitInfo?.provider?.type)
+      }
 
       // This removes the pseudo fields set for handling multiple fields in the form at once
       set(
@@ -598,7 +604,7 @@ export function OverlayInputSetForm({
       )
 
       setSavedInputSetObj(inputSetObj)
-      setInitialGitDetails(defaultTo(isEdit ? overlayInputSetResponse?.data?.gitDetails : gitDetails, {}))
+      setInitialGitDetails(defaultTo(updatedGitDetails, {}))
       setInitialStoreMetadata(defaultTo(storeMetadata, {}))
       if (inputSetObj) {
         delete inputSetObj.pipeline
@@ -609,7 +615,7 @@ export function OverlayInputSetForm({
               type: 'InputSets',
               name: inputSetObj.name as string,
               identifier: inputSetObj.identifier as string,
-              gitDetails: isEdit ? overlayInputSetResponse?.data?.gitDetails : gitDetails,
+              gitDetails: updatedGitDetails,
               storeMetadata: storeMetadata?.storeType === StoreType.REMOTE ? storeMetadata : undefined
             },
             payload: { overlayInputSet: inputSetObj }
@@ -754,7 +760,7 @@ export function OverlayInputSetForm({
                 {isEdit && overlayInputSetResponse?.data?.storeType === StoreType.REMOTE && (
                   <Container>
                     <GitRemoteDetails
-                      gitProvider={
+                      gitProviderType={
                         isEmpty(overlayInputSetResponse?.data?.connectorRef)
                           ? getGitProviderCards(getString)[0].type
                           : getGitProviderCards(getString)[1].type
@@ -890,7 +896,7 @@ export function OverlayInputSetForm({
                                       : {}
                                   }
                                   differentRepoAllowedSettings={allowDifferentRepoSettings?.data?.value === 'true'}
-                                  renderRepositoryLocationCard
+                                  shouldRenderRepositoryLocationCard
                                 ></GitSyncForm>
                               </Container>
                             )}

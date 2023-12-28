@@ -46,6 +46,8 @@ import {
   getGitProviderCards
 } from '@modules/10-common/components/GitProviderSelect/GitProviderSelect'
 import { useFeatureFlags } from '@modules/10-common/hooks/useFeatureFlag'
+import { isHarnessCodeRepoEntity } from '@modules/10-common/components/GitProviderSelect/GitProviderSelect.utils'
+import { SourceCodeTypes } from '@modules/10-common/components/AccessTokenOAuth/AccessTokenOAuth'
 import css from './GitSyncForm.module.scss'
 
 export interface GitSyncFormFields {
@@ -77,7 +79,7 @@ interface GitSyncFormProps<T> {
   skipDefaultConnectorSetting?: boolean
   skipBranch?: boolean
   supportNewBranch?: boolean
-  renderRepositoryLocationCard?: boolean
+  shouldRenderRepositoryLocationCard?: boolean
 }
 
 interface NewGitBranchProps<T> {
@@ -101,7 +103,7 @@ export const gitSyncFormSchema = (
     then: Yup.string().trim().required(getString('common.git.validation.branchRequired'))
   }),
   connectorRef: Yup.mixed().when(['storeType', 'provider'], {
-    is: (storeType, provider) => storeType === StoreType.REMOTE && provider?.type !== Connectors.Harness,
+    is: (storeType, provider) => storeType === StoreType.REMOTE && !isHarnessCodeRepoEntity(provider?.type),
     then: Yup.string().trim().required(getString('validation.sshConnectorRequired'))
   }),
   filePath: Yup.mixed().when('storeType', {
@@ -153,7 +155,7 @@ function NewGitBranch<T extends GitSyncFormFields = GitSyncFormFields>(
         {!isNewBranch && (
           <RepoBranchSelectV2
             key={formikProps?.values?.repo}
-            gitProvider={formikProps.values.provider?.type}
+            gitProviderType={formikProps.values.provider?.type}
             connectorIdentifierRef={(formikProps?.values?.connectorRef as unknown as ConnectorSelectedValue)?.value}
             repoName={formikProps?.values?.repo}
             onChange={(selected: SelectOption) => {
@@ -191,7 +193,7 @@ function NewGitBranch<T extends GitSyncFormFields = GitSyncFormFields>(
             <FormInput.Text name="branch" placeholder={getString('common.git.branchName')} />
             <RepoBranchSelectV2
               key={formikProps?.values?.repo}
-              gitProvider={formikProps.values.provider?.type}
+              gitProviderType={formikProps.values.provider?.type}
               name="baseBranch"
               connectorIdentifierRef={(formikProps?.values?.connectorRef as unknown as ConnectorSelectedValue)?.value}
               repoName={formikProps?.values?.repo}
@@ -227,7 +229,7 @@ export function GitSyncForm<T extends GitSyncFormFields = GitSyncFormFields>(
     differentRepoAllowedSettings,
     skipBranch = false,
     supportNewBranch = false,
-    renderRepositoryLocationCard = false
+    shouldRenderRepositoryLocationCard = false
   } = props
   const { accountId, projectIdentifier, orgIdentifier } = useParams<ProjectPathProps>()
   const { connectorRef, branch, repoName } = useQueryParams<GitQueryParams>()
@@ -285,7 +287,7 @@ export function GitSyncForm<T extends GitSyncFormFields = GitSyncFormFields>(
       } else if (
         getSettingValue(gitXSetting, SettingType.DEFAULT_CONNECTOR_FOR_GIT_EXPERIENCE) &&
         !(formikConnectorRef || connectorRef) &&
-        formikProps.values.provider?.type !== Connectors.Harness
+        formikProps.values.provider?.type !== SourceCodeTypes.HARNESS
       ) {
         defaultSettingConnector.current =
           getSettingValue(gitXSetting, SettingType.DEFAULT_CONNECTOR_FOR_GIT_EXPERIENCE) || ''
@@ -323,14 +325,14 @@ export function GitSyncForm<T extends GitSyncFormFields = GitSyncFormFields>(
   }
 
   useEffect(() => {
-    if (!formikProps.values.provider && renderRepositoryLocationCard) {
+    if (!formikProps.values.provider && shouldRenderRepositoryLocationCard) {
       if (CODE_ENABLED && isEmpty(formikConnectorRef)) {
         formikProps.setFieldValue('provider', getGitProviderCards(getString)[0])
       } else {
         formikProps.setFieldValue('provider', getGitProviderCards(getString)[1])
       }
     }
-  }, [formikProps?.values?.provider, renderRepositoryLocationCard])
+  }, [formikProps?.values?.provider, shouldRenderRepositoryLocationCard])
 
   useEffect(() => {
     if (!loadingDefaultConnector && connectorData?.data?.connector) {
@@ -376,7 +378,7 @@ export function GitSyncForm<T extends GitSyncFormFields = GitSyncFormFields>(
 
   return (
     <Container padding={{ top: 'large' }} className={cx(css.gitSyncForm, className)}>
-      {CODE_ENABLED && renderRepositoryLocationCard ? (
+      {CODE_ENABLED && shouldRenderRepositoryLocationCard ? (
         <>
           <Divider />
           <Text font={{ variation: FontVariation.H6 }} className={css.gitRepoLocationHeader}>
@@ -401,7 +403,7 @@ export function GitSyncForm<T extends GitSyncFormFields = GitSyncFormFields>(
       ) : null}
       <Layout.Horizontal>
         <Layout.Vertical>
-          {formikProps.values.provider?.type !== Connectors.Harness ? (
+          {!isHarnessCodeRepoEntity(formikProps.values.provider?.type) ? (
             <ConnectorReferenceField
               name="connectorRef"
               width={350}
@@ -436,7 +438,7 @@ export function GitSyncForm<T extends GitSyncFormFields = GitSyncFormFields>(
 
           <RepositorySelect
             formikProps={formikProps}
-            gitProvider={formikProps.values.provider?.type}
+            gitProviderType={formikProps.values.provider?.type}
             connectorRef={formikConnectorRef || preSelectedConnector}
             onChange={() => {
               if (errorResponse?.length === 0) {
@@ -452,7 +454,7 @@ export function GitSyncForm<T extends GitSyncFormFields = GitSyncFormFields>(
           ) : (
             <RepoBranchSelectV2
               key={formikProps?.values?.repo}
-              gitProvider={formikProps.values.provider?.type}
+              gitProviderType={formikProps.values.provider?.type}
               connectorIdentifierRef={formikConnectorRef || preSelectedConnector}
               repoName={formikProps?.values?.repo}
               onChange={(selected: SelectOption) => {

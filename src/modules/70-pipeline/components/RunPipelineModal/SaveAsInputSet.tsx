@@ -359,7 +359,7 @@ function SaveAsInputSet({
                             branch: true,
                             filePath: false
                           }}
-                          renderRepositoryLocationCard
+                          shouldRenderRepositoryLocationCard
                         ></GitSyncForm>
                       </Container>
                     )}

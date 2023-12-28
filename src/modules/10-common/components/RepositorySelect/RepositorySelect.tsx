@@ -14,8 +14,8 @@ import { useParams } from 'react-router-dom'
 import { useStrings } from 'framework/strings'
 import { Error, GitRepositoryResponseDTO, useGetListOfReposByRefConnector, validateRepoPromise } from 'services/cd-ng'
 import type { ProjectPathProps } from '@common/interfaces/RouteInterfaces'
-import { Connectors } from '@modules/27-platform/connectors/constants'
 import type { ResponseMessage } from '../ErrorHandler/ErrorHandler'
+import { isHarnessCodeRepoEntity } from '../GitProviderSelect/GitProviderSelect.utils'
 import css from '../RepoBranchSelectV2/RepoBranchSelectV2.module.scss'
 
 export interface NewRepoSelectOption extends SelectOption {
@@ -24,7 +24,7 @@ export interface NewRepoSelectOption extends SelectOption {
 
 export interface RepositorySelectProps<T> {
   formikProps?: FormikContextType<T>
-  gitProvider?: string
+  gitProviderType?: string
   connectorRef?: string
   selectedValue?: string
   onChange?: (selected: SelectOption, options?: SelectOption[]) => void
@@ -44,19 +44,20 @@ export const getRepoSelectOptions = (data: GitRepositoryResponseDTO[] = []): Sel
 }
 
 const RepositorySelect: React.FC<RepositorySelectProps<any>> = props => {
-  const { gitProvider, connectorRef, selectedValue, formikProps, disabled, setErrorResponse, customClassName } = props
+  const { gitProviderType, connectorRef, selectedValue, formikProps, disabled, setErrorResponse, customClassName } =
+    props
   const { accountId, projectIdentifier, orgIdentifier } = useParams<ProjectPathProps>()
   const [repoSelectOptions, setRepoSelectOptions] = useState<SelectOption[]>([])
   const [isValidating, setIsValidating] = useState(false)
   const { getString } = useStrings()
   const commonQueryParams = useMemo(
     () => ({
-      ...(gitProvider !== Connectors.Harness ? { connectorRef } : {}),
+      ...(!isHarnessCodeRepoEntity(gitProviderType) ? { connectorRef } : {}),
       accountIdentifier: accountId,
       orgIdentifier,
       projectIdentifier
     }),
-    [accountId, gitProvider, connectorRef, orgIdentifier, projectIdentifier]
+    [accountId, gitProviderType, connectorRef, orgIdentifier, projectIdentifier]
   )
 
   const {
@@ -79,11 +80,11 @@ const RepositorySelect: React.FC<RepositorySelectProps<any>> = props => {
   useEffect(() => {
     if (!disabled) {
       setRepoSelectOptions([])
-      if (connectorRef || gitProvider === Connectors.Harness) {
+      if (connectorRef || isHarnessCodeRepoEntity(gitProviderType)) {
         refetch()
       }
     }
-  }, [gitProvider, connectorRef, disabled, refetch])
+  }, [gitProviderType, connectorRef, disabled, refetch])
 
   useEffect(() => {
     if (loading || disabled) {
@@ -189,7 +190,7 @@ const RepositorySelect: React.FC<RepositorySelectProps<any>> = props => {
             onClick={() => {
               setErrorResponse?.([])
               setRepoSelectOptions([])
-              ;(connectorRef || gitProvider === Connectors.Harness) && refetch()
+              ;(connectorRef || isHarnessCodeRepoEntity(gitProviderType)) && refetch()
             }}
           />
         </Layout.Horizontal>

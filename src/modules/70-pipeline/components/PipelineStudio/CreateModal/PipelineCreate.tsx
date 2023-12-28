@@ -38,7 +38,7 @@ import { errorCheck } from '@common/utils/formikHelpers'
 import VersionSelector from '@pipeline/components/CreatePipelineButton/VersionSelector/VersionSelector'
 import { YamlVersion, useYamlVersion } from '@pipeline/common/hooks/useYamlVersion'
 import { CardSelectInterface } from '@modules/10-common/components/GitProviderSelect/GitProviderSelect'
-import { Connectors } from '@modules/27-platform/connectors/constants'
+import { isHarnessCodeRepoEntity } from '@modules/10-common/components/GitProviderSelect/GitProviderSelect.utils'
 import { DefaultNewPipelineId } from '../PipelineContext/PipelineActions'
 import css from './PipelineCreate.module.scss'
 
@@ -167,7 +167,7 @@ export default function CreatePipelines({
 
   const handleSubmit = (values: CreatePipelinesValue): void => {
     logger.info(JSON.stringify(values))
-    const isHarnessCodeRepo = values.provider?.type === Connectors.Harness
+    const isHarnessCodeRepo = isHarnessCodeRepoEntity(values.provider?.type)
     const formGitDetails =
       supportingGitSimplification && values.storeType === StoreType.REMOTE
         ? { repoName: values.repo, branch: values.branch, filePath: values.filePath, isHarnessCodeRepo }
@@ -268,7 +268,7 @@ export default function CreatePipelines({
                   formikProps={formikProps as any}
                   isEdit={isEdit}
                   initialValues={pick(newInitialValues, 'repo', 'branch', 'filePath', 'connectorRef')}
-                  renderRepositoryLocationCard
+                  shouldRenderRepositoryLocationCard
                 />
               ) : null}
 

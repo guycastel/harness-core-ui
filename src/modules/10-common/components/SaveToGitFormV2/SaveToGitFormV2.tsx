@@ -22,7 +22,8 @@ import {
   Icon
 } from '@harness/uicore'
 import { Color } from '@harness/design-system'
-import type { GitSyncEntityDTO, EntityGitDetails } from 'services/cd-ng'
+import type { GitSyncEntityDTO } from 'services/cd-ng'
+import type { EntityGitDetails } from 'services/pipeline-ng'
 import { useStrings } from 'framework/strings'
 import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
 import AccessTokenCalloutForCommit from '@common/components/AccessTokenCalloutForCommit/AccessTokenCalloutForCommit'
@@ -31,6 +32,7 @@ import type { StoreMetadata } from '@common/constants/GitSyncTypes'
 import type { StringsMap } from 'stringTypes'
 import { isOnPrem } from '@common/utils/utils'
 import RepoBranchSelectV2 from '../RepoBranchSelectV2/RepoBranchSelectV2'
+import { getGitProviderCards } from '../GitProviderSelect/GitProviderSelect'
 import css from './SaveToGitFormV2.module.scss'
 
 export interface GitResourceInterface {
@@ -67,11 +69,13 @@ const getInitialValues = (
     type: getEntityNameFromType(resource.type)
   }),
   createPr: false,
-  targetBranch: ''
+  targetBranch: '',
+  ...(resource.gitDetails?.isHarnessCodeRepo && { isHarnessCodeRepo: resource.gitDetails?.isHarnessCodeRepo })
 })
 
 export interface SaveToGitFormV2Interface {
   isNewBranch: boolean
+  isHarnessCodeRepo?: boolean
   branch: string
   targetBranch?: string
   filePath?: string
@@ -127,6 +131,11 @@ const SaveToGitFormV2: React.FC<ModalConfigureProps & SaveToGitFormV2Props> = pr
           name="targetBranch"
           noLabel={true}
           disabled={disableBranchSelection}
+          gitProviderType={
+            resource.gitDetails?.isHarnessCodeRepo
+              ? getGitProviderCards(getString)[0].type
+              : getGitProviderCards(getString)[1].type
+          }
           connectorIdentifierRef={resource.storeMetadata?.connectorRef}
           repoName={defaultTo(resource.storeMetadata?.repoName, resource.gitDetails?.repoName)}
           onChange={(selected: SelectOption) => {
@@ -182,7 +191,7 @@ const SaveToGitFormV2: React.FC<ModalConfigureProps & SaveToGitFormV2Props> = pr
           })}
           onSubmit={formData => {
             props.onSuccess?.({
-              ...pick(formData, ['commitMsg', 'createPr']),
+              ...pick(formData, ['commitMsg', 'createPr', 'isHarnessCodeRepo']),
               isNewBranch,
               branch: isNewBranch ? formData.branch : initialValues.branch,
               ...(isNewBranch ? { baseBranch: initialValues.branch } : {}),

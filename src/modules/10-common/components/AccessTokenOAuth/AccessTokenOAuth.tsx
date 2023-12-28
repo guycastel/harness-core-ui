@@ -24,12 +24,13 @@ import { Status } from '@common/utils/Constants'
 import { OAuthEventProcessingResponse, handleOAuthEventProcessing } from '@common/components/ConnectViaOAuth/OAuthUtils'
 import css from './AccessTokenOAuth.module.scss'
 
-enum SourceCodeTypes {
+export enum SourceCodeTypes {
   BITBUCKET = 'BITBUCKET',
   GITHUB = 'GITHUB',
   GITLAB = 'GITLAB',
   AZURE_REPO = 'AZURE_REPO',
-  AWS_CODE_COMMIT = 'AWS_CODE_COMMIT'
+  AWS_CODE_COMMIT = 'AWS_CODE_COMMIT',
+  HARNESS = 'Harness'
 }
 
 export const getRepoProviderLabelKey = (gitProviderType: string): keyof StringsMap => {

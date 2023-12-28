@@ -14,7 +14,7 @@ import { defaultGitContextBranchPlaceholder } from '@modules/10-common/utils/git
 import css from './GitRemoteDetails.module.scss'
 
 export interface GitRemoteDetailsProps {
-  gitProvider?: string
+  gitProviderType?: string
   connectorRef?: string
   repoName?: string
   filePath?: string
@@ -49,7 +49,7 @@ const getTooltipContent = (filePath: string, fileUrl?: string) => {
 }
 
 const GitRemoteDetails = ({
-  gitProvider,
+  gitProviderType,
   connectorRef,
   repoName,
   filePath,
@@ -114,7 +114,7 @@ const GitRemoteDetails = ({
           <RepoBranchSelectV2
             name="remoteBranch"
             noLabel={true}
-            gitProvider={gitProvider}
+            gitProviderType={gitProviderType}
             connectorIdentifierRef={connectorRef}
             repoName={repoName}
             onChange={(selected: SelectOption, defaultSelected = false): void => {

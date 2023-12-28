@@ -17,8 +17,8 @@ import type {
   PMSPipelineSummaryResponse
 } from 'services/pipeline-ng'
 import { StoreMetadata, StoreType } from '@common/constants/GitSyncTypes'
-import { Connectors } from '@modules/27-platform/connectors/constants'
 import { CardSelectInterface } from '@modules/10-common/components/GitProviderSelect/GitProviderSelect'
+import { isHarnessCodeRepoEntity } from '@modules/10-common/components/GitProviderSelect/GitProviderSelect.utils'
 
 export type OriginalPipeline = Pick<
   PMSPipelineSummaryResponse,
@@ -54,7 +54,7 @@ export function getValidationSchema(getString: UseStringsReturn['getString']): Y
       then: Yup.string().trim().required(getString('common.git.validation.repoRequired'))
     }),
     connectorRef: Yup.mixed().when(['storeType', 'provider'], {
-      is: (storeType, provider) => storeType === StoreType.REMOTE && provider?.type !== Connectors.Harness,
+      is: (storeType, provider) => storeType === StoreType.REMOTE && !isHarnessCodeRepoEntity(provider?.type),
       then: Yup.string().trim().required(getString('platform.connectors.validation.connectorIsRequired'))
     }),
     branch: Yup.mixed().when('storeType', {

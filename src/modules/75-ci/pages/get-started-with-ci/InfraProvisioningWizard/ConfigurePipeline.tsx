@@ -39,10 +39,9 @@ import { getScopedValueFromDTO, ScopedValueObjectDTO } from '@common/components/
 import { Status } from '@common/utils/Constants'
 import { isValidYAMLFilePath } from '@common/constants/Utils'
 import { getIdentifierFromValue } from '@common/components/EntityReference/EntityReference'
-import { Connectors } from '@modules/27-platform/connectors/constants'
+import { isHarnessCodeRepoEntity } from '@modules/10-common/components/GitProviderSelect/GitProviderSelect.utils'
 import { SupportedGitProvidersForCIOnboarding } from './SelectGitProvider'
 import { getRepoNameForDefaultBranchFetch, getValidRepoName } from '../../../utils/HostedBuildsUtils'
-
 import css from './InfraProvisioningWizard.module.scss'
 
 export enum PipelineConfigurationOption {
@@ -267,7 +266,7 @@ const ConfigurePipelineRef = (props: ConfigurePipelineProps, forwardRef: Configu
                                     name="branch"
                                     noLabel={true}
                                     connectorIdentifierRef={
-                                      configuredGitConnector && configuredGitConnector.type !== Connectors.Harness
+                                      configuredGitConnector && !isHarnessCodeRepoEntity(configuredGitConnector.type)
                                         ? getScopedValueFromDTO(configuredGitConnector)
                                         : ''
                                     }
@@ -340,7 +339,7 @@ const ConfigurePipelineRef = (props: ConfigurePipelineProps, forwardRef: Configu
       getListOfBranchesByRefConnectorV2Promise({
         queryParams: {
           connectorRef:
-            configuredGitConnector && configuredGitConnector.type !== Connectors.Harness
+            configuredGitConnector && !isHarnessCodeRepoEntity(configuredGitConnector.type)
               ? getScopedValueFromDTO(configuredGitConnector as ScopedValueObjectDTO)
               : undefined,
           accountIdentifier: accountId,

@@ -358,7 +358,7 @@ export function PipelineCanvasHeader(props: PipelineCanvasHeaderProps): React.Re
             {isPipelineRemote && (
               <div className={css.gitRemoteDetailsWrapper}>
                 <GitRemoteDetails
-                  gitProvider={
+                  gitProviderType={
                     isEmpty(connectorRef)
                       ? getGitProviderCards(getString)[0].type
                       : getGitProviderCards(getString)[1].type

@@ -266,8 +266,7 @@ function SavePipelinePopover(
           : {}),
         ...(isPublicAccessEnabledOnResources
           ? { public: !!pipelineMetadataConfig?.modifiedMetadata?.publicAccessResponse?.public }
-          : {}),
-        isHarnessCodeRepo: updatedGitDetails?.isHarnessCodeRepo
+          : {})
       },
       omit(latestPipeline, 'repo', 'branch'),
       isEdit
@@ -387,8 +386,7 @@ function SavePipelinePopover(
       {
         ...updatedGitDetails,
         repoName: gitDetails.repoName,
-        filePath: isGitSyncEnabled ? updatedGitDetails.filePath : defaultTo(gitDetails.filePath, ''),
-        isHarnessCodeRepo: gitDetails.isHarnessCodeRepo
+        filePath: isGitSyncEnabled ? updatedGitDetails.filePath : defaultTo(gitDetails.filePath, '')
       },
       pipelineIdentifier !== DefaultNewPipelineId ? { lastObjectId: objectId, lastCommitId: commitId } : {}
     )
@@ -422,13 +420,14 @@ function SavePipelinePopover(
           showError(getString('pipeline.gitExperience.selectRepoBranch'))
           return
         }
+        const isEditing = pipelineIdentifier !== DefaultNewPipelineId
         openSaveToGitDialog({
-          isEditing: pipelineIdentifier !== DefaultNewPipelineId,
+          isEditing,
           resource: {
             type: 'Pipelines',
             name: latestPipeline.name,
             identifier: latestPipeline.identifier,
-            gitDetails: gitDetails ?? {},
+            gitDetails: { ...gitDetails, ...(isEditing && { isHarnessCodeRepo: isEmpty(connectorRef) }) } ?? {},
             storeMetadata: storeMetadata?.storeType ? storeMetadata : undefined
           },
           payload: { pipeline: omit(latestPipeline, 'repo', 'branch') }

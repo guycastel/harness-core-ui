@@ -69,6 +69,7 @@ import { PreferenceScope, usePreferenceStore } from 'framework/PreferenceStore/P
 import { ExistingProvide } from '@modules/70-pipeline/components/RunPipelineModal/type'
 import { isSimplifiedYAMLEnabledForCI, YAMLVersion } from '@pipeline/utils/CIUtils'
 import { BuildTabs } from '@ci/components/PipelineStudio/CIPipelineStagesUtils'
+import { isHarnessCodeRepoEntity } from '@modules/10-common/components/GitProviderSelect/GitProviderSelect.utils'
 import {
   InfraProvisioningWizardProps,
   WizardStep,
@@ -508,7 +509,7 @@ export const InfraProvisioningWizard: React.FC<InfraProvisioningWizardProps> = p
       } = (configurePipelineRef.current?.values as SavePipelineToRemoteInterface) || {}
       const shouldSavePipelineToGit = (enableSavePipelinetoRemoteOption && storeInGit) || false
       const connectorRef =
-        configuredGitConnector && configuredGitConnector.type !== Connectors.Harness
+        configuredGitConnector && !isHarnessCodeRepoEntity(configuredGitConnector.type)
           ? getScopedValueFromDTO(configuredGitConnector as ScopedValueObjectDTO)
           : ''
       const isHarnessCodeRepo = isEmpty(connectorRef)
@@ -846,7 +847,7 @@ export const InfraProvisioningWizard: React.FC<InfraProvisioningWizardProps> = p
             return
           }
 
-          if (CODE_ENABLED && gitProvider?.type === Connectors.Harness) {
+          if (CODE_ENABLED && isHarnessCodeRepoEntity(gitProvider?.type)) {
             setCurrentWizardStepId(InfraProvisiongWizardStepId.SelectRepository)
             setShowError(false)
             updateStepStatus([InfraProvisiongWizardStepId.SelectGitProvider], StepStatus.Success)

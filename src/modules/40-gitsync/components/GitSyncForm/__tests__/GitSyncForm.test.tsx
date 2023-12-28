@@ -135,7 +135,7 @@ describe('GitSyncForm test', () => {
         >
           {formikProps => (
             <FormikForm>
-              <GitSyncForm formikProps={formikProps} isEdit={false} renderRepositoryLocationCard />
+              <GitSyncForm formikProps={formikProps} isEdit={false} shouldRenderRepositoryLocationCard />
             </FormikForm>
           )}
         </Formik>
@@ -148,6 +148,44 @@ describe('GitSyncForm test', () => {
     expect(getByText('common.harnessCodeRepoInfo')).toBeInTheDocument()
     expect(getByText('common.thirdPartyGitProvider')).toBeInTheDocument()
     expect(getByText('common.thirdPartyGitProviderInfo')).toBeInTheDocument()
+    expect(getByText('repository')).toBeInTheDocument()
+    expect(getByText('gitBranch')).toBeInTheDocument()
+    expect(getByText('gitsync.gitSyncForm.yamlPathLabel')).toBeInTheDocument()
+  })
+
+  test('Rendering GitSyncForm for create flow with FF on with shouldRenderRepositoryLocationCard as false', async () => {
+    const { getByText, queryByText } = render(
+      <TestWrapper
+        path="/account/:accountId/ci/orgs/:orgIdentifier/projects/:projectIdentifier/pipelines/-1/pipeline-studio/"
+        pathParams={pathParams}
+        defaultFeatureFlagValues={{ CODE_ENABLED: true }}
+      >
+        <Formik<GitSyncFormFields>
+          initialValues={{
+            identifier: 'testIdentifier',
+            connectorRef: {} as ConnectorSelectedValue,
+            repo: '',
+            branch: '',
+            filePath: ''
+          }}
+          onSubmit={() => undefined}
+          formName="GitSyncForm"
+        >
+          {formikProps => (
+            <FormikForm>
+              <GitSyncForm formikProps={formikProps} isEdit={false} />
+            </FormikForm>
+          )}
+        </Formik>
+      </TestWrapper>
+    )
+
+    expect(queryByText('common.git.gitRepositoryLocation')).not.toBeInTheDocument()
+    expect(queryByText('common.harnessCodeRepo')).not.toBeInTheDocument()
+    expect(queryByText('common.harnessCodeRepoInfo')).not.toBeInTheDocument()
+    expect(queryByText('common.thirdPartyGitProvider')).not.toBeInTheDocument()
+    expect(queryByText('common.thirdPartyGitProviderInfo')).not.toBeInTheDocument()
+    expect(getByText('platform.connectors.title.gitConnector')).toBeInTheDocument()
     expect(getByText('repository')).toBeInTheDocument()
     expect(getByText('gitBranch')).toBeInTheDocument()
     expect(getByText('gitsync.gitSyncForm.yamlPathLabel')).toBeInTheDocument()
@@ -173,7 +211,7 @@ describe('GitSyncForm test', () => {
         >
           {formikProps => (
             <FormikForm>
-              <GitSyncForm formikProps={formikProps} isEdit={false} renderRepositoryLocationCard />
+              <GitSyncForm formikProps={formikProps} isEdit={false} shouldRenderRepositoryLocationCard />
             </FormikForm>
           )}
         </Formik>
@@ -316,7 +354,7 @@ describe('GitSyncForm test', () => {
         >
           {formikProps => (
             <FormikForm>
-              <GitSyncForm formikProps={formikProps} isEdit={false} renderRepositoryLocationCard />
+              <GitSyncForm formikProps={formikProps} isEdit={false} shouldRenderRepositoryLocationCard />
             </FormikForm>
           )}
         </Formik>
@@ -408,7 +446,7 @@ describe('GitSyncForm test', () => {
         >
           {formikProps => (
             <FormikForm>
-              <GitSyncForm formikProps={formikProps} isEdit renderRepositoryLocationCard />
+              <GitSyncForm formikProps={formikProps} isEdit shouldRenderRepositoryLocationCard />
             </FormikForm>
           )}
         </Formik>
