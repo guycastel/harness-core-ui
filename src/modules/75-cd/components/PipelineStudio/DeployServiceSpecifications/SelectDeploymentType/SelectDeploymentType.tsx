@@ -282,16 +282,14 @@ export default function SelectDeploymentType({
   const { getString } = useStrings()
   const formikRef = React.useRef<FormikProps<unknown> | null>(null)
   const { subscribeForm, unSubscribeForm } = React.useContext(StageErrorContext)
-  const { NG_SVC_ENV_REDESIGN, CDP_AWS_SAM, CDS_NG_K8S_SERVICE_RELEASE_NAME, NG_EXPRESSIONS_NEW_INPUT_ELEMENT } =
-    useFeatureFlags()
+  const { NG_SVC_ENV_REDESIGN, CDS_NG_K8S_SERVICE_RELEASE_NAME, NG_EXPRESSIONS_NEW_INPUT_ELEMENT } = useFeatureFlags()
   const { expressions } = useVariablesExpression()
   // Supported in NG (Next Gen - The one for which you are coding right now)
   const ngSupportedDeploymentTypes = React.useMemo(() => {
     return getNgSupportedDeploymentTypes({
-      NG_SVC_ENV_REDESIGN,
-      CDP_AWS_SAM
+      NG_SVC_ENV_REDESIGN
     })
-  }, [NG_SVC_ENV_REDESIGN, CDP_AWS_SAM])
+  }, [NG_SVC_ENV_REDESIGN])
 
   // Suppported in CG (First Gen - Old Version of Harness App)
   const cgSupportedDeploymentTypes: DeploymentTypeItem[] = React.useMemo(() => {

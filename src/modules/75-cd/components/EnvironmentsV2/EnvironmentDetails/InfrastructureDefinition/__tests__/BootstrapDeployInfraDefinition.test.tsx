@@ -98,7 +98,7 @@ describe('BootstrapDeployInfraDefinition tests', () => {
       <TestWrapper
         path={TEST_PATH}
         pathParams={TEST_PARAMS}
-        defaultFeatureFlagValues={{ CDS_SCOPE_INFRA_TO_SERVICES: true, NG_SVC_ENV_REDESIGN: true, CDP_AWS_SAM: true }}
+        defaultFeatureFlagValues={{ CDS_SCOPE_INFRA_TO_SERVICES: true, NG_SVC_ENV_REDESIGN: true }}
       >
         <PipelineContext.Provider value={pipelineContextAwsSam}>
           <StageErrorContext.Provider
@@ -260,7 +260,7 @@ describe('BootstrapDeployInfraDefinition tests', () => {
       <TestWrapper
         path={TEST_PATH}
         pathParams={TEST_PARAMS}
-        defaultFeatureFlagValues={{ CDS_SCOPE_INFRA_TO_SERVICES: false, NG_SVC_ENV_REDESIGN: true, CDP_AWS_SAM: true }}
+        defaultFeatureFlagValues={{ CDS_SCOPE_INFRA_TO_SERVICES: false, NG_SVC_ENV_REDESIGN: true }}
       >
         <PipelineContext.Provider value={pipelineContextAwsSam}>
           <BootstrapDeployInfraDefinitionWithRef
@@ -315,7 +315,7 @@ describe('BootstrapDeployInfraDefinition tests', () => {
           accountId: 'testAcc',
           environmentIdentifier: 'testEnv'
         }}
-        defaultFeatureFlagValues={{ CDS_SCOPE_INFRA_TO_SERVICES: true, NG_SVC_ENV_REDESIGN: true, CDP_AWS_SAM: true }}
+        defaultFeatureFlagValues={{ CDS_SCOPE_INFRA_TO_SERVICES: true, NG_SVC_ENV_REDESIGN: true }}
       >
         <BootstrapDeployInfraDefinitionWithRef
           closeInfraDefinitionDetails={jest.fn()}
@@ -374,7 +374,7 @@ describe('BootstrapDeployInfraDefinition tests', () => {
           orgIdentifier: 'testOrg',
           environmentIdentifier: 'testEnv'
         }}
-        defaultFeatureFlagValues={{ CDS_SCOPE_INFRA_TO_SERVICES: true, NG_SVC_ENV_REDESIGN: true, CDP_AWS_SAM: true }}
+        defaultFeatureFlagValues={{ CDS_SCOPE_INFRA_TO_SERVICES: true, NG_SVC_ENV_REDESIGN: true }}
       >
         <BootstrapDeployInfraDefinitionWithRef
           closeInfraDefinitionDetails={jest.fn()}
@@ -440,7 +440,7 @@ describe('BootstrapDeployInfraDefinition tests', () => {
           projectIdentifier: 'testProject',
           environmentIdentifier: 'testEnv'
         }}
-        defaultFeatureFlagValues={{ CDS_SCOPE_INFRA_TO_SERVICES: true, NG_SVC_ENV_REDESIGN: true, CDP_AWS_SAM: true }}
+        defaultFeatureFlagValues={{ CDS_SCOPE_INFRA_TO_SERVICES: true, NG_SVC_ENV_REDESIGN: true }}
       >
         <BootstrapDeployInfraDefinitionWithRef
           closeInfraDefinitionDetails={jest.fn()}

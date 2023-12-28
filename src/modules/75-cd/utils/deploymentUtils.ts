@@ -49,11 +49,10 @@ export interface DeploymentTypeItem {
 export interface GetNgSupportedDeploymentTypesProps {
   NG_SVC_ENV_REDESIGN?: boolean
   CDS_ASG_NG?: boolean
-  CDP_AWS_SAM?: boolean
 }
 
 export function getNgSupportedDeploymentTypes(props: GetNgSupportedDeploymentTypesProps): DeploymentTypeItem[] {
-  const { NG_SVC_ENV_REDESIGN, CDP_AWS_SAM } = props
+  const { NG_SVC_ENV_REDESIGN } = props
 
   const baseTypes: DeploymentTypeItem[] = [
     {
@@ -101,7 +100,7 @@ export function getNgSupportedDeploymentTypes(props: GetNgSupportedDeploymentTyp
     })
   }
 
-  if (NG_SVC_ENV_REDESIGN && CDP_AWS_SAM) {
+  if (NG_SVC_ENV_REDESIGN) {
     baseTypes.push({
       label: 'pipeline.serviceDeploymentTypes.awsSAM',
       icon: deploymentIconMap[ServiceDeploymentType.AwsSam],

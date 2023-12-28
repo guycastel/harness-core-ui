@@ -139,7 +139,7 @@ describe('DeployInfrastructure tests', () => {
       <TestWrapper
         path={PATH}
         pathParams={PATH_PARAMS}
-        defaultFeatureFlagValues={{ CDS_SCOPE_INFRA_TO_SERVICES: true, NG_SVC_ENV_REDESIGN: true, CDP_AWS_SAM: true }}
+        defaultFeatureFlagValues={{ CDS_SCOPE_INFRA_TO_SERVICES: true, NG_SVC_ENV_REDESIGN: true }}
       >
         <PipelineContext.Provider value={pipelineContextAwsSam}>
           <Formik<DeployEnvironmentEntityFormState> initialValues={{ category: 'single' }} onSubmit={jest.fn()}>
@@ -303,7 +303,7 @@ describe('DeployInfrastructure tests', () => {
       <TestWrapper
         path={PATH}
         pathParams={PATH_PARAMS}
-        defaultFeatureFlagValues={{ CDS_SCOPE_INFRA_TO_SERVICES: false, NG_SVC_ENV_REDESIGN: true, CDP_AWS_SAM: true }}
+        defaultFeatureFlagValues={{ CDS_SCOPE_INFRA_TO_SERVICES: false, NG_SVC_ENV_REDESIGN: true }}
       >
         <PipelineContext.Provider value={pipelineContextAwsSam}>
           <Formik<DeployEnvironmentEntityFormState> initialValues={{ category: 'single' }} onSubmit={jest.fn()}>

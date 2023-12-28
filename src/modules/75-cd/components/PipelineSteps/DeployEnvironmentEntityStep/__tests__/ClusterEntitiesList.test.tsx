@@ -53,7 +53,7 @@ describe('Cluster Entities ', () => {
       <TestWrapper
         path={PATH}
         pathParams={PATH_PARAMS}
-        defaultFeatureFlagValues={{ CDS_SCOPE_INFRA_TO_SERVICES: true, NG_SVC_ENV_REDESIGN: true, CDP_AWS_SAM: true }}
+        defaultFeatureFlagValues={{ CDS_SCOPE_INFRA_TO_SERVICES: true, NG_SVC_ENV_REDESIGN: true }}
       >
         <ClusterEntitiesList {...clusterProps} />
       </TestWrapper>
@@ -69,7 +69,7 @@ describe('Cluster Entities ', () => {
       <TestWrapper
         path={PATH}
         pathParams={PATH_PARAMS}
-        defaultFeatureFlagValues={{ CDS_SCOPE_INFRA_TO_SERVICES: true, NG_SVC_ENV_REDESIGN: true, CDP_AWS_SAM: true }}
+        defaultFeatureFlagValues={{ CDS_SCOPE_INFRA_TO_SERVICES: true, NG_SVC_ENV_REDESIGN: true }}
       >
         <ClusterEntitiesList {...clusterProps} />
       </TestWrapper>
