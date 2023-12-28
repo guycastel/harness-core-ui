@@ -18,7 +18,6 @@ import type { Toleration } from 'services/cd-ng'
 import type { EmptyDirYaml, HostPathYaml, PersistentVolumeClaimYaml } from 'services/pipeline-ng'
 import { useStrings, UseStringsReturn } from 'framework/strings'
 import type { StringsMap } from 'framework/strings/StringsContext'
-import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
 import { k8sLabelRegex, k8sAnnotationRegex } from '@common/utils/StringUtils'
 import type { ListUIType } from '@pipeline/components/List/List'
 import type { MapUIType } from '@common/components/Map/Map'
@@ -113,10 +112,9 @@ function StepGroupStepEdit(
   const { selectedStage, isRollback, isProvisionerStep, isAnyParentContainerStepGroup } = customStepProps
 
   const { getString } = useStrings()
-  const { CDS_CONTAINER_STEP_GROUP } = useFeatureFlags()
 
   const [isContainerBasedExecutionEnabled, setIsContainerBasedExecutionEnabled] = useState<boolean>(
-    defaultTo(CDS_CONTAINER_STEP_GROUP && !!initialValues.stepGroupInfra?.type, false)
+    defaultTo(!!initialValues.stepGroupInfra?.type, false)
   )
 
   React.useEffect(() => {
@@ -368,27 +366,25 @@ function StepGroupStepEdit(
                 isRollback={isRollback}
                 isProvisionerStep={isProvisionerStep}
               />
-              {CDS_CONTAINER_STEP_GROUP &&
-                !isAnyParentContainerStepGroup &&
-                selectedStage.stage?.type !== StageType.BUILD && (
-                  <>
-                    <Switch
-                      checked={isContainerBasedExecutionEnabled}
-                      label={getString('pipeline.enableContainerBasedExecution')}
-                      onChange={() => setIsContainerBasedExecutionEnabled(!isContainerBasedExecutionEnabled)}
-                      disabled={readonly}
-                    />
-                    {isContainerBasedExecutionEnabled && (
-                      <div className={cx(stepCss.formGroup, stepCss.lg)}>
-                        <KubernetesStepGroupInfra
-                          formikRef={formik}
-                          allowableTypes={allowableTypes}
-                          readonly={readonly}
-                        />
-                      </div>
-                    )}
-                  </>
-                )}
+              {!isAnyParentContainerStepGroup && selectedStage.stage?.type !== StageType.BUILD && (
+                <>
+                  <Switch
+                    checked={isContainerBasedExecutionEnabled}
+                    label={getString('pipeline.enableContainerBasedExecution')}
+                    onChange={() => setIsContainerBasedExecutionEnabled(!isContainerBasedExecutionEnabled)}
+                    disabled={readonly}
+                  />
+                  {isContainerBasedExecutionEnabled && (
+                    <div className={cx(stepCss.formGroup, stepCss.lg)}>
+                      <KubernetesStepGroupInfra
+                        formikRef={formik}
+                        allowableTypes={allowableTypes}
+                        readonly={readonly}
+                      />
+                    </div>
+                  )}
+                </>
+              )}
             </FormikForm>
           )
         }}

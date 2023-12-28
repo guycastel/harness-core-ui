@@ -48,11 +48,6 @@ describe('StepGroupStepInputSetMode tests', () => {
         template={containerStepGroupTemplate}
         isNewStep={false}
         stepViewType={StepViewType.InputSet}
-        testWrapperProps={{
-          defaultFeatureFlagValues: {
-            CDS_CONTAINER_STEP_GROUP: true
-          }
-        }}
       />
     )
 

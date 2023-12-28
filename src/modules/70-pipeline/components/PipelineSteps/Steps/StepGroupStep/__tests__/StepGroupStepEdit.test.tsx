@@ -122,7 +122,7 @@ describe('StepGroupStepEdit tests', () => {
     const ref = createRef<StepFormikRef<StepGroupElementConfig>>()
 
     const { container } = render(
-      <TestWrapper defaultFeatureFlagValues={{ CDS_CONTAINER_STEP_GROUP: true }}>
+      <TestWrapper>
         <StepGroupStepEditRef
           initialValues={containerStepGroupInitialValues}
           isNewStep={false}
@@ -320,7 +320,7 @@ describe('StepGroupStepEdit tests', () => {
     const ref = createRef<StepFormikRef<StepGroupElementConfig>>()
 
     const { container } = render(
-      <TestWrapper defaultFeatureFlagValues={{ CDS_CONTAINER_STEP_GROUP: true }}>
+      <TestWrapper>
         <StepGroupStepEditRef
           initialValues={{
             identifier: 'container_step_group_1',

@@ -166,11 +166,6 @@ describe('StepGroupStep tests', () => {
         stepViewType={StepViewType.Edit}
         ref={ref}
         onUpdate={onUpdate}
-        testWrapperProps={{
-          defaultFeatureFlagValues: {
-            CDS_CONTAINER_STEP_GROUP: true
-          }
-        }}
         customStepProps={{
           stageIdentifier: 'stage_1',
           selectedStage: {
@@ -225,11 +220,6 @@ describe('StepGroupStep tests', () => {
         template={containerStepGroupTemplate}
         isNewStep={false}
         stepViewType={StepViewType.InputSet}
-        testWrapperProps={{
-          defaultFeatureFlagValues: {
-            CDS_CONTAINER_STEP_GROUP: true
-          }
-        }}
       />
     )
 
@@ -321,11 +311,6 @@ describe('StepGroupStep tests', () => {
         stepViewType={StepViewType.Edit}
         ref={ref}
         onUpdate={onUpdate}
-        testWrapperProps={{
-          defaultFeatureFlagValues: {
-            CDS_CONTAINER_STEP_GROUP: true
-          }
-        }}
         customStepProps={{
           stageIdentifier: 'stage_1',
           selectedStage: {
@@ -402,11 +387,6 @@ describe('StepGroupStep tests', () => {
         stepViewType={StepViewType.Edit}
         ref={ref}
         onUpdate={onUpdate}
-        testWrapperProps={{
-          defaultFeatureFlagValues: {
-            CDS_CONTAINER_STEP_GROUP: true
-          }
-        }}
         customStepProps={{
           stageIdentifier: 'stage_1',
           selectedStage: {
@@ -526,11 +506,6 @@ describe('StepGroupStep tests', () => {
         onUpdate={onUpdate}
         isNewStep={false}
         stepViewType={StepViewType.InputSet}
-        testWrapperProps={{
-          defaultFeatureFlagValues: {
-            CDS_CONTAINER_STEP_GROUP: true
-          }
-        }}
       />
     )
 
