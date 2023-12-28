@@ -92,7 +92,7 @@ describe('AquaSecurity Step', () => {
         description: 'Description',
         timeout: '10s',
         spec: {
-          privileged: true,
+          privileged: false,
           target: {
             type: 'container',
             name: 'target name',

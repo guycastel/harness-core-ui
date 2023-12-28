@@ -22,8 +22,15 @@ import { useGetPropagatedStageById } from '@ci/components/PipelineSteps/CIStep/S
 import { getImagePullPolicyOptions } from '@common/utils/ContainerRunStepUtils'
 import { transformValuesFieldsConfig, editViewValidateFieldsConfig } from './AquaSecurityStepFunctionConfigs'
 import type { AquaSecurityStepProps, AquaSecurityStepData } from './AquaSecurityStep'
-import { AdditionalFields, SecurityIngestionFields, SecurityScanFields, SecurityTargetFields } from '../SecurityFields'
-import { INGESTION_SCAN_MODE, CONTAINER_TARGET_TYPE } from '../constants'
+import {
+  AdditionalFields,
+  SecurityAuthFields,
+  SecurityImageFields,
+  SecurityIngestionFields,
+  SecurityScanFields,
+  SecurityTargetFields
+} from '../SecurityFields'
+import { INGESTION_SCAN_MODE, ORCHESTRATION_SCAN_MODE, CONTAINER_TARGET_TYPE } from '../constants'
 
 export const AquaSecurityStepBase = (
   {
@@ -88,6 +95,21 @@ export const AquaSecurityStepBase = (
         // This is required
         setFormikRef?.(formikRef, formik)
 
+        const targetTypeSelectItems = [CONTAINER_TARGET_TYPE]
+
+        if (
+          formik.values.spec.privileged !== true &&
+          formik.values.spec.mode === 'orchestration' &&
+          formik.values.spec.target.type === 'container'
+        ) {
+          formik.setFieldValue('spec.privileged', true)
+        } else if (
+          formik.values.spec.privileged === true &&
+          (formik.values.spec.mode !== 'orchestration' || formik.values.spec.target.type !== 'container')
+        ) {
+          formik.setFieldValue('spec.privileged', false)
+        }
+
         return (
           <FormikForm>
             <CIStep
@@ -105,16 +127,25 @@ export const AquaSecurityStepBase = (
               allowableTypes={allowableTypes}
               formik={formik}
               scanConfigReadonly
-              scanModeSelectItems={[INGESTION_SCAN_MODE]}
+              scanModeSelectItems={[ORCHESTRATION_SCAN_MODE, INGESTION_SCAN_MODE]}
             />
 
             <SecurityTargetFields
               allowableTypes={allowableTypes}
               formik={formik}
-              targetTypeSelectItems={[CONTAINER_TARGET_TYPE]}
+              targetTypeSelectItems={targetTypeSelectItems}
             />
 
+            <SecurityImageFields allowableTypes={allowableTypes} formik={formik} />
+
             <SecurityIngestionFields allowableTypes={allowableTypes} formik={formik} />
+
+            <SecurityAuthFields
+              showFields={{ domain: true }}
+              allowableTypes={allowableTypes}
+              formik={formik}
+              authDomainPlaceHolder="https://<TENANT_ID>.cloud.aquasec.com"
+            />
 
             <AdditionalFields
               readonly={readonly}
