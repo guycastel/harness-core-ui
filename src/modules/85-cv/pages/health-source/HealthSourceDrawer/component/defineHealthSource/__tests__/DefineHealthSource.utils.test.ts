@@ -132,32 +132,21 @@ describe('DefineHealthSource.utils.test', () => {
 describe('getDisabledConnectorsList', () => {
   test('should return an empty array when all connectors are enabled', () => {
     const result = getDisabledConnectorsList({
-      isLokiEnabled: true,
-      isAzureLogsEnabled: true
+      isLokiEnabled: true
     })
     expect(result).toEqual([])
   })
 
   test('should return an array with GrafanaLoki when GrafanaLoki is disabled', () => {
     const result = getDisabledConnectorsList({
-      isLokiEnabled: false,
-      isAzureLogsEnabled: true
+      isLokiEnabled: false
     })
     expect(result).toEqual([HealthSourceTypes.GrafanaLoki])
   })
 
-  test('should return an array with Azure when Azure is disabled', () => {
-    const result = getDisabledConnectorsList({
-      isLokiEnabled: true,
-      isAzureLogsEnabled: false
-    })
-    expect(result).toEqual([HealthSourceTypes.Azure])
-  })
-
   test('should return an array with GrafanaLoki when it is disabled', () => {
     const result = getDisabledConnectorsList({
-      isLokiEnabled: false,
-      isAzureLogsEnabled: true
+      isLokiEnabled: false
     })
     expect(result).toEqual([HealthSourceTypes.GrafanaLoki])
   })

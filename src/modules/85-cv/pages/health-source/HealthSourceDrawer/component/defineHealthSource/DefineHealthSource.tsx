@@ -84,7 +84,7 @@ function DefineHealthSource(props: DefineHealthSourceProps): JSX.Element {
   const { isEdit } = sourceData
   const isSplunkMetricEnabled = useFeatureFlag(FeatureFlag.CVNG_SPLUNK_METRICS)
   const isLokiEnabled = useFeatureFlag(FeatureFlag.SRM_ENABLE_GRAFANA_LOKI_LOGS)
-  const isAzureLogsEnabled = useFeatureFlag(FeatureFlag.SRM_ENABLE_AZURE_LOGS)
+
   const { NG_EXPRESSIONS_NEW_INPUT_ELEMENT } = useFeatureFlags()
 
   const [productInfo, setProductInfo] = useState<{
@@ -94,8 +94,8 @@ function DefineHealthSource(props: DefineHealthSourceProps): JSX.Element {
   const defineHealthSourceFormRef = useRef<FormikProps<any>>()
 
   const disabledByFF: string[] = useMemo(() => {
-    return getDisabledConnectorsList({ isLokiEnabled, isAzureLogsEnabled })
-  }, [isLokiEnabled, isAzureLogsEnabled])
+    return getDisabledConnectorsList({ isLokiEnabled })
+  }, [isLokiEnabled])
 
   const initialValues = useMemo(() => {
     return getInitialValues(sourceData, getString)

@@ -486,21 +486,11 @@ export function shouldShowProductChangeConfirmation(
   )
 }
 
-export function getDisabledConnectorsList({
-  isLokiEnabled,
-  isAzureLogsEnabled
-}: {
-  isLokiEnabled: boolean
-  isAzureLogsEnabled: boolean
-}): HealthSourceTypes[] {
+export function getDisabledConnectorsList({ isLokiEnabled }: { isLokiEnabled: boolean }): HealthSourceTypes[] {
   const disabledConnectorsList = []
 
   if (!isLokiEnabled) {
     disabledConnectorsList.push(HealthSourceTypes.GrafanaLoki)
-  }
-
-  if (!isAzureLogsEnabled) {
-    disabledConnectorsList.push(HealthSourceTypes.Azure)
   }
 
   return disabledConnectorsList

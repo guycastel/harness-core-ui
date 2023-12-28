@@ -56,7 +56,6 @@ export const LoadSourceByType = ({
 }): JSX.Element | null => {
   const isSplunkMetricEnabled = useFeatureFlag(FeatureFlag.CVNG_SPLUNK_METRICS)
   const isLokiEnabled = useFeatureFlag(FeatureFlag.SRM_ENABLE_GRAFANA_LOKI_LOGS)
-  const isAzureLogsEnabled = useFeatureFlag(FeatureFlag.SRM_ENABLE_AZURE_LOGS)
 
   const selectedProduct = data?.product?.value || data?.existingMetricDetails?.type
   const productInfo = getSelectedProductInfo(selectedProduct)
@@ -173,9 +172,6 @@ export const LoadSourceByType = ({
     case HealthSourceTypes.Azure:
     case HealthSourceTypes.AzureMetrics:
     case HealthSourceTypes.AzureLogs: {
-      if (!isAzureLogsEnabled) {
-        return null
-      }
       return (
         <CommonHealthSourceContainer
           data={data}
