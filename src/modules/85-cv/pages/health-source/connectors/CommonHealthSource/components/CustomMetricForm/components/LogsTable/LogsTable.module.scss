@@ -25,6 +25,7 @@
   position: relative;
   border: 1px solid var(--grey-200);
   border-radius: var(--spacing-small);
+  overflow-y: scroll;
   > div {
     height: unset !important;
     position: absolute;
