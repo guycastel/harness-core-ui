@@ -5,7 +5,7 @@
  * https://polyformproject.org/wp-content/uploads/2020/06/PolyForm-Shield-1.0.0.txt.
  */
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import type { FormikContextType } from 'formik'
 import { defaultTo, isEmpty } from 'lodash-es'
 import { useParams } from 'react-router-dom'
@@ -300,11 +300,14 @@ export function GitSyncForm<T extends GitSyncFormFields = GitSyncFormFields>(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gitXSettingError, loadingSetting, formikProps.values.provider?.type])
 
-  const preSelectedConnector =
-    connectorRef ||
-    (skipDefaultConnectorSetting
-      ? undefined
-      : getSettingValue(gitXSetting, SettingType.DEFAULT_CONNECTOR_FOR_GIT_EXPERIENCE))
+  const preSelectedConnector = useMemo(
+    () =>
+      connectorRef ||
+      (skipDefaultConnectorSetting || isHarnessCodeRepoEntity(formikProps.values.provider?.type)
+        ? undefined
+        : getSettingValue(gitXSetting, SettingType.DEFAULT_CONNECTOR_FOR_GIT_EXPERIENCE)),
+    [connectorRef, gitXSetting, skipDefaultConnectorSetting, formikProps.values.provider?.type]
+  )
 
   const validateAndSetRepo = async (settingRepoName: string): Promise<void> => {
     const validateRepoResponse = await validateRepoPromise({
