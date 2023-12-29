@@ -19,6 +19,7 @@ export enum MigrationType {
 export interface ExtraQueryParams {
   pipelineIdentifier?: string
   inputSetIdentifier?: string
+  environmentIdentifier?: string
   identifier?: string
   name?: string
   versionLabel?: string

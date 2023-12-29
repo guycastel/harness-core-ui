@@ -7,7 +7,7 @@
 
 import React, { useRef, useState, useCallback } from 'react'
 import { useParams } from 'react-router-dom'
-import { isEmpty, omit } from 'lodash-es'
+import { get, isEmpty, omit } from 'lodash-es'
 import * as Yup from 'yup'
 import {
   Container,
@@ -42,8 +42,10 @@ import { yamlPathRegex } from '@common/utils/StringUtils'
 import useRBACError, { RBACError } from '@rbac/utils/useRBACError/useRBACError'
 import {
   MoveEnvironmentConfigsQueryParams,
+  MoveInfraConfigsQueryParams,
   ResponseServiceMoveConfigResponse,
   moveEnvironmentConfigsPromise,
+  moveInfraConfigsPromise,
   moveServiceConfigsPromise
 } from 'services/cd-ng'
 import {
@@ -86,6 +88,7 @@ export default function MoveResource({
   const [isLoading, setIsLoading] = useState<boolean>()
   const { accountId, orgIdentifier, projectIdentifier } = useParams<PipelinePathProps>()
   const pipelineIdentifier = extraQueryParams?.pipelineIdentifier
+  const environmentIdentifier = get(extraQueryParams, 'environmentIdentifier', '')
   const { showError, clear, showSuccess } = useToaster()
   const { getString } = useStrings()
   const formikRef = useRef<FormikProps<ModifiedInitialValuesType>>(null)
@@ -100,6 +103,8 @@ export default function MoveResource({
         return getString('service')
       case ResourceType.ENVIRONMENT:
         return getString('environment')
+      case ResourceType.INFRASTRUCTURE:
+        return getString('infrastructureText')
       default:
         return getString('common.resourceLabel')
     }
@@ -215,6 +220,7 @@ export default function MoveResource({
       .then(handleResponse)
       .catch(handleError)
   }
+
   const moveEnvironment = (formValues: ModifiedInitialValuesType): void => {
     const { identifier, connectorRef, repo, branch, filePath, commitMsg, baseBranch } = formValues
     setIsLoading(true)
@@ -243,6 +249,35 @@ export default function MoveResource({
       .catch(handleError)
   }
 
+  const moveInfra = (formValues: ModifiedInitialValuesType): void => {
+    const { identifier, connectorRef, repo, branch, filePath, commitMsg, baseBranch } = formValues
+    setIsLoading(true)
+    moveInfraConfigsPromise({
+      infraIdentifier: identifier,
+      queryParams: {
+        accountIdentifier: accountId,
+        orgIdentifier,
+        projectIdentifier,
+        environmentIdentifier,
+        connectorRef: typeof connectorRef === 'string' ? connectorRef : (connectorRef as any).value,
+        repoName: repo,
+        branch,
+        filePath,
+        moveConfigType: migrationType as MoveInfraConfigsQueryParams['moveConfigType'],
+        ...(baseBranch ? { isNewBranch: true, baseBranch } : { isNewBranch: false }),
+        commitMsg
+      },
+      requestOptions: {
+        headers: {
+          'content-type': 'application/json'
+        }
+      },
+      body: undefined
+    })
+      .then(handleResponse)
+      .catch(handleError)
+  }
+
   const moveEntity = (formValues: ModifiedInitialValuesType): void => {
     switch (resourceType) {
       case ResourceType.PIPELINES:
@@ -256,6 +291,9 @@ export default function MoveResource({
         break
       case ResourceType.ENVIRONMENT:
         moveEnvironment(formValues)
+        break
+      case ResourceType.INFRASTRUCTURE:
+        moveInfra(formValues)
         break
     }
   }

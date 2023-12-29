@@ -172,7 +172,8 @@ export default function InfrastructureList({
         Cell: withInfrastructure(InfrastructureMenu),
         actions: {
           onEdit,
-          onDelete: deleteHandler
+          onDelete: deleteHandler,
+          reload: refetch
         }
       }
     ],

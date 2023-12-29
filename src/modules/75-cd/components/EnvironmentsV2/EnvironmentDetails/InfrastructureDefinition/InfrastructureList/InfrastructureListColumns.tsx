@@ -12,7 +12,7 @@ import { defaultTo, get, isEmpty, pick } from 'lodash-es'
 import { Classes, Menu, PopoverInteractionKind, Position } from '@blueprintjs/core'
 import { Layout, TagsPopover, Text, useConfirmationDialog, Popover, Button, Icon } from '@harness/uicore'
 import { Intent, Color, FontVariation } from '@harness/design-system'
-
+import { ResourceType as GitResourceType } from '@common/interfaces/GitSyncInterface'
 import { useStrings } from 'framework/strings'
 import type { InfrastructureResponse, InfrastructureResponseDTO } from 'services/cd-ng'
 
@@ -24,6 +24,10 @@ import { PermissionIdentifier } from '@rbac/interfaces/PermissionIdentifier'
 import type { PermissionRequest } from '@rbac/hooks/usePermission'
 
 import { CodeSourceWrapper } from '@modules/70-pipeline/components/CommonPipelineStages/PipelineStage/utils'
+import { useFeatureFlags } from '@modules/10-common/hooks/useFeatureFlag'
+import useMigrateResource from '@modules/70-pipeline/components/MigrateResource/useMigrateResource'
+import { MigrationType } from '@modules/70-pipeline/components/MigrateResource/MigrateUtils'
+import { StoreType } from '@modules/10-common/constants/GitSyncTypes'
 import css from '../InfrastructureDefinition.module.scss'
 
 interface InfrastructureRowColumn {
@@ -86,11 +90,13 @@ export type InfraDetails = { name?: string; identifier?: string }
 export function InfrastructureMenu({
   infrastructure,
   onEdit,
-  onDelete
+  onDelete,
+  reload
 }: {
   infrastructure: InfrastructureResponseDTO
   onEdit: (identifier: string, infrastructure?: InfrastructureResponseDTO) => void
   onDelete: (infrastructureDetails: InfraDetails) => void
+  reload: () => void
 }): React.ReactElement {
   const [menuOpen, setMenuOpen] = React.useState(false)
   const { getString } = useStrings()
@@ -98,7 +104,7 @@ export function InfrastructureMenu({
     ProjectPathProps & EnvironmentPathProps
   >()
   const { yaml } = infrastructure
-
+  const { CDS_INFRA_GITX } = useFeatureFlags()
   const { openDialog } = useConfirmationDialog({
     titleText: getString('cd.infrastructure.delete'),
     contentText: getString('cd.infrastructure.deleteConfirmation'),
@@ -115,15 +121,29 @@ export function InfrastructureMenu({
     }
   })
 
-  const handleEdit = (event: React.MouseEvent) => {
+  const { showMigrateResourceModal: showMoveResourceModal } = useMigrateResource({
+    resourceType: GitResourceType.INFRASTRUCTURE,
+    modalTitle: getString('common.moveEntitytoGit', { resourceType: getString('infrastructureText') }),
+    migrationType: MigrationType.INLINE_TO_REMOTE,
+    extraQueryParams: { name: infrastructure.name, identifier: infrastructure.identifier, environmentIdentifier },
+    onSuccess: () => reload()
+  })
+
+  const handleEdit = (event: React.MouseEvent): void => {
     event.stopPropagation()
     onEdit(defaultTo(yaml, ''), infrastructure)
     setMenuOpen(false)
   }
 
-  const handleDelete = (event: React.MouseEvent) => {
+  const handleDelete = (event: React.MouseEvent): void => {
     event.stopPropagation()
     openDialog()
+  }
+
+  const handleMoveInlineToRemote = (event: React.MouseEvent): void => {
+    event.stopPropagation()
+    showMoveResourceModal()
+    setMenuOpen(false)
   }
 
   const resourceAndScope: Pick<PermissionRequest, 'resource' | 'resourceScope'> = {
@@ -173,6 +193,17 @@ export function InfrastructureMenu({
               permission: PermissionIdentifier.EDIT_ENVIRONMENT
             }}
           />
+          {CDS_INFRA_GITX && infrastructure.storeType !== StoreType.REMOTE && (
+            <RbacMenuItem
+              icon="git-merge"
+              text={getString('common.moveToGit')}
+              onClick={handleMoveInlineToRemote}
+              permission={{
+                ...resourceAndScope,
+                permission: PermissionIdentifier.EDIT_ENVIRONMENT
+              }}
+            />
+          )}
         </Menu>
       </Popover>
     </Layout.Horizontal>

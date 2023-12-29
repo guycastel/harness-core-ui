@@ -47,6 +47,7 @@ export enum ResourceType {
   DEPLOYMENT_STAGE = 'DeploymentStage',
   DEPLOYMENT_STEPS = 'DeploymentSteps',
   ENVIRONMENT = 'Environment',
+  INFRASTRUCTURE = 'Infrastructure',
   FEATURE_FLAGS = 'FeatureFlags',
   INPUT_SETS = 'InputSets',
   INTEGRATION_STAGE = 'IntegrationStage',
