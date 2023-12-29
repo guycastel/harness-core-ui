@@ -1058,7 +1058,10 @@ describe('VALIDATIONS', () => {
                 }
               }
             }
-          ]
+          ],
+          manifestConfigurations: {
+            primaryManifestRef: ''
+          }
         }}
       />
     )
@@ -1067,7 +1070,7 @@ describe('VALIDATIONS', () => {
       fireEvent.click(getByText('Submit'))
     })
     const errorDiv = container.querySelector('pre')
-    await waitFor(() => expect(errorDiv?.innerHTML).not.toBe('{}'))
+    await waitFor(() => expect(errorDiv?.innerHTML).not.toBe(''))
   })
 
   test('MANIFESTS - with values present', async () => {

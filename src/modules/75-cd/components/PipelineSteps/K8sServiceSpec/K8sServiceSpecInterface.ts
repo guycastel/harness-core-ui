@@ -98,6 +98,8 @@ export interface KubernetesManifestsProps {
   manifest?: ManifestConfig
   manifestPath?: string
   childPipelineMetadata?: ChildPipelineMetadataType
+  primaryManifest?: string
+  isHelm?: boolean
 }
 
 export interface KubernetesServiceHooksProps {

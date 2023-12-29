@@ -306,7 +306,7 @@ exports[`OpenshiftTemplateManifestSource tests Should match snapshot 1`] = `
                   >
                     <button
                       class="bp3-button bp3-minimal Button--button StyledProps--font StyledProps--main container Button--iconOnly Button--without-shadow Button--withRightIcon"
-                      data-testid="cr-field-stages[0].stage.spec.serviceConfig.serviceDefinition.spec.manifests[1].manifest.spec.store.spec.connectorRef"
+                      data-testid="cr-field-stages[0].stage.spec.serviceConfig.serviceDefinition.spec.manifests[0].manifest.spec.store.spec.connectorRef"
                       style="width: 100%;"
                       type="button"
                     >
@@ -380,7 +380,7 @@ exports[`OpenshiftTemplateManifestSource tests Should match snapshot 1`] = `
           >
             <label
               class="bp3-label"
-              for="stages[0].stage.spec.serviceConfig.serviceDefinition.spec.manifests[1].manifest.spec.store.spec.repoName"
+              for="stages[0].stage.spec.serviceConfig.serviceDefinition.spec.manifests[0].manifest.spec.store.spec.repoName"
             >
               common.repositoryName
                
@@ -400,7 +400,7 @@ exports[`OpenshiftTemplateManifestSource tests Should match snapshot 1`] = `
                   <input
                     autocomplete="off"
                     class="bp3-input"
-                    name="stages[0].stage.spec.serviceConfig.serviceDefinition.spec.manifests[1].manifest.spec.store.spec.repoName"
+                    name="stages[0].stage.spec.serviceConfig.serviceDefinition.spec.manifests[0].manifest.spec.store.spec.repoName"
                     type="text"
                     value=""
                   />
@@ -476,7 +476,7 @@ exports[`OpenshiftTemplateManifestSource tests Should match snapshot 1`] = `
                       class="bp3-control bp3-checkbox StyledProps--font Checkbox--checkbox input StyledProps--main"
                     >
                       <input
-                        name="stages[0].stage.spec.serviceConfig.serviceDefinition.spec.manifests[1].manifest.spec.skipResourceVersioning"
+                        name="stages[0].stage.spec.serviceConfig.serviceDefinition.spec.manifests[0].manifest.spec.skipResourceVersioning"
                         type="checkbox"
                       />
                       <span
@@ -917,7 +917,7 @@ exports[`OpenshiftTemplateManifestSource tests Should match snapshot with fromTr
                   >
                     <button
                       class="bp3-button bp3-minimal Button--button StyledProps--font StyledProps--main container Button--iconOnly Button--without-shadow Button--withRightIcon"
-                      data-testid="cr-field-stages[0].stage.spec.serviceConfig.serviceDefinition.spec.manifests[1].manifest.spec.store.spec.connectorRef"
+                      data-testid="cr-field-stages[0].stage.spec.serviceConfig.serviceDefinition.spec.manifests[0].manifest.spec.store.spec.connectorRef"
                       style="width: 100%;"
                       type="button"
                     >
@@ -991,7 +991,7 @@ exports[`OpenshiftTemplateManifestSource tests Should match snapshot with fromTr
           >
             <label
               class="bp3-label"
-              for="stages[0].stage.spec.serviceConfig.serviceDefinition.spec.manifests[1].manifest.spec.store.spec.repoName"
+              for="stages[0].stage.spec.serviceConfig.serviceDefinition.spec.manifests[0].manifest.spec.store.spec.repoName"
             >
               common.repositoryName
                
@@ -1011,7 +1011,7 @@ exports[`OpenshiftTemplateManifestSource tests Should match snapshot with fromTr
                   <input
                     autocomplete="off"
                     class="bp3-input"
-                    name="stages[0].stage.spec.serviceConfig.serviceDefinition.spec.manifests[1].manifest.spec.store.spec.repoName"
+                    name="stages[0].stage.spec.serviceConfig.serviceDefinition.spec.manifests[0].manifest.spec.store.spec.repoName"
                     type="text"
                     value=""
                   />
@@ -1087,7 +1087,7 @@ exports[`OpenshiftTemplateManifestSource tests Should match snapshot with fromTr
                       class="bp3-control bp3-checkbox StyledProps--font Checkbox--checkbox input StyledProps--main"
                     >
                       <input
-                        name="stages[0].stage.spec.serviceConfig.serviceDefinition.spec.manifests[1].manifest.spec.skipResourceVersioning"
+                        name="stages[0].stage.spec.serviceConfig.serviceDefinition.spec.manifests[0].manifest.spec.skipResourceVersioning"
                         type="checkbox"
                       />
                       <span

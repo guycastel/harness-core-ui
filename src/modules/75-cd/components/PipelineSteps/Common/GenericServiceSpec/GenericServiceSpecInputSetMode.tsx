@@ -77,6 +77,7 @@ export interface KubernetesInputSetProps {
   allowableTypes: AllowedTypes
   childPipelineMetadata?: ChildPipelineMetadataType
   viewTypeMetadata?: Record<string, boolean>
+  isHelm?: boolean
 }
 const GenericServiceSpecInputSetModeFormikForm = (props: KubernetesInputSetProps): React.ReactElement => {
   const {
@@ -95,7 +96,8 @@ const GenericServiceSpecInputSetModeFormikForm = (props: KubernetesInputSetProps
     formik,
     allowableTypes,
     childPipelineMetadata,
-    viewTypeMetadata
+    viewTypeMetadata,
+    isHelm
   } = props
   const { getString } = useStrings()
   const { expressions } = useVariablesExpression()
@@ -181,6 +183,8 @@ const GenericServiceSpecInputSetModeFormikForm = (props: KubernetesInputSetProps
           manifestSourceBaseFactory={manifestSourceBaseFactory}
           stageIdentifier={stageIdentifier}
           template={template}
+          primaryManifest={allValues?.manifestConfigurations?.primaryManifestRef}
+          isHelm={isHelm}
           {...commonProps}
         />
       )}

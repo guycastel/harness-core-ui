@@ -342,149 +342,154 @@ export class GenericServiceSpec extends Step<KubernetesServiceSpec & ServiceSpec
     data?.manifests?.forEach((manifest, index) => {
       const currentManifestTemplate = get(template, `manifests[${index}].manifest.spec.store.spec`, '')
 
-      // Git provider manifest store specific fields
       if (
-        isEmpty(manifest?.manifest?.spec?.store?.spec?.connectorRef) &&
-        isRequired &&
-        getMultiTypeFromValue(currentManifestTemplate?.connectorRef) === MultiTypeInputType.RUNTIME
+        data?.manifestConfigurations?.primaryManifestRef &&
+        data?.manifestConfigurations?.primaryManifestRef === manifest?.manifest?.identifier
       ) {
-        set(
-          errors,
-          `manifests[${index}].manifest.spec.store.spec.connectorRef`,
-          getString?.('fieldRequired', { field: getString('connector') })
-        )
-      }
-      if (
-        isEmpty(manifest?.manifest?.spec?.store?.spec?.branch) &&
-        isRequired &&
-        getMultiTypeFromValue(currentManifestTemplate?.branch) === MultiTypeInputType.RUNTIME
-      ) {
-        set(
-          errors,
-          `manifests[${index}].manifest.spec.store.spec.branch`,
-          getString?.('fieldRequired', { field: 'Branch' })
-        )
-      }
-      if (
-        isEmpty(manifest?.manifest?.spec?.store?.spec?.commitId) &&
-        isRequired &&
-        getMultiTypeFromValue(currentManifestTemplate?.commitId) === MultiTypeInputType.RUNTIME
-      ) {
-        set(
-          errors,
-          `manifests[${index}].manifest.spec.store.spec.commitId`,
-          getString?.('fieldRequired', { field: getString('common.commitId') })
-        )
-      }
-      if (
-        isEmpty(manifest?.manifest?.spec?.store?.spec?.paths?.[0]) &&
-        isRequired &&
-        getMultiTypeFromValue(currentManifestTemplate?.paths) === MultiTypeInputType.RUNTIME
-      ) {
-        set(
-          errors,
-          `manifests[${index}].manifest.spec.store.spec.paths`,
-          getString?.('fieldRequired', { field: getString?.('common.fileOrFolderPath') })
-        )
-      }
-      if (
-        isEmpty(manifest?.manifest?.spec?.store?.spec?.folderPath) &&
-        isRequired &&
-        getMultiTypeFromValue(currentManifestTemplate?.folderPath) === MultiTypeInputType.RUNTIME
-      ) {
-        set(
-          errors,
-          `manifests[${index}].manifest.spec.store.spec.folderPath`,
-          getString?.('fieldRequired', {
-            field: manifest.manifest?.type === ManifestDataType.HelmChart ? getString?.('chartPath') : 'Folder Path'
-          })
-        )
-      }
+        // Git provider manifest store specific fields
+        if (
+          isEmpty(manifest?.manifest?.spec?.store?.spec?.connectorRef) &&
+          isRequired &&
+          getMultiTypeFromValue(currentManifestTemplate?.connectorRef) === MultiTypeInputType.RUNTIME
+        ) {
+          set(
+            errors,
+            `manifests[${index}].manifest.spec.store.spec.connectorRef`,
+            getString?.('fieldRequired', { field: getString('connector') })
+          )
+        }
+        if (
+          isEmpty(manifest?.manifest?.spec?.store?.spec?.branch) &&
+          isRequired &&
+          getMultiTypeFromValue(currentManifestTemplate?.branch) === MultiTypeInputType.RUNTIME
+        ) {
+          set(
+            errors,
+            `manifests[${index}].manifest.spec.store.spec.branch`,
+            getString?.('fieldRequired', { field: 'Branch' })
+          )
+        }
+        if (
+          isEmpty(manifest?.manifest?.spec?.store?.spec?.commitId) &&
+          isRequired &&
+          getMultiTypeFromValue(currentManifestTemplate?.commitId) === MultiTypeInputType.RUNTIME
+        ) {
+          set(
+            errors,
+            `manifests[${index}].manifest.spec.store.spec.commitId`,
+            getString?.('fieldRequired', { field: getString('common.commitId') })
+          )
+        }
+        if (
+          isEmpty(manifest?.manifest?.spec?.store?.spec?.paths?.[0]) &&
+          isRequired &&
+          getMultiTypeFromValue(currentManifestTemplate?.paths) === MultiTypeInputType.RUNTIME
+        ) {
+          set(
+            errors,
+            `manifests[${index}].manifest.spec.store.spec.paths`,
+            getString?.('fieldRequired', { field: getString?.('common.fileOrFolderPath') })
+          )
+        }
+        if (
+          isEmpty(manifest?.manifest?.spec?.store?.spec?.folderPath) &&
+          isRequired &&
+          getMultiTypeFromValue(currentManifestTemplate?.folderPath) === MultiTypeInputType.RUNTIME
+        ) {
+          set(
+            errors,
+            `manifests[${index}].manifest.spec.store.spec.folderPath`,
+            getString?.('fieldRequired', {
+              field: manifest.manifest?.type === ManifestDataType.HelmChart ? getString?.('chartPath') : 'Folder Path'
+            })
+          )
+        }
 
-      if (
-        isArray(manifest.manifest?.spec?.valuesPaths) &&
-        manifest.manifest?.spec?.valuesPaths?.includes('') &&
-        getMultiTypeFromValue(get(template, `manifests[${index}].manifest.spec.valuesPaths`, '')) ===
-          MultiTypeInputType.RUNTIME
-      ) {
-        set(errors, `manifests[${index}].manifest.spec.valuesPaths`, getString?.('cd.valuesYamlValidation'))
-      }
+        if (
+          isArray(manifest.manifest?.spec?.valuesPaths) &&
+          manifest.manifest?.spec?.valuesPaths?.includes('') &&
+          getMultiTypeFromValue(get(template, `manifests[${index}].manifest.spec.valuesPaths`, '')) ===
+            MultiTypeInputType.RUNTIME
+        ) {
+          set(errors, `manifests[${index}].manifest.spec.valuesPaths`, getString?.('cd.valuesYamlValidation'))
+        }
 
-      // Harness manifest store spcific fields
-      if (
-        isEmpty(manifest?.manifest?.spec?.store?.spec?.files?.[0]) &&
-        isRequired &&
-        getMultiTypeFromValue(currentManifestTemplate?.files) === MultiTypeInputType.RUNTIME
-      ) {
-        set(
-          errors,
-          `manifests[${index}].manifest.spec.store.spec.files[0]`,
-          getString?.('fieldRequired', { field: getString?.('resourcePage.fileStore') })
-        )
-      }
+        // Harness manifest store spcific fields
+        if (
+          isEmpty(manifest?.manifest?.spec?.store?.spec?.files?.[0]) &&
+          isRequired &&
+          getMultiTypeFromValue(currentManifestTemplate?.files) === MultiTypeInputType.RUNTIME
+        ) {
+          set(
+            errors,
+            `manifests[${index}].manifest.spec.store.spec.files[0]`,
+            getString?.('fieldRequired', { field: getString?.('resourcePage.fileStore') })
+          )
+        }
 
-      // S3 manifest store specific fields
-      if (
-        isEmpty(manifest?.manifest?.spec?.store?.spec?.region) &&
-        isRequired &&
-        getMultiTypeFromValue(currentManifestTemplate?.region) === MultiTypeInputType.RUNTIME
-      ) {
-        set(
-          errors,
-          `manifests[${index}].manifest.spec.store.spec.region`,
-          getString?.('fieldRequired', { field: getString?.('regionLabel') })
-        )
-      }
-      if (
-        isEmpty(manifest?.manifest?.spec?.store?.spec?.bucketName) &&
-        isRequired &&
-        getMultiTypeFromValue(currentManifestTemplate?.bucketName) === MultiTypeInputType.RUNTIME
-      ) {
-        set(
-          errors,
-          `manifests[${index}].manifest.spec.store.spec.bucketName`,
-          getString?.('fieldRequired', { field: getString?.('common.bucketName') })
-        )
-      }
+        // S3 manifest store specific fields
+        if (
+          isEmpty(manifest?.manifest?.spec?.store?.spec?.region) &&
+          isRequired &&
+          getMultiTypeFromValue(currentManifestTemplate?.region) === MultiTypeInputType.RUNTIME
+        ) {
+          set(
+            errors,
+            `manifests[${index}].manifest.spec.store.spec.region`,
+            getString?.('fieldRequired', { field: getString?.('regionLabel') })
+          )
+        }
+        if (
+          isEmpty(manifest?.manifest?.spec?.store?.spec?.bucketName) &&
+          isRequired &&
+          getMultiTypeFromValue(currentManifestTemplate?.bucketName) === MultiTypeInputType.RUNTIME
+        ) {
+          set(
+            errors,
+            `manifests[${index}].manifest.spec.store.spec.bucketName`,
+            getString?.('fieldRequired', { field: getString?.('common.bucketName') })
+          )
+        }
 
-      // Helm With S3 manifest store specific fields
-      if (
-        isEmpty(manifest?.manifest?.spec?.chartName) &&
-        isRequired &&
-        getMultiTypeFromValue(get(template, `manifests[${index}].manifest.spec.chartName`)) ===
-          MultiTypeInputType.RUNTIME
-      ) {
-        set(
-          errors,
-          `manifests[${index}].manifest.spec.chartName`,
-          getString?.('fieldRequired', { field: 'Chart Name' })
-        )
-      }
+        // Helm With S3 manifest store specific fields
+        if (
+          isEmpty(manifest?.manifest?.spec?.chartName) &&
+          isRequired &&
+          getMultiTypeFromValue(get(template, `manifests[${index}].manifest.spec.chartName`)) ===
+            MultiTypeInputType.RUNTIME
+        ) {
+          set(
+            errors,
+            `manifests[${index}].manifest.spec.chartName`,
+            getString?.('fieldRequired', { field: 'Chart Name' })
+          )
+        }
 
-      // Custom Remote Manifest store specific fields
-      if (
-        isEmpty(manifest?.manifest?.spec?.store?.spec?.extractionScript) &&
-        isRequired &&
-        getMultiTypeFromValue(currentManifestTemplate?.extractionScript) === MultiTypeInputType.RUNTIME
-      ) {
-        set(
-          errors,
-          `manifests[${index}].manifest.spec.store.spec.extractionScript`,
-          getString?.('fieldRequired', { field: getString?.('pipeline.manifestType.customRemoteExtractionScript') })
-        )
-      }
-      if (
-        isEmpty(manifest?.manifest?.spec?.store?.spec?.filePath) &&
-        isRequired &&
-        getMultiTypeFromValue(currentManifestTemplate?.filePath) === MultiTypeInputType.RUNTIME
-      ) {
-        set(
-          errors,
-          `manifests[${index}].manifest.spec.store.spec.filePath`,
-          getString?.('fieldRequired', {
-            field: getString?.('pipeline.manifestType.customRemoteExtractedFileLocation')
-          })
-        )
+        // Custom Remote Manifest store specific fields
+        if (
+          isEmpty(manifest?.manifest?.spec?.store?.spec?.extractionScript) &&
+          isRequired &&
+          getMultiTypeFromValue(currentManifestTemplate?.extractionScript) === MultiTypeInputType.RUNTIME
+        ) {
+          set(
+            errors,
+            `manifests[${index}].manifest.spec.store.spec.extractionScript`,
+            getString?.('fieldRequired', { field: getString?.('pipeline.manifestType.customRemoteExtractionScript') })
+          )
+        }
+        if (
+          isEmpty(manifest?.manifest?.spec?.store?.spec?.filePath) &&
+          isRequired &&
+          getMultiTypeFromValue(currentManifestTemplate?.filePath) === MultiTypeInputType.RUNTIME
+        ) {
+          set(
+            errors,
+            `manifests[${index}].manifest.spec.store.spec.filePath`,
+            getString?.('fieldRequired', {
+              field: getString?.('pipeline.manifestType.customRemoteExtractedFileLocation')
+            })
+          )
+        }
       }
     })
   }
@@ -716,15 +721,10 @@ export class GenericServiceSpec extends Step<KubernetesServiceSpec & ServiceSpec
     })
   }
 
-  validateInputSet({
-    data,
-    template,
-    getString,
-    viewType
-  }: ValidateInputSetProps<K8SDirectServiceStep>): FormikErrors<K8SDirectServiceStep> {
+  validateInputSet(props: ValidateInputSetProps<K8SDirectServiceStep>): FormikErrors<K8SDirectServiceStep> {
+    const { data, template, getString, viewType } = props
     const errors: FormikErrors<K8SDirectServiceStep> = {}
     const isRequired = viewType === StepViewType.DeploymentForm || viewType === StepViewType.TriggerForm
-
     /** Manifest fields validation */
     this.validateManifestInputSetFields({
       data,
@@ -806,6 +806,7 @@ export class GenericServiceSpec extends Step<KubernetesServiceSpec & ServiceSpec
           factory={factory}
           allowableTypes={allowableTypes}
           viewTypeMetadata={viewTypeMetadata}
+          isHelm={true}
         />
       )
     }

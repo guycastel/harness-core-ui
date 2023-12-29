@@ -14,6 +14,7 @@ import { useStrings } from 'framework/strings'
 import manifestSourceBaseFactory from '@cd/factory/ManifestSourceFactory/ManifestSourceBaseFactory'
 import type { GitQueryParams } from '@common/interfaces/RouteInterfaces'
 import { useQueryParams } from '@common/hooks'
+
 import type { ManifestConfig } from 'services/cd-ng'
 import { isTemplatizedView } from '@pipeline/utils/stepUtils'
 import { useGetChildPipelineMetadata } from '@pipeline/hooks/useGetChildPipelineMetadata'
@@ -76,20 +77,31 @@ const ManifestInputField = (props: ManifestInputFieldProps): React.ReactElement 
   )
 }
 export function KubernetesManifests(props: KubernetesManifestsProps): React.ReactElement {
+  const { primaryManifest, formik, path, isHelm } = props
   const { getString } = useStrings()
+  const primaryManifestId =
+    defaultTo(get(formik?.values, `${path}.manifestConfigurations.primaryManifestRef`), '') || primaryManifest
+  const filteredManifests_ = props.template.manifests?.filter(
+    manifestObj => get(manifestObj, 'manifest.identifier') === primaryManifestId
+  )
+
+  const filteredManifests = isHelm ? filteredManifests_ : props?.template?.manifests
 
   return (
     <div className={cx(css.nopadLeft, css.accordionSummary)} id={`Stage.${props.stageIdentifier}.Service.Manifests`}>
-      {!props.fromTrigger && (
+      {filteredManifests?.length && !props.fromTrigger && (
         <div className={css.subheading}>
           {getString('pipelineSteps.deploy.serviceSpecifications.deploymentTypes.manifests')}
         </div>
       )}
-      {props.template.manifests?.map((manifestObj, index) => {
+      {filteredManifests?.map(manifestObj => {
         if (!manifestObj?.manifest || !props.template.manifests?.length) {
           return null
         }
-        const manifestPath = `manifests[${index}].manifest`
+        const manifestIndex = props.template.manifests?.findIndex(
+          templateManifestObj => templateManifestObj.manifest?.identifier === get(manifestObj, 'manifest.identifier')
+        )
+        const manifestPath = `manifests[${manifestIndex}].manifest`
 
         return (
           <ManifestInputField
