@@ -340,8 +340,6 @@ export function InputSetForm(props: InputSetFormProps): React.ReactElement {
     [pipeline?.data?.yamlPipeline]
   )
 
-  const parsedInputSetObj = parse<InputSet>(defaultTo(inputSetResponse?.data?.inputSetYaml, ''))
-
   const latestYamlPipeline = React.useMemo(() => {
     if (selectedView === SelectedView.YAML) {
       const yaml = defaultTo(yamlHandler?.getLatestYaml(), '')
@@ -350,7 +348,7 @@ export function InputSetForm(props: InputSetFormProps): React.ReactElement {
   }, [selectedView, yamlHandler])
 
   const { open: openDiffModal } = useDiffDialog({
-    originalYaml: stringify(parsedInputSetObj?.inputSet?.pipeline),
+    originalYaml: stringify(inputSet.pipeline),
     updatedYaml:
       selectedView === SelectedView.VISUAL ? stringify(formikRef?.current?.values?.pipeline) : latestYamlPipeline ?? '',
     title: getString('pipeline.inputSetDiffTitle')

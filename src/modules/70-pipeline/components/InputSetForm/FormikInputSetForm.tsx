@@ -349,6 +349,16 @@ export function FormikInputSetForm(props: FormikInputSetFormProps): React.ReactE
     })
   }, [inputSet, isEdit, resolvedPipeline])
 
+  const handleChange = (values: InputSetDTO & GitContextProps & StoreMetadata): void => {
+    // show unsaved changes only for input set change
+    const isInputSetChanged = isEqual(values.pipeline, inputSet?.pipeline)
+    handleFormDirty(!isInputSetChanged)
+
+    // enable save for any change
+    const isFormDirty = isEqual(values, inputSet)
+    setIsSaveEnabled(!isFormDirty)
+  }
+
   return (
     <Container className={cx(css.inputSetForm, className, hasError ? css.withError : '')}>
       <Layout.Vertical
@@ -364,7 +374,10 @@ export function FormikInputSetForm(props: FormikInputSetFormProps): React.ReactE
           }}
           formName="inputSetForm"
           validationSchema={NameIdSchema}
-          validate={validateValues}
+          validate={values => {
+            validateValues(values)
+            handleChange(values)
+          }}
           onSubmit={values => {
             handleSubmit(
               values,
@@ -385,22 +398,13 @@ export function FormikInputSetForm(props: FormikInputSetFormProps): React.ReactE
         >
           {formikProps => {
             formikRef.current = formikProps
-            const handleChange = (): void => {
-              // form dirty is determined on formvalues.pipeline
-              // This is used to determine to show the unsaved changes button
-              const isIpSetPipelineChanged = isEqual(formikRef?.current?.values?.pipeline, inputSet?.pipeline)
-              // Save is enabled on the whole form
-              const isIpSetFormDirty = isEqual(formikRef?.current?.values, inputSet)
-              handleFormDirty(!isIpSetPipelineChanged)
-              setIsSaveEnabled(!isIpSetFormDirty)
-            }
             return (
               <>
                 {selectedView === SelectedView.VISUAL ? (
                   <div className={css.inputsetGrid}>
                     <div>
                       <ErrorsStrip formErrors={formErrors} domRef={formRefDom} />
-                      <FormikForm onChange={handleChange}>
+                      <FormikForm>
                         {executionView ? null : (
                           <Layout.Vertical className={css.content} padding="xlarge">
                             <NameIdDescriptionTags
