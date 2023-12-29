@@ -11,6 +11,7 @@ import moment from 'moment'
 import { set } from 'lodash-es'
 import type { UseStringsReturn } from 'framework/strings'
 import { DATE_PARSE_FORMAT } from '@common/components/DateTimePicker/DateTimePicker'
+import { getTimeZoneOffsetInMinutes } from '@common/utils/dateUtils'
 import { StepViewType } from '@pipeline/components/AbstractSteps/Step'
 import type { ApproverInputsSubmitCallInterface, HarnessApprovalData } from './types'
 
@@ -135,4 +136,21 @@ export const scheduleAutoApprovalValidationSchema = (
     }
     return Yup.string().required(getString('common.validation.fieldIsRequired', { name: 'Time' }))
   })
+}
+
+export const getIsAutoApprovalMinimumTimeValidationApplicable = (
+  currentTime: string,
+  currentTimezone: string
+): boolean => {
+  const currentDate = new Date()
+  const currentTimeOffset = getTimeZoneOffsetInMinutes(currentTimezone)
+
+  const currentTimeBasedOnTimezone = moment.utc(currentDate.getTime()).utcOffset(currentTimeOffset).valueOf()
+
+  const formValueTimeBasedOnTimezone =
+    moment.utc(currentTime, DATE_PARSE_FORMAT).utcOffset(currentTimeOffset).valueOf() - currentTimeOffset * 60000
+
+  const minApprovalTime: number = currentTimeBasedOnTimezone + parseStringToTime('15m')
+
+  return formValueTimeBasedOnTimezone < minApprovalTime
 }

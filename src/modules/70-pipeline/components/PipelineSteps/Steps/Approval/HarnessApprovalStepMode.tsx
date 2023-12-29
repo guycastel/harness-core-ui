@@ -24,12 +24,10 @@ import {
   AllowedTypes,
   useToaster,
   Layout,
-  Text,
-  parseStringToTime
+  Text
 } from '@harness/uicore'
 import { FontVariation } from '@harness/design-system'
 import { useParams } from 'react-router-dom'
-import moment from 'moment'
 import { setFormikRef, StepFormikFowardRef, StepViewType } from '@pipeline/components/AbstractSteps/Step'
 import { String, useStrings } from 'framework/strings'
 import {
@@ -41,7 +39,7 @@ import { ALLOWED_VALUES_TYPE, ConfigureOptions } from '@common/components/Config
 import { FormMultiTypeTextAreaField } from '@common/components/MultiTypeTextArea/MultiTypeTextArea'
 import { FormMultiTypeUserGroupInput } from '@rbac/components/UserGroupsInput/FormMultitypeUserGroupInput'
 import { regexPositiveNumbers } from '@common/utils/StringUtils'
-import { isMultiTypeRuntime } from '@common/utils/utils'
+import { isMultiTypeRuntime, isValueFixed } from '@common/utils/utils'
 import { UserGroupConfigureOptions } from '@rbac/components/UserGroupConfigureOptions/UserGroupConfigureOptions'
 
 import { getIdentifierFromValue, getScopeFromValue } from '@common/components/EntityReference/EntityReference'
@@ -49,11 +47,9 @@ import type { ProjectPathProps } from '@common/interfaces/RouteInterfaces'
 import { getBatchUserGroupListPromise } from 'services/cd-ng'
 import { Scope } from '@common/interfaces/SecretsInterface'
 import useRBACError from '@rbac/utils/useRBACError/useRBACError'
-import { DATE_PARSE_FORMAT } from '@common/components/DateTimePicker/DateTimePicker'
 import { useFeatureFlag } from '@common/hooks/useFeatureFlag'
 import { useFeatureFlags } from '@modules/10-common/hooks/useFeatureFlag'
 import { FeatureFlag } from '@common/featureFlags'
-import { getTimeZoneOffsetInMinutes } from '@common/utils/dateUtils'
 import { isApprovalStepFieldDisabled } from '../Common/ApprovalCommons'
 import type {
   ApproverInputsSubmitCallInterface,
@@ -63,7 +59,7 @@ import type {
 } from './types'
 import { getNameAndIdentifierSchema } from '../StepsValidateUtils'
 import ScheduleAutoApproval from './ScheduleAutoApproval'
-import { ApproveAction } from './helper'
+import { ApproveAction, getIsAutoApprovalMinimumTimeValidationApplicable } from './helper'
 import stepCss from '@pipeline/components/PipelineSteps/Steps/Steps.module.scss'
 import css from './HarnessApproval.module.scss'
 
@@ -82,7 +78,7 @@ function FormContent({
   const { NG_EXPRESSIONS_NEW_INPUT_ELEMENT } = useFeatureFlags()
   const formikUserGroups = formik.values.spec?.approvers?.userGroups
   const [scopeCountMap, setScopeCountMap] = useState<Map<Scope, string[]>>(new Map<Scope, string[]>())
-  const showAutoApporval = useFeatureFlag(FeatureFlag.CDS_AUTO_APPROVAL)
+  const showAutoApproval = useFeatureFlag(FeatureFlag.CDS_AUTO_APPROVAL)
 
   const userGroupMap = React.useMemo(() => {
     const _userGroupMap = new Map<Scope, string[]>()
@@ -283,7 +279,7 @@ function FormContent({
       <div className={stepCss.noLookDivider} />
 
       <Accordion className={cx(stepCss.accordion, css.accordionStyle)}>
-        {showAutoApporval ? (
+        {showAutoApproval ? (
           <Accordion.Panel
             id="schedule-autoApproval"
             summary={
@@ -474,24 +470,14 @@ function HarnessApprovalStepMode(
                       const currentTimezone = get(
                         formikRef,
                         'current.values.spec.autoApproval.scheduledDeadline.timeZone'
-                      )
-                      const currentDate = new Date()
-                      const currentTimeOffset = getTimeZoneOffsetInMinutes(currentTimezone)
-                      const currentTimeBasedOnTimezone = moment
-                        .utc(currentDate.getTime())
-                        .utcOffset(currentTimeOffset)
-                        .valueOf()
-
-                      const formValueTimeBasedOnTimezone =
-                        moment.utc(val, DATE_PARSE_FORMAT).utcOffset(currentTimeOffset).valueOf() -
-                        currentTimeOffset * 60000
-
-                      const minApprovalTime: number = currentTimeBasedOnTimezone + parseStringToTime('15m')
-
-                      if (formValueTimeBasedOnTimezone < minApprovalTime)
-                        return this.createError({
-                          message: getString('pipeline.approvalStep.validation.autoApproveScheduleCurrentTime')
-                        })
+                      ) as string
+                      if (currentTimezone && isValueFixed(currentTimezone)) {
+                        return getIsAutoApprovalMinimumTimeValidationApplicable(val, currentTimezone)
+                          ? this.createError({
+                              message: getString('pipeline.approvalStep.validation.autoApproveScheduleCurrentTime')
+                            })
+                          : true
+                      }
                       return true
                     }
                   }),

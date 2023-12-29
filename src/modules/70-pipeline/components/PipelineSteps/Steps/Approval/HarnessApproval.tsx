@@ -7,7 +7,7 @@
 
 import React from 'react'
 import * as Yup from 'yup'
-import { isEmpty, get, compact } from 'lodash-es'
+import { isEmpty, get, compact, set } from 'lodash-es'
 import { CompletionItemKind } from 'vscode-languageserver-types'
 import { connect, FormikErrors, yupToFormErrors } from 'formik'
 import { getMultiTypeFromValue, IconName, MultiTypeInputType } from '@harness/uicore'
@@ -26,7 +26,7 @@ import { DATE_PARSE_FORMAT } from '@common/components/DateTimePicker/DateTimePic
 import { PipelineStep } from '../../PipelineStep'
 import { StepType } from '../../PipelineStepInterface'
 import { getSanitizedflatObjectForVariablesView } from '../Common/ApprovalCommons'
-import { processFormData, processForInitialValues } from './helper'
+import { processFormData, processForInitialValues, getIsAutoApprovalMinimumTimeValidationApplicable } from './helper'
 import HarnessApprovalDeploymentMode from './HarnessApprovalDeploymentMode'
 import HarnessApprovalStepModeWithRef from './HarnessApprovalStepMode'
 import type { HarnessApprovalData, HarnessApprovalVariableListModeProps } from './types'
@@ -188,6 +188,50 @@ export class HarnessApproval extends PipelineStep<HarnessApprovalData> {
             minimumCount: getString?.('pipeline.approvalStep.validation.minimumCountOne')
           }
         }
+      }
+    }
+
+    if (
+      typeof template?.spec?.autoApproval?.scheduledDeadline?.timeZone === 'string' &&
+      isRequired &&
+      getMultiTypeFromValue(template?.spec?.autoApproval?.scheduledDeadline?.timeZone) === MultiTypeInputType.RUNTIME
+    ) {
+      if (!data?.spec?.autoApproval?.scheduledDeadline?.timeZone) {
+        set(
+          errors,
+          'spec.autoApproval.scheduledDeadline.timeZone',
+          getString?.('common.validation.fieldIsRequired', { name: getString?.('common.timezone') })
+        )
+      }
+    }
+
+    if (
+      typeof template?.spec?.autoApproval?.scheduledDeadline?.time === 'string' &&
+      isRequired &&
+      getMultiTypeFromValue(template?.spec?.autoApproval?.scheduledDeadline?.time) === MultiTypeInputType.RUNTIME
+    ) {
+      const { time: timeValFromData, timeZone: timeZoneValFromData } = (data?.spec?.autoApproval?.scheduledDeadline ||
+        {}) as {
+        time: string
+        timeZone: string
+      }
+
+      if (!timeValFromData) {
+        set(
+          errors,
+          'spec.autoApproval.scheduledDeadline.time',
+          getString?.('common.validation.fieldIsRequired', { name: 'Time' })
+        )
+      } else if (
+        timeValFromData &&
+        timeZoneValFromData &&
+        getIsAutoApprovalMinimumTimeValidationApplicable(timeValFromData, timeZoneValFromData)
+      ) {
+        set(
+          errors,
+          'spec.autoApproval.scheduledDeadline.time',
+          getString?.('pipeline.approvalStep.validation.autoApproveScheduleCurrentTime')
+        )
       }
     }
 

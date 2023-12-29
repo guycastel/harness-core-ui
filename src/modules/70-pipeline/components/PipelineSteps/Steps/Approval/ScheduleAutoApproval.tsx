@@ -23,6 +23,7 @@ import { get } from 'lodash-es'
 import { useStrings, UseStringsReturn } from 'framework/strings'
 import { FormMultiTypeTextAreaField } from '@common/components'
 import { useVariablesExpression } from '@pipeline/components/PipelineStudio/PiplineHooks/useVariablesExpression'
+import type { AcceptableValue } from '@pipeline/components/PipelineInputSetForm/CICodebaseInputSetForm'
 import { FormMultiTypeDateTimePickerField } from '@common/components/MultiTypeDateTimePicker/MultiTypeDateTimePicker'
 import { ALL_TIME_ZONES, convertDateTimeBasedOnTimezone } from '@common/utils/dateUtils'
 import { DATE_PARSE_FORMAT } from '@common/components/DateTimePicker/DateTimePicker'
@@ -45,7 +46,8 @@ const showAutoApproveScheduleTimeoutWarning = (getString: UseStringsReturn['getS
 
 export default function ScheduleAutoApproval({
   formik,
-  readonly
+  readonly,
+  allowableTypes = [MultiTypeInputType.FIXED, MultiTypeInputType.EXPRESSION, MultiTypeInputType.RUNTIME]
 }: Partial<HarnessApprovalFormContentProps>): JSX.Element {
   const { getString } = useStrings()
   const { expressions } = useVariablesExpression()
@@ -71,30 +73,35 @@ export default function ScheduleAutoApproval({
         margin={{ bottom: 'medium', top: 'small' }}
       />
       <div className={cx(stepCss.formGroup, stepCss.lg)}>
-        <FormInput.DropDown
+        <FormInput.MultiTypeInput
           label={getString('common.timezone')}
           name="spec.autoApproval.scheduledDeadline.timeZone"
-          items={timeZoneList}
-          dropDownProps={{
-            minWidth: 200
-          }}
-          usePortal
           disabled={isApprovalStepFieldDisabled(readonly) || !isApproveActionChecked}
-          onChange={timeZone => {
-            const formValue = get(formik?.values, 'spec.autoApproval.scheduledDeadline.time')
-            if (getMultiTypeFromValue(formValue) === MultiTypeInputType.FIXED) {
-              const prevTimezone = get(formik?.values, 'spec.autoApproval.scheduledDeadline.timeZone')
+          useValue
+          multiTypeInputProps={{
+            onChange: (timeZone: AcceptableValue | undefined) => {
+              const formValue = get(formik?.values, 'spec.autoApproval.scheduledDeadline.time')
+              if (getMultiTypeFromValue(formValue) === MultiTypeInputType.FIXED) {
+                const prevTimezone = get(formik?.values, 'spec.autoApproval.scheduledDeadline.timeZone')
 
-              const adjustedTimeFromEpoch = convertDateTimeBasedOnTimezone(
-                prevTimezone,
-                timeZone.value as string,
-                formValue,
-                DATE_PARSE_FORMAT
-              )
+                const adjustedTimeFromEpoch = convertDateTimeBasedOnTimezone(
+                  prevTimezone,
+                  get(timeZone, 'value', '') as string,
+                  formValue,
+                  DATE_PARSE_FORMAT
+                )
 
-              formik?.setFieldValue('spec.autoApproval.scheduledDeadline.time', adjustedTimeFromEpoch)
-            }
+                formik?.setFieldValue('spec.autoApproval.scheduledDeadline.time', adjustedTimeFromEpoch)
+              }
+            },
+            expressions,
+            selectProps: {
+              usePortal: true,
+              items: timeZoneList
+            },
+            allowableTypes
           }}
+          selectItems={timeZoneList}
         />
       </div>
       <div className={cx(stepCss.formGroup, stepCss.lg)}>
@@ -107,7 +114,7 @@ export default function ScheduleAutoApproval({
           defaultValueToReset={Date.now().toString()}
           multiTypeDateTimePicker={{
             expressions,
-            allowableTypes: [MultiTypeInputType.FIXED],
+            allowableTypes: allowableTypes,
             placeholder: getString('pipeline.approvalStep.autoApproveDeadline'),
             dateInputProps: {
               dateProps: {
