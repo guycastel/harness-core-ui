@@ -19,6 +19,7 @@ jest.mock('services/cd-ng', () => {
     useGetServicesGrowthTrend: jest.fn(() => ({ data: null })),
     useGetServiceDeploymentsInfoV2: jest.fn(() => ({ loading: false })),
     useDeleteServiceV2: jest.fn(() => ({ mutate: jest.fn() })),
+    useGetSettingsList: jest.fn().mockResolvedValue({}),
     useGetSettingValue: jest.fn().mockResolvedValue({})
   }
 })

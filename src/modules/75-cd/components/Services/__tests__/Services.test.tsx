@@ -21,6 +21,7 @@ jest.mock('services/cd-ng', () => {
     useGetServicesGrowthTrend: jest.fn,
     useGetServiceDetails: jest.fn,
     useGetServiceDetailsV2: jest.fn,
+    useGetSettingsList: jest.fn().mockResolvedValue({}),
     useGetSettingValue: jest.fn().mockResolvedValue({})
   }
 })

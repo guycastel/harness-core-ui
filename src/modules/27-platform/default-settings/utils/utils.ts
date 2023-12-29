@@ -30,3 +30,19 @@ export const getDefaultStoreType = (
   const settingValue = getSettingValue(settingsData, SettingType.DEFAULT_STORE_TYPE_FOR_ENTITIES)
   return settingValue === StoreType.REMOTE ? StoreType.REMOTE : StoreType.INLINE
 }
+
+/**
+ * This method will include both ENFORCE_GIT_EXPERIENCE and DEFAULT_STORE_TYPE_FOR_ENTITIES settings
+ * INLINE is used as fallback if no gitXSetting is defined
+ * @param gitXSetting
+ * @returns
+ */
+export function getDefaultStoreTypeFromSettings(
+  gitXSetting?: ResponseListSettingResponseDTO | null
+): StoreMetadata['storeType'] {
+  return gitXSetting
+    ? getSettingValue(gitXSetting, SettingType.ENFORCE_GIT_EXPERIENCE) === 'true'
+      ? StoreType.REMOTE
+      : getDefaultStoreType(gitXSetting)
+    : StoreType.INLINE
+}

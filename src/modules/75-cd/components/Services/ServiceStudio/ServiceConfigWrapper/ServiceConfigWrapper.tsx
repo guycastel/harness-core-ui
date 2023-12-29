@@ -28,7 +28,7 @@ import type { PipelineInfoConfig } from 'services/pipeline-ng'
 import { useServiceContext } from '@cd/context/ServiceContext'
 import { PipelineVariablesContextProvider } from '@pipeline/components/PipelineVariablesContext/PipelineVariablesContext'
 import type { DeploymentStageElementConfig } from '@pipeline/utils/pipelineTypes'
-import { StoreType } from '@modules/10-common/constants/GitSyncTypes'
+import { StoreMetadata, StoreType } from '@modules/10-common/constants/GitSyncTypes'
 import { GitSyncFormFields } from '@modules/40-gitsync/components/GitSyncForm/GitSyncForm'
 import { ConnectorSelectedValue } from '@modules/27-platform/connectors/components/ConnectorReferenceField/ConnectorReferenceField'
 import {
@@ -44,11 +44,13 @@ import ServiceStudioDetails from '../ServiceStudioDetails'
 interface ServiceConfigurationWrapperProps {
   summaryPanel?: JSX.Element
   refercedByPanel?: JSX.Element
+  defaultStoreType?: StoreMetadata['storeType']
   invokeServiceHeaderRefetch?: () => void
 }
 function ServiceConfigurationWrapper(props: ServiceConfigurationWrapperProps): React.ReactElement {
   const { accountId, orgIdentifier, projectIdentifier, serviceId } = useParams<ProjectPathProps & ServicePathProps>()
   const { branch, repoIdentifier } = useQueryParams<GitQueryParams>()
+  const { defaultStoreType } = props
   const { serviceResponse, isServiceCreateModalView, selectedDeploymentType, gitOpsEnabled, deploymentMetadata } =
     useServiceContext()
 
@@ -177,7 +179,7 @@ function ServiceConfigurationWrapper(props: ServiceConfigurationWrapperProps): R
       queryParams={{ accountIdentifier: accountId, orgIdentifier, projectIdentifier, repoIdentifier, branch }}
       initialValue={isServiceCreateModalView ? createService : (service as PipelineInfoConfig)}
       storeMetadata={{
-        storeType: serviceResponse?.storeType,
+        storeType: isServiceCreateModalView ? defaultStoreType : serviceResponse?.storeType,
         connectorRef: serviceResponse?.connectorRef,
         fallbackBranch: serviceResponse?.fallbackBranch
       }}

@@ -9,6 +9,7 @@ import React from 'react'
 import { PageSpinner } from '@harness/uicore'
 import { defaultTo } from 'lodash-es'
 import type { DeploymentMetaData, ServiceResponseDTO, ServiceYaml } from 'services/cd-ng'
+import { StoreMetadata } from '@modules/10-common/constants/GitSyncTypes'
 import ServiceConfigurationWrapper from '@cd/components/Services/ServiceStudio/ServiceConfigWrapper/ServiceConfigWrapper'
 import { ServiceContextProvider } from '@cd/context/ServiceContext'
 import type { ServiceDeploymentType } from '@pipeline/utils/stageHelpers'
@@ -22,6 +23,8 @@ export interface ServiceEntityEditModalProps {
   serviceCacheKey?: string
   selectedDeploymentType?: ServiceDeploymentType
   gitOpsEnabled?: boolean
+  isGitXEnforced?: boolean
+  defaultStoreType?: StoreMetadata['storeType']
   deploymentMetadata?: DeploymentMetaData
 }
 function ServiceEntityEditModal({
@@ -33,6 +36,8 @@ function ServiceEntityEditModal({
   serviceCacheKey,
   selectedDeploymentType,
   gitOpsEnabled,
+  isGitXEnforced = false,
+  defaultStoreType,
   deploymentMetadata
 }: ServiceEntityEditModalProps): React.ReactElement {
   if (isLoading) {
@@ -54,10 +59,11 @@ function ServiceEntityEditModal({
       serviceCacheKey={defaultTo(serviceCacheKey, '')}
       selectedDeploymentType={selectedDeploymentType as ServiceDeploymentType}
       gitOpsEnabled={defaultTo(gitOpsEnabled, false)}
+      isGitXEnforced={isGitXEnforced}
       deploymentMetadata={deploymentMetadata}
       isDeploymentTypeDisabled
     >
-      <ServiceConfigurationWrapper />
+      <ServiceConfigurationWrapper defaultStoreType={defaultStoreType} />
     </ServiceContextProvider>
   )
 }

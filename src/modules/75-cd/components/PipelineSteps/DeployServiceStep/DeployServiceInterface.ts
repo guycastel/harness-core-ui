@@ -50,6 +50,7 @@ export interface NewEditServiceModalProps {
   isEdit: boolean
   isService: boolean
   data: ServiceResponseDTO
+  isGitXEnforced: boolean
   serviceIdentifier?: string
   onCreateOrUpdate(data: ServiceRequestDTO): void
   closeModal?: () => void

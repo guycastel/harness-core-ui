@@ -59,7 +59,12 @@ describe('NewEditServiceForm test', () => {
           formName="newEditServiceForm"
         >
           {formikProps => (
-            <NewEditServiceForm isGitXEnabledForServices={false} formikProps={formikProps} isEdit={false} />
+            <NewEditServiceForm
+              isGitXEnabledForServices={false}
+              formikProps={formikProps}
+              isEdit={false}
+              isGitXEnforced={false}
+            />
           )}
         </Formik>
       </TestWrapper>
@@ -81,7 +86,12 @@ describe('NewEditServiceForm test', () => {
           formName="newEditServiceForm"
         >
           {formikProps => (
-            <NewEditServiceForm isGitXEnabledForServices={true} formikProps={formikProps} isEdit={false} />
+            <NewEditServiceForm
+              isGitXEnabledForServices={true}
+              formikProps={formikProps}
+              isEdit={false}
+              isGitXEnforced={false}
+            />
           )}
         </Formik>
       </TestWrapper>
@@ -118,7 +128,12 @@ describe('NewEditServiceForm test', () => {
           formName="newEditServiceForm"
         >
           {formikProps => (
-            <NewEditServiceForm isGitXEnabledForServices={true} formikProps={formikProps} isEdit={true} />
+            <NewEditServiceForm
+              isGitXEnabledForServices={true}
+              formikProps={formikProps}
+              isEdit={true}
+              isGitXEnforced={false}
+            />
           )}
         </Formik>
       </TestWrapper>

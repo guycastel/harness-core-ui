@@ -57,6 +57,7 @@ export const NewEditServiceModal: React.FC<NewEditServiceModalProps> = ({
   isEdit,
   data,
   isService,
+  isGitXEnforced,
   onCreateOrUpdate,
   closeModal,
   setShowOverlay
@@ -202,11 +203,16 @@ export const NewEditServiceModal: React.FC<NewEditServiceModalProps> = ({
       })}
     >
       {formikProps => {
+        // if (!isEdit && isGitXEnforced) {
+        //   formikProps?.setFieldValue('storeType', StoreType.REMOTE)
+        // }
         formikRef.current = formikProps as FormikProps<ServiceResponseDTO> | undefined
+
         return (
           <>
             <NewEditServiceForm
               isEdit={isEdit}
+              isGitXEnforced={isGitXEnforced}
               formikProps={formikProps as FormikProps<ServiceResponseDTO & GitSyncFormFields>}
               isGitXEnabledForServices={isGitXEnabledForServices}
               closeModal={closeModal}

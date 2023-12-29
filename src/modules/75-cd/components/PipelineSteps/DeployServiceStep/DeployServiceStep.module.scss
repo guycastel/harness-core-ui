@@ -24,6 +24,7 @@
 
 .serviceForm {
   .serviceFormBody {
+    padding-right: var(--spacing-medium);
     max-height: 500px !important;
     overflow-y: auto;
     scroll-behavior: smooth;

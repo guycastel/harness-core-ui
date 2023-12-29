@@ -15,6 +15,7 @@ import {
   FormikForm,
   AllowedTypes,
   Toggle,
+  useToaster,
   Container,
   useToggleOpen,
   ConfirmationDialog,
@@ -29,8 +30,9 @@ import { Intent } from '@blueprintjs/core'
 import produce from 'immer'
 import { useParams } from 'react-router-dom'
 import { WritableDraft } from 'immer/dist/types/types-external'
-import { JsonNode, mergeServiceInputsPromise, ServiceYaml } from 'services/cd-ng'
+import { JsonNode, mergeServiceInputsPromise, ServiceYaml, useGetSettingsList } from 'services/cd-ng'
 import { useStrings } from 'framework/strings'
+import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
 import { useVariablesExpression } from '@pipeline/components/PipelineStudio/PiplineHooks/useVariablesExpression'
 import { ResourceType } from '@rbac/interfaces/ResourceType'
 import { PermissionIdentifier } from '@rbac/interfaces/PermissionIdentifier'
@@ -52,6 +54,9 @@ import { FormMultiTypeCheckboxField } from '@common/components/MultiTypeCheckbox
 import type { Error, ServiceResponseDTO } from 'services/cd-ng'
 import { ErrorHandler } from '@modules/10-common/components/ErrorHandler/ErrorHandler'
 import { StoreType } from '@modules/10-common/constants/GitSyncTypes'
+import useRBACError from '@modules/20-rbac/utils/useRBACError/useRBACError'
+import { getDefaultStoreTypeFromSettings, getSettingValue } from '@modules/27-platform/default-settings/utils/utils'
+import { SettingType } from '@modules/10-common/constants/Utils'
 import {
   DeployServiceEntityData,
   DeployServiceEntityCustomProps,
@@ -117,9 +122,11 @@ export default function BaseDeployServiceEntity({
     useGetServicesDataReturn
   const remoteFetchErrorMessages = (remoteFetchError as Error)?.responseMessages
   const { getString } = useStrings()
-
+  const { CDS_SERVICE_GITX } = useFeatureFlags()
   const { expressions } = useVariablesExpression()
   const { refetchPipelineVariable } = usePipelineVariables()
+  const { showError } = useToaster()
+  const { getRBACErrorMessage } = useRBACError()
 
   const { isOpen: isAddNewModalOpen, open: openAddNewModal, close: closeAddNewModal } = useToggleOpen()
   const {
@@ -138,6 +145,26 @@ export default function BaseDeployServiceEntity({
     close: closeSwitchToSingleSvcDialog
   } = useToggleOpen()
   const { accountId, projectIdentifier, orgIdentifier } = useParams<PipelinePathProps>()
+
+  const {
+    data: gitXSetting,
+    error: gitXSettingError,
+    loading: loadingSetting
+  } = useGetSettingsList({
+    queryParams: {
+      category: 'GIT_EXPERIENCE',
+      accountIdentifier: accountId,
+      orgIdentifier,
+      projectIdentifier
+    },
+    lazy: !CDS_SERVICE_GITX
+  })
+
+  React.useEffect(() => {
+    if (!loadingSetting && gitXSettingError) {
+      showError(getRBACErrorMessage(gitXSettingError))
+    }
+  }, [gitXSettingError, showError, loadingSetting])
 
   useDeepCompareEffect(() => {
     /* istanbul ignore else */
@@ -564,11 +591,14 @@ export default function BaseDeployServiceEntity({
         isOpen={isAddNewModalOpen}
         onClose={closeAddNewModal}
         title={getString('newService')}
+        showOverlay={loadingSetting}
         {...DIALOG_PROPS}
       >
         <ServiceEntityEditModal
           selectedDeploymentType={deploymentType as ServiceDeploymentType}
           gitOpsEnabled={gitOpsEnabled}
+          isGitXEnforced={getSettingValue(gitXSetting, SettingType.ENFORCE_GIT_EXPERIENCE) === 'true'}
+          defaultStoreType={CDS_SERVICE_GITX ? getDefaultStoreTypeFromSettings(gitXSetting) : undefined}
           deploymentMetadata={deploymentMetadata}
           onCloseModal={closeAddNewModal}
           onServiceCreate={onServiceEntityCreate}

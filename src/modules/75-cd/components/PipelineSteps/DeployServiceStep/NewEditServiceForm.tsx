@@ -21,13 +21,14 @@ import css from './DeployServiceStep.module.scss'
 
 interface NewEditServiceFormProps {
   isEdit: boolean
+  isGitXEnforced: boolean
   formikProps: FormikProps<ServiceResponseDTO & GitSyncFormFields>
   isGitXEnabledForServices: boolean
   closeModal?: () => void
 }
 
 const NewEditServiceForm: React.FC<NewEditServiceFormProps> = props => {
-  const { isEdit, formikProps, closeModal, isGitXEnabledForServices } = props
+  const { isEdit, isGitXEnforced, formikProps, closeModal, isGitXEnabledForServices } = props
   const { getString } = useStrings()
 
   return (
@@ -62,7 +63,7 @@ const NewEditServiceForm: React.FC<NewEditServiceFormProps> = props => {
               entityType={'Service'}
               selected={defaultTo(formikProps?.values?.storeType, StoreType.INLINE)}
               getCardDisabledStatus={(current, selected) => {
-                return isEdit ? current !== selected : false
+                return isEdit ? current !== selected : Boolean(isGitXEnforced && current === StoreType.INLINE)
               }}
               onChange={item => {
                 if (!isEdit) {

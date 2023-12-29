@@ -48,6 +48,7 @@ export const ServiceEnvModal = ({ service, environment }: ServiceEnvModalProps) 
       >
         <NewEditServiceModal
           data={{}}
+          isGitXEnforced={false}
           isEdit={false}
           isService={false}
           onCreateOrUpdate={onServiceCreate}

@@ -72,6 +72,7 @@ const fetchConnectors = () => Promise.resolve({})
 jest.mock('services/cd-ng', () => ({
   useGetEnvironmentList: jest.fn().mockImplementation(() => ({ loading: false, data: envs, refetch: jest.fn() })),
   useGetServiceList: jest.fn().mockImplementation(() => ({ loading: false, data: services, refetch: jest.fn() })),
+  useGetSettingsList: jest.fn().mockResolvedValue({}),
   useGetConnectorListV2: jest.fn().mockImplementation(() => ({ mutate: fetchConnectors })),
   useGetConnector: jest.fn().mockImplementation(() => {
     return { data: {}, refetch: jest.fn(), error: null }

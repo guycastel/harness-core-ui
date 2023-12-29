@@ -28,15 +28,17 @@ import { PageSpinner } from '@common/components'
 import ServiceDetailsEmptyState from '@cd/icons/ServiceDetailsEmptyState.svg'
 import { useGetCommunity, useGetFreeOrCommunityCD } from '@common/utils/utils'
 import GetStartedWithCDButton from '@pipeline/components/GetStartedWithCDButton/GetStartedWithCDButton'
-import { useFeatureFlags, useFeatureFlag } from '@common/hooks/useFeatureFlag'
+import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
 import { COMMON_DEFAULT_PAGE_SIZE, COMMON_PAGE_SIZE_OPTIONS } from '@common/constants/Pagination'
 import RbacButton from '@rbac/components/Button/Button'
 import { PermissionIdentifier } from '@rbac/interfaces/PermissionIdentifier'
 import { ResourceType } from '@rbac/interfaces/ResourceType'
-import { FeatureFlag } from '@common/featureFlags'
 import type { ModulePathParams, ProjectPathProps } from '@common/interfaces/RouteInterfaces'
-import type { ServiceResponseDTO } from 'services/cd-ng'
+import { useGetSettingsList, ServiceResponseDTO } from 'services/cd-ng'
 import routes from '@common/RouteDefinitions'
+import { getDefaultStoreTypeFromSettings, getSettingValue } from '@modules/27-platform/default-settings/utils/utils'
+import { SettingType } from '@modules/10-common/constants/Utils'
+import useRBACError from '@modules/20-rbac/utils/useRBACError/useRBACError'
 import { NewEditServiceModal } from '../PipelineSteps/DeployServiceStep/NewEditServiceModal'
 import { ServiceTabs, getRemoteServiceQueryParams } from '../Services/utils/ServiceUtils'
 import { useServiceStore } from '../Services/common'
@@ -99,7 +101,8 @@ export const DashboardList = <T extends Record<string, any>>(props: DashboardLis
     onRowClick
   } = props
   const isFreeOrCommunityCD = useGetFreeOrCommunityCD()
-  const { PL_NEW_PAGE_SIZE } = useFeatureFlags()
+  const { PL_NEW_PAGE_SIZE, CDS_SERVICE_GITX, NG_SVC_ENV_REDESIGN: isSvcEnvEntityEnabled } = useFeatureFlags()
+  const { getRBACErrorMessage } = useRBACError()
 
   const [pageIndex, setPageIndex] = useState(0)
   const [pageSize, setPageSize] = useState(PL_NEW_PAGE_SIZE ? COMMON_DEFAULT_PAGE_SIZE : PAGE_SIZE)
@@ -113,7 +116,6 @@ export const DashboardList = <T extends Record<string, any>>(props: DashboardLis
   const { fetchDeploymentList } = useServiceStore()
   const isCommunity = useGetCommunity()
   const history = useHistory()
-  const isSvcEnvEntityEnabled = useFeatureFlag(FeatureFlag.NG_SVC_ENV_REDESIGN)
   const { showError } = useToaster()
   const { accountId, orgIdentifier, projectIdentifier, module } = useParams<ProjectPathProps & ModulePathParams>()
 
@@ -126,6 +128,26 @@ export const DashboardList = <T extends Record<string, any>>(props: DashboardLis
     description: '',
     tags: {}
   })
+
+  const {
+    data: gitXSetting,
+    error: gitXSettingError,
+    loading: loadingSetting
+  } = useGetSettingsList({
+    queryParams: {
+      category: 'GIT_EXPERIENCE',
+      accountIdentifier: accountId,
+      orgIdentifier,
+      projectIdentifier
+    },
+    lazy: !CDS_SERVICE_GITX
+  })
+
+  React.useEffect(() => {
+    if (!loadingSetting && gitXSettingError) {
+      showError(getRBACErrorMessage(gitXSettingError))
+    }
+  }, [gitXSettingError, showError, loadingSetting])
 
   useEffect(() => {
     if (isEdit) {
@@ -194,13 +216,24 @@ export const DashboardList = <T extends Record<string, any>>(props: DashboardLis
       title={isEdit ? getString('editService') : getString('cd.addService')}
       isCloseButtonShown
       width={800}
-      showOverlay={showOverlay}
+      showOverlay={showOverlay || loadingSetting}
     >
       <Container>
         <NewEditServiceModal
-          data={isEdit ? serviceDetails : { name: '', identifier: '', orgIdentifier, projectIdentifier }}
+          data={
+            isEdit
+              ? serviceDetails
+              : {
+                  name: '',
+                  identifier: '',
+                  orgIdentifier,
+                  projectIdentifier,
+                  ...(CDS_SERVICE_GITX ? { storeType: getDefaultStoreTypeFromSettings(gitXSetting) } : {})
+                }
+          }
           isEdit={isEdit}
           isService={!isEdit}
+          isGitXEnforced={getSettingValue(gitXSetting, SettingType.ENFORCE_GIT_EXPERIENCE) === 'true'}
           onCreateOrUpdate={values => {
             onServiceCreate(values)
             setIsEdit(false)

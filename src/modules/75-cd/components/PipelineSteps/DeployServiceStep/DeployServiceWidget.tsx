@@ -25,7 +25,7 @@ import { defaultTo, isEmpty, isNil, noop, omit } from 'lodash-es'
 import { useParams } from 'react-router-dom'
 import type { FormikProps, FormikValues } from 'formik'
 import type { IDialogProps } from '@blueprintjs/core'
-import { ServiceRequestDTO, ServiceYaml, useGetServiceList } from 'services/cd-ng'
+import { ServiceRequestDTO, ServiceYaml, useGetServiceList, useGetSettingsList } from 'services/cd-ng'
 import { useStrings } from 'framework/strings'
 import type { PipelineType } from '@common/interfaces/RouteInterfaces'
 import { useToaster } from '@common/exports'
@@ -38,6 +38,8 @@ import { DeployTabs } from '@pipeline/components/PipelineStudio/CommonUtils/Depl
 import { getServiceRefSchema } from '@cd/components/PipelineSteps/PipelineStepsUtil'
 import RbacButton from '@rbac/components/Button/Button'
 import { useFeatureFlags } from '@modules/10-common/hooks/useFeatureFlag'
+import { getDefaultStoreTypeFromSettings, getSettingValue } from '@modules/27-platform/default-settings/utils/utils'
+import { SettingType } from '@modules/10-common/constants/Utils'
 import type { DeployServiceData, DeployServiceProps, DeployServiceState } from './DeployServiceInterface'
 import { flexStart, isEditService } from './DeployServiceUtils'
 import { NewEditServiceModal } from './NewEditServiceModal'
@@ -70,7 +72,7 @@ function DeployServiceWidget({
   const [state, setState] = useState<DeployServiceState>({ isEdit: false, isService: false })
   const [type, setType] = useState<MultiTypeInputType>(getMultiTypeFromValue(serviceRef))
   const [showOverlay, setShowOverlay] = useState(false)
-  const { NG_EXPRESSIONS_NEW_INPUT_ELEMENT } = useFeatureFlags()
+  const { NG_EXPRESSIONS_NEW_INPUT_ELEMENT, CDS_SERVICE_GITX } = useFeatureFlags()
 
   const { subscribeForm, unSubscribeForm } = React.useContext(StageErrorContext)
   const formikRef = React.useRef<FormikProps<unknown> | null>(null)
@@ -89,6 +91,26 @@ function DeployServiceWidget({
       size: 200
     }
   })
+
+  const {
+    data: gitXSetting,
+    error: gitXSettingError,
+    loading: loadingSetting
+  } = useGetSettingsList({
+    queryParams: {
+      category: 'GIT_EXPERIENCE',
+      accountIdentifier: accountId,
+      orgIdentifier,
+      projectIdentifier
+    },
+    lazy: !CDS_SERVICE_GITX
+  })
+
+  React.useEffect(() => {
+    if (!loadingSetting && gitXSettingError) {
+      showError(getRBACErrorMessage(gitXSettingError))
+    }
+  }, [gitXSettingError, showError, loadingSetting])
 
   useEffect(() => {
     if (!isNil(selectOptions) && initialValues.serviceRef) {
@@ -231,9 +253,11 @@ function DeployServiceWidget({
             identifier: defaultTo(state.data?.identifier, ''),
             orgIdentifier,
             projectIdentifier,
-            ...state.data
+            ...state.data,
+            ...(!state.isEdit && CDS_SERVICE_GITX ? { storeType: getDefaultStoreTypeFromSettings(gitXSetting) } : {})
           }}
           isEdit={state.isEdit}
+          isGitXEnforced={getSettingValue(gitXSetting, SettingType.ENFORCE_GIT_EXPERIENCE) === 'true'}
           isService={state.isService}
           onCreateOrUpdate={value => {
             updateServicesList(value)
@@ -244,7 +268,7 @@ function DeployServiceWidget({
         />
       </ModalDialog>
     ),
-    [state]
+    [state, gitXSetting]
   )
 
   const onClose = React.useCallback(() => {

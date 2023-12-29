@@ -115,6 +115,7 @@ const ServiceMenu = (props: ServiceItemProps): React.ReactElement => {
               } || { name: '', identifier: '' }
             }
             isEdit={true}
+            isGitXEnforced={false}
             isService={false}
             onCreateOrUpdate={() => {
               hideModal()

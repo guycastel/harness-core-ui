@@ -65,6 +65,7 @@ jest.mock('services/cd-ng', () => ({
     mutate: jest.fn().mockImplementation(() => ({ loading: false, data: connectorListJSON })),
     refetch: jest.fn()
   })),
+  useGetSettingsList: jest.fn().mockResolvedValue({}),
   useGetServiceList: jest.fn().mockImplementation(() => ({ loading: false, data: servicesV2Mock, refetch: jest.fn() })),
   useGetServiceV2: jest.fn().mockImplementation(() => ({ loading: false, data: {}, refetch: jest.fn() })),
   listSecretsV2Promise: jest.fn().mockImplementation(() => Promise.resolve(mockListSecrets)),

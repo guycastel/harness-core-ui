@@ -24,6 +24,7 @@ const onClose = jest.fn()
 
 const props = {
   isEdit: false,
+  isGitXEnforced: false,
   data: { name: 'demo', identifier: 'demo1', orgIdentifier: 'orgIdentifier', projectIdentifier: 'projectIdentifier' },
   isService: true,
   onCreateOrUpdate: onSave,
@@ -33,6 +34,7 @@ const props = {
 jest.mock('services/cd-ng', () => ({
   useGetServiceList: jest.fn().mockImplementation(() => ({ loading: false, data: serviceData, refetch: jest.fn() })),
   useGetServiceV2: jest.fn().mockImplementation(() => ({ loading: false, data: {}, refetch: jest.fn() })),
+  useGetSettingsList: jest.fn().mockResolvedValue({}),
   useGetServiceAccessList: jest
     .fn()
     .mockImplementation(() => ({ loading: false, data: inputSetServiceData, refetch: jest.fn() })),

@@ -20,15 +20,18 @@ import { useModalHook } from '@harness/use-modal'
 import { defaultTo, isEmpty } from 'lodash-es'
 import { useParams } from 'react-router-dom'
 import { connect } from 'formik'
-import { ServiceRequestDTO, useGetServiceAccessList } from 'services/cd-ng'
+import { ServiceRequestDTO, useGetServiceAccessList, useGetSettingsList } from 'services/cd-ng'
 import { useStrings } from 'framework/strings'
 import type { PipelineType } from '@common/interfaces/RouteInterfaces'
 import { useToaster } from '@common/exports'
+import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
 import { useVariablesExpression } from '@pipeline/components/PipelineStudio/PiplineHooks/useVariablesExpression'
 import { usePermission } from '@rbac/hooks/usePermission'
 import { ResourceType } from '@rbac/interfaces/ResourceType'
 import { PermissionIdentifier } from '@rbac/interfaces/PermissionIdentifier'
 import useRBACError from '@rbac/utils/useRBACError/useRBACError'
+import { getDefaultStoreTypeFromSettings, getSettingValue } from '@modules/27-platform/default-settings/utils/utils'
+import { SettingType } from '@modules/10-common/constants/Utils'
 import type { DeployServiceProps, DeployServiceState } from './DeployServiceInterface'
 import ExperimentalInput from '../K8sServiceSpec/K8sServiceSpecForms/ExperimentalInput'
 import { isEditService } from './DeployServiceUtils'
@@ -42,6 +45,7 @@ const DeployServiceInputStep: React.FC<DeployServiceProps & { formik?: any }> = 
   allowableTypes
 }) => {
   const { getString } = useStrings()
+  const { CDS_SERVICE_GITX } = useFeatureFlags()
   const { accountId, projectIdentifier, orgIdentifier } = useParams<
     PipelineType<{
       orgIdentifier: string
@@ -62,6 +66,26 @@ const DeployServiceInputStep: React.FC<DeployServiceProps & { formik?: any }> = 
   } = useGetServiceAccessList({
     queryParams: { accountIdentifier: accountId, orgIdentifier, projectIdentifier }
   })
+
+  const {
+    data: gitXSetting,
+    error: gitXSettingError,
+    loading: loadingSetting
+  } = useGetSettingsList({
+    queryParams: {
+      category: 'GIT_EXPERIENCE',
+      accountIdentifier: accountId,
+      orgIdentifier,
+      projectIdentifier
+    },
+    lazy: !CDS_SERVICE_GITX
+  })
+
+  React.useEffect(() => {
+    if (!loadingSetting && gitXSettingError) {
+      showError(getRBACErrorMessage(gitXSettingError))
+    }
+  }, [gitXSettingError, showError, loadingSetting])
 
   const [services, setService] = React.useState<SelectOption[]>([])
 
@@ -114,9 +138,11 @@ const DeployServiceInputStep: React.FC<DeployServiceProps & { formik?: any }> = 
             identifier: defaultTo(state.data?.identifier, ''),
             orgIdentifier,
             projectIdentifier,
-            ...state.data
+            ...state.data,
+            ...(!state.isEdit && CDS_SERVICE_GITX ? { storeType: getDefaultStoreTypeFromSettings(gitXSetting) } : {})
           }}
           isEdit={state.isEdit}
+          isGitXEnforced={getSettingValue(gitXSetting, SettingType.ENFORCE_GIT_EXPERIENCE) === 'true'}
           isService={state.isService}
           onCreateOrUpdate={values => {
             refetch()
@@ -131,7 +157,7 @@ const DeployServiceInputStep: React.FC<DeployServiceProps & { formik?: any }> = 
         />
       </ModalDialog>
     ),
-    [state]
+    [state, gitXSetting]
   )
 
   const onClose = React.useCallback(() => {

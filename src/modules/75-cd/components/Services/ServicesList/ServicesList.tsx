@@ -413,6 +413,7 @@ const RenderColumnMenu: Renderer<CellProps<any>> = ({ row, column }) => {
         <NewEditServiceModal
           data={{ ...pick(data, ['name', 'identifier', 'description', 'tags']) } || { name: '', identifier: '' }}
           isEdit={true}
+          isGitXEnforced={false}
           isService={false}
           onCreateOrUpdate={() => {
             ;(column as any).reload?.()

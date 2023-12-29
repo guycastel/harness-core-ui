@@ -36,6 +36,7 @@ const initialValues = {
 }
 
 jest.mock('services/cd-ng', () => ({
+  useGetSettingsList: jest.fn().mockResolvedValue({}),
   useCreateServiceV2: jest.fn().mockReturnValue({
     mutate: jest
       .fn()

@@ -49,6 +49,7 @@ jest.mock('services/template-ng', () => ({
 }))
 
 jest.mock('services/cd-ng', () => ({
+  useGetSettingsList: jest.fn().mockResolvedValue({}),
   useGetServiceAccessList: jest.fn().mockImplementation(() => ({
     loading: false,
     data: {

@@ -104,6 +104,7 @@ function ServiceStudio(): React.ReactElement | null {
         serviceCacheKey={''}
         selectedDeploymentType={defaultTo(deploymentType, '') as ServiceDeploymentType}
         gitOpsEnabled={false}
+        isGitXEnforced={false} // This is used from GitX setting only while creating, not required in ServiceStudio
         isDeploymentTypeDisabled={isDeploymentTypeDisabled}
         setIsDeploymentTypeDisabled={setIsDeploymentTypeDisabled}
         setServiceResponse={setUpdatedServiceResponse}

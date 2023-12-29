@@ -21,6 +21,7 @@ export interface ServiceContextValues {
   serviceCacheKey: string
   selectedDeploymentType: ServiceDeploymentType
   gitOpsEnabled: boolean
+  isGitXEnforced: boolean
   deploymentMetadata?: DeploymentMetaData
   isDeploymentTypeDisabled: boolean
   hasRemoteFetchFailed?: boolean
@@ -42,6 +43,7 @@ export const ServiceContext = React.createContext<ServiceContextValues>({
   serviceCacheKey: '',
   selectedDeploymentType: '' as ServiceDeploymentType,
   gitOpsEnabled: false,
+  isGitXEnforced: false,
   deploymentMetadata: undefined,
   isDeploymentTypeDisabled: false,
   drawerOpen: false,

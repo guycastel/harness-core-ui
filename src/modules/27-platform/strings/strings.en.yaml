@@ -12,11 +12,11 @@ defaultSettings:
   enableGitCommands: Use Git client for commits
   enableBiDirectionalSync: Enable Bi-Directional Sync
   allowDifferentRepoForInputSets: Allow different repo for Pipeline and InputSets
-  defaultGitConnector: Default Connector For Git Experience with Entities - Pipelines/InputSets/Templates
+  defaultGitConnector: Default Connector
   fetchingDefaultConnector: Checking for default connector
-  enforceGitExperience: Enforce git experience for pipelines and templates
-  defaultStoreType: Default Store Type For Entities- Pipelines/InputSets/Templates
-  defaultGitExperienceRepo: Default Repository For Git Experience with Entities - Pipelines/InputSets/Templates
+  enforceGitExperience: Enforce git experience
+  defaultStoreType: Default Store Type For Entities
+  defaultGitExperienceRepo: Default Repository
   defaultGitExperienceRepoPlaceholder: Enter a repository name
   allowedRepositories: Allowed Repositories
   allowedRepositoriesPlaceholder: Type and press enter to add a repository

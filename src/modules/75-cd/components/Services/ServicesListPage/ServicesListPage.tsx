@@ -34,7 +34,8 @@ import {
   useGetServiceList,
   ServiceResponse,
   useGetSettingValue,
-  useGetRepositoryList
+  useGetRepositoryList,
+  useGetSettingsList
 } from 'services/cd-ng'
 import type { ModulePathParams, ProjectPathProps } from '@common/interfaces/RouteInterfaces'
 import routes from '@common/RouteDefinitions'
@@ -51,6 +52,7 @@ import { useQueryParams, useUpdateQueryParams } from '@common/hooks'
 import type { Sort, SortFields } from '@common/utils/listUtils'
 import { useDocumentTitle } from '@common/hooks/useDocumentTitle'
 import routesV2 from '@common/RouteDefinitionsV2'
+import { getDefaultStoreTypeFromSettings, getSettingValue } from '@modules/27-platform/default-settings/utils/utils'
 import ServicesGridView from '../ServicesGridView/ServicesGridView'
 import ServicesListView from '../ServicesListView/ServicesListView'
 import {
@@ -136,6 +138,26 @@ export const ServicesListPage = ({
     },
     lazy: !isGitXEnabled
   })
+
+  const {
+    data: gitXSetting,
+    error: gitXSettingError,
+    loading: loadingSetting
+  } = useGetSettingsList({
+    queryParams: {
+      category: 'GIT_EXPERIENCE',
+      accountIdentifier: accountId,
+      orgIdentifier,
+      projectIdentifier
+    },
+    lazy: !isGitXEnabled
+  })
+
+  React.useEffect(() => {
+    if (!loadingSetting && gitXSettingError) {
+      showError(getRBACErrorMessage(gitXSettingError))
+    }
+  }, [gitXSettingError, showError, loadingSetting])
 
   useEffect(() => {
     if (forceDeleteSettingsError) {
@@ -236,8 +258,19 @@ export const ServicesListPage = ({
       >
         <Container>
           <NewEditServiceModal
-            data={isEdit ? serviceDetails : { name: '', identifier: '', orgIdentifier, projectIdentifier }}
+            data={
+              isEdit
+                ? serviceDetails
+                : {
+                    name: '',
+                    identifier: '',
+                    orgIdentifier,
+                    projectIdentifier,
+                    ...(isGitXEnabled ? { storeType: getDefaultStoreTypeFromSettings(gitXSetting) } : {})
+                  }
+            }
             isEdit={isEdit}
+            isGitXEnforced={getSettingValue(gitXSetting, SettingType.ENFORCE_GIT_EXPERIENCE) === 'true'}
             isService={!isEdit}
             onCreateOrUpdate={values => {
               onServiceCreate(values)
@@ -252,7 +285,7 @@ export const ServicesListPage = ({
         </Container>
       </ModalDialog>
     ),
-    [fetchDeploymentList, orgIdentifier, projectIdentifier, mode, isEdit, serviceDetails]
+    [fetchDeploymentList, orgIdentifier, projectIdentifier, mode, isEdit, serviceDetails, gitXSetting]
   )
 
   const {

@@ -28,6 +28,7 @@ jest.mock('services/cd-ng', () => {
     useCreateServiceV2: jest.fn(() => ({ mutate: jest.fn() })),
     useUpsertServiceV2: jest.fn(() => ({ mutate: jest.fn() })),
     useDeleteServiceV2: jest.fn(() => ({ mutate: jest.fn() })),
+    useGetSettingsList: jest.fn().mockResolvedValue({}),
     useGetSettingValue: jest.fn().mockResolvedValue({}),
     useGetRepositoryList: jest.fn().mockImplementation(() => {
       return { data: { data: { repositories: mockRepositories } }, loading: false }

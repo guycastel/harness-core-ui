@@ -36,7 +36,7 @@ function ServiceStepBasicInfo(): React.ReactElement {
     updatePipelineStoreMetadata
   } = usePipelineContext()
 
-  const { isServiceCreateModalView } = useServiceContext()
+  const { isServiceCreateModalView, isGitXEnforced } = useServiceContext()
   const [gitConnector, setGitConnector] = React.useState(storeMetadata?.connectorRef)
 
   const initialGitFormValue = {
@@ -120,7 +120,9 @@ function ServiceStepBasicInfo(): React.ReactElement {
                     entityType={'Service'}
                     selected={defaultTo(formikProps?.values?.storeType, StoreType.INLINE)}
                     getCardDisabledStatus={(current, selected) => {
-                      return isServiceCreateModalView ? false : current !== selected
+                      return isServiceCreateModalView
+                        ? Boolean(isGitXEnforced && current === StoreType.INLINE)
+                        : current !== selected
                     }}
                     onChange={item => {
                       if (isServiceCreateModalView) {
