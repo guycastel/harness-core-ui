@@ -5,12 +5,13 @@
  * https://polyformproject.org/wp-content/uploads/2020/06/PolyForm-Shield-1.0.0.txt.
  */
 
-import { Color } from '@harness/design-system'
-import { FormInput, Layout, SelectOption, Text } from '@harness/uicore'
+import { Color, Intent } from '@harness/design-system'
+import { FormInput, Icon, Layout, SelectOption, Text } from '@harness/uicore'
 import type { FormikContextType } from 'formik'
 import React, { ReactElement, useMemo } from 'react'
 import type { UseGetReturn } from 'restful-react'
 import { useVariablesExpression } from '@pipeline/components/PipelineStudio/PiplineHooks/useVariablesExpression'
+import useRBACError from '@rbac/utils/useRBACError/useRBACError'
 import { useStrings } from 'framework/strings'
 import type {
   Failure,
@@ -58,12 +59,16 @@ export function ServiceNowApprovalChangeWindow({
     return getDateTimeOptions(fieldList)
   }, [fieldList])
 
+  const { getRBACErrorMessage } = useRBACError()
+
+  const createMetadataError = getServiceNowIssueCreateMetadataQuery.error
+
   const commonMultiTypeInputProps = (placeholder: string) => ({
     disabled: readonly,
     selectItems: selectOptions,
     placeholder: getServiceNowIssueCreateMetadataQuery.loading
       ? getString('pipeline.serviceNowApprovalStep.fetching')
-      : getServiceNowIssueCreateMetadataQuery.error?.message || `${getString('select')} ${placeholder}`,
+      : `${getString('select')} ${placeholder}`,
     useValue: true,
     multiTypeInputProps: {
       newExpressionComponent: NG_EXPRESSIONS_NEW_INPUT_ELEMENT,
@@ -87,18 +92,26 @@ export function ServiceNowApprovalChangeWindow({
         {getString('pipeline.serviceNowApprovalStep.approvalChangeWindow')}
       </Text>
 
-      <Layout.Horizontal spacing="medium" className={css.windowSelection}>
-        <FormInput.MultiTypeInput
-          name="spec.changeWindow.startField"
-          label={getString('pipeline.serviceNowApprovalStep.windowStart')}
-          {...commonMultiTypeInputProps(getString('pipeline.serviceNowApprovalStep.windowStart'))}
-        />
-        <FormInput.MultiTypeInput
-          name="spec.changeWindow.endField"
-          label={getString('pipeline.serviceNowApprovalStep.windowEnd')}
-          {...commonMultiTypeInputProps(getString('pipeline.serviceNowApprovalStep.windowEnd'))}
-        />
-      </Layout.Horizontal>
+      <Layout.Vertical spacing="xsmall" className={css.windowSelection}>
+        <Layout.Horizontal spacing="medium">
+          <FormInput.MultiTypeInput
+            name="spec.changeWindow.startField"
+            label={getString('pipeline.serviceNowApprovalStep.windowStart')}
+            {...commonMultiTypeInputProps(getString('pipeline.serviceNowApprovalStep.windowStart'))}
+          />
+          <FormInput.MultiTypeInput
+            name="spec.changeWindow.endField"
+            label={getString('pipeline.serviceNowApprovalStep.windowEnd')}
+            {...commonMultiTypeInputProps(getString('pipeline.serviceNowApprovalStep.windowEnd'))}
+          />
+        </Layout.Horizontal>
+        {createMetadataError && (
+          <Layout.Horizontal spacing="small">
+            <Icon name="error" intent={Intent.DANGER} />
+            <Text intent={Intent.DANGER}>{getRBACErrorMessage(createMetadataError)}</Text>
+          </Layout.Horizontal>
+        )}
+      </Layout.Vertical>
     </div>
   )
 }

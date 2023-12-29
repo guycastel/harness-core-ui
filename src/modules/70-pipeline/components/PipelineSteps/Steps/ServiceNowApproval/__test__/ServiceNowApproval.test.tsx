@@ -11,6 +11,7 @@ import userEvent from '@testing-library/user-event'
 import { StepType } from '@pipeline/components/PipelineSteps/PipelineStepInterface'
 import { StepFormikRef, StepViewType } from '@pipeline/components/AbstractSteps/Step'
 import type { CompletionItemInterface } from '@common/interfaces/YAMLBuilderProps'
+import * as cdNg from 'services/cd-ng'
 import { findPopoverContainer } from '@common/utils/testUtils'
 import { TestStepWidget, factory } from '../../__tests__/StepTestUtil'
 import { ServiceNowApproval } from '../ServiceNowApproval'
@@ -33,7 +34,7 @@ jest.mock('services/cd-ng', () => ({
   useGetConnector: () => mockConnectorResponse,
   useGetServiceNowTicketTypes: () => mockTicketTypesResponse,
   useGetServiceNowTicketTypesV2: () => mockTicketTypesResponseV2,
-  useGetServiceNowIssueCreateMetadata: () => mockServiceNowCreateMetadataResponse,
+  useGetServiceNowIssueCreateMetadata: jest.fn().mockImplementation(() => mockServiceNowCreateMetadataResponse),
   getConnectorListV2Promise: jest.fn(() => Promise.resolve(ConnectorsResponse.data)),
   getServiceNowTicketTypesPromise: jest.fn(() => Promise.resolve(mockTicketTypesResponse.data))
 }))
@@ -257,6 +258,32 @@ describe('ServiceNow Approval tests', () => {
       },
       name: 'serviceNow approval step'
     })
+  })
+
+  test('Open a saved serviceNow approval step - edit stage view - approval change window error should be visible', async () => {
+    jest.spyOn(cdNg, 'useGetServiceNowIssueCreateMetadata').mockImplementation((): any => {
+      return { refetch: jest.fn(), loading: false, error: { data: { message: 'Missing Permission' } } }
+    })
+    const ref = React.createRef<StepFormikRef<unknown>>()
+    const props = getServiceNowApprovalEditModePropsWithValues()
+    const { container, queryByDisplayValue } = render(
+      <TestStepWidget
+        initialValues={props.initialValues}
+        type={StepType.ServiceNowApproval}
+        stepViewType={StepViewType.Edit}
+        ref={ref}
+        onUpdate={props.onUpdate}
+      />
+    )
+    const queryByNameAttribute = (name: string): HTMLElement | null => queryByAttribute('name', container, name)
+    fireEvent.change(queryByNameAttribute('name')!, { target: { value: 'serviceNow approval step' } })
+
+    expect(queryByDisplayValue('somevalue for f1')).toBeTruthy()
+    await userEvent.click(screen.getByText('common.optionalConfig'))
+    expect(queryByDisplayValue("<+state> == 'Blocked'")).toBeTruthy()
+
+    // Approval change window error assertion
+    expect(screen.getByText('Missing Permission')).toBeInTheDocument()
   })
 
   test('Minimum time cannot be less than 10s', () => {
