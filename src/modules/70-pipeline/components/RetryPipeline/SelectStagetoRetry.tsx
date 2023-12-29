@@ -5,9 +5,8 @@
  * https://polyformproject.org/wp-content/uploads/2020/06/PolyForm-Shield-1.0.0.txt.
  */
 
-import React, { useState, useEffect, FormEvent } from 'react'
-import { Layout, Select, SelectOption, Text } from '@harness/uicore'
-import { Radio, RadioGroup } from '@blueprintjs/core'
+import React, { useState, useEffect } from 'react'
+import { Select, SelectOption, Text } from '@harness/uicore'
 import { Color } from '@harness/design-system'
 import { useStrings } from 'framework/strings'
 import type { RetryInfo } from 'services/pipeline-ng'
@@ -18,22 +17,14 @@ import css from './RetryPipeline.module.scss'
 interface SelectStagetoRetryProps {
   stageResponse?: RetryInfo
   selectedStage: ParallelStageOption | null
-  isParallelStage: boolean
-  isAllStage: boolean
-  isLastIndex: boolean
   handleStageChange: (value: ParallelStageOption) => void
-  handleStageType: (e: FormEvent<HTMLInputElement>) => void
   preSelectLastStage: boolean
 }
 
 function SelectStagetoRetry({
   stageResponse,
   selectedStage,
-  isParallelStage,
-  isAllStage,
-  isLastIndex,
   handleStageChange,
-  handleStageType,
   preSelectLastStage
 }: SelectStagetoRetryProps): React.ReactElement | null {
   const { getString } = useStrings()
@@ -79,25 +70,13 @@ function SelectStagetoRetry({
         {stageResponse?.errorMessage ? stageResponse.errorMessage : getString('pipeline.stagetoRetryFrom')}
       </Text>
       {!!stageResponse?.groups?.length && (
-        <Layout.Horizontal
-          margin={{ top: 'medium' }}
-          spacing="medium"
-          flex={{ justifyContent: 'flex-start', alignItems: 'flex-end' }}
-        >
-          <Select
-            name={'selectRetryStage'}
-            value={selectedStage}
-            items={stageList}
-            onChange={handleStageChange as any}
-            className={css.selectStage}
-          />
-          {isParallelStage && isLastIndex && (
-            <RadioGroup inline selectedValue={isAllStage ? 'allparallel' : 'failedStages'} onChange={handleStageType}>
-              <Radio label={getString('pipeline.runAllParallelstages')} value="allparallel" />
-              <Radio label={getString('pipeline.runFailedStages')} value="failedStages" />
-            </RadioGroup>
-          )}
-        </Layout.Horizontal>
+        <Select
+          name={'selectRetryStage'}
+          value={selectedStage}
+          items={stageList}
+          onChange={handleStageChange as any}
+          className={css.selectStage}
+        />
       )}
     </div>
   )

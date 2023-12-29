@@ -5280,9 +5280,7 @@ export interface StringsMap {
   'pipeline.rightBar.mergeCommit': string
   'pipeline.rollbackExecution': string
   'pipeline.runAPipeline': string
-  'pipeline.runAllParallelstages': string
   'pipeline.runDisabledOnFreeze': string
-  'pipeline.runFailedStages': string
   'pipeline.runPipeline.ciCodebaseConfig': string
   'pipeline.runPipelineForm.disallowStageExecution': string
   'pipeline.runPipelineForm.notifyOnlyMe': string

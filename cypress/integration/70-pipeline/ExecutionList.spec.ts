@@ -33,7 +33,7 @@ describe('RETRY FAILED PIPELINE', () => {
     cy.contains('h2', 'Re-run From Specific Stage').should('be.visible')
 
     // Select stage option should be present by default
-    cy.contains('div', 'Select the stage that you would like to resume from').should('be.visible')
+    cy.contains('div', 'Select the stage(s) that you would like to resume from').should('be.visible')
     cy.get('button[data-testid="retry-failed-pipeline"]').should('be.visible')
 
     //Retry Button should be disabled if no stages are selected

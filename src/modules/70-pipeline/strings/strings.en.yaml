@@ -1496,9 +1496,7 @@ deploymentFrequency: 'Deployment Frequency'
 executionFrequency: 'Execution Frequency'
 retryPipeline: Retry Failed Pipeline
 openPipelineInNewTab: Open Pipeline in new tab
-stagetoRetryFrom: Select the stage that you would like to resume from
-runAllParallelstages: Run all parallel stages
-runFailedStages: Run only failed stages
+stagetoRetryFrom: Select the stage(s) that you would like to resume from
 runPipelineForm:
   notifyOnlyMe: Notify only me about execution status
   disallowStageExecution: Not allowed for Individual Stage executions

@@ -35,7 +35,6 @@ import {
   useGetTemplateFromPipeline,
   getInputSetForPipelinePromise,
   InputSetSummaryResponse,
-  RetryGroup,
   useGetInputSetsListForPipeline,
   useGetInputsetYamlV2,
   useGetMergeInputSetFromPipelineTemplateWithListInput,
@@ -182,8 +181,6 @@ function RetryPipeline({
   const [selectedStage, setSelectedStage] = useState<ParallelStageOption | null>(null)
   const [selectedInputSets, setSelectedInputSets] = useState<InputSetSelectorProps['value']>(getInputSetSelected())
   const [isParallelStage, setIsParallelStage] = useState(false)
-  const [isLastIndex, setIsLastIndex] = useState(false)
-  const [isAllStage, setIsAllStage] = useState(true)
   const [inputSetTemplateYaml, setInputSetTemplateYaml] = useState('')
   const [skipPreFlightCheck, setSkipPreFlightCheck] = useState(isPipelineRemote)
   const [notifyOnlyMe, setNotifyOnlyMe] = useState(false)
@@ -271,7 +268,7 @@ function RetryPipeline({
       retryStages: (!isParallelStage
         ? [selectedStage?.value]
         : (selectedStage?.value as string)?.split(' | ')) as string[],
-      runAllStages: isAllStage
+      runAllStages: true
     },
     queryParamStringifyOptions: {
       arrayFormat: 'repeat'
@@ -608,7 +605,6 @@ function RetryPipeline({
       formErrors,
       isParallelStage,
       selectedStage,
-      isAllStage,
       connectorRef,
       repoIdentifier,
       branch,
@@ -682,18 +678,6 @@ function RetryPipeline({
     [yamlHandler?.getLatestYaml]
   )
 
-  const handleParallelStagesSelection = (value: ParallelStageOption): void => {
-    const lastStageIdx = preSelectLastStage
-      ? lastFailedStageIdx
-      : (stageResponse?.data?.groups as RetryGroup[])?.length - 1
-    if ((value as ParallelStageOption).isLastIndex === lastStageIdx) {
-      setIsLastIndex(true)
-    } else {
-      setIsLastIndex(false)
-    }
-    setIsParallelStage(true)
-  }
-
   const selectListOfSelectedStages = (value: ParallelStageOption): void => {
     const stagesList = stageResponse?.data?.groups?.filter((_, stageIdx) => stageIdx < value.isLastIndex)
     const listOfIds: string[] = []
@@ -724,7 +708,7 @@ function RetryPipeline({
             value: parallelStagesValue as string,
             isLastIndex: idx
           }
-          handleParallelStagesSelection(value)
+          setIsParallelStage(true)
           setSelectedStage(value)
           selectListOfSelectedStages(value)
         }
@@ -735,20 +719,14 @@ function RetryPipeline({
 
   const handleStageChange = (value: ParallelStageOption): void => {
     if (value.label.includes('|')) {
-      handleParallelStagesSelection(value)
+      setIsParallelStage(true)
     } else {
       setIsParallelStage(false)
     }
     selectListOfSelectedStages(value)
     setSelectedStage(value)
   }
-  const handleStageType = (e: FormEvent<HTMLInputElement>): void => {
-    if ((e.target as any).value === 'allparallel') {
-      setIsAllStage(true)
-    } else {
-      setIsAllStage(false)
-    }
-  }
+
   const onExistingProvideRadioChange = (ev: FormEvent<HTMLInputElement>): void => {
     const existingProvideValue = ev.currentTarget.checked ? 'existing' : 'provide'
     setExistingProvide(existingProvideValue)
@@ -803,7 +781,7 @@ function RetryPipeline({
         />
       </Dialog>
     )
-  }, [isParallelStage, isAllStage, selectedStage])
+  }, [isParallelStage, selectedStage])
 
   const showInputSetSelector = (): boolean => {
     return !!(
@@ -964,10 +942,6 @@ function RetryPipeline({
                       handleStageChange={handleStageChange}
                       selectedStage={selectedStage}
                       stageResponse={stageResponse?.data}
-                      isParallelStage={isParallelStage}
-                      handleStageType={handleStageType}
-                      isAllStage={isAllStage}
-                      isLastIndex={isLastIndex}
                       preSelectLastStage={preSelectLastStage}
                     />
                   )}

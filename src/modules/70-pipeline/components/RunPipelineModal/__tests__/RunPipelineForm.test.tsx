@@ -942,8 +942,6 @@ describe('Retry Pipeline tests', () => {
     await waitFor(() => expect(selectedStage).toBeTruthy())
     fireEvent.click(selectedStage)
 
-    expect(getByText('pipeline.runAllParallelstages')).toBeTruthy()
-    expect(getByText('pipeline.runFailedStages')).toBeTruthy()
     await waitFor(() => expect(getByRole('button', { name: 'pipeline.execution.actions.reRun' })).toBeEnabled())
   })
 
@@ -1020,24 +1018,33 @@ describe('Retry Pipeline tests', () => {
     expect(container).toMatchSnapshot()
   })
 
-  test('should send isAllStage:true when we chose all parallel stages', async () => {
+  test('should send isAllStage:true when modal is opened from "rerun from specific stage"', async () => {
     const useRetryPipelineHook = jest.fn(() => mockPostRetryPipeline as any)
     jest.spyOn(pipelineNgServices, 'useRetryPipeline').mockImplementation(useRetryPipelineHook)
 
-    const { findByDisplayValue, getByText, container, getByRole } = render(
+    const { findByDisplayValue, container, getByText, getByRole, findByText } = render(
       <TestWrapper>
-        <RunPipelineForm
-          {...commonProps}
-          source="executions"
-          isRetryFromStage={true}
-          preSelectLastStage={true}
-          inputSetYAML={inputSetYAML}
-        />
+        <RunPipelineForm {...commonProps} source="executions" isRetryFromStage={true} inputSetYAML={inputSetYAML} />
       </TestWrapper>
     )
-    await findByDisplayValue('stage3 | stage4')
+    // Making sure retryStageInfo is availble before selecting stage
+    const retryStageInfo = await findByText('pipeline.stagetoRetryFrom')
+    expect(retryStageInfo).toBeDefined()
+    // Selecting specific stage(s) to retry
+    await fillAtForm([
+      {
+        container,
+        type: InputTypes.SELECT,
+        fieldId: 'selectRetryStage',
+        value: 'stage3 | stage4'
+      }
+    ])
+    const selectedStage = getByText('stage3 | stage4')
 
-    fireEvent.click(getByText('pipeline.runAllParallelstages'))
+    await waitFor(() => expect(selectedStage).toBeTruthy())
+    fireEvent.click(selectedStage)
+
+    await findByDisplayValue('stage3 | stage4')
 
     // Enter a value for required fields
     const variableInputElement = container.querySelector('input[name="variables[0].value"]')
@@ -1053,7 +1060,7 @@ describe('Retry Pipeline tests', () => {
     const useRetryPipelineHook = jest.fn(() => mockPostRetryPipeline as any)
     jest.spyOn(pipelineNgServices, 'useRetryPipeline').mockImplementation(useRetryPipelineHook)
 
-    const { findByDisplayValue, getByText, container, getByRole } = render(
+    const { findByDisplayValue, container, getByRole } = render(
       <TestWrapper>
         <RunPipelineForm
           {...commonProps}
@@ -1065,8 +1072,6 @@ describe('Retry Pipeline tests', () => {
       </TestWrapper>
     )
     await findByDisplayValue('stage3 | stage4')
-
-    fireEvent.click(getByText('pipeline.runFailedStages'))
 
     // Enter a value for required fields
     const variableInputElement = container.querySelector('input[name="variables[0].value"]')

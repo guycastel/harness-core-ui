@@ -5,13 +5,12 @@
  * https://polyformproject.org/wp-content/uploads/2020/06/PolyForm-Shield-1.0.0.txt.
  */
 
-import React, { useState, useEffect, FormEvent, useMemo } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { isEqual } from 'lodash-es'
-import { Layout, Select, SelectOption, Text } from '@harness/uicore'
-import { Radio, RadioGroup } from '@blueprintjs/core'
+import { Select, SelectOption, Text } from '@harness/uicore'
 import { Color } from '@harness/design-system'
 import { useStrings } from 'framework/strings'
-import type { RetryGroup, RetryInfo } from 'services/pipeline-ng'
+import type { RetryInfo } from 'services/pipeline-ng'
 import { isExecutionFailed } from '@pipeline/utils/statusHelpers'
 import css from './RunPipelineForm.module.scss'
 
@@ -44,7 +43,6 @@ function SelectStageToRetryNew({
 }: SelectStageToRetryProps): React.ReactElement | null {
   const { getString } = useStrings()
   const [stageList, setStageList] = useState<SelectOption[]>([])
-  const [isLastIndex, setIsLastIndex] = useState(false)
 
   const {
     isAllStage = true,
@@ -131,8 +129,6 @@ function SelectStageToRetryNew({
               value: parallelStagesValue as string,
               isLastIndex: lastFailedStageIdx
             }
-            const lastIndex = getIsLastIndexFromParallelStagesSelection(value)
-            setIsLastIndex(lastIndex)
             const selectedStages = getListOfSelectedStages(value)
             newState.selectedStage = value
             newState.listOfSelectedStages = selectedStages
@@ -160,13 +156,6 @@ function SelectStageToRetryNew({
     return listOfIds
   }
 
-  const getIsLastIndexFromParallelStagesSelection = (value: ParallelStageOption): boolean => {
-    const lastStageIdx = preSelectLastStage
-      ? lastFailedStageIdx
-      : (retryStagesResponseData?.groups as RetryGroup[])?.length - 1
-    return (value as ParallelStageOption).isLastIndex === lastStageIdx
-  }
-
   const handleStageChange = (selectedStageValue: ParallelStageOption): void => {
     const newState: SelectStageToRetryState = {
       isAllStage,
@@ -176,8 +165,6 @@ function SelectStageToRetryNew({
     }
 
     if (selectedStageValue.label.includes('|')) {
-      const lastIndex = getIsLastIndexFromParallelStagesSelection(selectedStageValue)
-      setIsLastIndex(lastIndex)
       newState.isParallelStage = true
     } else {
       newState.isParallelStage = false
@@ -186,16 +173,6 @@ function SelectStageToRetryNew({
     const selectedStages = getListOfSelectedStages(selectedStageValue)
     newState.listOfSelectedStages = selectedStages
 
-    onChangeInternal(newState)
-  }
-
-  const handleStageType = (e: FormEvent<HTMLInputElement>): void => {
-    const newState: SelectStageToRetryState = {
-      isAllStage: e.currentTarget.value === 'allparallel',
-      isParallelStage,
-      listOfSelectedStages,
-      selectedStage
-    }
     onChangeInternal(newState)
   }
 
@@ -211,26 +188,14 @@ function SelectStageToRetryNew({
           : getString('pipeline.stagetoRetryFrom')}
       </Text>
       {!!retryStagesResponseData?.groups?.length && (
-        <Layout.Horizontal
-          margin={{ top: 'medium' }}
-          spacing="medium"
-          flex={{ justifyContent: 'flex-start', alignItems: 'flex-end' }}
-        >
-          <Select
-            disabled={retryStagesLoading}
-            name={'selectRetryStage'}
-            value={selectedStage}
-            items={stageList}
-            onChange={value => handleStageChange(value as ParallelStageOption)}
-            className={css.selectStage}
-          />
-          {isParallelStage && isLastIndex && (
-            <RadioGroup inline selectedValue={isAllStage ? 'allparallel' : 'failedStages'} onChange={handleStageType}>
-              <Radio label={getString('pipeline.runAllParallelstages')} value="allparallel" />
-              <Radio label={getString('pipeline.runFailedStages')} value="failedStages" />
-            </RadioGroup>
-          )}
-        </Layout.Horizontal>
+        <Select
+          disabled={retryStagesLoading}
+          name={'selectRetryStage'}
+          value={selectedStage}
+          items={stageList}
+          onChange={value => handleStageChange(value as ParallelStageOption)}
+          className={css.selectStage}
+        />
       )}
     </div>
   )

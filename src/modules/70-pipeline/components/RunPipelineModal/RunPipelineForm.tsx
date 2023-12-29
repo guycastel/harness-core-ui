@@ -437,8 +437,11 @@ function RunPipelineFormBasic({
       retryStages: (!stageToRetryState?.isParallelStage
         ? [stageToRetryState?.selectedStage?.value]
         : (stageToRetryState?.selectedStage?.value as string)?.split(' | ')) as string[],
-      runAllStages: stageToRetryState?.isAllStage
+      runAllStages: !preSelectLastStage
+      // PreselectedStage will be present if user want to run "Last failed stage", so we should not run all stages
+      // While running specific stage(s), preSelectLastStage will be false
     },
+
     queryParamStringifyOptions: {
       arrayFormat: 'repeat'
     },

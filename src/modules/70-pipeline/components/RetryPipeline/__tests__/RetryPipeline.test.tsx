@@ -180,8 +180,6 @@ describe('Retry Pipeline tests', () => {
 
     await waitFor(() => expect(selectedStage).toBeTruthy())
     fireEvent.click(selectedStage)
-    expect(getByText('pipeline.runAllParallelstages')).toBeTruthy()
-    expect(getByText('pipeline.runFailedStages')).toBeTruthy()
     expect(getByRole('button', { name: 'pipeline.execution.actions.reRun' })).toBeEnabled()
   })
 
