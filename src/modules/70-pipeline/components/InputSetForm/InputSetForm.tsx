@@ -461,15 +461,21 @@ export function InputSetForm(props: InputSetFormProps): React.ReactElement {
             inputSet.description = inputSetYamlVisual.description
             inputSet.pipeline = inputSetYamlVisual.pipeline
 
+            const {
+              repo: formikRefRepo,
+              branch: formikRefBranch,
+              connectorRef: formikRefConnectorRef,
+              repoName: formikRefRepoName
+            } = formikRef.current?.values ?? {}
             formikRef.current?.setValues({
               ...omit(inputSet, 'gitDetails', 'entityValidityDetails', 'outdated', 'inputSetErrorWrapper'),
-              repo: defaultTo(repoIdentifier || repoName, ''),
-              branch: defaultTo(branch, ''),
-              connectorRef: defaultTo(connectorRef, ''),
-              repoName: defaultTo(repoName, ''),
+              repo: formikRefRepo ?? defaultTo(repoIdentifier || repoName, ''),
+              branch: formikRefBranch ?? defaultTo(branch, ''),
+              connectorRef: formikRefConnectorRef ?? defaultTo(connectorRef, ''),
+              repoName: formikRefRepoName ?? defaultTo(repoName, ''),
               storeType: defaultTo(storeType, StoreType.INLINE),
               filePath: getFilePath(inputSetYamlVisual),
-              provider: connectorRef ? getGitProviderCards(getString)[1] : getGitProviderCards(getString)[0]
+              provider: formikRefConnectorRef ? getGitProviderCards(getString)[1] : getGitProviderCards(getString)[0]
             })
             setFilePath(getFilePath(inputSetYamlVisual))
           }
