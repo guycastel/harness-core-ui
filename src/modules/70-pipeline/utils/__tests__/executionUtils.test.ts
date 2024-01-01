@@ -102,9 +102,14 @@ describe('ExecutionUtils tests', () => {
 
     test('Test getNodeId method', () => {
       expect(utils.getNodeId('', '')).toBe('')
-      expect(utils.getNodeId('selected_stage_id', '')).toBe('selected_stage_id')
-      expect(utils.getNodeId('', 'stage_id')).toBe('stage_id')
-      expect(utils.getNodeId('selected_stage_id', 'stage_id')).toBe('selected_stage_id')
+      expect(utils.getNodeId('selected_stage_id', '', '')).toBe('selected_stage_id')
+      expect(utils.getNodeId('selected_stage_id')).toBe('selected_stage_id')
+      expect(utils.getNodeId('', 'selected_stage_execution_id')).toBe('selected_stage_execution_id')
+      expect(utils.getNodeId('selected_stage_id', 'selected_stage_execution_id', 'selected_child_stage_id')).toBe(
+        'selected_stage_execution_id'
+      )
+      expect(utils.getNodeId('', '', 'selected_child_stage_id')).toBe('selected_child_stage_id')
+      expect(utils.getNodeId('selected_stage_id', undefined, 'selected_child_stage_id')).toBe('selected_child_stage_id')
     })
 
     test('Test getStageErrorMessage method', () => {

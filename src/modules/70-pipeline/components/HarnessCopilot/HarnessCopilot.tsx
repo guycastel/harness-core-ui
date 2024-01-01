@@ -30,7 +30,8 @@ import {
   resolveCurrentStep,
   getOSTypeAndArchFromStageForCurrentStep,
   getSelectedStageModule,
-  getPluginUsedFromStepParams
+  getPluginUsedFromStepParams,
+  getNodeId
 } from '@pipeline/utils/executionUtils'
 import type { LogsContentProps } from '@pipeline/factories/ExecutionFactory/types'
 import UsefulOrNot, { AidaClient } from '@common/components/UsefulOrNot/UsefulOrNot'
@@ -68,7 +69,8 @@ function HarnessCopilot(props: HarnessCopilotProps): React.ReactElement {
     queryParams,
     allNodeMap,
     logsToken,
-    selectedStageExecutionId
+    selectedStageExecutionId,
+    selectedChildStageId
   } = useExecutionContext()
   const [showTooltip, setShowTooltip] = useLocalStorage<boolean>('show_harness_ai_co-pilot_tooptip', true)
   const [showPanel, setShowPanel] = useState<boolean>(false)
@@ -81,12 +83,14 @@ function HarnessCopilot(props: HarnessCopilotProps): React.ReactElement {
   const [showDelayMssg, setShowDelayMessage] = useState<boolean>(false)
   const controllerRef = useRef<AbortController>()
   const showMinimalView = scope === ErrorScope.Stage
-  let currentModule = getSelectedStageModule(pipelineStagesMap, selectedStageId)
+  const nodeId = getNodeId(selectedStageId, selectedStageExecutionId, selectedChildStageId)
+  let currentModule = getSelectedStageModule(pipelineStagesMap, nodeId)
   if (!currentModule) {
+    const _pipelineExecutionDetail = get(pipelineExecutionDetail, 'childGraph', pipelineExecutionDetail)
     const pipelineStagesMapFromExecutionDetails = new Map(
-      Object.entries(get(pipelineExecutionDetail, 'pipelineExecutionSummary.layoutNodeMap', {}))
+      Object.entries(get(_pipelineExecutionDetail, 'pipelineExecutionSummary.layoutNodeMap', {}))
     ) as Map<string, GraphLayoutNode>
-    currentModule = getSelectedStageModule(pipelineStagesMapFromExecutionDetails, selectedStageId)
+    currentModule = getSelectedStageModule(pipelineStagesMapFromExecutionDetails, nodeId)
   }
   const { trackEvent } = useTelemetry()
 
@@ -171,26 +175,16 @@ function HarnessCopilot(props: HarnessCopilotProps): React.ReactElement {
         pipelineExecutionDetail,
         pipelineStagesMap,
         queryParams,
-        selectedStageExecutionId,
-        selectedStageId,
+        nodeId,
         selectedStepId
       }),
-    [
-      allNodeMap,
-      pipelineExecutionDetail,
-      pipelineStagesMap,
-      queryParams,
-      scope,
-      selectedStageExecutionId,
-      selectedStageId,
-      selectedStepId
-    ]
+    [allNodeMap, pipelineExecutionDetail, pipelineStagesMap, queryParams, scope, nodeId, selectedStepId]
   )
 
   const getPostAPIBodyPayload = useCallback((): RcaRequestBody => {
     const commonArgs = {
       pipelineStagesMap,
-      selectedStageId,
+      selectedStageId: nodeId,
       pipelineExecutionDetail
     }
     const step_type = get(selectedStep, 'stepType', '') as StepType

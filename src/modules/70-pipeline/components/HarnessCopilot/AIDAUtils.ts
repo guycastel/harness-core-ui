@@ -7,7 +7,7 @@
 
 import { defaultTo, get } from 'lodash-es'
 import { ResponseMessage } from 'services/pipeline-ng'
-import { getNodeId, getStageErrorMessage, resolveCurrentStep } from '@pipeline/utils/executionUtils'
+import { getStageErrorMessage, resolveCurrentStep } from '@pipeline/utils/executionUtils'
 import { ExecutionContextParams } from '@pipeline/context/ExecutionContext'
 
 export enum ErrorScope {
@@ -17,8 +17,7 @@ export enum ErrorScope {
 
 export const getErrorMessage = ({
   erropScope,
-  selectedStageExecutionId,
-  selectedStageId,
+  nodeId,
   pipelineStagesMap,
   pipelineExecutionDetail,
   selectedStepId,
@@ -26,18 +25,17 @@ export const getErrorMessage = ({
   queryParams
 }: {
   erropScope: ErrorScope
-  selectedStageExecutionId: string
-  selectedStageId: string
+  nodeId: string
   pipelineStagesMap: ExecutionContextParams['pipelineStagesMap']
   pipelineExecutionDetail: ExecutionContextParams['pipelineExecutionDetail']
   selectedStepId: ExecutionContextParams['selectedStepId']
   allNodeMap: ExecutionContextParams['allNodeMap']
   queryParams: ExecutionContextParams['queryParams']
 }): string => {
-  const nodeId = getNodeId(selectedStageExecutionId, selectedStageId)
   const stage = pipelineStagesMap.get(nodeId)
+  const _pipelineExecutionDetail = get(pipelineExecutionDetail, 'childGraph', pipelineExecutionDetail)
   const responseMessages = defaultTo(
-    pipelineExecutionDetail?.pipelineExecutionSummary?.failureInfo?.responseMessages,
+    _pipelineExecutionDetail?.pipelineExecutionSummary?.failureInfo?.responseMessages,
     []
   )
   const currentStepId = resolveCurrentStep(selectedStepId, queryParams)

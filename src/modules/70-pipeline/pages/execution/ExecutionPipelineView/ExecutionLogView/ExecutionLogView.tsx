@@ -31,6 +31,7 @@ export default function ExecutionLogView(): React.ReactElement {
     pipelineExecutionDetail,
     selectedStageId,
     selectedStageExecutionId,
+    selectedChildStageId,
     pipelineStagesMap
   } = useExecutionContext()
   const { accountId, projectIdentifier, orgIdentifier } = useParams<ExecutionPathProps>()
@@ -54,12 +55,12 @@ export default function ExecutionLogView(): React.ReactElement {
   const errorMessage =
     get(selectedStep, 'failureInfo.message') || get(selectedStep, 'executableResponses[0].skipTask.message')
 
-  const nodeId = getNodeId(selectedStageExecutionId, selectedStageId)
+  const nodeId = getNodeId(selectedStageId, selectedStageExecutionId, selectedChildStageId)
 
   const stage = pipelineStagesMap.get(nodeId)
   const responseMessages = defaultTo(
-    pipelineExecutionDetail?.pipelineExecutionSummary?.failureInfo?.responseMessages,
-    []
+    pipelineExecutionDetail?.childGraph?.pipelineExecutionSummary?.failureInfo?.responseMessages,
+    defaultTo(pipelineExecutionDetail?.pipelineExecutionSummary?.failureInfo?.responseMessages, [])
   )
   const stageErrorMessage = getStageErrorMessage(responseMessages, stage)
 

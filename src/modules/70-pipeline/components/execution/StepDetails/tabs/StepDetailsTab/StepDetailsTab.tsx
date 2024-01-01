@@ -21,7 +21,7 @@ import { useQueryParams } from '@common/hooks'
 import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
 import { SettingType } from '@common/constants/Utils'
 import { ProjectPathProps } from '@common/interfaces/RouteInterfaces'
-import { ExecutionQueryParams, showHarnessCoPilot } from '@pipeline/utils/executionUtils'
+import { ExecutionQueryParams, getNodeId, showHarnessCoPilot } from '@pipeline/utils/executionUtils'
 import HarnessCopilot from '@pipeline/components/HarnessCopilot/HarnessCopilot'
 import { ErrorScope } from '@pipeline/components/HarnessCopilot/AIDAUtils'
 import { useExecutionContext } from '@pipeline/context/ExecutionContext'
@@ -40,7 +40,13 @@ export function StepDetailsTab(props: ExecutionStepDetailsTabProps): React.React
   const { pathname } = useLocation()
   const { accountId, orgIdentifier, projectIdentifier } = useParams<ProjectPathProps>()
   const queryParams = useQueryParams<ExecutionQueryParams>()
-  const { pipelineStagesMap, selectedStageId, pipelineExecutionDetail } = useExecutionContext()
+  const {
+    pipelineStagesMap,
+    selectedStageId,
+    selectedStageExecutionId,
+    selectedChildStageId,
+    pipelineExecutionDetail
+  } = useExecutionContext()
   const { CI_AI_ENHANCED_REMEDIATIONS } = useFeatureFlags()
 
   const logUrl = `${pathname}?${qs.stringify({ ...queryParams, view: 'log' })}`
@@ -48,6 +54,7 @@ export function StepDetailsTab(props: ExecutionStepDetailsTabProps): React.React
   const errorMessage = step?.failureInfo?.message || step.executableResponses?.[0]?.skipTask?.message
   const isFailed = isExecutionCompletedWithBadState(step.status)
   const isSkipped = isExecutionSkipped(step.status)
+  const nodeId = getNodeId(selectedStageId, selectedStageExecutionId, selectedChildStageId)
 
   const { data: aidaSettingResponse } = useGetSettingValue({
     identifier: SettingType.AIDA,
@@ -67,7 +74,7 @@ export function StepDetailsTab(props: ExecutionStepDetailsTabProps): React.React
       {isFailed &&
       showHarnessCoPilot({
         pipelineStagesMap,
-        selectedStageId,
+        selectedStageId: nodeId,
         pipelineExecutionDetail,
         enableForCI: CI_AI_ENHANCED_REMEDIATIONS,
         enableForCD: true,

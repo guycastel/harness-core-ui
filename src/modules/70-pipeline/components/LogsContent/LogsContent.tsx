@@ -22,7 +22,7 @@ import {
 } from '@harness/uicore'
 import type { GroupedVirtuosoHandle, VirtuosoHandle } from 'react-virtuoso'
 import { Color } from '@harness/design-system'
-import { defaultTo, merge } from 'lodash-es'
+import { defaultTo, get, merge } from 'lodash-es'
 import { useGetSettingValue } from 'services/cd-ng'
 import routes from '@common/RouteDefinitions'
 import { ErrorList, extractInfo } from '@common/components/ErrorHandler/ErrorHandler'
@@ -35,7 +35,7 @@ import type {
   RenderLogsInterface
 } from '@pipeline/factories/ExecutionFactory/types'
 import { ExecutionNode, PipelineExecutionDetail } from 'services/pipeline-ng'
-import { showHarnessCoPilot, resolveCurrentStep } from '@pipeline/utils/executionUtils'
+import { showHarnessCoPilot, resolveCurrentStep, getNodeId } from '@pipeline/utils/executionUtils'
 import type { ModulePathParams, ExecutionPathProps, ProjectPathProps } from '@common/interfaces/RouteInterfaces'
 import { addHotJarSuppressionAttribute } from '@common/utils/utils'
 import { ExecutionStatus, isExecutionComplete, isExecutionWaitingForInput } from '@pipeline/utils/statusHelpers'
@@ -151,7 +151,8 @@ export const shouldRenderAIDAForStageLevelErrors = (
   pipelineExecutionDetail: PipelineExecutionDetail | null
 ): boolean => {
   const nodeId = Object.entries(allNodeMap).find(([, value]) => value.setupId === selectedStageId)?.[0] || ''
-  return pipelineExecutionDetail?.executionGraph?.nodeAdjacencyListMap?.[nodeId]?.children?.length === 0
+  const _pipelineExecutionDetail = get(pipelineExecutionDetail, 'childGraph', pipelineExecutionDetail)
+  return _pipelineExecutionDetail?.executionGraph?.nodeAdjacencyListMap?.[nodeId]?.children?.length === 0
 }
 
 export function LogsContent(props: LogsContentProps): React.ReactElement {
@@ -161,6 +162,8 @@ export function LogsContent(props: LogsContentProps): React.ReactElement {
   const {
     pipelineStagesMap,
     selectedStageId,
+    selectedChildStageId,
+    selectedStageExecutionId,
     allNodeMap,
     selectedStepId,
     pipelineExecutionDetail,
@@ -256,6 +259,8 @@ export function LogsContent(props: LogsContentProps): React.ReactElement {
     errorObjects = [{ error: { message: currentStep.failureInfo.message } }]
     hasError = true
   }
+
+  const nodeId = getNodeId(selectedStageId, selectedStageExecutionId, selectedChildStageId)
 
   const handleCopyToClipboard = (event: React.MouseEvent): void => {
     event.stopPropagation()
@@ -395,7 +400,7 @@ export function LogsContent(props: LogsContentProps): React.ReactElement {
             </Container>
             {showHarnessCoPilot({
               pipelineStagesMap,
-              selectedStageId,
+              selectedStageId: nodeId,
               pipelineExecutionDetail,
               enableForCI: CI_AI_ENHANCED_REMEDIATIONS,
               enableForCD: true,
@@ -460,7 +465,16 @@ export function DefaultConsoleViewStepDetails(props: ConsoleViewStepDetailProps)
   const isWaitingOnExecInputs = isExecutionWaitingForInput(status)
   const shouldShowInputOutput = ((stepType ?? '') as string) !== 'liteEngineTask' && !isStageExecutionInputConfigured
   const { CI_AI_ENHANCED_REMEDIATIONS } = useFeatureFlags()
-  const { pipelineStagesMap, selectedStageId, pipelineExecutionDetail, allNodeMap } = useExecutionContext()
+  const {
+    pipelineStagesMap,
+    selectedStageId,
+    selectedStageExecutionId,
+    selectedChildStageId,
+    pipelineExecutionDetail,
+    allNodeMap
+  } = useExecutionContext()
+
+  const nodeId = getNodeId(selectedStageId, selectedStageExecutionId, selectedChildStageId)
 
   React.useEffect(() => {
     if (!shouldShowInputOutput && activeTab !== ConsoleDetailTab.CONSOLE_LOGS) {
@@ -534,10 +548,10 @@ export function DefaultConsoleViewStepDetails(props: ConsoleViewStepDetailProps)
         )}
         {stageErrorMessage && (
           <div className={css.errorMsgWrapper}>
-            {shouldRenderAIDAForStageLevelErrors(selectedStageId, allNodeMap, pipelineExecutionDetail) &&
+            {shouldRenderAIDAForStageLevelErrors(nodeId, allNodeMap, pipelineExecutionDetail) &&
             showHarnessCoPilot({
               pipelineStagesMap,
-              selectedStageId,
+              selectedStageId: nodeId,
               pipelineExecutionDetail,
               enableForCI: CI_AI_ENHANCED_REMEDIATIONS,
               enableForCD: true,

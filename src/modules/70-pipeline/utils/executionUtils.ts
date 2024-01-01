@@ -1499,11 +1499,12 @@ export const getCurrentModuleInfo = ({
   pipelineExecutionDetail
 }: RCAUtilsInterface): CDStageModuleInfo | CIPipelineStageModuleInfo | null => {
   const currentModule = getSelectedStageModule(pipelineStagesMap, selectedStageId)
+  const _pipelineExecutionDetail = get(pipelineExecutionDetail, 'childGraph', pipelineExecutionDetail)
   switch (currentModule) {
     case 'cd':
-      return get(pipelineExecutionDetail, 'pipelineExecutionSummary.moduleInfo.cd', {})
+      return get(_pipelineExecutionDetail, 'pipelineExecutionSummary.moduleInfo.cd', {})
     case 'ci':
-      return get(pipelineExecutionDetail, 'pipelineExecutionSummary.moduleInfo.ci.ciPipelineStageModuleInfo', {})
+      return get(_pipelineExecutionDetail, 'pipelineExecutionSummary.moduleInfo.ci.ciPipelineStageModuleInfo', {})
     default:
       return null
   }
@@ -1543,8 +1544,9 @@ export const showHarnessCoPilot = ({
   /* It is possible for a stageId to be not present in "pipelineStagesMap" and be present in "pipelineExecutionSummary.layoutNodeMap" */
   let selectedModule = getSelectedStageModule(pipelineStagesMap, selectedStageId)
   if (!selectedModule) {
+    const _pipelineExecutionDetail = get(pipelineExecutionDetail, 'childGraph', pipelineExecutionDetail)
     const pipelineStagesMapFromExecutionDetails = new Map(
-      Object.entries(get(pipelineExecutionDetail, 'pipelineExecutionSummary.layoutNodeMap', {}))
+      Object.entries(get(_pipelineExecutionDetail, 'pipelineExecutionSummary.layoutNodeMap', {}))
     ) as Map<string, GraphLayoutNode>
     selectedModule = getSelectedStageModule(pipelineStagesMapFromExecutionDetails, selectedStageId)
   }
@@ -1606,9 +1608,15 @@ export const getPluginUsedFromStepParams = (selectedStep: ExecutionNode, stepTyp
   }
 }
 
-export const getNodeId = (selectedStageExecutionId: string, selectedStageId: string): string =>
+export const getNodeId = (
+  selectedStageId: string,
+  selectedStageExecutionId?: string,
+  selectedChildStageId?: string
+): string =>
   selectedStageExecutionId !== selectedStageId && !isEmpty(selectedStageExecutionId)
-    ? selectedStageExecutionId
+    ? (selectedStageExecutionId as string)
+    : selectedChildStageId && !isEmpty(selectedChildStageId)
+    ? selectedChildStageId
     : selectedStageId
 
 export const getStageErrorMessage = (responseMessages: ResponseMessage[], stage: GraphLayoutNode | undefined): string =>

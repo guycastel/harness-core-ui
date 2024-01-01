@@ -21,8 +21,7 @@ describe('Test AIDAUtils', () => {
       erropScope: ErrorScope.Step,
       pipelineExecutionDetail: ciStagePipelineExecutionDetails,
       pipelineStagesMap: new Map<string, GraphLayoutNode>([['SELECTED_CI_STAGE_ID', nodeLayoutForCIStage]]),
-      selectedStageExecutionId: 'SELECTED_CI_STAGE_ID',
-      selectedStageId: 'SELECTED_CI_STAGE_ID',
+      nodeId: 'SELECTED_CI_STAGE_ID',
       selectedStepId: 'SELECTED_CI_STEP_ID',
       queryParams: { storeType: 'INLINE' } as ExecutionContextParams['queryParams']
     }

@@ -28,7 +28,7 @@ import ExecutionStatusLabel from '@pipeline/components/ExecutionStatusLabel/Exec
 import ExecutionActions from '@pipeline/components/ExecutionActions/ExecutionActions'
 import HarnessCopilot from '@pipeline/components/HarnessCopilot/HarnessCopilot'
 import { ErrorScope } from '@pipeline/components/HarnessCopilot/AIDAUtils'
-import { showHarnessCoPilot } from '@pipeline/utils/executionUtils'
+import { getNodeId, showHarnessCoPilot } from '@pipeline/utils/executionUtils'
 import { usePermission } from '@rbac/hooks/usePermission'
 import { useRunPipelineModalV1 } from '@pipeline/v1/components/RunPipelineModalV1/useRunPipelineModalV1'
 import type { ExecutionPathProps, PipelineType } from '@common/interfaces/RouteInterfaces'
@@ -61,19 +61,14 @@ export function ExecutionStageDetailsHeader(): React.ReactElement {
     useParams<PipelineType<ExecutionPathProps>>()
   const { isGitSyncEnabled: isGitSyncEnabledForProject, gitSyncEnabledOnlyForFF } = useAppStore()
   const isGitSyncEnabled = isGitSyncEnabledForProject && !gitSyncEnabledOnlyForFF
-  const getNodeId =
-    selectedStageExecutionId !== selectedStageId && !isEmpty(selectedStageExecutionId)
-      ? selectedStageExecutionId
-      : selectedChildStageId && !isEmpty(selectedChildStageId)
-      ? selectedChildStageId
-      : selectedStageId
+  const nodeId = getNodeId(selectedStageId, selectedStageExecutionId, selectedChildStageId)
 
-  const stage = pipelineStagesMap.get(getNodeId)
+  const stage = pipelineStagesMap.get(nodeId)
   const stageDetail = factory.getStageDetails(stage?.nodeType as StageType)
   const shouldShowError = isExecutionFailed(stage?.status)
   const responseMessages = defaultTo(
-    pipelineExecutionDetail?.pipelineExecutionSummary?.failureInfo?.responseMessages,
-    []
+    pipelineExecutionDetail?.childGraph?.pipelineExecutionSummary?.failureInfo?.responseMessages,
+    defaultTo(pipelineExecutionDetail?.pipelineExecutionSummary?.failureInfo?.responseMessages, [])
   )
 
   // check if the stage is retried or not
@@ -114,7 +109,7 @@ export function ExecutionStageDetailsHeader(): React.ReactElement {
     },
     [orgIdentifier, projectIdentifier, accountId, pipelineIdentifier]
   )
-  const stageNode = find(allNodeMap, node => node.setupId === getNodeId || node?.uuid === getNodeId)
+  const stageNode = find(allNodeMap, node => node.setupId === nodeId || node?.uuid === nodeId)
   const selectedIACMStage = allStagesMap.get(selectedStageId)?.module === StageType.IACM.toLowerCase()
   let waitingStepsCount = 0
 
@@ -338,10 +333,10 @@ export function ExecutionStageDetailsHeader(): React.ReactElement {
 
       {shouldShowError ? (
         <div className={css.errorMsgWrapper}>
-          {shouldRenderAIDAForStageLevelErrors(selectedStageId, allNodeMap, pipelineExecutionDetail) &&
+          {shouldRenderAIDAForStageLevelErrors(nodeId, allNodeMap, pipelineExecutionDetail) &&
           showHarnessCoPilot({
             pipelineStagesMap,
-            selectedStageId,
+            selectedStageId: nodeId,
             pipelineExecutionDetail,
             enableForCI: CI_AI_ENHANCED_REMEDIATIONS,
             enableForCD: true,
