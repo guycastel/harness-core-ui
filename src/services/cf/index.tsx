@@ -203,6 +203,29 @@ export interface Environment {
   tags?: Tag[]
 }
 
+export interface EnvironmentPerspective {
+  /**
+   * The date the key was created at in milliseconds
+   */
+  createdAt: number
+  /**
+   * The ID of the Environment
+   */
+  environmentId: string
+  /**
+   * The ID of the Perspective
+   */
+  perspectiveId: string
+  /**
+   * The Identifier/Common Name of the Perspective
+   */
+  perspectiveIdentifier: string
+  /**
+   * The date the key was last updated at in milliseconds
+   */
+  updatedAt: number
+}
+
 /**
  * A list of Environments
  */
@@ -1042,6 +1065,21 @@ export interface ProxyKey {
   updatedAt: number
 }
 
+/**
+ * A Proxy Key instruction
+ */
+export interface ProxyKeyInstruction {
+  instructions?: {
+    rotateKey?: string
+    updateConfig?: {
+      organizations: OrganizationDictionary
+      version: number
+    }
+    updateDescription?: string
+    updateName?: string
+  }
+}
+
 export interface ProxyKeyProject {
   environments?: string[]
   scope: 'all' | 'prod' | 'non-prod' | 'selected'
@@ -1503,6 +1541,11 @@ export interface APIKeyUpdateRequestRequestBody {
   name?: string
 }
 
+export interface EnvironmentPerspectiveUpsertRequestRequestBody {
+  perspectiveIdentifier: string
+  perspectiveName: string
+}
+
 export interface EnvironmentRequestRequestBody {
   description?: string
   identifier: string
@@ -1560,16 +1603,13 @@ export interface ProjectRequestRequestBody {
   tags?: Tag[]
 }
 
+export type ProxyKeysPatchRequestRequestBody = ProxyKeyInstruction
+
 export interface ProxyKeysPostRequestRequestBody {
   description?: string
   identifier: string
   name: string
   organizations: OrganizationDictionary
-}
-
-export interface ProxyKeysPutRequestRequestBody {
-  organizations: OrganizationDictionary
-  version: number
 }
 
 export type SegmentPatchRequestRequestBody = GitSyncPatchOperation
@@ -1636,6 +1676,11 @@ export type BadRequestResponse = Error
  * The specified resource already exists
  */
 export type ConflictResponse = Error
+
+/**
+ * OK
+ */
+export type EnvironmentPerspectiveResponseResponse = EnvironmentPerspective
 
 /**
  * OK
@@ -2884,6 +2929,226 @@ export const createEnvironmentPromise = (
     EnvironmentRequestRequestBody,
     void
   >('POST', getConfig('cf'), `/admin/environments`, props, signal)
+
+export interface DeletePerspectiveQueryParams {
+  /**
+   * Account Identifier
+   */
+  accountIdentifier: string
+  /**
+   * Organization Identifier
+   */
+  orgIdentifier: string
+  /**
+   * The Project identifier
+   */
+  projectIdentifier: string
+  /**
+   * Environment Identifier
+   */
+  environmentIdentifier: string
+}
+
+export type DeletePerspectiveProps = Omit<
+  MutateProps<
+    void,
+    UnauthenticatedResponse | UnauthorizedResponse | NotFoundResponse | InternalServerErrorResponse,
+    DeletePerspectiveQueryParams,
+    void,
+    void
+  >,
+  'path' | 'verb'
+>
+
+/**
+ * Delete a Perspective - Environment link.
+ *
+ * Deletes a perspective from an environment. An Environment can only have one Perspective
+ */
+export const DeletePerspective = (props: DeletePerspectiveProps) => (
+  <Mutate<
+    void,
+    UnauthenticatedResponse | UnauthorizedResponse | NotFoundResponse | InternalServerErrorResponse,
+    DeletePerspectiveQueryParams,
+    void,
+    void
+  >
+    verb="DELETE"
+    path={`/admin/environments/perspectives`}
+    base={getConfig('cf')}
+    {...props}
+  />
+)
+
+export type UseDeletePerspectiveProps = Omit<
+  UseMutateProps<
+    void,
+    UnauthenticatedResponse | UnauthorizedResponse | NotFoundResponse | InternalServerErrorResponse,
+    DeletePerspectiveQueryParams,
+    void,
+    void
+  >,
+  'path' | 'verb'
+>
+
+/**
+ * Delete a Perspective - Environment link.
+ *
+ * Deletes a perspective from an environment. An Environment can only have one Perspective
+ */
+export const useDeletePerspective = (props: UseDeletePerspectiveProps) =>
+  useMutate<
+    void,
+    UnauthenticatedResponse | UnauthorizedResponse | NotFoundResponse | InternalServerErrorResponse,
+    DeletePerspectiveQueryParams,
+    void,
+    void
+  >('DELETE', `/admin/environments/perspectives`, { base: getConfig('cf'), ...props })
+
+/**
+ * Delete a Perspective - Environment link.
+ *
+ * Deletes a perspective from an environment. An Environment can only have one Perspective
+ */
+export const deletePerspectivePromise = (
+  props: MutateUsingFetchProps<
+    void,
+    UnauthenticatedResponse | UnauthorizedResponse | NotFoundResponse | InternalServerErrorResponse,
+    DeletePerspectiveQueryParams,
+    void,
+    void
+  >,
+  signal?: RequestInit['signal']
+) =>
+  mutateUsingFetch<
+    void,
+    UnauthenticatedResponse | UnauthorizedResponse | NotFoundResponse | InternalServerErrorResponse,
+    DeletePerspectiveQueryParams,
+    void,
+    void
+  >('DELETE', getConfig('cf'), `/admin/environments/perspectives`, props, signal)
+
+export interface UpsertPerspectiveQueryParams {
+  /**
+   * Account Identifier
+   */
+  accountIdentifier: string
+  /**
+   * Organization Identifier
+   */
+  orgIdentifier: string
+  /**
+   * The Project identifier
+   */
+  projectIdentifier: string
+  /**
+   * Environment Identifier
+   */
+  environmentIdentifier: string
+}
+
+export type UpsertPerspectiveProps = Omit<
+  MutateProps<
+    EnvironmentPerspectiveResponseResponse,
+    | BadRequestResponse
+    | UnauthenticatedResponse
+    | UnauthorizedResponse
+    | ConflictResponse
+    | InternalServerErrorResponse,
+    UpsertPerspectiveQueryParams,
+    EnvironmentPerspectiveUpsertRequestRequestBody,
+    void
+  >,
+  'path' | 'verb'
+>
+
+/**
+ * Upsert a Perspective to an Environment.
+ *
+ * Adds a perspective to an environment, or updates an existing. An Environment can only have one Perspective
+ */
+export const UpsertPerspective = (props: UpsertPerspectiveProps) => (
+  <Mutate<
+    EnvironmentPerspectiveResponseResponse,
+    | BadRequestResponse
+    | UnauthenticatedResponse
+    | UnauthorizedResponse
+    | ConflictResponse
+    | InternalServerErrorResponse,
+    UpsertPerspectiveQueryParams,
+    EnvironmentPerspectiveUpsertRequestRequestBody,
+    void
+  >
+    verb="PUT"
+    path={`/admin/environments/perspectives`}
+    base={getConfig('cf')}
+    {...props}
+  />
+)
+
+export type UseUpsertPerspectiveProps = Omit<
+  UseMutateProps<
+    EnvironmentPerspectiveResponseResponse,
+    | BadRequestResponse
+    | UnauthenticatedResponse
+    | UnauthorizedResponse
+    | ConflictResponse
+    | InternalServerErrorResponse,
+    UpsertPerspectiveQueryParams,
+    EnvironmentPerspectiveUpsertRequestRequestBody,
+    void
+  >,
+  'path' | 'verb'
+>
+
+/**
+ * Upsert a Perspective to an Environment.
+ *
+ * Adds a perspective to an environment, or updates an existing. An Environment can only have one Perspective
+ */
+export const useUpsertPerspective = (props: UseUpsertPerspectiveProps) =>
+  useMutate<
+    EnvironmentPerspectiveResponseResponse,
+    | BadRequestResponse
+    | UnauthenticatedResponse
+    | UnauthorizedResponse
+    | ConflictResponse
+    | InternalServerErrorResponse,
+    UpsertPerspectiveQueryParams,
+    EnvironmentPerspectiveUpsertRequestRequestBody,
+    void
+  >('PUT', `/admin/environments/perspectives`, { base: getConfig('cf'), ...props })
+
+/**
+ * Upsert a Perspective to an Environment.
+ *
+ * Adds a perspective to an environment, or updates an existing. An Environment can only have one Perspective
+ */
+export const upsertPerspectivePromise = (
+  props: MutateUsingFetchProps<
+    EnvironmentPerspectiveResponseResponse,
+    | BadRequestResponse
+    | UnauthenticatedResponse
+    | UnauthorizedResponse
+    | ConflictResponse
+    | InternalServerErrorResponse,
+    UpsertPerspectiveQueryParams,
+    EnvironmentPerspectiveUpsertRequestRequestBody,
+    void
+  >,
+  signal?: RequestInit['signal']
+) =>
+  mutateUsingFetch<
+    EnvironmentPerspectiveResponseResponse,
+    | BadRequestResponse
+    | UnauthenticatedResponse
+    | UnauthorizedResponse
+    | ConflictResponse
+    | InternalServerErrorResponse,
+    UpsertPerspectiveQueryParams,
+    EnvironmentPerspectiveUpsertRequestRequestBody,
+    void
+  >('PUT', getConfig('cf'), `/admin/environments/perspectives`, props, signal)
 
 export interface DeleteEnvironmentQueryParams {
   /**
@@ -7434,99 +7699,99 @@ export const getProxyKeyPromise = (
     GetProxyKeyPathParams
   >(getConfig('cf'), `/admin/proxy/keys/${identifier}`, props, signal)
 
-export interface UpdateProxyKeyQueryParams {
+export interface PatchProxyKeyQueryParams {
   /**
    * Account Identifier
    */
   accountIdentifier: string
 }
 
-export interface UpdateProxyKeyPathParams {
+export interface PatchProxyKeyPathParams {
   /**
    * Unique identifier for the object in the API.
    */
   identifier: string
 }
 
-export type UpdateProxyKeyProps = Omit<
+export type PatchProxyKeyProps = Omit<
   MutateProps<
-    void,
+    ProxyKeysCreateResponseResponse,
     | BadRequestResponse
     | UnauthenticatedResponse
     | UnauthorizedResponse
     | NotFoundResponse
     | ConflictResponse
     | InternalServerErrorResponse,
-    UpdateProxyKeyQueryParams,
-    ProxyKeysPutRequestRequestBody,
-    UpdateProxyKeyPathParams
+    PatchProxyKeyQueryParams,
+    ProxyKeysPatchRequestRequestBody,
+    PatchProxyKeyPathParams
   >,
   'path' | 'verb'
 > &
-  UpdateProxyKeyPathParams
+  PatchProxyKeyPathParams
 
 /**
  * Updates a Proxy Key in the account & org
  *
- * This operation is used to modify which environments a ProxyKey has access to. The requet body can include one or more instructions that can assign or unassign environmnets to the ProxyKey
+ * This operation is used to modify which environments a ProxyKey has access to. The request body can include one or more instructions that can assign or unassign environmnets to the ProxyKey
  *
  */
-export const UpdateProxyKey = ({ identifier, ...props }: UpdateProxyKeyProps) => (
+export const PatchProxyKey = ({ identifier, ...props }: PatchProxyKeyProps) => (
   <Mutate<
-    void,
+    ProxyKeysCreateResponseResponse,
     | BadRequestResponse
     | UnauthenticatedResponse
     | UnauthorizedResponse
     | NotFoundResponse
     | ConflictResponse
     | InternalServerErrorResponse,
-    UpdateProxyKeyQueryParams,
-    ProxyKeysPutRequestRequestBody,
-    UpdateProxyKeyPathParams
+    PatchProxyKeyQueryParams,
+    ProxyKeysPatchRequestRequestBody,
+    PatchProxyKeyPathParams
   >
-    verb="PUT"
+    verb="PATCH"
     path={`/admin/proxy/keys/${identifier}`}
     base={getConfig('cf')}
     {...props}
   />
 )
 
-export type UseUpdateProxyKeyProps = Omit<
+export type UsePatchProxyKeyProps = Omit<
   UseMutateProps<
-    void,
+    ProxyKeysCreateResponseResponse,
     | BadRequestResponse
     | UnauthenticatedResponse
     | UnauthorizedResponse
     | NotFoundResponse
     | ConflictResponse
     | InternalServerErrorResponse,
-    UpdateProxyKeyQueryParams,
-    ProxyKeysPutRequestRequestBody,
-    UpdateProxyKeyPathParams
+    PatchProxyKeyQueryParams,
+    ProxyKeysPatchRequestRequestBody,
+    PatchProxyKeyPathParams
   >,
   'path' | 'verb'
 > &
-  UpdateProxyKeyPathParams
+  PatchProxyKeyPathParams
 
 /**
  * Updates a Proxy Key in the account & org
  *
- * This operation is used to modify which environments a ProxyKey has access to. The requet body can include one or more instructions that can assign or unassign environmnets to the ProxyKey
+ * This operation is used to modify which environments a ProxyKey has access to. The request body can include one or more instructions that can assign or unassign environmnets to the ProxyKey
  *
  */
-export const useUpdateProxyKey = ({ identifier, ...props }: UseUpdateProxyKeyProps) =>
+export const usePatchProxyKey = ({ identifier, ...props }: UsePatchProxyKeyProps) =>
   useMutate<
-    void,
+    ProxyKeysCreateResponseResponse,
     | BadRequestResponse
     | UnauthenticatedResponse
     | UnauthorizedResponse
     | NotFoundResponse
     | ConflictResponse
     | InternalServerErrorResponse,
-    UpdateProxyKeyQueryParams,
-    ProxyKeysPutRequestRequestBody,
-    UpdateProxyKeyPathParams
-  >('PUT', (paramsInPath: UpdateProxyKeyPathParams) => `/admin/proxy/keys/${paramsInPath.identifier}`, {
+    PatchProxyKeyQueryParams,
+    ProxyKeysPatchRequestRequestBody,
+    PatchProxyKeyPathParams
+  >('PATCH', (paramsInPath: PatchProxyKeyPathParams) => `/admin/proxy/keys/${paramsInPath.identifier}`, {
     base: getConfig('cf'),
     pathParams: { identifier },
     ...props
@@ -7535,24 +7800,24 @@ export const useUpdateProxyKey = ({ identifier, ...props }: UseUpdateProxyKeyPro
 /**
  * Updates a Proxy Key in the account & org
  *
- * This operation is used to modify which environments a ProxyKey has access to. The requet body can include one or more instructions that can assign or unassign environmnets to the ProxyKey
+ * This operation is used to modify which environments a ProxyKey has access to. The request body can include one or more instructions that can assign or unassign environmnets to the ProxyKey
  *
  */
-export const updateProxyKeyPromise = (
+export const patchProxyKeyPromise = (
   {
     identifier,
     ...props
   }: MutateUsingFetchProps<
-    void,
+    ProxyKeysCreateResponseResponse,
     | BadRequestResponse
     | UnauthenticatedResponse
     | UnauthorizedResponse
     | NotFoundResponse
     | ConflictResponse
     | InternalServerErrorResponse,
-    UpdateProxyKeyQueryParams,
-    ProxyKeysPutRequestRequestBody,
-    UpdateProxyKeyPathParams
+    PatchProxyKeyQueryParams,
+    ProxyKeysPatchRequestRequestBody,
+    PatchProxyKeyPathParams
   > & {
     /**
      * Unique identifier for the object in the API.
@@ -7562,17 +7827,17 @@ export const updateProxyKeyPromise = (
   signal?: RequestInit['signal']
 ) =>
   mutateUsingFetch<
-    void,
+    ProxyKeysCreateResponseResponse,
     | BadRequestResponse
     | UnauthenticatedResponse
     | UnauthorizedResponse
     | NotFoundResponse
     | ConflictResponse
     | InternalServerErrorResponse,
-    UpdateProxyKeyQueryParams,
-    ProxyKeysPutRequestRequestBody,
-    UpdateProxyKeyPathParams
-  >('PUT', getConfig('cf'), `/admin/proxy/keys/${identifier}`, props, signal)
+    PatchProxyKeyQueryParams,
+    ProxyKeysPatchRequestRequestBody,
+    PatchProxyKeyPathParams
+  >('PATCH', getConfig('cf'), `/admin/proxy/keys/${identifier}`, props, signal)
 
 export interface GetAllSegmentsQueryParams {
   /**
