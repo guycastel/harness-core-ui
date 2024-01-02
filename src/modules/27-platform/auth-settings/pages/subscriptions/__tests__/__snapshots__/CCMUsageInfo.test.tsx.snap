@@ -144,7 +144,7 @@ exports[`CCMUsageInfo CCMUsageInfo 1`] = `
           class="StyledProps--font StyledProps--main StyledProps--font-size-large StyledProps--font-weight-bold StyledProps--color StyledProps--color-black"
         >
           $
-          352.8333333333333
+          10.59K
         </p>
         <div
           class="StyledProps--font StyledProps--main bar StyledProps--background-grey100 StyledProps--border StyledProps--margin-bottom-small"
@@ -152,7 +152,7 @@ exports[`CCMUsageInfo CCMUsageInfo 1`] = `
         >
           <div
             class="StyledProps--font StyledProps--main StyledProps--background-primary6 StyledProps--border"
-            style="width: 0.1411333333333333%; height: 100%;"
+            style="width: 4.234%; height: 100%;"
           />
         </div>
         <div
@@ -168,7 +168,7 @@ exports[`CCMUsageInfo CCMUsageInfo 1`] = `
           <p
             class="StyledProps--font StyledProps--main StyledProps--font-size-xsmall StyledProps--color"
           >
-            0
+            4
             % 
             common.subscribed
           </p>
