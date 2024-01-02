@@ -101,8 +101,7 @@ describe('TargetingRulesTab Governance', () => {
     } as any)
   })
 
-  // eslint-disable-next-line jest/no-disabled-tests
-  test.skip('it should show governance modal if governance data present in successful response', async () => {
+  test('it should show governance modal if governance data present in successful response', async () => {
     patchFeatureMock.mockResolvedValue({
       details: { governanceMetadata: { status: 'warning', message: 'governance warning' } }
     })
@@ -139,8 +138,7 @@ describe('TargetingRulesTab Governance', () => {
     await waitFor(() => expect(screen.getByText('GOVERNANCE MODAL')).toBeInTheDocument())
   })
 
-  // eslint-disable-next-line jest/no-disabled-tests
-  test.skip('it should show governance modal on governance error response', async () => {
+  test('it should show governance modal on governance error response', async () => {
     patchFeatureMock.mockRejectedValue({
       data: { details: { governanceMetadata: { status: 'error', message: 'governance error' } } }
     })

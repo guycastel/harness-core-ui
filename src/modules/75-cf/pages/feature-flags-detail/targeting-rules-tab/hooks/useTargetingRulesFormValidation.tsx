@@ -42,20 +42,33 @@ const useTargetingRulesFormValidation = (): UseTargetingRulesFormValidationRetur
                       .of(yup.string().required(getString('cf.featureFlags.rules.validation.selectTargetGroup')))
                   })
                 )
-                // targets: (v as FormVariationMap).targetGroups?.length
-                //   ? yup.array().optional()
-                //   : yup.array().required(getString('cf.featureFlags.rules.validation.selectTarget')),
-
-                // targetGroups: (v as FormVariationMap).targets?.length
-                //   ? yup.array().optional()
-                //   : yup.array().required(getString('cf.featureFlags.rules.validation.selectTargetGroup'))
               }
 
               if ('variations' in (v as VariationPercentageRollout)) {
                 validations.variations = getPercentageRolloutVariationsArrayTest(getString)
               }
 
-              return yup.object(validations)
+              if ('targets' in (v as FormVariationMap) || 'targetGroups' in (v as FormVariationMap)) {
+                return yup.object({
+                  targets: (v as FormVariationMap).targetGroups?.length
+                    ? yup.array().optional()
+                    : yup.array().required(getString('cf.featureFlags.rules.validation.selectTarget')),
+                  targetGroups: (v as FormVariationMap).targets?.length
+                    ? yup.array().optional()
+                    : yup.array().required(getString('cf.featureFlags.rules.validation.selectTargetGroup'))
+                })
+              } else {
+                return yup.object({
+                  clauses: yup.array().of(
+                    yup.object({
+                      values: yup
+                        .array()
+                        .of(yup.string().required(getString('cf.featureFlags.rules.validation.selectTargetGroup')))
+                    })
+                  ),
+                  variations: getPercentageRolloutVariationsArrayTest(getString)
+                })
+              }
             })
           )
         }),
