@@ -13,6 +13,11 @@ import { useQueryParams, useUpdateQueryParams } from '@common/hooks'
 import { useQueryParamsOptions } from '@common/hooks/useQueryParams'
 import { AccountPathProps, Module } from '@common/interfaces/RouteInterfaces'
 import { RouteWithContext } from '@common/router/RouteWithContext/RouteWithContext'
+import {
+  useMetadataGetProject,
+  useMetadataListPriorities,
+  useMetadataListProjects
+} from 'services/ticket-service/ticketServiceComponents'
 import { NAV_MODE, accountPathProps, orgPathProps, projectPathProps } from '@common/utils/routeUtils'
 import PipelineRouteDestinations from '@pipeline/PipelineRouteDestinations'
 import { Scope } from 'framework/types/types'
@@ -20,6 +25,7 @@ import ChildAppMounter from 'microfrontends/ChildAppMounter'
 import { useGetSelectedScope } from '@common/navigation/SideNavV2/SideNavV2.utils'
 import { PolicyViolationsDrawer } from '@modules/70-pipeline/pages/execution/ExecutionArtifactsView/PolicyViolations/PolicyViolationsDrawer'
 import { SLSAVerification } from '@modules/70-pipeline/pages/execution/ExecutionArtifactsView/ArtifactsTable/ArtifactTableCells'
+import { SSCACustomMicroFrontendProps } from './interfaces/SSCACustomMicroFrontendProps.types'
 
 const module: Module = 'ssca'
 
@@ -77,10 +83,19 @@ const SSCARouteDestinations = (mode = NAV_MODE.MODULE): React.ReactElement => {
           routes.toOverview({ ...projectPathProps, module, mode })
         ]}
       >
-        <ChildAppMounter
+        <ChildAppMounter<SSCACustomMicroFrontendProps>
           ChildApp={RemoteSSCAApp}
           customComponents={{ Duration, PolicyViolationsDrawer, SLSAVerification, TimeAgoPopover }}
-          customHooks={{ useQueryParams, useUpdateQueryParams, useQueryParamsOptions }}
+          customHooks={{
+            useQueryParams,
+            useUpdateQueryParams,
+            useQueryParamsOptions
+          }}
+          customServices={{
+            useMetadataGetProject,
+            useMetadataListPriorities,
+            useMetadataListProjects
+          }}
         />
       </RouteWithContext>
 
@@ -90,10 +105,19 @@ const SSCARouteDestinations = (mode = NAV_MODE.MODULE): React.ReactElement => {
           routes.toRemediationTracker({ ...projectPathProps, module, mode })
         ]}
       >
-        <ChildAppMounter
+        <ChildAppMounter<SSCACustomMicroFrontendProps>
           ChildApp={RemoteSSCAApp}
           customComponents={{ Duration, PolicyViolationsDrawer, SLSAVerification, TimeAgoPopover }}
-          customHooks={{ useQueryParams, useUpdateQueryParams, useQueryParamsOptions }}
+          customHooks={{
+            useQueryParams,
+            useUpdateQueryParams,
+            useQueryParamsOptions
+          }}
+          customServices={{
+            useMetadataGetProject,
+            useMetadataListPriorities,
+            useMetadataListProjects
+          }}
         />
       </RouteWithContext>
 

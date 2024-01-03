@@ -22,6 +22,11 @@ import { useQueryParams, useUpdateQueryParams } from '@common/hooks'
 import ChildAppMounter from 'microfrontends/ChildAppMounter'
 import { ConnectorRouteDestinations } from '@platform/connectors/RouteDestinations'
 import { DefaultSettingsRouteDestinations } from '@platform/default-settings/RouteDestinations'
+import {
+  useMetadataGetProject,
+  useMetadataListPriorities,
+  useMetadataListProjects
+} from 'services/ticket-service/ticketServiceComponents'
 import { SecretRouteDestinations } from '@platform/secrets/RouteDestinations'
 import { AccessControlRouteDestinations } from '@rbac/RouteDestinations'
 import { DelegateRouteDestinations } from '@platform/delegates/RouteDestinations'
@@ -82,8 +87,17 @@ export default (
     >
       <ChildAppMounter<SSCACustomMicroFrontendProps>
         ChildApp={RemoteSSCAApp}
-        customHooks={{ useQueryParams, useUpdateQueryParams, useQueryParamsOptions }}
+        customHooks={{
+          useQueryParams,
+          useUpdateQueryParams,
+          useQueryParamsOptions
+        }}
         customComponents={{ Duration, PolicyViolationsDrawer, SLSAVerification, TimeAgoPopover }}
+        customServices={{
+          useMetadataGetProject,
+          useMetadataListPriorities,
+          useMetadataListProjects
+        }}
       />
     </RouteWithLayout>
 
@@ -98,8 +112,17 @@ export default (
     >
       <ChildAppMounter<SSCACustomMicroFrontendProps>
         ChildApp={RemoteSSCAApp}
-        customHooks={{ useQueryParams, useUpdateQueryParams, useQueryParamsOptions }}
+        customHooks={{
+          useQueryParams,
+          useUpdateQueryParams,
+          useQueryParamsOptions
+        }}
         customComponents={{ Duration, PolicyViolationsDrawer, SLSAVerification, TimeAgoPopover }}
+        customServices={{
+          useMetadataGetProject,
+          useMetadataListPriorities,
+          useMetadataListProjects
+        }}
       />
     </RouteWithLayout>
 
