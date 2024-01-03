@@ -89,7 +89,7 @@ export default function NewRelicHealthSource({
   const [validationResultData, setValidationResultData] = useState<MetricPackValidationResponse[]>()
   const [applicationNameForEdit, setApplicationNameForEdit] = useState(newRelicData?.applicationId)
   const [newRelicValidation, setNewRelicValidation] = useState<{
-    status: string
+    status?: string
     result: MetricPackValidationResponse[] | []
   }>({
     status: '',
@@ -145,6 +145,18 @@ export default function NewRelicHealthSource({
     async (appName: string, appId: string, metricObject: { [key: string]: any }): Promise<void> => {
       setNewRelicValidation({ status: StatusOfValidation.IN_PROGRESS, result: [] })
       const filteredMetricPack = selectedMetricPacks?.filter(item => metricObject[item.identifier as string])
+
+      /**
+       * Make the validation call only if
+       * 1. Atleast one metric pack is selected
+       * 2. Application call is loaded
+       * 3. Application call responds with some data
+       */
+      if (!filteredMetricPack.length || applicationLoading || !applicationsData) {
+        setNewRelicValidation({ status: undefined, result: [] })
+        return void 0
+      }
+
       const { validationStatus, validationResult } = await validateMetrics(
         filteredMetricPack || [],
         {
@@ -163,7 +175,15 @@ export default function NewRelicHealthSource({
         result: validationResult as MetricPackValidationResponse[]
       })
     },
-    [accountId, connectorIdentifier, orgIdentifier, projectIdentifier, selectedMetricPacks]
+    [
+      accountId,
+      connectorIdentifier,
+      orgIdentifier,
+      projectIdentifier,
+      selectedMetricPacks,
+      applicationLoading,
+      applicationsData
+    ]
   )
 
   const applicationOptions: SelectOption[] = useMemo(
@@ -184,7 +204,7 @@ export default function NewRelicHealthSource({
       shouldRunValidation({
         isEdit: newRelicData.isEdit,
         hasMetricPacks: Boolean(selectedMetricPacks.length),
-        validationStatus: newRelicValidation.status,
+        validationStatus: newRelicValidation.status as string,
         isConnectorRuntimeOrExpression
       }),
     [newRelicData.isEdit, selectedMetricPacks.length, newRelicValidation.status, isConnectorRuntimeOrExpression]
@@ -220,6 +240,13 @@ export default function NewRelicHealthSource({
 
   const [inputType, setInputType] = React.useState<MultiTypeInputType | undefined>(() =>
     getTypeOfInput(applicationNameForEdit)
+  )
+
+  const handleApplicationUpdate = useCallback(
+    async ({ appName, appId }) => {
+      if (appId) await onValidate(appName, appId, nonCustomFeilds.metricData)
+    },
+    [nonCustomFeilds.metricData, onValidate]
   )
 
   const handleMetricPackUpdate = useCallback(
@@ -329,7 +356,12 @@ export default function NewRelicHealthSource({
                         <ExpressionAndRuntimeType<ApplicationIdDropdownProps>
                           key={inputType}
                           data-testid="newRelicApplication"
-                          fixedTypeComponentProps={{ applicationLoading, applicationOptions, isTemplate: true }}
+                          fixedTypeComponentProps={{
+                            applicationLoading,
+                            applicationOptions,
+                            isTemplate: true,
+                            onApplicationChange: handleApplicationUpdate
+                          }}
                           fixedTypeComponent={ApplicationIdDropdown as () => JSX.Element}
                           name={'newRelicApplication'}
                           expressions={expressions}
@@ -387,6 +419,7 @@ export default function NewRelicHealthSource({
                       <ApplicationIdDropdown
                         applicationOptions={applicationOptions}
                         applicationLoading={applicationLoading}
+                        onApplicationChange={handleApplicationUpdate}
                       />
                     )}
                     {formik?.errors?.newRelicApplication && (

@@ -17,10 +17,11 @@ export interface ApplicationIdDropdownProps {
   applicationOptions?: SelectOption[]
   applicationLoading: boolean
   isTemplate?: boolean
+  onApplicationChange: ({ appName, appId }: { appName: string; appId: string }) => void
 }
 
 function ApplicationIdDropdown(props: ApplicationIdDropdownProps): JSX.Element | null {
-  const { applicationOptions, applicationLoading, isTemplate } = props
+  const { applicationOptions, applicationLoading, isTemplate, onApplicationChange } = props
 
   const { getString } = useStrings()
 
@@ -36,6 +37,7 @@ function ApplicationIdDropdown(props: ApplicationIdDropdownProps): JSX.Element |
     if (selectedOption?.value === currentSelectedOption.value) {
       return
     }
+    onApplicationChange({ appId: currentSelectedOption.value as string, appName: currentSelectedOption.label })
     setSelectedOption(currentSelectedOption)
     setFieldValue('newRelicApplication', currentSelectedOption)
     setIsSelectOpen(false)

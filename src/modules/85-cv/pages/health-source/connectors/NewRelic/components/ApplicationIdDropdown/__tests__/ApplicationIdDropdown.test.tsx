@@ -10,7 +10,7 @@ describe('ApplicationIdDropdown', () => {
     render(
       <TestWrapper>
         <Formik.Formik initialValues={{}} onSubmit={Promise.resolve}>
-          <ApplicationIdDropdown applicationLoading={false} />
+          <ApplicationIdDropdown applicationLoading={false} onApplicationChange={() => void 0} />
         </Formik.Formik>
       </TestWrapper>
     )
@@ -22,6 +22,7 @@ describe('ApplicationIdDropdown', () => {
     const useFormikContextMock = jest.spyOn(Formik, 'useFormikContext')
 
     const setFieldValueMock = jest.fn()
+    const onApplicationChangeMock = jest.fn()
 
     useFormikContextMock.mockReturnValue({
       isValid: true,
@@ -32,7 +33,11 @@ describe('ApplicationIdDropdown', () => {
     render(
       <TestWrapper>
         <Formik.Formik initialValues={{}} onSubmit={Promise.resolve}>
-          <ApplicationIdDropdown applicationOptions={[{ label: 'My app', value: '1222' }]} applicationLoading={false} />
+          <ApplicationIdDropdown
+            applicationOptions={[{ label: 'My app', value: '1222' }]}
+            applicationLoading={false}
+            onApplicationChange={onApplicationChangeMock}
+          />
         </Formik.Formik>
       </TestWrapper>
     )
@@ -52,6 +57,7 @@ describe('ApplicationIdDropdown', () => {
     })
 
     await waitFor(() => expect(screen.getByTestId(/newRelicApplicationValue/)).toHaveTextContent('1222'))
+    await waitFor(() => expect(onApplicationChangeMock).toHaveBeenCalledWith({ appId: '1222', appName: 'My app' }))
 
     expect(setFieldValueMock).toHaveBeenCalledWith('newRelicApplication', { label: 'My app', value: '1222' })
 

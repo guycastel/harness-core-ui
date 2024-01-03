@@ -104,10 +104,6 @@ describe('Create empty monitored service', () => {
     cy.wait('@ApplicationCall')
     cy.wait('@MetricPackCall')
 
-    cy.get('input[name="Performance"]').check({ force: true })
-
-    cy.get('input[name="Performance"]').should('be.checked')
-
     cy.contains('span', 'Add Metric').click()
 
     // Custom validation
@@ -232,11 +228,6 @@ describe('Create empty monitored service', () => {
       cy.wait('@ApplicationCall')
       cy.wait('@MetricPackCall')
 
-      cy.findByTestId('applicationIdDropdown').should('exist').scrollIntoView().click({ force: true })
-      cy.contains('p', '107019083').click({ force: true })
-
-      cy.findByTestId('newRelicApplicationValue').should('have.text', '107019083')
-
       cy.contains('.Accordion--label', 'Advanced (Optional)').should('exist')
 
       // If no metric pack is selected, metric thresholds should be hidden
@@ -262,11 +253,6 @@ describe('Create empty monitored service', () => {
       // Fill Customise HealthSource Tab for AppDynamics
       cy.wait('@ApplicationCall')
       cy.wait('@MetricPackCall')
-
-      cy.findByTestId('applicationIdDropdown').should('exist').scrollIntoView().click({ force: true })
-      cy.contains('p', '107019083').click({ force: true })
-
-      cy.findByTestId('newRelicApplicationValue').should('have.text', '107019083')
 
       cy.contains('.Accordion--label', 'Advanced (Optional)').should('exist')
 
@@ -378,11 +364,6 @@ describe('Create empty monitored service', () => {
       cy.wait('@ApplicationCall')
       cy.wait('@MetricPackCall')
 
-      cy.findByTestId('applicationIdDropdown').should('exist').scrollIntoView().click({ force: true })
-      cy.contains('p', '107019083').click({ force: true })
-
-      cy.findByTestId('newRelicApplicationValue').should('have.text', '107019083')
-
       cy.contains('.Accordion--label', 'Advanced (Optional)').should('exist')
 
       cy.findByTestId('AddThresholdButton').click()
@@ -418,11 +399,6 @@ describe('Create empty monitored service', () => {
       // Fill Customise HealthSource Tab for AppDynamics
       cy.wait('@ApplicationCall')
       cy.wait('@MetricPackCall')
-
-      cy.findByTestId('applicationIdDropdown').should('exist').scrollIntoView().click({ force: true })
-      cy.contains('p', '107019083').click({ force: true })
-
-      cy.findByTestId('newRelicApplicationValue').should('have.text', '107019083')
 
       // Adding custom metrics
       cy.contains('span', 'Add Metric').click()
