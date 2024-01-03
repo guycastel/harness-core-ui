@@ -7,7 +7,7 @@
 
 import React, { useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { useFeatureFlags } from '@harnessio/ff-react-client-sdk'
+import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
 import { TemplateType } from '@common/interfaces/RouteInterfaces'
 import { GetTemplateQueryParams } from 'services/template-ng'
 import { TemplateMetadataForRouter } from '@templates-library/pages/TemplatesPage/views/NewTemplatePopover/useCreateTemplateModalY1'
@@ -69,7 +69,8 @@ export function TemplateLoaderProvider({
           setYamlVersion('0')
         }
       } else {
-        setYamlVersion('0')
+        // If FF enabled, the yamlVersion is set via routerState else default to 0
+        !CDS_YAML_SIMPLIFICATION && setYamlVersion('0')
       }
     }
 
