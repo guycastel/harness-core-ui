@@ -188,6 +188,8 @@ export default function OptionalConfiguration(props: {
   const { expressions } = useVariablesExpression()
 
   const shellVariablesExportFF = useFeatureFlag(FeatureFlag.CDS_SHELL_VARIABLES_EXPORT)
+  const { NG_EXPRESSIONS_NEW_INPUT_ELEMENT } = useFeatureFlags()
+
   const scopeTypes = [
     {
       label: getString('common.pipeline'),
@@ -313,12 +315,17 @@ export default function OptionalConfiguration(props: {
                               placeholder={getString('typeLabel')}
                               disabled={readonly}
                             />
-
-                            <OptionalVariables
-                              variableSpec={`spec.outputVariables[${i}]`}
-                              allowableTypes={allowableTypes}
-                              readonly={readonly}
-                              stepName={stepName}
+                            <FormInput.MultiTextInput
+                              name={`spec.outputVariables[${i}].value`}
+                              placeholder={getString('valueLabel')}
+                              multiTextInputProps={{
+                                allowableTypes,
+                                expressions,
+                                disabled: readonly,
+                                newExpressionComponent: NG_EXPRESSIONS_NEW_INPUT_ELEMENT
+                              }}
+                              label=""
+                              disabled={readonly}
                             />
 
                             <Button minimal icon="main-trash" onClick={() => remove(i)} disabled={readonly} />

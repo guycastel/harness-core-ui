@@ -407,23 +407,7 @@ export default function ShellScriptInputSetStep(props: ShellScriptInputSetStepPr
                             disabled={true}
                           />
 
-                          {get(outputVariable, 'type') === 'Secret' ? (
-                            <MultiTypeSecretInput
-                              expressions={expressions}
-                              allowableTypes={allowableTypes}
-                              name={`${formikOutputVariablePath}.value`}
-                              disabled={readonly}
-                              label=""
-                              templateProps={{
-                                isTemplatizedView: true,
-                                templateValue: get(template, `${formikOutputVariablePath}.value`)
-                              }}
-                              enableConfigureOptions
-                              configureOptionsProps={{
-                                isExecutionTimeFieldDisabled: isExecutionTimeFieldDisabledForStep
-                              }}
-                            />
-                          ) : allowMultiSelectAllowedValues ? (
+                          {allowMultiSelectAllowedValues ? (
                             <MultiSelectVariableAllowedValues
                               name={`${formikOutputVariablePath}.value`}
                               allowableTypes={allowableTypes}
