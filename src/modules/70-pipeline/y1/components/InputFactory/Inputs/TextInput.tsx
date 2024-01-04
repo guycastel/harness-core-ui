@@ -8,16 +8,19 @@
 import React from 'react'
 import { FormInput } from '@harness/uicore'
 import { useVariablesExpression } from '@pipeline/components/PipelineStudio/PiplineHooks/useVariablesExpression'
+import { useRuntimeInput } from '@modules/70-pipeline/y1/hooks/useRuntimeInput'
 import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
 import { PrimitiveInputType } from '../InputComponentType'
 import { InputComponent, InputProps } from '../InputComponent'
 import { InputsFormValues } from '../../InputsForm/InputsForm'
+import { RuntimeInputType } from '../../InputsForm/types'
 
 function TextInputInternal(props: InputProps<InputsFormValues>): JSX.Element {
   const { allowableTypes, readonly, path, input } = props
   const { label = '' } = input
   const { expressions } = useVariablesExpression()
   const { NG_EXPRESSIONS_NEW_INPUT_ELEMENT } = useFeatureFlags()
+  const { renderRuntimeInput } = useRuntimeInput({ type: RuntimeInputType.string })
 
   return (
     <FormInput.MultiTextInput
@@ -32,7 +35,8 @@ function TextInputInternal(props: InputProps<InputsFormValues>): JSX.Element {
           disabled: readonly,
           type: 'text'
         },
-        allowableTypes
+        allowableTypes,
+        renderRuntimeInput
       }}
     />
   )

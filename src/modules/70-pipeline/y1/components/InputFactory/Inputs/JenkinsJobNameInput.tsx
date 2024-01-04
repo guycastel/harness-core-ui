@@ -1,3 +1,10 @@
+/*
+ * Copyright 2023 Harness Inc. All rights reserved.
+ * Use of this source code is governed by the PolyForm Shield 1.0.0 license
+ * that can be found in the licenses directory at the root of this repository, also available at
+ * https://polyformproject.org/wp-content/uploads/2020/06/PolyForm-Shield-1.0.0.txt.
+ */
+
 import React, { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useFormikContext } from 'formik'
@@ -11,10 +18,12 @@ import { JobDetails, useGetJobDetailsForJenkins } from 'services/cd-ng'
 import { GitQueryParams } from '@common/interfaces/RouteInterfaces'
 import { useQueryParams } from '@common/hooks'
 import ItemRendererWithMenuItem from '@common/components/ItemRenderer/ItemRendererWithMenuItem'
+import { useRuntimeInput } from '@modules/70-pipeline/y1/hooks/useRuntimeInput'
 import { InputsFormValues } from '../../InputsForm/InputsForm'
 import { InputComponent, InputProps } from '../InputComponent'
 import { DerivedInputType } from '../InputComponentType'
 import { useInputDependencies } from '../../InputsForm/hooks/useInputDependencies'
+import { RuntimeInputType } from '../../InputsForm/types'
 
 function JenkinsJobNameInternal(props: InputProps<InputsFormValues>): JSX.Element {
   const { allowableTypes, readonly, path, input } = props
@@ -162,6 +171,8 @@ function JenkinsJobNameInternal(props: InputProps<InputsFormValues>): JSX.Elemen
     return getString('select')
   }
 
+  const { renderRuntimeInput } = useRuntimeInput({ type: RuntimeInputType.string })
+
   return (
     <>
       <FormInput.MultiTypeBiLevelInput
@@ -202,7 +213,8 @@ function JenkinsJobNameInternal(props: InputProps<InputsFormValues>): JSX.Elemen
             addClearBtn: !readonly,
             itemRenderer: jobNameRenderer
           },
-          allowableTypes
+          allowableTypes,
+          renderRuntimeInput
         }}
         selectItems={jobDetails || []}
       />

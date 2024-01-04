@@ -6,16 +6,26 @@
  */
 
 import React from 'react'
-import { FormInput } from '@harness/uicore'
+import { FormMultiTypeTextAreaField } from '@modules/10-common/components'
+import { useRuntimeInput } from '@modules/70-pipeline/y1/hooks/useRuntimeInput'
 import { PrimitiveInputType } from '../InputComponentType'
 import { InputComponent, InputProps } from '../InputComponent'
 import { InputsFormValues } from '../../InputsForm/InputsForm'
+import { RuntimeInputType } from '../../InputsForm/types'
 
 function TextAreaInternal(props: InputProps<InputsFormValues>): JSX.Element {
   const { readonly, path, input } = props
   const { label = '' } = input
+  const { renderRuntimeInput } = useRuntimeInput({ type: RuntimeInputType.string })
 
-  return <FormInput.TextArea label={label} name={path} disabled={readonly} />
+  return (
+    <FormMultiTypeTextAreaField
+      label={label}
+      name={path}
+      disabled={readonly}
+      multiTypeTextArea={{ renderRuntimeInput }}
+    />
+  )
 }
 
 export class TextAreaInput extends InputComponent<InputsFormValues> {

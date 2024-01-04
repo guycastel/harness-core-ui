@@ -6,6 +6,7 @@
  */
 
 import { PipelineInputSchemaDetailsResponseBody } from '@harnessio/react-pipeline-service-client'
+import { UIInputs } from '../types'
 
 export const pipelineInputsSchema1API: PipelineInputSchemaDetailsResponseBody = {
   inputs: [
@@ -13,7 +14,7 @@ export const pipelineInputsSchema1API: PipelineInputSchemaDetailsResponseBody = 
       details: {
         name: 'input-1',
         type: 'String',
-        description: '',
+        desc: '',
         required: false
       },
       metadata: {
@@ -43,7 +44,7 @@ export const pipelineInputsSchema1API: PipelineInputSchemaDetailsResponseBody = 
   ]
 }
 
-export const pipelineInputsSchema1UI = {
+export const pipelineInputsSchema1UI: UIInputs = {
   hasInputs: true,
   inputs: [
     {
@@ -76,7 +77,8 @@ export const pipelineInputsSchema1UI = {
       },
       name: 'input-1',
       required: false,
-      type: 'String'
+      type: 'String',
+      default: undefined
     }
   ]
 }

@@ -12,9 +12,11 @@ import { Container } from '@harness/uicore'
 import MonacoEditor from '@common/components/MonacoEditor/MonacoEditor'
 import MultiTypeFieldSelector from '@common/components/MultiTypeFieldSelector/MultiTypeFieldSelector'
 import { getDefaultMonacoConfig } from '@modules/10-common/components/MonacoTextField/MonacoTextField'
+import { useRuntimeInput } from '@modules/70-pipeline/y1/hooks/useRuntimeInput'
 import { PrimitiveInputType } from '../InputComponentType'
 import { InputComponent, InputProps } from '../InputComponent'
 import { InputsFormValues } from '../../InputsForm/InputsForm'
+import { RuntimeInputType } from '../../InputsForm/types'
 import css from './inputs.module.scss'
 
 function ObjectInputInternal(props: InputProps<InputsFormValues>): JSX.Element {
@@ -22,6 +24,7 @@ function ObjectInputInternal(props: InputProps<InputsFormValues>): JSX.Element {
   const { label = '' } = input
   const formik = useFormikContext()
   const value = get(formik.values, path)?.toString() || ''
+  const { renderRuntimeInput } = useRuntimeInput({ type: RuntimeInputType.object, standalone: true })
 
   const editor = (
     <Container
@@ -52,6 +55,7 @@ function ObjectInputInternal(props: InputProps<InputsFormValues>): JSX.Element {
       disableTypeSelection={readonly}
       skipRenderValueInExpressionLabel
       expressionRender={() => editor}
+      renderRuntimeInput={renderRuntimeInput}
     >
       {editor}
     </MultiTypeFieldSelector>

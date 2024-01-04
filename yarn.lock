@@ -3009,10 +3009,10 @@
   resolved "https://registry.yarnpkg.com/@harnessio/react-ng-manager-client/-/react-ng-manager-client-1.18.0.tgz#c0e3f4781e2da09e2a60eb261d7a38dae26b5b19"
   integrity sha512-AqC0RhRefydYglZ8EszBaUAkHOt+Eomd+gbQV7dXXBNjr92D8zLfCU8o9jMraruW1yzrfmOrPwWBiZAahetnmw==
 
-"@harnessio/react-pipeline-service-client@1.9.0":
-  version "1.9.0"
-  resolved "https://registry.yarnpkg.com/@harnessio/react-pipeline-service-client/-/react-pipeline-service-client-1.9.0.tgz#86c46acc9e97ac9b895846590832e6c54f0bd041"
-  integrity sha512-xaPFI9W1RaSHcxpu8IWgp/0xpt78ujNOBJvrEROjfdP5Vqb9g6TsXkfRNslJtaUq4HsZlXKvJl797TWPlk3UbQ==
+"@harnessio/react-pipeline-service-client@1.11.0":
+  version "1.11.0"
+  resolved "https://registry.yarnpkg.com/@harnessio/react-pipeline-service-client/-/react-pipeline-service-client-1.11.0.tgz#1daabd31359d43d5713c0fb4fcd25f0f31809d7f"
+  integrity sha512-Z3TXg8JwcKzFEiB2ywDyXoOXU8H2AA41iSRsLcf8WqNmlSfltvQqWV4orjyh5ZywkQo4HTBA4uTQzEprQVUWsw==
 
 "@harnessio/react-srm-service-client@1.0.0":
   version "1.0.0"

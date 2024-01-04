@@ -40,8 +40,8 @@ export function generateInputsFromMetadataResponse(data: PipelineInputSchemaDeta
     )
     return {
       name: runtimeInput.details?.name ?? '',
-      // TODO: read description from `desc` instead of `description`
-      desc: runtimeInput.details?.description,
+      desc: runtimeInput.details?.desc,
+      default: runtimeInput.details?.default,
       type: (runtimeInput.details?.type as string) ?? defaultInputMetadata.type,
       required: runtimeInput.details?.required,
       dependencies: processDependencies(runtimeInput.metadata?.dependencies),

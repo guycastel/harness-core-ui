@@ -7,19 +7,22 @@
 
 import React from 'react'
 import { FormMultiTypeCheckboxField } from '@common/components'
+import { useRuntimeInput } from '@modules/70-pipeline/y1/hooks/useRuntimeInput'
 import { PrimitiveInputType } from '../InputComponentType'
 import { InputComponent, InputProps } from '../InputComponent'
 import { InputsFormValues } from '../../InputsForm/InputsForm'
+import { RuntimeInputType } from '../../InputsForm/types'
 
 function BooleanInputInternal(props: InputProps<InputsFormValues>): JSX.Element {
   const { allowableTypes, readonly, path, input } = props
   const { label = '' } = input
+  const { renderRuntimeInput } = useRuntimeInput({ type: RuntimeInputType.boolean })
 
   return (
     <FormMultiTypeCheckboxField
       name={path}
       label={label}
-      multiTypeTextbox={{ expressions: [], disabled: readonly, allowableTypes }}
+      multiTypeTextbox={{ expressions: [], disabled: readonly, allowableTypes, renderRuntimeInput }}
       disabled={readonly}
     />
   )

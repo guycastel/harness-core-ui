@@ -50,7 +50,7 @@ export function InputRow({ input }: InputRowProps): React.ReactElement {
       <Container>
         <InputComponentRenderer
           path={input.name}
-          allowableTypes={[MultiTypeInputType.FIXED, MultiTypeInputType.RUNTIME, MultiTypeInputType.EXPRESSION]} // TODO:: fetch from context or prop
+          allowableTypes={[MultiTypeInputType.FIXED, MultiTypeInputType.EXPRESSION]}
           factory={inputComponentFactory}
           readonly={false}
           input={input}

@@ -16,7 +16,7 @@ export interface RuntimeInput {
   type: string
   desc?: string
   required?: boolean
-  default?: string
+  default?: unknown
   validator?: {
     allowed?: string[] | number[] | boolean[]
     regex?: string

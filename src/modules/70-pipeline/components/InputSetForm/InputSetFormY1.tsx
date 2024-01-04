@@ -139,7 +139,8 @@ export function InputSetFormY1(props: InputSetFormY1Props): React.ReactElement {
   } = useGetInputsSchemaDetailsQuery({
     org: orgIdentifier,
     pipeline: pipelineIdentifier,
-    project: projectIdentifier
+    project: projectIdentifier,
+    queryParams: {}
   })
 
   useEffect(() => {

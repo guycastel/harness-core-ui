@@ -726,7 +726,7 @@ function RunPipelineFormBasic({
         org: orgIdentifier,
         pipeline: pipelineMetadata?.identifier as string,
         project: projectIdentifier,
-        body: { yaml: yamlStringify({ inputs: valuesPipeline }) },
+        body: { inputs_yaml: yamlStringify(valuesPipeline) },
         queryParams: {}
       })
       const data = response?.content
@@ -957,7 +957,8 @@ function RunPipelineFormBasic({
     {
       org: orgIdentifier,
       pipeline: pipelineMetadata?.identifier as string,
-      project: projectIdentifier
+      project: projectIdentifier,
+      queryParams: {}
     },
     {
       cacheTime: 0

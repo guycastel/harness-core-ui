@@ -24,7 +24,9 @@ import { get, compact, isArray } from 'lodash-es'
 import { FormGroup, IFormGroupProps, Intent } from '@blueprintjs/core'
 import { useStrings } from 'framework/strings'
 import { errorCheck } from '@common/utils/formikHelpers'
-import MultiTypeFieldSelector from '@common/components/MultiTypeFieldSelector/MultiTypeFieldSelector'
+import MultiTypeFieldSelector, {
+  MultiTypeFieldSelectorProps
+} from '@common/components/MultiTypeFieldSelector/MultiTypeFieldSelector'
 import { ExpressionsListInput } from '@common/components/ExpressionsListInput/ExpressionsListInput'
 import {
   DelegateSelectorsV2Container,
@@ -43,6 +45,7 @@ export interface MultiTypeDelegateSelectorProps extends IFormGroupProps {
   inputProps: Omit<DelegateSelectorsV2ContainerProps, 'onChange'>
   disableTypeSelection?: boolean
   enableConfigureOptions?: boolean
+  multiTypeFieldSelectorProps?: Partial<MultiTypeFieldSelectorProps>
 }
 
 export interface ConnectedMultiTypeDelegateSelectorProps extends MultiTypeDelegateSelectorProps {
@@ -133,6 +136,7 @@ export function MultiTypeDelegateSelector(props: ConnectedMultiTypeDelegateSelec
     inputProps,
     disableTypeSelection = false,
     enableConfigureOptions = false,
+    multiTypeFieldSelectorProps,
     ...restProps
   } = props
   const { showLabelText = true } = inputProps
@@ -174,6 +178,7 @@ export function MultiTypeDelegateSelector(props: ConnectedMultiTypeDelegateSelec
           )}
           enableConfigureOptions={enableConfigureOptions}
           style={{ flexGrow: 1, marginBottom: 0 }}
+          {...multiTypeFieldSelectorProps}
         >
           <DelegateSelectorsV2Container
             {...inputProps}

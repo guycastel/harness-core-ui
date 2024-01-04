@@ -72,7 +72,7 @@
     "@harnessio/react-audit-service-client": "^0.3.0",
     "@harnessio/react-idp-service-client": "0.45.2",
     "@harnessio/react-ng-manager-client": "^1.18.0",
-    "@harnessio/react-pipeline-service-client": "1.9.0",
+    "@harnessio/react-pipeline-service-client": "1.11.0",
     "@harnessio/react-srm-service-client": "1.0.0",
     "@harnessio/react-ssca-manager-client": "^0.18.0",
     "@harnessio/react-template-service-client": "^0.2.0",
