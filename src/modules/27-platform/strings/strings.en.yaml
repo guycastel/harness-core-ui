@@ -48,6 +48,7 @@ defaultSettings:
   showGcpCostAs: (GCP only) Show costs as
   projectScopedResourceConstraintQueue: Project Scoped Resource Constraint Queue
   exportServiceVariablesAsEnvVariables: Export Service Variables as Env Variables
+  mandatePipelineCreateEditPermissionCreateEditTriggers: Mandate pipeline create and edit permission to create and edit triggers
   ticketingToolLabel: Ticketing Tool
   ticketingToolConnectorLabel: Ticketing Tool Connector
   enableSlack: '{{ $.common.slack }} {{$.rbac.notifications.name}}'

@@ -3207,6 +3207,7 @@ export interface StringsMap {
   'platform.defaultSettings.harnessDefault': string
   'platform.defaultSettings.inheritedFrom': string
   'platform.defaultSettings.mandateAuthorizationForCustomWebhookTriggers': string
+  'platform.defaultSettings.mandatePipelineCreateEditPermissionCreateEditTriggers': string
   'platform.defaultSettings.mandateWebhookSecretsGithubTriggers': string
   'platform.defaultSettings.msteamsPlaceholder': string
   'platform.defaultSettings.noSettingToDisplay': string

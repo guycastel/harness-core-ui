@@ -51,7 +51,8 @@ jest.mock('services/cd-ng', () => ({
   getConnectorListV2Promise: jest.fn(() => Promise.resolve(ConnectorListV2)),
   useGetConnector: jest.fn(() => ({})),
   useListGitSync: jest.fn(() => ({})),
-  useGetImagesListForEcr: jest.fn(() => ({}))
+  useGetImagesListForEcr: jest.fn(() => ({})),
+  useGetSettingValue: jest.fn(() => ({ data: { data: { value: 'true' } } }))
 }))
 
 jest.mock('@harnessio/react-pipeline-service-client', () => ({

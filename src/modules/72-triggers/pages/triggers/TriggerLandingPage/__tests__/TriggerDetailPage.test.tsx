@@ -17,6 +17,8 @@ import { TestWrapper } from '@common/utils/testUtils'
 import { defaultAppStoreValues } from '@common/utils/DefaultAppStoreData'
 import { GetTriggerResponse } from '@triggers/pages/trigger-details/TriggerDetailsMock'
 import * as pipelineServices from 'services/pipeline-ng'
+import * as cdNg from 'services/cd-ng'
+import * as usePermission from '@rbac/hooks/usePermission'
 import { GetTriggerDetailsResponse } from '../../__tests__/TriggerDetailPageMock'
 import TriggerLandingPage from '../TriggerLandingPage'
 import TriggerDetailPage from '../TriggerDetailPage/TriggerDetailPage'
@@ -70,6 +72,10 @@ jest.mock('@harnessio/react-pipeline-service-client', () => ({
 
 describe('Test Trigger Detail Page Test', () => {
   test('should test snapshot view', async () => {
+    jest.spyOn(usePermission, 'usePermission').mockImplementation(() => [true, true])
+    jest.spyOn(cdNg, 'useGetSettingValue').mockImplementation((): any => {
+      return { data: { data: { value: 'true' } } }
+    })
     const datespy = jest.spyOn(Date.prototype, 'toLocaleDateString')
     const timespy = jest.spyOn(Date.prototype, 'toLocaleTimeString')
 
@@ -98,9 +104,85 @@ describe('Test Trigger Detail Page Test', () => {
         loading: true
       }
     })
+    jest.spyOn(usePermission, 'usePermission').mockImplementation(() => [true, true])
+    jest.spyOn(cdNg, 'useGetSettingValue').mockImplementation((): any => {
+      return { data: { data: { value: 'true' } } }
+    })
     const { container, getAllByText } = render(<TestComponent />)
     //loading icon and text should be visible
     expect(container.querySelector('[data-icon="steps-spinner"]')).toBeDefined()
     expect(getAllByText('Loading, please wait...')).toBeDefined()
+  })
+
+  describe('Test with MANDATE_PIPELINE_CREATE_EDIT_PERMISSION_TO_CREATE_EDIT_TRIGGERS: true', () => {
+    beforeEach(() => {
+      jest.spyOn(cdNg, 'useGetSettingValue').mockImplementation((): any => {
+        return { data: { data: { value: 'true' } } }
+      })
+    })
+
+    test('EXECUTE_PIPELINE: false, EDIT_PIPELINE: true', () => {
+      jest.spyOn(usePermission, 'usePermission').mockImplementation(() => [false, true])
+
+      const { container } = render(<TestComponent />)
+      expect(container.querySelector('[aria-label="edit"]')).toBeDisabled()
+    })
+
+    test('EXECUTE_PIPELINE: true, EDIT_PIPELINE: false', () => {
+      jest.spyOn(usePermission, 'usePermission').mockImplementation(() => [true, false])
+
+      const { container } = render(<TestComponent />)
+      expect(container.querySelector('[aria-label="edit"]')).toBeDisabled()
+    })
+
+    test('EXECUTE_PIPELINE: false, EDIT_PIPELINE: false', () => {
+      jest.spyOn(usePermission, 'usePermission').mockImplementation(() => [false, false])
+
+      const { container } = render(<TestComponent />)
+      expect(container.querySelector('[aria-label="edit"]')).toBeDisabled()
+    })
+
+    test('EXECUTE_PIPELINE: true, EDIT_PIPELINE: true', () => {
+      jest.spyOn(usePermission, 'usePermission').mockImplementation(() => [true, true])
+
+      const { container } = render(<TestComponent />)
+      expect(container.querySelector('[aria-label="edit"]')).not.toBeDisabled()
+    })
+  })
+
+  describe('Test with MANDATE_PIPELINE_CREATE_EDIT_PERMISSION_TO_CREATE_EDIT_TRIGGERS: false', () => {
+    beforeEach(() => {
+      jest.spyOn(cdNg, 'useGetSettingValue').mockImplementation((): any => {
+        return { data: { data: { value: 'false' } } }
+      })
+    })
+
+    test('EXECUTE_PIPELINE: false, EDIT_PIPELINE: true', () => {
+      jest.spyOn(usePermission, 'usePermission').mockImplementation(() => [false, true])
+
+      const { container } = render(<TestComponent />)
+      expect(container.querySelector('[aria-label="edit"]')).toBeDisabled()
+    })
+
+    test('EXECUTE_PIPELINE: true, EDIT_PIPELINE: false', () => {
+      jest.spyOn(usePermission, 'usePermission').mockImplementation(() => [true, false])
+
+      const { container } = render(<TestComponent />)
+      expect(container.querySelector('[aria-label="edit"]')).not.toBeDisabled()
+    })
+
+    test('EXECUTE_PIPELINE: false, EDIT_PIPELINE: false', () => {
+      jest.spyOn(usePermission, 'usePermission').mockImplementation(() => [false, false])
+
+      const { container } = render(<TestComponent />)
+      expect(container.querySelector('[aria-label="edit"]')).toBeDisabled()
+    })
+
+    test('EXECUTE_PIPELINE: true, EDIT_PIPELINE: true', () => {
+      jest.spyOn(usePermission, 'usePermission').mockImplementation(() => [true, true])
+
+      const { container } = render(<TestComponent />)
+      expect(container.querySelector('[aria-label="edit"]')).not.toBeDisabled()
+    })
   })
 })

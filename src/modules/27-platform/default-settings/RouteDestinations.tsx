@@ -363,6 +363,15 @@ DefaultSettingsFactory.registerSettingHandler(SettingType.DISABLE_HARNESS_BUILT_
   settingCategory: 'CONNECTORS'
 })
 
+DefaultSettingsFactory.registerSettingHandler(
+  SettingType.MANDATE_PIPELINE_CREATE_EDIT_PERMISSION_TO_CREATE_EDIT_TRIGGERS,
+  {
+    label: 'platform.defaultSettings.mandatePipelineCreateEditPermissionCreateEditTriggers',
+    settingRenderer: props => <DefaultSettingRadioBtnWithTrueAndFalse {...props} />,
+    settingCategory: 'PMS'
+  }
+)
+
 DefaultSettingsFactory.registerSettingHandler(SettingType.MANDATE_CUSTOM_WEBHOOK_AUTHORIZATION, {
   label: 'platform.defaultSettings.mandateAuthorizationForCustomWebhookTriggers',
   settingRenderer: props => <DefaultSettingRadioBtnWithTrueAndFalse {...props} />,

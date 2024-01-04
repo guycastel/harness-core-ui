@@ -85,6 +85,7 @@ export enum SettingType {
   TRIGGER_FOR_ALL_ARTIFACTS_OR_MANIFESTS = 'trigger_for_all_artifacts_or_manifests',
   ENABLE_FORCE_DELETE = 'enable_force_delete',
   PIPELINE_TIMEOUT = 'pipeline_timeout',
+  MANDATE_PIPELINE_CREATE_EDIT_PERMISSION_TO_CREATE_EDIT_TRIGGERS = 'mandate_pipeline_create_edit_permission_to_create_edit_triggers',
   STAGE_TIMEOUT = 'stage_timeout',
   CONCURRENT_ACTIVE_PIPELINE_EXECUTIONS = 'concurrent_active_pipeline_executions',
   ALLOW_USER_TO_MARK_STEP_AS_FAILED_EXPLICITLY = 'allow_user_to_mark_step_as_failed_explicitly',
