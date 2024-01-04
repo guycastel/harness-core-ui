@@ -247,7 +247,7 @@ export function TemplatePipelineProvider({
         updatePipelineStoreMetadata: Promise.resolve,
         updateEntityValidityDetails: Promise.resolve,
         updatePipeline,
-        updatePipelineMetadata: Promise.resolve,
+        updatePipelineMetadata: () => Promise.resolve(),
         updateStage,
         updatePipelineView,
         deletePipelineCache: Promise.resolve,
