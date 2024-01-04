@@ -44,13 +44,15 @@ import css from './SelectMonitoredServiceType.module.scss'
 export interface SelectMonitoredServiceTypeProps {
   formik: FormikProps<ContinousVerificationData>
   allowableTypes: AllowedTypes
+  readonly?: boolean
 }
 
 export default function SelectMonitoredServiceType(props: SelectMonitoredServiceTypeProps): React.ReactElement {
   const {
     formik,
     formik: { values: formValues, setFieldValue },
-    allowableTypes
+    allowableTypes,
+    readonly
   } = props
   const { getString } = useStrings()
   const { getTemplate } = useTemplateSelector()
@@ -177,6 +179,7 @@ export default function SelectMonitoredServiceType(props: SelectMonitoredService
                 label={getString('platform.connectors.cdng.monitoredServiceType')}
                 items={monitoredServiceTypes as SelectOption[]}
                 onChange={handleOnChangeMonitoredServiceType}
+                disabled={readonly}
               />
               {showTemplateButton && type === MONITORED_SERVICE_TYPE.TEMPLATE ? (
                 <RbacButton
@@ -184,6 +187,7 @@ export default function SelectMonitoredServiceType(props: SelectMonitoredService
                   variation={ButtonVariation.SECONDARY}
                   icon="template-library"
                   onClick={onUseTemplate}
+                  disabled={readonly}
                   featuresProps={{
                     featuresRequest: {
                       featureNames: [FeatureIdentifier.TEMPLATE_SERVICE]

@@ -21,10 +21,11 @@ import VerificationTypeDropdown from './components/VerificationTypeDropdown'
 interface SelectVerificationTypeProps {
   formik: FormikProps<ContinousVerificationData>
   allowableTypes: AllowedTypes
+  readonly?: boolean
 }
 
 export default function SelectVerificationType(props: SelectVerificationTypeProps): React.ReactElement {
-  const { formik, allowableTypes } = props
+  const { formik, allowableTypes, readonly } = props
 
   const { setFieldValue } = useFormikContext()
 
@@ -59,9 +60,11 @@ export default function SelectVerificationType(props: SelectVerificationTypeProp
       <>
         <Layout.Vertical spacing={'medium'}>
           <Text font={{ size: 'small' }}>{getString('platform.connectors.cdng.verificationTypeHeading')}</Text>
-          <VerificationTypeDropdown verificationTypeOptions={continousVerificationTypeOptions} />
+          <VerificationTypeDropdown verificationTypeOptions={continousVerificationTypeOptions} readonly={readonly} />
         </Layout.Vertical>
-        {formik?.values?.spec?.type ? <ConfigureFields formik={formik} allowableTypes={allowableTypes} /> : null}
+        {formik?.values?.spec?.type ? (
+          <ConfigureFields formik={formik} allowableTypes={allowableTypes} readonly={readonly} />
+        ) : null}
       </>
     </Card>
   )

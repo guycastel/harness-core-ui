@@ -17,6 +17,7 @@ enableVerificationHelpText: Apply verification step to a deployment to detect re
 openInPipelineStudio: Open in Pipeline Studio
 closeStepConfig: Close step configuration?
 stepConfigContent: Changes to your step configuration will be lost if you do not apply your changes.
+stepConfigContentInvalidPermission: You do not have permission to update the step configuration.
 stepConfigHasChanges: Form has some unsaved changes, Do you want to apply the changes?
 clickHere: Click here
 stepDetails: Step details

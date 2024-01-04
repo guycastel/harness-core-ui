@@ -5452,6 +5452,7 @@ export interface StringsMap {
   'pipeline.stepCommonFields.validation.mustBeANumber': string
   'pipeline.stepCommonFields.validation.notIn': string
   'pipeline.stepConfigContent': string
+  'pipeline.stepConfigContentInvalidPermission': string
   'pipeline.stepConfigHasChanges': string
   'pipeline.stepDescription.ACR': string
   'pipeline.stepDescription.AdvancedCommandFlags': string

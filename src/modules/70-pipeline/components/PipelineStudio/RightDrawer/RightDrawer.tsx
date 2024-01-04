@@ -826,6 +826,7 @@ export function RightDrawer(): React.ReactElement {
       />
       <Button
         text={getString('cancel')}
+        margin={{ left: 'small' }}
         variation={ButtonVariation.TERTIARY}
         size={ButtonSize.MEDIUM}
         onClick={() => closeConfirmBEUpdateError()}
@@ -834,9 +835,11 @@ export function RightDrawer(): React.ReactElement {
   )
 
   const { openDialog: openConfirmBEUpdateError, closeDialog: closeConfirmBEUpdateError } = useConfirmationDialog({
-    contentText: getString('pipeline.stepConfigContent'),
+    contentText: !isReadonly
+      ? getString('pipeline.stepConfigContent')
+      : getString('pipeline.stepConfigContentInvalidPermission'),
     titleText: getString('pipeline.closeStepConfig'),
-    confirmButtonText: getString('applyChanges'),
+    confirmButtonText: !isReadonly ? getString('applyChanges') : null,
     customButtons: customButtonContainer,
     intent: Intent.WARNING,
     showCloseButton: false,

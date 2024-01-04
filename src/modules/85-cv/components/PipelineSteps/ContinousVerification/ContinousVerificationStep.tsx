@@ -54,7 +54,8 @@ export class ContinousVerificationStep extends PipelineStep<ContinousVerificatio
       customStepProps,
       isNewStep,
       allowableTypes,
-      onChange
+      onChange,
+      readonly
     } = props
 
     if (this.isTemplatizedView(stepViewType)) {
@@ -86,6 +87,7 @@ export class ContinousVerificationStep extends PipelineStep<ContinousVerificatio
         allowableTypes={allowableTypes}
         stepViewType={stepViewType}
         ref={formikRef}
+        readonly={readonly}
       />
     )
   }

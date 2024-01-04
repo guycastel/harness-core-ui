@@ -19,10 +19,12 @@ import styles from './VerificationTypeDropdown.module.scss'
 
 interface VerificationTypeDropdownProps {
   verificationTypeOptions: VerificationTypesOptionsType[]
+  readonly?: boolean
 }
 
 export default function VerificationTypeDropdown({
-  verificationTypeOptions
+  verificationTypeOptions,
+  readonly
 }: VerificationTypeDropdownProps): JSX.Element {
   const { getString } = useStrings()
 
@@ -50,6 +52,7 @@ export default function VerificationTypeDropdown({
       </Text>
       <Popover
         isOpen={isSelectOpen}
+        disabled={readonly}
         onInteraction={nextOpenState => {
           setIsSelectOpen(nextOpenState)
         }}
@@ -94,7 +97,12 @@ export default function VerificationTypeDropdown({
           </Layout.Vertical>
         }
       >
-        <div className={cx(styles.selectContainer)} data-testid="selectedVerificationDisplay">
+        <div
+          className={cx(styles.selectContainer, {
+            [styles.disabledStyle]: readonly
+          })}
+          data-testid="selectedVerificationDisplay"
+        >
           {selectedOption ? (
             <Layout.Horizontal>
               <Icon margin={{ right: 'small' }} name={selectedOption?.icon?.name as IconName} />

@@ -15,4 +15,5 @@ export interface ContinousVerificationWidgetSectionsProps {
   formik: FormikProps<ContinousVerificationData>
   stepViewType?: StepViewType
   allowableTypes: AllowedTypes
+  readonly?: boolean
 }

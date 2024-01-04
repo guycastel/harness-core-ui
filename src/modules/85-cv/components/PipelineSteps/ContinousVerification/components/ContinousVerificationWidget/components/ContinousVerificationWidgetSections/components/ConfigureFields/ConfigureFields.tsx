@@ -21,11 +21,13 @@ import stepCss from '@pipeline/components/PipelineSteps/Steps/Steps.module.scss'
 export default function ConfigureFields(props: {
   formik: FormikProps<ContinousVerificationData>
   allowableTypes: AllowedTypes
+  readonly?: boolean
 }): React.ReactElement {
   const {
     formik: { values: formValues, setFieldValue },
     formik,
-    allowableTypes
+    allowableTypes,
+    readonly
   } = props
   const { getString } = useStrings()
   const { expressions } = useVariablesExpression()
@@ -47,6 +49,7 @@ export default function ConfigureFields(props: {
             <div className={stepCss.formGroup} data-testid="simpleVerification_form">
               <Duration
                 name={`spec.spec.duration`}
+                disabled={readonly}
                 label={getString('duration')}
                 expressions={expressions}
                 formik={formik}
@@ -65,6 +68,7 @@ export default function ConfigureFields(props: {
                 expressions={expressions}
                 formik={formik}
                 allowableTypes={allowableTypes}
+                disabled={readonly}
               />
             </div>
             <div className={stepCss.formGroup}>
@@ -74,6 +78,7 @@ export default function ConfigureFields(props: {
                 expressions={expressions}
                 formik={formik}
                 allowableTypes={allowableTypes}
+                disabled={readonly}
               />
             </div>
             <div className={stepCss.formGroup}>
@@ -83,6 +88,7 @@ export default function ConfigureFields(props: {
                 expressions={expressions}
                 formik={formik}
                 allowableTypes={allowableTypes}
+                disabled={readonly}
               />
             </div>
           </>
@@ -100,6 +106,7 @@ export default function ConfigureFields(props: {
                 expressions={expressions}
                 formik={formik}
                 allowableTypes={allowableTypes}
+                disabled={readonly}
               />
             </div>
             <div className={stepCss.formGroup}>
@@ -109,6 +116,7 @@ export default function ConfigureFields(props: {
                 expressions={expressions}
                 formik={formik}
                 allowableTypes={allowableTypes}
+                disabled={readonly}
               />
             </div>
             <div className={stepCss.formGroup}>
@@ -148,10 +156,12 @@ export default function ConfigureFields(props: {
         <FormInput.MultiTextInput
           label={getString('platform.connectors.cdng.artifactTag')}
           name="spec.spec.deploymentTag"
+          disabled={readonly}
           multiTextInputProps={{
             expressions,
             allowableTypes,
-            newExpressionComponent: NG_EXPRESSIONS_NEW_INPUT_ELEMENT
+            newExpressionComponent: NG_EXPRESSIONS_NEW_INPUT_ELEMENT,
+            disabled: readonly
           }}
         />
       </div>
@@ -160,11 +170,12 @@ export default function ConfigureFields(props: {
           <FormInput.CheckBox
             name="spec.spec.failOnNoAnalysis"
             label={getString('platform.connectors.cdng.failOnNoAnalysis')}
+            disabled={readonly}
           />
         </div>
       )}
 
-      <NodeFilteringFields allowableTypes={allowableTypes} />
+      <NodeFilteringFields allowableTypes={allowableTypes} readonly={readonly} />
     </>
   )
 }

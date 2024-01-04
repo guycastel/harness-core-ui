@@ -25,8 +25,9 @@ export default function BaseContinousVerification(props: {
   isNewStep?: boolean
   stepViewType?: StepViewType
   allowableTypes: AllowedTypes
+  readonly?: boolean
 }): React.ReactElement {
-  const { isNewStep = true, stepViewType, allowableTypes } = props
+  const { isNewStep = true, stepViewType, allowableTypes, readonly } = props
   const { getString } = useStrings()
   const { expressions } = useVariablesExpression()
   const { NG_EXPRESSIONS_NEW_INPUT_ELEMENT } = useFeatureFlags()
@@ -36,14 +37,18 @@ export default function BaseContinousVerification(props: {
         {stepViewType !== StepViewType.Template && (
           <div className={cx(stepCss.formGroup)}>
             <FormInput.InputWithIdentifier
-              isIdentifierEditable={isNewStep}
+              isIdentifierEditable={isNewStep && !readonly}
               inputLabel={getString('pipelineSteps.stepNameLabel')}
+              inputGroupProps={{
+                disabled: readonly
+              }}
             />
           </div>
         )}
         <div className={cx(stepCss.formGroup)}>
           <FormMultiTypeDurationField
             name="timeout"
+            disabled={readonly}
             label={getString('pipelineSteps.timeoutLabel')}
             multiTypeDurationProps={{
               enableConfigureOptions: true,

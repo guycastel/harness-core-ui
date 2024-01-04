@@ -50,6 +50,16 @@ window.getComputedStyle = elt => getComputedStyle(elt)
 
 jest.mock('@common/components/MonacoEditor/MonacoEditor')
 
+const useConfirmationDialogMock = jest.fn()
+
+jest.mock('@harness/uicore', () => ({
+  ...jest.requireActual('@harness/uicore'),
+  useConfirmationDialog: jest.fn().mockImplementation((...args) => {
+    useConfirmationDialogMock(...args)
+    return {}
+  })
+}))
+
 const getListOfBranchesWithStatus = jest.fn(() => Promise.resolve(branchStatusMock))
 const getListGitSync = jest.fn(() => Promise.resolve(gitConfigs))
 
@@ -476,12 +486,21 @@ describe('Right Drawer tests', () => {
       })
     })
 
-    test('Apply Changes button should be disabled if isReadOnly is true', async () => {
+    test('Apply Changes button should be disabled if isReadOnly is true and useConfirmationDialog must be called with null confirmButtonText prop', async () => {
+      useConfirmationDialogMock.mockClear()
       const pipelineContextMock = getPipelineContextMock()
+      // here
       pipelineContextMock.isReadonly = true
       render(<WrapperComponent mockData={pipelineContextMock} />)
 
       expect(screen.getByRole('button', { name: 'applyChanges' })).toBeDisabled()
+
+      expect(useConfirmationDialogMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          confirmButtonText: null,
+          contentText: 'pipeline.stepConfigContentInvalidPermission'
+        })
+      )
     })
   })
 

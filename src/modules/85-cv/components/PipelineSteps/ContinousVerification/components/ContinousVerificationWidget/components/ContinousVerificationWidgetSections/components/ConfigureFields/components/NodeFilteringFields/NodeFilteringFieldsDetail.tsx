@@ -12,9 +12,13 @@ import styles from './NodeFilteringFieldsDetail.module.scss'
 
 interface NodeFilteringFieldsDetailProps {
   allowableTypes: AllowedTypes
+  readonly?: boolean
 }
 
-export default function NodeFilteringFieldsDetail({ allowableTypes }: NodeFilteringFieldsDetailProps): JSX.Element {
+export default function NodeFilteringFieldsDetail({
+  allowableTypes,
+  readonly
+}: NodeFilteringFieldsDetailProps): JSX.Element {
   const { getString } = useStrings()
 
   const { expressions } = useVariablesExpression()
@@ -36,6 +40,7 @@ export default function NodeFilteringFieldsDetail({ allowableTypes }: NodeFilter
       <FormInput.CheckBox
         name="spec.spec.failIfAnyCustomMetricInNoAnalysis"
         label={getString('cv.verifyStep.shouldFailWhenNoAnalysisForMetrics')}
+        disabled={readonly}
       />
 
       {isFilterFromCDEnabled && (
@@ -43,6 +48,7 @@ export default function NodeFilteringFieldsDetail({ allowableTypes }: NodeFilter
           <FormInput.CheckBox
             name="spec.spec.shouldUseCDNodes"
             label={getString('cv.verifyStep.shouldUseCDNodesLabel')}
+            disabled={readonly}
           />
 
           <Text
@@ -72,6 +78,7 @@ export default function NodeFilteringFieldsDetail({ allowableTypes }: NodeFilter
               tooltipProps={{ dataTooltipId: 'controlNodeRegexFilterInput' }}
               name="spec.spec.controlNodeRegExPattern"
               placeholder={getString('cv.verifyStep.controlNodePlaceholder')}
+              disabled={readonly}
               multiTextInputProps={{
                 expressions,
                 allowableTypes,
@@ -86,6 +93,7 @@ export default function NodeFilteringFieldsDetail({ allowableTypes }: NodeFilter
               tooltipProps={{ dataTooltipId: 'testNodeRegexFilterInput' }}
               name="spec.spec.testNodeRegExPattern"
               placeholder={getString('cv.verifyStep.testNodePlaceholder')}
+              disabled={readonly}
               multiTextInputProps={{
                 expressions,
                 allowableTypes,

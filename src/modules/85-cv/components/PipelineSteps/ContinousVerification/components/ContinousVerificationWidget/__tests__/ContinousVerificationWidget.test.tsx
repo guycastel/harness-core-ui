@@ -222,6 +222,30 @@ describe('Unit tests for ContinousVerificationWidget Utils', () => {
       await userEvent.click(simpleVerificationOption)
     })
 
+    test('should verify whether verification type dropdown is disabled when it is readonly', async () => {
+      const { container } = render(
+        <TestWrapper defaultFeatureFlagValues={{ SRM_ENABLE_SIMPLE_VERIFICATION: true }}>
+          <Formik initialValues={formikMockValues.values} onSubmit={jest.fn()}>
+            <SelectVerificationType allowableTypes={[MultiTypeInputType.FIXED]} formik={formikMockValues} readonly />
+          </Formik>
+        </TestWrapper>
+      )
+
+      const verificationTypeDropdownInput = document.querySelector(
+        '.disabledStyle[data-testid="selectedVerificationDisplay"]'
+      )
+
+      await waitFor(() =>
+        expect(screen.getByRole('checkbox', { name: 'platform.connectors.cdng.failOnNoAnalysis' })).toBeDisabled()
+      )
+
+      expect(container.querySelector('input[name="spec.spec.sensitivity"]')).toBeDisabled()
+      expect(container.querySelector('input[name="spec.spec.duration"]')).toBeDisabled()
+      expect(container.querySelector('input[name="spec.spec.deploymentTag"]')).toBeDisabled()
+
+      await waitFor(() => expect(verificationTypeDropdownInput).toBeInTheDocument())
+    })
+
     test('Should render the form based on the deployment type selected', async () => {
       render(
         <TestWrapper defaultFeatureFlagValues={{ SRM_ENABLE_SIMPLE_VERIFICATION: true }}>

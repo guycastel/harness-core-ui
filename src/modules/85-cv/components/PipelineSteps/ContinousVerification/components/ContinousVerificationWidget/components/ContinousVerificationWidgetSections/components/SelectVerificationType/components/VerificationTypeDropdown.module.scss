@@ -34,3 +34,8 @@
   height: 400px !important;
   overflow: auto;
 }
+
+.disabledStyle {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

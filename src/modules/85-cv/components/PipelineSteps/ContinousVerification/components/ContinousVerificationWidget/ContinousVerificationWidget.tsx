@@ -35,7 +35,15 @@ import { VerificationTypes } from './components/ContinousVerificationWidgetSecti
  */
 
 export function ContinousVerificationWidget(
-  { initialValues, onUpdate, isNewStep, stepViewType, onChange, allowableTypes }: ContinousVerificationWidgetProps,
+  {
+    initialValues,
+    onUpdate,
+    isNewStep,
+    stepViewType,
+    onChange,
+    allowableTypes,
+    readonly
+  }: ContinousVerificationWidgetProps,
   formikRef: StepFormikFowardRef
 ): JSX.Element {
   const { getString } = useStrings()
@@ -143,6 +151,7 @@ export function ContinousVerificationWidget(
             isNewStep={isNewStep}
             stepViewType={stepViewType}
             allowableTypes={allowableTypes}
+            readonly={readonly}
           />
         )
       }}

@@ -49,7 +49,7 @@ export function getVerificationSensitivityOptions(getString: UseStringsReturn['g
 }
 
 export function VerificationSensitivity(props: BaseFieldProps): JSX.Element {
-  const { zIndex, label, name, expressions, formik, isSimpleDropdown, allowableTypes } = props
+  const { zIndex, label, name, expressions, formik, isSimpleDropdown, allowableTypes, disabled } = props
   const style: CSSProperties = useMemo(() => ({ zIndex: zIndex ?? 10 }), [zIndex]) as CSSProperties
   const { getString } = useStrings()
   const { NG_EXPRESSIONS_NEW_INPUT_ELEMENT } = useFeatureFlags()
@@ -58,6 +58,7 @@ export function VerificationSensitivity(props: BaseFieldProps): JSX.Element {
       <FormInput.MultiTypeInput
         name={name ? name : 'sensitivity'}
         style={style}
+        disabled={disabled}
         label={label ? label : getString('sensitivity')}
         selectItems={getVerificationSensitivityOptions(getString)}
         multiTypeInputProps={{
@@ -83,7 +84,7 @@ export function VerificationSensitivity(props: BaseFieldProps): JSX.Element {
 export function Duration(props: BaseFieldProps): JSX.Element {
   const selectProps = useMemo(() => ({ items: getDurationOptions() }), [])
 
-  const { zIndex, label, name, expressions, formik, isSimpleDropdown, allowableTypes } = props
+  const { zIndex, label, name, expressions, formik, isSimpleDropdown, allowableTypes, disabled } = props
   const style: CSSProperties = useMemo(() => ({ zIndex: zIndex ?? 8 }), [zIndex]) as CSSProperties
   const { getString } = useStrings()
   const { NG_EXPRESSIONS_NEW_INPUT_ELEMENT } = useFeatureFlags()
@@ -93,6 +94,7 @@ export function Duration(props: BaseFieldProps): JSX.Element {
         name={name ? name : 'duration'}
         style={style}
         label={label ? label : getString('duration')}
+        disabled={disabled}
         selectItems={selectProps.items}
         multiTypeInputProps={{
           ...getMultiTypeInputProps(expressions, allowableTypes),

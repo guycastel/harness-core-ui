@@ -21,7 +21,8 @@ export function ContinousVerificationWidgetSections({
   formik,
   isNewStep,
   stepViewType,
-  allowableTypes
+  allowableTypes,
+  readonly
 }: ContinousVerificationWidgetSectionsProps): JSX.Element {
   const { CVNG_TEMPLATE_VERIFY_STEP } = useFeatureFlags()
 
@@ -55,9 +56,12 @@ export function ContinousVerificationWidgetSections({
         isNewStep={isNewStep}
         stepViewType={stepViewType}
         allowableTypes={allowableTypes}
+        readonly={readonly}
       />
-      <SelectVerificationType formik={formik} allowableTypes={allowableTypes} />
-      {CVNG_TEMPLATE_VERIFY_STEP && <SelectMonitoredServiceType formik={formik} allowableTypes={allowableTypes} />}
+      <SelectVerificationType formik={formik} allowableTypes={allowableTypes} readonly={readonly} />
+      {CVNG_TEMPLATE_VERIFY_STEP && (
+        <SelectMonitoredServiceType formik={formik} allowableTypes={allowableTypes} readonly={readonly} />
+      )}
       {CVNG_TEMPLATE_VERIFY_STEP ? renderMonitoredService() : <MonitoredService formik={formik} />}
     </>
   )

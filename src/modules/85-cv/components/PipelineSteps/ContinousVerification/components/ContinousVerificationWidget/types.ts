@@ -16,6 +16,7 @@ export interface ContinousVerificationWidgetProps {
   onChange?: (data: ContinousVerificationData) => void
   allowableTypes: AllowedTypes
   stepViewType?: StepViewType
+  readonly?: boolean
 }
 
 export interface VerificationJob {
