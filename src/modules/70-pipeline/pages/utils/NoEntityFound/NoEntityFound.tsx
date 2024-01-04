@@ -5,7 +5,7 @@
  * https://polyformproject.org/wp-content/uploads/2020/06/PolyForm-Shield-1.0.0.txt.
  */
 
-import React from 'react'
+import React, { useMemo } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 import { defaultTo, isEmpty } from 'lodash-es'
 import { Container, Layout, Text } from '@harness/uicore'
@@ -30,6 +30,7 @@ import type { Error as TemplateError } from 'services/template-ng'
 import GenericErrorHandler from '@common/pages/GenericErrorHandler/GenericErrorHandler'
 import { usePipelineContext } from '@pipeline/components/PipelineStudio/PipelineContext/PipelineContext'
 import { FetchPipelineProps } from '@modules/70-pipeline/components/PipelineStudio/PipelineContext/PipelineAsyncActions'
+import { getGitProvider } from '@modules/10-common/components/GitProviderSelect/GitProviderSelect.utils'
 import noEntityFoundImage from './images/no-entity-found.svg'
 import css from './NoEntityFound.module.scss'
 
@@ -100,6 +101,11 @@ function NoEntityFound(props: NoEntityFoundProps): JSX.Element {
     }> &
       TemplateStudioPathProps
   >()
+
+  const repoSelectorConnectorRef = useMemo(
+    () => gitDetails?.connectorRef || entityConnectorRef || connectorRef,
+    [gitDetails?.connectorRef, entityConnectorRef, connectorRef]
+  )
 
   const onGitBranchChange = React.useMemo(
     () =>
@@ -200,7 +206,8 @@ function NoEntityFound(props: NoEntityFoundProps): JSX.Element {
         </Text>
         {supportingGitSimplification ? (
           <GitRemoteDetails
-            connectorRef={gitDetails?.connectorRef || entityConnectorRef || connectorRef}
+            gitProviderType={getGitProvider(getString, repoSelectorConnectorRef).type}
+            connectorRef={repoSelectorConnectorRef}
             repoName={gitDetails?.repoName || repoName}
             branch={gitDetails?.branch || branch}
             flags={{ borderless: false, showRepo: false, normalInputStyle: true }}

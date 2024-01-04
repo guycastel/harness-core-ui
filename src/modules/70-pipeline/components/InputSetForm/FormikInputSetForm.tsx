@@ -53,7 +53,7 @@ import {
 import { SettingType } from '@common/constants/Utils'
 import { ConnectorSelectedValue } from '@connectors/components/ConnectorReferenceField/ConnectorReferenceField'
 import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
-import { getGitProviderCards } from '@modules/10-common/components/GitProviderSelect/GitProviderSelect'
+import { getGitProvider } from '@modules/10-common/components/GitProviderSelect/GitProviderSelect.utils'
 import { PipelineInputSetForm } from '../PipelineInputSetForm/PipelineInputSetForm'
 import { validatePipeline } from '../PipelineStudio/StepUtil'
 import factory from '../PipelineSteps/PipelineStepFactory'
@@ -345,7 +345,7 @@ export function FormikInputSetForm(props: FormikInputSetFormProps): React.ReactE
     formikRef.current?.setValues({
       ...initialValues,
       ...storeMetadata,
-      provider: connectorRef ? getGitProviderCards(getString)[1] : getGitProviderCards(getString)[0]
+      provider: getGitProvider(getString, connectorRef)
     })
   }, [inputSet, isEdit, resolvedPipeline])
 

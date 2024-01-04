@@ -51,13 +51,12 @@ import type { GitFilterScope } from '@common/components/GitFilters/GitFilters'
 import type { Pipeline } from '@pipeline/utils/types'
 import type { Error } from 'services/pipeline-ng'
 import RbacMenuItem from '@rbac/components/MenuItem/MenuItem'
-
 import { useQueryParams } from '@common/hooks'
 import useRBACError from '@rbac/utils/useRBACError/useRBACError'
-import { getGitProviderCards } from '@modules/10-common/components/GitProviderSelect/GitProviderSelect'
 import { YamlVersionBadge } from '@pipeline/common/components/YamlVersionBadge/YamlVersionBadge'
 import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
 import { useYamlVersion } from '@pipeline/common/hooks/useYamlVersion'
+import { getGitProvider } from '@modules/10-common/components/GitProviderSelect/GitProviderSelect.utils'
 import StudioGitPopover from '../StudioGitPopover'
 import { usePipelineContext } from '../PipelineContext/PipelineContext'
 import { DefaultNewPipelineId, DrawerTypes } from '../PipelineContext/PipelineActions'
@@ -358,11 +357,7 @@ export function PipelineCanvasHeader(props: PipelineCanvasHeaderProps): React.Re
             {isPipelineRemote && (
               <div className={css.gitRemoteDetailsWrapper}>
                 <GitRemoteDetails
-                  gitProviderType={
-                    isEmpty(connectorRef)
-                      ? getGitProviderCards(getString)[0].type
-                      : getGitProviderCards(getString)[1].type
-                  }
+                  gitProviderType={getGitProvider(getString, connectorRef).type}
                   connectorRef={connectorRef}
                   repoName={defaultTo(
                     defaultTo(defaultTo(repoName, gitDetails.repoName), gitDetails.repoIdentifier),

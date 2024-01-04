@@ -20,7 +20,7 @@ import {
 } from '@harness/uicore'
 import { Color, FontVariation } from '@harness/design-system'
 import { flushSync } from 'react-dom'
-import { defaultTo, isEmpty } from 'lodash-es'
+import { defaultTo } from 'lodash-es'
 import { useHistory, useParams } from 'react-router-dom'
 import { Classes, Menu, Position } from '@blueprintjs/core'
 import routes from '@common/RouteDefinitions'
@@ -39,7 +39,7 @@ import { GitQueryParams, InputSetPathProps, PipelineType } from '@modules/10-com
 import { YamlVersionBadge } from '@modules/70-pipeline/common/components/YamlVersionBadge/YamlVersionBadge'
 import { useFeatureFlags } from '@modules/10-common/hooks/useFeatureFlag'
 import { YamlVersion } from '@modules/70-pipeline/common/hooks/useYamlVersion'
-import { getGitProviderCards } from '@modules/10-common/components/GitProviderSelect/GitProviderSelect'
+import { getGitProvider } from '@modules/10-common/components/GitProviderSelect/GitProviderSelect.utils'
 import GitPopover from '../GitPopover/GitPopover'
 import { OutOfSyncErrorStrip } from '../InputSetErrorHandling/OutOfSyncErrorStrip/OutOfSyncErrorStrip'
 import {
@@ -152,11 +152,7 @@ export function InputSetFormHeader(props: InputSetFormHeaderProps): React.ReactE
             {isEdit && inputSet.storeType === StoreType.REMOTE && (
               <Container className={cx(css.gitRemoteDetails, inputSet.cacheResponse ? '' : css.noCacheDetails)}>
                 <GitRemoteDetails
-                  gitProviderType={
-                    isEmpty(inputSet.connectorRef)
-                      ? getGitProviderCards(getString)[0].type
-                      : getGitProviderCards(getString)[1].type
-                  }
+                  gitProviderType={getGitProvider(getString, inputSet.connectorRef).type}
                   connectorRef={inputSet.connectorRef}
                   repoName={inputSet.gitDetails?.repoName}
                   branch={inputSet.gitDetails?.branch}

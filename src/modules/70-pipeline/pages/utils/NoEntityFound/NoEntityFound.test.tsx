@@ -16,6 +16,16 @@ import { accountPathProps, pipelineModuleParams, pipelinePathProps } from '@comm
 import { TestWrapper } from '@common/utils/testUtils'
 import NoEntityFound from './NoEntityFound'
 
+const mockBranches = {
+  status: 'SUCCESS',
+  data: {
+    branches: [{ name: 'main' }, { name: 'main-demo' }, { name: 'main-patch' }, { name: 'main-patch2' }],
+    defaultBranch: { name: 'main' }
+  },
+  metaData: null,
+  correlationId: 'correlationId'
+}
+
 const errorObjMock: Error = {
   status: 'ERROR',
   code: 'HINT',
@@ -48,11 +58,20 @@ const failureObj: Failure = {
 
 const handleRemoteBranchChangMock = jest.fn((selectedBranch?: string) => branchChangeHandler(selectedBranch))
 const branchChangeHandler = jest.fn().mockImplementation((selectedBranch?: string) => noop(selectedBranch))
+const refetchBranches = jest.fn(() => Promise.resolve(mockBranches))
+jest.mock('services/cd-ng', () => ({
+  useGetListOfBranchesByRefConnectorV2: jest.fn().mockImplementation(() => {
+    return { data: mockBranches, refetch: refetchBranches, error: null, loading: false }
+  }),
+  useGetListOfBranchesWithStatus: jest.fn().mockImplementation(() => {
+    return { data: [], refetch: jest.fn(), error: null, loading: false }
+  })
+}))
 
 const TEST_PATH = routes.toPipelineStudio({ ...accountPathProps, ...pipelinePathProps, ...pipelineModuleParams })
 
-const renderComponent = (errorObj?: Failure | Error) => {
-  return render(
+const renderComponent = (errorObj?: Failure | Error) =>
+  render(
     <GitSyncTestWrapper
       path={TEST_PATH}
       pathParams={{
@@ -73,8 +92,12 @@ const renderComponent = (errorObj?: Failure | Error) => {
       <NoEntityFound entityType="pipeline" identifier="abc" errorObj={errorObj} />
     </GitSyncTestWrapper>
   )
-}
+
 describe('NoEntityFound tests', () => {
+  beforeEach(() => {
+    refetchBranches.mockReset()
+  })
+
   test('when errorObj is not passed in props', () => {
     const { container } = renderComponent()
     expect(container).toMatchSnapshot()
@@ -90,7 +113,7 @@ describe('NoEntityFound tests', () => {
     expect(container).toMatchSnapshot()
   })
 
-  test('NoENtityFound test for remote Overlay InputSet', async () => {
+  test('NoEntityFound test for remote Overlay InputSet', async () => {
     const { getByText } = render(
       <TestWrapper
         path={TEST_PATH}
@@ -126,6 +149,43 @@ describe('NoEntityFound tests', () => {
     const branchSelect = await screen.findByPlaceholderText('- common.git.selectBranchPlaceholder -')
     expect(branchChangeHandler).toHaveBeenCalledTimes(0)
     expect(branchSelect).toHaveValue('is_branch')
+    expect(refetchBranches).toHaveBeenCalledTimes(1)
+  })
+
+  test('NoEntityFound test for entities stored in harness code repos (w/o connectorRef)', async () => {
+    const { getByText } = render(
+      <TestWrapper
+        path={TEST_PATH}
+        pathParams={{
+          accountId: 'testAcc',
+          orgIdentifier: 'default',
+          projectIdentifier: 'testProject',
+          pipelineIdentifier: 'abc',
+          module: 'cd'
+        }}
+        queryParams={{
+          repoName: 'identifier',
+          branch: 'feature',
+          storeType: StoreType.REMOTE
+        }}
+        defaultAppStoreValues={{ supportingGitSimplification: true }}
+      >
+        <NoEntityFound
+          identifier={'anc'}
+          entityType={'pipeline'}
+          gitDetails={{
+            repoName: 'isRepoName',
+            branch: 'is_branch'
+          }}
+          errorObj={errorObjMock}
+          onBranchChange={handleRemoteBranchChangMock}
+        />
+      </TestWrapper>
+    )
+    expect(getByText('pipeline.gitExperience.noEntityFound')).toBeInTheDocument()
+    const branchSelect = await screen.findByPlaceholderText('- common.git.selectBranchPlaceholder -')
+    expect(branchSelect).toHaveValue('is_branch')
+    expect(refetchBranches).toHaveBeenCalledTimes(1)
   })
 
   test('when isGitSyncEnabled is true', () => {

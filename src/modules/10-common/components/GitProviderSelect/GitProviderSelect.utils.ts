@@ -5,7 +5,13 @@
  * https://polyformproject.org/wp-content/uploads/2020/06/PolyForm-Shield-1.0.0.txt.
  */
 
+import { isEmpty } from 'lodash-es'
+import { UseStringsReturn } from 'framework/strings'
 import { SourceCodeTypes } from '../AccessTokenOAuth/AccessTokenOAuth'
+import { CardSelectInterface, getGitProviderCards } from './GitProviderSelect'
 
 export const isHarnessCodeRepoEntity = (gitProviderType?: string): boolean =>
   gitProviderType === SourceCodeTypes.HARNESS
+
+export const getGitProvider = (getString: UseStringsReturn['getString'], connectorRef?: string): CardSelectInterface =>
+  isEmpty(connectorRef) ? getGitProviderCards(getString)[0] : getGitProviderCards(getString)[1]

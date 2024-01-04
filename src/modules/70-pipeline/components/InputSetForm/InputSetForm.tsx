@@ -52,7 +52,7 @@ import useDiffDialog from '@common/hooks/useDiffDialog'
 import { usePermission } from '@rbac/hooks/usePermission'
 import { ConnectorSelectedValue } from '@platform/connectors/components/ConnectorReferenceField/ConnectorReferenceField'
 import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
-import { getGitProviderCards } from '@modules/10-common/components/GitProviderSelect/GitProviderSelect'
+import { getGitProvider } from '@modules/10-common/components/GitProviderSelect/GitProviderSelect.utils'
 import { FormikInputSetForm } from './FormikInputSetForm'
 import { useSaveInputSet } from './useSaveInputSet'
 import { PipelineVariablesContextProvider } from '../PipelineVariablesContext/PipelineVariablesContext'
@@ -473,7 +473,7 @@ export function InputSetForm(props: InputSetFormProps): React.ReactElement {
               repoName: formikRefRepoName ?? defaultTo(repoName, ''),
               storeType: defaultTo(storeType, StoreType.INLINE),
               filePath: getFilePath(inputSetYamlVisual),
-              provider: formikRefConnectorRef ? getGitProviderCards(getString)[1] : getGitProviderCards(getString)[0]
+              provider: getGitProvider(getString, formikRefConnectorRef)
             })
             setFilePath(getFilePath(inputSetYamlVisual))
           }
