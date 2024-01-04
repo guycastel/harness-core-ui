@@ -41,7 +41,7 @@ export const environmentListCall =
 
 //API Responses
 export const infraCall =
-  '/ng/api/infrastructures?routingId=accountId&accountIdentifier=accountId&orgIdentifier=default&projectIdentifier=project1&environmentIdentifier=testEnvConfig&size=1000'
+  '/ng/api/infrastructures?routingId=accountId&accountIdentifier=accountId&orgIdentifier=default&projectIdentifier=project1&environmentIdentifier=testEnvConfig&page=0&size=10&searchTerm='
 
 export const selectInfraCall =
   '/template/api/templates/dep_temp_test?routingId=accountId&accountIdentifier=accountId&projectIdentifier=project1&orgIdentifier=default&versionLabel=1&getDefaultFromOtherRepo=true'

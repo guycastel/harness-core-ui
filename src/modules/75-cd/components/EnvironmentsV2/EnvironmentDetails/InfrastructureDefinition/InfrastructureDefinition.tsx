@@ -8,8 +8,18 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { ButtonSize, ButtonVariation, Container, ModalDialog, Page, useToggleOpen } from '@harness/uicore'
-import { find, get, isEmpty } from 'lodash-es'
+import {
+  ButtonSize,
+  ButtonVariation,
+  Container,
+  ModalDialog,
+  Page,
+  useToggleOpen,
+  Pagination,
+  Layout,
+  ExpandingSearchInput
+} from '@harness/uicore'
+import { find, get, isEmpty, defaultTo } from 'lodash-es'
 import { useStrings } from 'framework/strings'
 
 import { InfrastructureResponse, useGetInfrastructure, useGetInfrastructureList } from 'services/cd-ng'
@@ -17,7 +27,7 @@ import { InfrastructureResponse, useGetInfrastructure, useGetInfrastructureList 
 import type { EnvironmentPathProps, ProjectPathProps, EnvironmentQueryParams } from '@common/interfaces/RouteInterfaces'
 import { ContainerSpinner } from '@common/components/ContainerSpinner/ContainerSpinner'
 import useRBACError from '@rbac/utils/useRBACError/useRBACError'
-import { useQueryParams } from '@common/hooks'
+import { useQueryParams, useUpdateQueryParams } from '@common/hooks'
 import { ResourceType } from '@rbac/interfaces/ResourceType'
 import { PermissionIdentifier } from '@rbac/interfaces/PermissionIdentifier'
 import RbacButton from '@rbac/components/Button/Button'
@@ -25,6 +35,10 @@ import { InfraDefinitionDetailsDrawer } from '@cd/components/EnvironmentsV2/Envi
 import { useInfrastructureUnsavedChanges } from '@cd/hooks/useInfrastructureUnsavedChanges'
 import { useTemplateSelector } from 'framework/Templates/TemplateSelectorContext/useTemplateSelector'
 import { getScopeFromDTO } from '@common/components/EntityReference/EntityReference.types'
+import { useDefaultPaginationProps } from '@common/hooks/useDefaultPaginationProps'
+import { PageQueryParams, PAGE_TEMPLATE_DEFAULT_PAGE_INDEX } from '@common/constants/Pagination'
+import { DEFAULT_PAGE_INDEX } from '@pipeline/utils/constants'
+import { useRbacQueryParamOptions } from '@rbac/utils/utils'
 import InfrastructureList from './InfrastructureList/InfrastructureList'
 import InfrastructureModal from './InfrastructureModal'
 
@@ -32,7 +46,7 @@ import css from './InfrastructureDefinition.module.scss'
 
 // TODO: To be removed once pagination and search support is available for Infrastructure Definitions
 // Ticket - https://harness.atlassian.net/browse/CDS-86868
-const DEFAULT_PAGE_SIZE_FOR_INFRASTRUCTURES = 1000
+// const DEFAULT_PAGE_SIZE_FOR_INFRASTRUCTURES = 1000
 
 export default function InfrastructureDefinition({ isEnvPage }: { isEnvPage: boolean }): JSX.Element {
   const { accountId, orgIdentifier, projectIdentifier, environmentIdentifier } = useParams<
@@ -44,6 +58,9 @@ export default function InfrastructureDefinition({ isEnvPage }: { isEnvPage: boo
 
   const { isInfraUpdated, updatedInfrastructure, handleInfrastructureUpdate, openUnsavedChangesDiffModal } =
     useInfrastructureUnsavedChanges({ selectedInfrastructure })
+  const queryParamOptions = useRbacQueryParamOptions()
+  const { page: page, size: size } = useQueryParams(queryParamOptions)
+  const { updateQueryParams } = useUpdateQueryParams<Partial<PageQueryParams>>()
 
   const [infraSaveInProgress, setInfraSaveInProgress] = useState<boolean>(false)
   const {
@@ -59,6 +76,7 @@ export default function InfrastructureDefinition({ isEnvPage }: { isEnvPage: boo
     infraRepoName,
     infraBranch = ''
   } = useQueryParams<EnvironmentQueryParams>()
+  const [searchTerm, setSearchTerm] = useState<string>('')
 
   const { data, loading, error, refetch } = useGetInfrastructureList({
     queryParams: {
@@ -66,7 +84,9 @@ export default function InfrastructureDefinition({ isEnvPage }: { isEnvPage: boo
       orgIdentifier,
       projectIdentifier,
       environmentIdentifier,
-      size: DEFAULT_PAGE_SIZE_FOR_INFRASTRUCTURES
+      page: page ? page - 1 : DEFAULT_PAGE_INDEX,
+      size,
+      searchTerm
     }
   })
   const scopeFromDTO = getScopeFromDTO({ accountId, orgIdentifier, projectIdentifier })
@@ -127,6 +147,18 @@ export default function InfrastructureDefinition({ isEnvPage }: { isEnvPage: boo
     }
   }, [selectedInfrastructure, openInfraDefinitionDetails, handleInfrastructureUpdate])
 
+  const handlePageIndexChange = /* istanbul ignore next */ (index: number): void =>
+    updateQueryParams({ page: index + 1 })
+
+  const paginationProps = useDefaultPaginationProps({
+    itemCount: defaultTo(data?.data?.totalItems, 0),
+    pageSize: defaultTo(data?.data?.pageSize, 0),
+    pageCount: defaultTo(data?.data?.totalPages, 0),
+    pageIndex: defaultTo(data?.data?.pageIndex, 0),
+    gotoPage: handlePageIndexChange,
+    onPageSizeChange: newSize => updateQueryParams({ page: PAGE_TEMPLATE_DEFAULT_PAGE_INDEX, size: newSize })
+  })
+
   return (
     <>
       <Container padding={{ left: 'medium', right: 'medium' }}>
@@ -136,32 +168,47 @@ export default function InfrastructureDefinition({ isEnvPage }: { isEnvPage: boo
           <Page.Error>{getRBACErrorMessage(error)}</Page.Error>
         ) : (
           <>
-            <RbacButton
-              text={getString('pipelineSteps.deploy.infrastructure.infraDefinition')}
-              font={{ weight: 'bold' }}
-              icon="plus"
-              onClick={openInfraDefinitionDetails}
-              size={ButtonSize.SMALL}
-              variation={ButtonVariation.LINK}
-              permission={{
-                resource: {
-                  resourceType: ResourceType.ENVIRONMENT,
-                  resourceIdentifier: environmentIdentifier
-                },
-                resourceScope: {
-                  accountIdentifier: accountId,
-                  orgIdentifier,
-                  projectIdentifier
-                },
-                permission: PermissionIdentifier.EDIT_ENVIRONMENT
-              }}
-            />
+            <Layout.Horizontal flex={{ justifyContent: 'space-between', alignItems: 'center' }}>
+              <RbacButton
+                text={getString('pipelineSteps.deploy.infrastructure.infraDefinition')}
+                font={{ weight: 'bold' }}
+                icon="plus"
+                onClick={openInfraDefinitionDetails}
+                size={ButtonSize.SMALL}
+                variation={ButtonVariation.LINK}
+                permission={{
+                  resource: {
+                    resourceType: ResourceType.ENVIRONMENT,
+                    resourceIdentifier: environmentIdentifier
+                  },
+                  resourceScope: {
+                    accountIdentifier: accountId,
+                    orgIdentifier,
+                    projectIdentifier
+                  },
+                  permission: PermissionIdentifier.EDIT_ENVIRONMENT
+                }}
+              />
+              <ExpandingSearchInput
+                alwaysExpanded
+                width={200}
+                placeholder={getString('search')}
+                onChange={
+                  /* istanbul ignore next */ text => {
+                    setSearchTerm(text?.trim())
+                    updateQueryParams({ page: 0 })
+                  }
+                }
+                defaultValue={searchTerm}
+              />
+            </Layout.Horizontal>
             <InfrastructureList
               list={data?.data?.content}
               showModal={openInfraDefinitionDetails}
               refetch={refetch}
               setSelectedInfrastructure={setSelectedInfrastructure}
             />
+            <Pagination {...paginationProps} />
           </>
         )}
         {selectedInfrastructure ? (

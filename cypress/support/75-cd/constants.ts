@@ -14,7 +14,7 @@ export const environmentGroupYamlSchemaCall = `/ng/api/yaml-schema?routingId=${a
 export const environmentConfigurationCall = `/ng/api/environmentsV2/${environmentIdentifier}?routingId=${accountIdentifier}&accountIdentifier=${accountIdentifier}&orgIdentifier=${orgIdentifier}&projectIdentifier=${projectIdentifier}`
 export const environmentFetchCall = `/ng/api/environmentsV2?routingId=${accountIdentifier}&accountIdentifier=${accountIdentifier}&orgIdentifier=${orgIdentifier}&projectIdentifier=${projectIdentifier}`
 export const environmentSaveCall = `/ng/api/environmentsV2?routingId=${accountIdentifier}&accountIdentifier=${accountIdentifier}`
-export const infrastructureListCall = `/ng/api/infrastructures?routingId=${accountIdentifier}&accountIdentifier=${accountIdentifier}&orgIdentifier=${orgIdentifier}&projectIdentifier=${projectIdentifier}&environmentIdentifier=${environmentIdentifier}&size=1000`
+export const infrastructureListCall = `/ng/api/infrastructures?routingId=${accountIdentifier}&accountIdentifier=${accountIdentifier}&orgIdentifier=${orgIdentifier}&projectIdentifier=${projectIdentifier}&environmentIdentifier=${environmentIdentifier}&page=0&size=10&searchTerm=`
 
 export const environmentConfigurationSecretCall = `/ng/api/v2/secrets?accountIdentifier=${accountIdentifier}&type=${secretText}&searchTerm=&projectIdentifier=${projectIdentifier}&orgIdentifier=${orgIdentifier}&pageIndex=0&pageSize=10&includeAllSecretsAccessibleAtScope=true`
 export const infrastructureDefinitionSaveCall = `/ng/api/infrastructures?routingId=${accountIdentifier}&accountIdentifier=${accountIdentifier}`
