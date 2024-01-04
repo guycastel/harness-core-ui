@@ -2,6 +2,7 @@ import React from 'react'
 
 import { Layout, Text } from '@harness/uicore'
 
+import { defaultTo } from 'lodash-es'
 import { useStrings } from 'framework/strings'
 
 import { useServiceOverridesContext } from '@cd/components/ServiceOverrides/context/ServiceOverrideContext'
@@ -78,7 +79,11 @@ export default function ViewOnlyRow({
                   />
                 )}
               </Layout.Horizontal>
-              <RowActionButtons rowIndex={rowIndex} environmentRef={overrideDetails['environmentRef']} />
+              <RowActionButtons
+                rowIndex={rowIndex}
+                environmentRef={overrideDetails['environmentRef']}
+                serviceRef={defaultTo(overrideDetails['serviceRef'], '')}
+              />
             </Layout.Horizontal>
           )
         }
