@@ -33,7 +33,8 @@ import {
 } from 'services/pipeline-ng'
 import { importTemplatePromise, ResponseTemplateImportSaveResponse } from 'services/template-ng'
 import { IdentifierSchema, NameSchema, TemplateVersionLabelSchema } from '@common/utils/Validation'
-import { GitSyncForm, gitSyncFormSchema } from '@gitsync/components/GitSyncForm/GitSyncForm'
+import { GitSyncForm } from '@gitsync/components/GitSyncForm/GitSyncForm'
+import { yamlPathRegex } from '@common/utils/StringUtils'
 import type { ResponseMessage } from '@common/components/ErrorHandler/ErrorHandler'
 import type { PipelinePathProps } from '@common/interfaces/RouteInterfaces'
 import { ResourceType } from '@common/interfaces/GitSyncInterface'
@@ -254,18 +255,25 @@ export default function ImportResource({
         }
       : {}
 
-  const validationSchema =
-    resourceType === ResourceType.PIPELINES
-      ? Yup.object().shape({
-          ...getVersionLabelSchema,
-          ...gitSyncFormSchema(getString)
-        })
-      : Yup.object().shape({
+  const nameIdSchema =
+    resourceType !== ResourceType.PIPELINES
+      ? {
           name: NameSchema(getString, { requiredErrorMsg: getString('createPipeline.pipelineNameRequired') }),
-          identifier: IdentifierSchema(getString),
-          ...getVersionLabelSchema,
-          ...gitSyncFormSchema(getString)
-        })
+          identifier: IdentifierSchema(getString)
+        }
+      : {}
+
+  const validationSchema = Yup.object().shape({
+    ...nameIdSchema,
+    ...getVersionLabelSchema,
+    repo: Yup.string().trim().required(getString('common.git.validation.repoRequired')),
+    branch: Yup.string().trim().required(getString('common.git.validation.branchRequired')),
+    connectorRef: Yup.string().trim().required(getString('validation.sshConnectorRequired')),
+    filePath: Yup.string()
+      .trim()
+      .required(getString('gitsync.gitSyncForm.yamlPathRequired'))
+      .matches(yamlPathRegex, getString('gitsync.gitSyncForm.yamlPathInvalid'))
+  })
 
   const modifiedInitialValues = React.useMemo(() => {
     return {
