@@ -69,6 +69,7 @@ export interface KubernetesArtifactsProps {
   serviceBranch?: string
   gitMetadata?: StoreMetadata
   artifacts?: ArtifactListConfig
+  resolvedArtifacts?: ArtifactListConfig
   formik?: any
   path?: string
   initialValues: K8SDirectServiceStep

@@ -248,6 +248,7 @@ export default function SingleServiceInputSetForm({
                 serviceBranch: deploymentStageInputSet?.service?.gitBranch,
                 serviceIdentifier,
                 allValues: deploymentStage?.service?.serviceInputs?.serviceDefinition?.spec,
+                resolvedValues: resolvedStage?.service?.serviceInputs?.serviceDefinition?.spec,
                 childPipelineMetadata
               }}
               onUpdate={(data: any) => {

@@ -53,7 +53,7 @@ import {
   getDefaultQueryParam,
   getFinalQueryParamValue,
   getFqnPath,
-  getValidInitialValuePath,
+  getValidInitialValueFromArrayOfValues,
   getYamlData,
   isFieldfromTriggerTabDisabled,
   isNewServiceEnvEntity
@@ -90,6 +90,7 @@ const Content = (props: JenkinsRenderContent): React.ReactElement => {
     pipelineIdentifier,
     serviceBranch,
     artifacts,
+    resolvedArtifacts,
     useArtifactV1Data = false
   } = props
 
@@ -110,29 +111,56 @@ const Content = (props: JenkinsRenderContent): React.ReactElement => {
   const serviceId = isNewServiceEnvEntity(path as string) ? serviceIdentifier : undefined
   const isPropagatedStage = path?.includes('serviceConfig.stageOverrides')
 
+  // when some runtime input provided in nested pipeline and remaining runtime values depend on this value,
+  // we need to pick the correct value from resolved artifact instead of artifact.
+  // sequence should be artifacts, resolvedArtifacts, artifact, initialValues
   const connectorRefValue = getDefaultQueryParam(
-    getValidInitialValuePath(get(artifacts, `${artifactPath}.spec.connectorRef`, ''), artifact?.spec?.connectorRef),
+    getValidInitialValueFromArrayOfValues(
+      [artifacts, resolvedArtifacts],
+      `${artifactPath}.spec.connectorRef`,
+      artifact?.spec?.connectorRef
+    ),
     get(initialValues?.artifacts, `${artifactPath}.spec.connectorRef`, '')
   )
   const packageValue = getDefaultQueryParam(
-    getValidInitialValuePath(get(artifacts, `${artifactPath}.spec.package`, ''), artifact?.spec?.package),
+    getValidInitialValueFromArrayOfValues(
+      [artifacts, resolvedArtifacts],
+      `${artifactPath}.spec.package`,
+      artifact?.spec?.package
+    ),
     get(initialValues?.artifacts, `${artifactPath}.spec.package`)
   )
   const projectValue = getDefaultQueryParam(
-    getValidInitialValuePath(get(artifacts, `${artifactPath}.spec.project`, ''), artifact?.spec?.project),
+    getValidInitialValueFromArrayOfValues(
+      [artifacts, resolvedArtifacts],
+      `${artifactPath}.spec.project`,
+      artifact?.spec?.project
+    ),
     get(initialValues?.artifacts, `${artifactPath}.spec.project`)
   )
   const regionValue = getDefaultQueryParam(
-    getValidInitialValuePath(get(artifacts, `${artifactPath}.spec.region`, ''), artifact?.spec?.region),
+    getValidInitialValueFromArrayOfValues(
+      [artifacts, resolvedArtifacts],
+      `${artifactPath}.spec.region`,
+      artifact?.spec?.region
+    ),
     get(initialValues?.artifacts, `${artifactPath}.spec.region`)
   )
   const repositoryNameValue = getDefaultQueryParam(
-    getValidInitialValuePath(get(artifacts, `${artifactPath}.spec.repositoryName`, ''), artifact?.spec?.repositoryName),
+    getValidInitialValueFromArrayOfValues(
+      [artifacts, resolvedArtifacts],
+      `${artifactPath}.spec.repositoryName`,
+      artifact?.spec?.repositoryName
+    ),
     get(initialValues?.artifacts, `${artifactPath}.spec.repositoryName`)
   )
 
   const versionValue = getDefaultQueryParam(
-    getValidInitialValuePath(get(artifacts, `${artifactPath}.spec.version`, ''), artifact?.spec?.version),
+    getValidInitialValueFromArrayOfValues(
+      [artifacts, resolvedArtifacts],
+      `${artifactPath}.spec.version`,
+      artifact?.spec?.version
+    ),
     get(initialValues?.artifacts, `${artifactPath}.spec.version`)
   )
 

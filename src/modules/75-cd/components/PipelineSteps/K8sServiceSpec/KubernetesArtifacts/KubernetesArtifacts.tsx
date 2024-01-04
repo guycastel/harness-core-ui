@@ -15,6 +15,7 @@ export const KubernetesArtifacts: React.FC<KubernetesArtifactsProps> = props => 
   const commonProps = {
     template: props.template,
     artifacts: props.artifacts,
+    resolvedArtifacts: props.resolvedArtifacts,
     artifactSourceBaseFactory: props.artifactSourceBaseFactory,
     stepViewType: props.stepViewType,
     stageIdentifier: props.stageIdentifier,

@@ -17,6 +17,7 @@ import {
 import type { K8SDirectServiceStep } from '@pipeline/factories/ArtifactTriggerInputFactory/types'
 import type {
   ArtifactConfig,
+  ArtifactListConfig,
   ArtifactoryBuildDetailsDTO,
   DockerBuildDetailsDTO,
   EcrBuildDetailsDTO,
@@ -175,6 +176,19 @@ export const getValidInitialValuePath = (allValuesPath: string, defaultValuesPat
   }
   return defaultValuesPath
 }
+
+export const getValidInitialValueFromArrayOfValues = (
+  list: Array<ArtifactListConfig | undefined>,
+  path: string,
+  defaultValue: string
+): string => {
+  if (!list.length) return defaultValue
+  return getValidInitialValuePath(
+    get(list[0], path, ''),
+    getValidInitialValueFromArrayOfValues(list.slice(1), path, defaultValue)
+  )
+}
+
 export const getDefaultQueryParam = (initialImagePath: string, formikImagePathValue: string): string => {
   //initialImagePath is empty in case of new service entity, so we return defaultParam string to make tag as enabled
   if (isEmpty(initialImagePath)) {

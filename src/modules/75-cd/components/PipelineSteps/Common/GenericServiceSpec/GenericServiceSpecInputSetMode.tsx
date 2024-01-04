@@ -66,6 +66,12 @@ export interface KubernetesInputSetProps {
       connectionStrings?: ConnectionStringsConfiguration
       hooks?: ServiceHookWrapper[]
     }
+  resolvedValues?: KubernetesServiceSpec &
+    ServiceSpec & {
+      applicationSettings?: ApplicationSettingsConfiguration
+      connectionStrings?: ConnectionStringsConfiguration
+      hooks?: ServiceHookWrapper[]
+    }
   readonly?: boolean
   factory?: AbstractStepFactory
   path?: string
@@ -85,6 +91,7 @@ const GenericServiceSpecInputSetModeFormikForm = (props: KubernetesInputSetProps
     path,
     factory,
     allValues,
+    resolvedValues,
     initialValues,
     onUpdate,
     readonly = false,
@@ -136,6 +143,7 @@ const GenericServiceSpecInputSetModeFormikForm = (props: KubernetesInputSetProps
           type={template?.artifacts?.primary?.type || ''}
           artifacts={allValues?.artifacts}
           artifactSourceBaseFactory={artifactSourceBaseFactory}
+          resolvedArtifacts={resolvedValues?.artifacts}
           stageIdentifier={stageIdentifier}
           template={template as ServiceSpec}
           viewTypeMetadata={viewTypeMetadata}
