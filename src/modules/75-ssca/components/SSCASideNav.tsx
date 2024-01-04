@@ -57,11 +57,9 @@ export default function SSCASideNav(): React.ReactElement {
           <SidebarLink label={getString('overview')} to={routes.toProjectOverview(params)} />
           <SidebarLink label={getString('artifacts')} to={routes.toSSCAArtifacts(params)} />
           <SidebarLink label={getString('pipelines')} to={routes.toPipelines(params)} />
-          <SidebarLink
-            label={getString('ssca.remediationTracker')}
-            to={routes.toRemediationTracker(params)}
-            hidden={showRemediationTracker}
-          />
+          {showRemediationTracker && (
+            <SidebarLink label={getString('ssca.remediationTracker')} to={routes.toRemediationTracker(params)} />
+          )}
           <ProjectSetupMenu module={module} />
         </>
       )}

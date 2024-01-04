@@ -36,6 +36,10 @@ import { GovernanceRouteDestinations } from '@modules/25-governance/RouteDestina
 import { useQueryParamsOptions } from '@common/hooks/useQueryParams'
 import { PolicyViolationsDrawer } from '@modules/70-pipeline/pages/execution/ExecutionArtifactsView/PolicyViolations/PolicyViolationsDrawer'
 import { SLSAVerification } from '@modules/70-pipeline/pages/execution/ExecutionArtifactsView/ArtifactsTable/ArtifactTableCells'
+import { ResourceCategory, ResourceType } from '@modules/20-rbac/interfaces/ResourceType'
+import RbacFactory from '@modules/20-rbac/factories/RbacFactory'
+import { PermissionIdentifier } from '@modules/20-rbac/interfaces/PermissionIdentifier'
+import { String } from 'framework/strings'
 import { SSCACustomMicroFrontendProps } from './interfaces/SSCACustomMicroFrontendProps.types'
 import SSCASideNav from './components/SSCASideNav'
 
@@ -51,6 +55,36 @@ const SSCASideNavProps: SidebarContext = {
 const moduleParams: ModulePathParams = {
   module: ':module(ssca)'
 }
+
+RbacFactory.registerResourceCategory(ResourceCategory.SSCA, {
+  icon: 'ssca-main',
+  label: 'common.ssca'
+})
+
+RbacFactory.registerResourceTypeHandler(ResourceType.SSCA_REMEDIATION_TRACKER, {
+  icon: 'ssca-remediation',
+  label: 'ssca.remediationTracker',
+  labelSingular: 'ssca.remediationTracker',
+  category: ResourceCategory.SSCA,
+  permissionLabels: {
+    [PermissionIdentifier.SSCA_REMEDIATIONTRACKER_VIEW]: <String stringID="rbac.permissionLabels.view" />,
+    [PermissionIdentifier.SSCA_REMEDIATIONTRACKER_EDIT]: <String stringID="rbac.permissionLabels.createEdit" />,
+    [PermissionIdentifier.SSCA_REMEDIATIONTRACKER_CLOSE]: <String stringID="close" />
+  }
+})
+
+RbacFactory.registerResourceTypeHandler(ResourceType.SSCA_ENFORCEMENT_EXEMPTION, {
+  icon: 'ssca-enforce',
+  label: 'sto.exemptions',
+  labelSingular: 'sto.exemptions',
+  category: ResourceCategory.SSCA,
+  permissionLabels: {
+    [PermissionIdentifier.SSCA_ENFORCEMENTEXEMPTION_VIEW]: <String stringID="rbac.permissionLabels.view" />,
+    [PermissionIdentifier.SSCA_ENFORCEMENTEXEMPTION_EDIT]: <String stringID="rbac.permissionLabels.createEdit" />,
+    [PermissionIdentifier.SSCA_ENFORCEMENTEXEMPTION_DELETE]: <String stringID="delete" />,
+    [PermissionIdentifier.SSCA_ENFORCEMENTEXEMPTION_REVIEW]: <String stringID="review" />
+  }
+})
 
 const RedirectToProjectOverviewPage = (): React.ReactElement => {
   const { accountId } = useParams<ProjectPathProps>()

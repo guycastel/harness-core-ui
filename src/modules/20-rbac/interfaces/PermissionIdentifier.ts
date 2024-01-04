@@ -310,5 +310,15 @@ export enum PermissionIdentifier {
   CET_TOKEN_REVOKE = 'cet_token_revoke',
   CET_CRITICALEVENT_VIEW = 'cet_criticalevent_view',
   CET_CRITICALEVENT_CREATE = 'cet_criticalevent_create',
-  CET_CRITICALEVENT_DELETE = 'cet_criticalevent_delete'
+  CET_CRITICALEVENT_DELETE = 'cet_criticalevent_delete',
+
+  //SSCA  Permissions
+  SSCA_REMEDIATIONTRACKER_VIEW = 'ssca_remediationtracker_view',
+  SSCA_REMEDIATIONTRACKER_CLOSE = 'ssca_remediationtracker_close',
+  SSCA_REMEDIATIONTRACKER_EDIT = 'ssca_remediationtracker_edit',
+
+  SSCA_ENFORCEMENTEXEMPTION_DELETE = 'ssca_enforcementexemption_delete',
+  SSCA_ENFORCEMENTEXEMPTION_REVIEW = 'ssca_enforcementexemption_review',
+  SSCA_ENFORCEMENTEXEMPTION_EDIT = 'ssca_enforcementexemption_edit',
+  SSCA_ENFORCEMENTEXEMPTION_VIEW = 'ssca_enforcementexemption_view'
 }
