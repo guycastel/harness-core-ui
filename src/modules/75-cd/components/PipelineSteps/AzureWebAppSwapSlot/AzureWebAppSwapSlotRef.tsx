@@ -8,20 +8,17 @@
 import React from 'react'
 import cx from 'classnames'
 import * as Yup from 'yup'
-import { Formik, FormInput, getMultiTypeFromValue, MultiTypeInputType, AllowedTypes } from '@harness/uicore'
-import { get } from 'lodash-es'
+import { Formik, FormInput } from '@harness/uicore'
 import { useStrings } from 'framework/strings'
 import {
   FormMultiTypeDurationField,
   getDurationValidationSchema
 } from '@common/components/MultiTypeDuration/MultiTypeDuration'
-import { ConfigureOptions } from '@common/components/ConfigureOptions/ConfigureOptions'
-import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
 import { useQueryParams } from '@common/hooks'
 import { useVariablesExpression } from '@pipeline/components/PipelineStudio/PiplineHooks/useVariablesExpression'
 import { setFormikRef, StepFormikFowardRef, StepViewType } from '@pipeline/components/AbstractSteps/Step'
 import { getNameAndIdentifierSchema } from '@pipeline/components/PipelineSteps/Steps/StepsValidateUtils'
-import { getAllowableTypes, isMultiEnv } from '../AzureSlotDeployment/utils'
+import { useFeatureFlags } from '@modules/10-common/hooks/useFeatureFlag'
 import { AzureSwapSlotDeploymentDynamicField } from './AzureWebAppSwapSlotField'
 
 import type { AzureWebAppSwapSlotProps } from './SwapSlot.types'
@@ -32,21 +29,12 @@ export const AzureWebAppSwapSlotRef = (
   formikRef: StepFormikFowardRef
 ): JSX.Element => {
   /* istanbul ignore next */
-  const {
-    allowableTypes,
-    isNewStep = true,
-    readonly = false,
-    initialValues,
-    onUpdate,
-    onChange,
-    stepViewType,
-    selectedStage
-  } = props
+  const { allowableTypes, isNewStep = true, readonly = false, initialValues, onUpdate, onChange, stepViewType } = props
   const { getString } = useStrings()
   const query = useQueryParams()
   const sectionId = (query as any).sectionId || ''
   const { expressions } = useVariablesExpression()
-  const { CDS_AZURE_WEBAPP_NG_LISTING_APP_NAMES_AND_SLOTS, NG_EXPRESSIONS_NEW_INPUT_ELEMENT } = useFeatureFlags()
+  const { NG_EXPRESSIONS_NEW_INPUT_ELEMENT } = useFeatureFlags()
 
   return (
     <Formik
@@ -108,45 +96,7 @@ export const AzureWebAppSwapSlotRef = (
               />
             </div>
             <div className={stepCss.divider} />
-            {CDS_AZURE_WEBAPP_NG_LISTING_APP_NAMES_AND_SLOTS ? (
-              <AzureSwapSlotDeploymentDynamicField {...props} />
-            ) : (
-              <div className={cx(stepCss.formGroup, stepCss.lg)}>
-                <FormInput.MultiTextInput
-                  name="spec.targetSlot"
-                  placeholder={getString('cd.steps.azureWebAppInfra.targetSlotSpecify')}
-                  label={getString('cd.steps.azureWebAppInfra.targetSlotTitle')}
-                  multiTextInputProps={{
-                    expressions,
-                    newExpressionComponent: NG_EXPRESSIONS_NEW_INPUT_ELEMENT,
-                    multitypeInputValue:
-                      CDS_AZURE_WEBAPP_NG_LISTING_APP_NAMES_AND_SLOTS && isMultiEnv(selectedStage)
-                        ? MultiTypeInputType.EXPRESSION
-                        : getMultiTypeFromValue(get(formik.values, 'spec.targetSlot')),
-                    allowableTypes:
-                      CDS_AZURE_WEBAPP_NG_LISTING_APP_NAMES_AND_SLOTS && isMultiEnv(selectedStage)
-                        ? (getAllowableTypes(selectedStage) as AllowedTypes)
-                        : allowableTypes
-                  }}
-                  disabled={readonly}
-                />
-                {getMultiTypeFromValue(get(formik, 'values.spec.targetSlot')) === MultiTypeInputType.RUNTIME && (
-                  <ConfigureOptions
-                    value={get(formik, 'values.spec.targetSlot') as string}
-                    type="String"
-                    variableName="spec.targetSlot"
-                    showRequiredField={false}
-                    showDefaultField={false}
-                    onChange={
-                      /* istanbul ignore next */ value => {
-                        formik?.setFieldValue('spec.targetSlot', value)
-                      }
-                    }
-                    isReadonly={readonly}
-                  />
-                )}
-              </div>
-            )}
+            <AzureSwapSlotDeploymentDynamicField {...props} />
           </>
         )
       }}

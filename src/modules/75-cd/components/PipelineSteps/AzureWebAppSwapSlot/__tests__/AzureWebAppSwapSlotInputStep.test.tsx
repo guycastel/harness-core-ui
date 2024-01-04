@@ -6,7 +6,7 @@
  */
 
 import React from 'react'
-import { render, act, waitFor } from '@testing-library/react'
+import { render } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Formik, FormikForm, MultiTypeInputType, RUNTIME_INPUT_VALUE } from '@harness/uicore'
 import { TestWrapper } from '@common/utils/testUtils'
@@ -62,8 +62,9 @@ describe('Test Azure Web App Swap Slot input set', () => {
         targetSlot: 'test_targetSlot'
       }
     }
-    const { container } = renderComponent(data)
-    expect(container).toMatchSnapshot()
+    const { getByText } = renderComponent(data)
+    expect(getByText('cd.steps.azureWebAppInfra.targetSlotTitle')).toBeInTheDocument()
+    expect(getByText('cd.configFilePlaceHolder')).toBeInTheDocument()
   })
 
   test('timeout should be updated', async () => {
@@ -74,11 +75,12 @@ describe('Test Azure Web App Swap Slot input set', () => {
       timeout: RUNTIME_INPUT_VALUE,
       spec: {}
     }
-    const { container, getByPlaceholderText } = renderComponent(data)
-    await waitFor(() => expect(getByPlaceholderText('Enter w/d/h/m/s/ms')))
-    await act(async () => await userEvent.type(getByPlaceholderText('Enter w/d/h/m/s/ms'), '10m'))
+    const { getByText, getByPlaceholderText } = renderComponent(data)
 
-    expect(getByPlaceholderText('Enter w/d/h/m/s/ms')).toHaveDisplayValue('10m')
-    expect(container).toMatchSnapshot()
+    expect(getByText('pipelineSteps.timeoutLabel')).toBeInTheDocument()
+    await userEvent.type(getByPlaceholderText('Enter w/d/h/m/s/ms'), '20m')
+    expect(getByPlaceholderText('Enter w/d/h/m/s/ms')).toHaveDisplayValue('20m')
+    expect(getByText('cd.steps.azureWebAppInfra.targetSlotTitle')).toBeInTheDocument()
+    expect(getByText('cd.configFilePlaceHolder')).toBeInTheDocument()
   })
 })

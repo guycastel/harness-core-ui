@@ -12,6 +12,7 @@ import userEvent from '@testing-library/user-event'
 import { StepFormikRef, StepViewType } from '@pipeline/components/AbstractSteps/Step'
 import { StepType } from '@pipeline/components/PipelineSteps/PipelineStepInterface'
 import { factory, TestStepWidget } from '@pipeline/components/PipelineSteps/Steps/__tests__/StepTestUtil'
+import { queryByNameAttribute } from '@modules/10-common/utils/testUtils'
 import { AzureSlotDeployment } from '../AzureSlotDeployment'
 
 jest.mock('@common/components/YAMLBuilder/YamlBuilder')
@@ -50,11 +51,11 @@ describe('Azure Slot Deployment step', () => {
     await act(async () => await userEvent.type(timeout!, '10s'))
     expect(timeout).toHaveDisplayValue('10s')
 
-    const webApp = getByPlaceholderText('cd.steps.azureWebAppInfra.webAppPlaceholder')
+    const webApp = queryByNameAttribute('spec.webApp', container)
     await act(async () => await userEvent.type(webApp!, 'New azure web App Name'))
     expect(webApp).toHaveDisplayValue('New azure web App Name')
 
-    const deploymentSlot = getByPlaceholderText('cd.steps.azureWebAppInfra.deploymentSlotPlaceHolder')
+    const deploymentSlot = queryByNameAttribute('spec.deploymentSlot', container)
     await act(async () => await userEvent.type(deploymentSlot!, 'New azure deployment Slot'))
     expect(deploymentSlot).toHaveDisplayValue('New azure deployment Slot')
 

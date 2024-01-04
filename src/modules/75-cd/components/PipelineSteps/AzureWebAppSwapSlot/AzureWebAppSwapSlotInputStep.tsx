@@ -11,11 +11,11 @@ import cx from 'classnames'
 import { FormikForm, MultiTypeInputType, getMultiTypeFromValue } from '@harness/uicore'
 import { connect, FormikContextType } from 'formik'
 import { useStrings } from 'framework/strings'
-import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
 import { useVariablesExpression } from '@pipeline/components/PipelineStudio/PiplineHooks/useVariablesExpression'
 import { TimeoutFieldInputSetView } from '@pipeline/components/InputSetView/TimeoutFieldInputSetView/TimeoutFieldInputSetView'
 import { TextFieldInputSetView } from '@pipeline/components/InputSetView/TextFieldInputSetView/TextFieldInputSetView'
 import { isExecutionTimeFieldDisabled } from '@pipeline/utils/runPipelineUtils'
+import { useFeatureFlags } from '@modules/10-common/hooks/useFeatureFlag'
 import { AzureSwapSlotDeploymentDynamicField, AzureSwapSlotDeploymentDynamicProps } from './AzureWebAppSwapSlotField'
 
 import type { AzureWebAppSwapSlotData, AzureWebAppSwapSlotProps } from './SwapSlot.types'
@@ -29,7 +29,7 @@ export function AzureWebAppSwapSlotInputStepRef<T extends AzureWebAppSwapSlotDat
   const { inputSetData, readonly, allowableTypes, stepViewType, formik, path } = props
   const { getString } = useStrings()
   const { expressions } = useVariablesExpression()
-  const { CDS_AZURE_WEBAPP_NG_LISTING_APP_NAMES_AND_SLOTS, NG_EXPRESSIONS_NEW_INPUT_ELEMENT } = useFeatureFlags()
+  const { NG_EXPRESSIONS_NEW_INPUT_ELEMENT } = useFeatureFlags()
 
   return (
     <FormikForm>
@@ -55,7 +55,7 @@ export function AzureWebAppSwapSlotInputStepRef<T extends AzureWebAppSwapSlotDat
           />
         )
       }
-      {CDS_AZURE_WEBAPP_NG_LISTING_APP_NAMES_AND_SLOTS && formik ? (
+      {formik ? (
         <AzureSwapSlotDeploymentDynamicField
           webAppSwapSlotPath={`${path}.spec.targetSlot`}
           isRuntime={true}

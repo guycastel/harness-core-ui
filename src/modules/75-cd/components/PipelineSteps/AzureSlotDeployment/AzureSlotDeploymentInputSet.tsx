@@ -13,7 +13,6 @@ import { FormikForm, MultiTypeInputType, getMultiTypeFromValue } from '@harness/
 import { connect, FormikContextType } from 'formik'
 import { useStrings } from 'framework/strings'
 
-import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
 import { FormMultiTypeCheckboxField } from '@common/components'
 
 import { useVariablesExpression } from '@pipeline/components/PipelineStudio/PiplineHooks/useVariablesExpression'
@@ -21,6 +20,7 @@ import { TimeoutFieldInputSetView } from '@pipeline/components/InputSetView/Time
 import { TextFieldInputSetView } from '@pipeline/components/InputSetView/TextFieldInputSetView/TextFieldInputSetView'
 import { isExecutionTimeFieldDisabled } from '@pipeline/utils/runPipelineUtils'
 
+import { useFeatureFlags } from '@modules/10-common/hooks/useFeatureFlag'
 import { AzureSlotDeploymentDynamicField, AzureSlotDeploymentDynamicProps } from './AzureWebAppField'
 import type { AzureSlotDeploymentData, AzureSlotDeploymentProps } from './AzureSlotDeploymentInterface.types'
 import stepCss from '@pipeline/components/PipelineSteps/Steps/Steps.module.scss'
@@ -34,11 +34,11 @@ export function AzureSlotDeploymentInputSetRef<T extends AzureSlotDeploymentData
   const { getString } = useStrings()
   const { expressions } = useVariablesExpression()
 
-  const { CDS_AZURE_WEBAPP_NG_LISTING_APP_NAMES_AND_SLOTS, NG_EXPRESSIONS_NEW_INPUT_ELEMENT } = useFeatureFlags()
+  const { NG_EXPRESSIONS_NEW_INPUT_ELEMENT } = useFeatureFlags()
 
   return (
     <FormikForm>
-      {CDS_AZURE_WEBAPP_NG_LISTING_APP_NAMES_AND_SLOTS && formik ? (
+      {formik ? (
         <AzureSlotDeploymentDynamicField
           webAppNamePath={`${path}.spec.webApp`}
           webAppSlotPath={`${path}.spec.deploymentSlot`}

@@ -8,11 +8,10 @@
 import React from 'react'
 import cx from 'classnames'
 import * as Yup from 'yup'
-import { Formik, FormInput, getMultiTypeFromValue, MultiTypeInputType, SelectOption } from '@harness/uicore'
+import { Formik, FormInput, SelectOption } from '@harness/uicore'
 
 import { get } from 'lodash-es'
 import { useStrings } from 'framework/strings'
-import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
 import { FormMultiTypeCheckboxField } from '@common/components'
 
 import {
@@ -24,8 +23,8 @@ import { useQueryParams } from '@common/hooks'
 
 import { useVariablesExpression } from '@pipeline/components/PipelineStudio/PiplineHooks/useVariablesExpression'
 
+import { useFeatureFlags } from '@modules/10-common/hooks/useFeatureFlag'
 import { setFormikRef, StepFormikFowardRef, StepViewType } from '@pipeline/components/AbstractSteps/Step'
-import { ConfigureOptions } from '@common/components/ConfigureOptions/ConfigureOptions'
 import { getNameAndIdentifierSchema } from '@pipeline/components/PipelineSteps/Steps/StepsValidateUtils'
 import { AzureSlotDeploymentDynamicField } from './AzureWebAppField'
 import type { AzureSlotDeploymentProps } from './AzureSlotDeploymentInterface.types'
@@ -41,7 +40,7 @@ export const AzureSlotDeploymentRef = (
   const { allowableTypes, isNewStep = true, readonly, initialValues, onUpdate, onChange, stepViewType } = props
   const { getString } = useStrings()
   const { expressions } = useVariablesExpression()
-  const { CDS_AZURE_WEBAPP_NG_LISTING_APP_NAMES_AND_SLOTS, NG_EXPRESSIONS_NEW_INPUT_ELEMENT } = useFeatureFlags()
+  const { NG_EXPRESSIONS_NEW_INPUT_ELEMENT } = useFeatureFlags()
 
   const query = useQueryParams()
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -129,68 +128,7 @@ export const AzureSlotDeploymentRef = (
               />
             </div>
             <div className={stepCss.divider} />
-            {CDS_AZURE_WEBAPP_NG_LISTING_APP_NAMES_AND_SLOTS ? (
-              <AzureSlotDeploymentDynamicField {...props} />
-            ) : (
-              <>
-                <div className={cx(stepCss.formGroup, stepCss.lg)}>
-                  <FormInput.MultiTextInput
-                    name="spec.webApp"
-                    placeholder={getString('cd.steps.azureWebAppInfra.webAppPlaceholder')}
-                    label={getString('cd.serviceDashboard.webApp')}
-                    multiTextInputProps={{
-                      expressions,
-                      allowableTypes,
-                      newExpressionComponent: NG_EXPRESSIONS_NEW_INPUT_ELEMENT
-                    }}
-                    disabled={readonly}
-                  />
-                  {getMultiTypeFromValue(get(formik, 'values.spec.webApp')) === MultiTypeInputType.RUNTIME && (
-                    <ConfigureOptions
-                      value={get(formik, 'values.spec.webApp') as string}
-                      type="String"
-                      variableName="spec.webApp"
-                      showRequiredField={false}
-                      showDefaultField={false}
-                      onChange={
-                        /* istanbul ignore next */ value => {
-                          formik?.setFieldValue('spec.webApp', value)
-                        }
-                      }
-                      isReadonly={readonly}
-                    />
-                  )}
-                </div>
-                <div className={cx(stepCss.formGroup, stepCss.lg)}>
-                  <FormInput.MultiTextInput
-                    name="spec.deploymentSlot"
-                    placeholder={getString('cd.steps.azureWebAppInfra.deploymentSlotPlaceHolder')}
-                    label={getString('cd.serviceDashboard.deploymentSlotTitle')}
-                    multiTextInputProps={{
-                      expressions,
-                      allowableTypes,
-                      newExpressionComponent: NG_EXPRESSIONS_NEW_INPUT_ELEMENT
-                    }}
-                    disabled={readonly}
-                  />
-                  {getMultiTypeFromValue(get(formik, 'values.spec.deploymentSlot')) === MultiTypeInputType.RUNTIME && (
-                    <ConfigureOptions
-                      value={get(formik, 'values.spec.deploymentSlot') as string}
-                      type="String"
-                      variableName="spec.deploymentSlot"
-                      showRequiredField={false}
-                      showDefaultField={false}
-                      onChange={
-                        /* istanbul ignore next */ value => {
-                          formik?.setFieldValue('spec.deploymentSlot', value)
-                        }
-                      }
-                      isReadonly={readonly}
-                    />
-                  )}
-                </div>
-              </>
-            )}
+            <AzureSlotDeploymentDynamicField {...props} />
           </>
         )
       }}

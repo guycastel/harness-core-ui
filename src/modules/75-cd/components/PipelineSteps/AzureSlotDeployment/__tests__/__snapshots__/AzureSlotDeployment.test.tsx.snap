@@ -257,16 +257,24 @@ exports[`Azure Slot Deployment step Should render edit view as edit step 1`] = `
             class="Layout--horizontal StyledProps--main MultiTypeInput--main"
           >
             <div
-              class="bp3-input-group MultiTypeInput--input"
+              class="bp3-popover-wrapper MultiTypeInput--input"
             >
-              <input
-                autocomplete="off"
-                class="bp3-input"
-                name="spec.webApp"
-                placeholder="cd.steps.azureWebAppInfra.webAppPlaceholder"
-                type="text"
-                value="WebApp_test"
-              />
+              <div
+                class="bp3-popover-target"
+              >
+                <div
+                  class="bp3-input-group"
+                >
+                  <input
+                    autocomplete="off"
+                    class="bp3-input"
+                    name="spec.webApp"
+                    placeholder="<+expression>"
+                    type="text"
+                    value="WebApp_test"
+                  />
+                </div>
+              </div>
             </div>
             <span
               class="bp3-popover-wrapper MultiTypeInput--wrapper"
@@ -275,22 +283,36 @@ exports[`Azure Slot Deployment step Should render edit view as edit step 1`] = `
                 class="bp3-popover-target"
               >
                 <button
-                  class="MultiTypeInput--btn MultiTypeInput--FIXED"
+                  class="MultiTypeInput--btn MultiTypeInput--EXPRESSION"
                   data-testid="multi-type-button"
                 >
                   <span
                     class="bp3-icon StyledProps--main"
-                    data-icon="fixed-input"
+                    data-icon="expression-input"
                   >
                     <svg
-                      height="12"
-                      viewBox="0 0 9 9"
-                      width="12"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      width="16"
                       xmlns="http://www.w3.org/2000/svg"
                     >
                       <path
-                        d="M5.61 7.55c.62-.7.3-1.42.18-2.35a.32.32 0 01.1-.29l1.43-1.42a.76.76 0 01.28-.15c.39-.1 1 0 1.28-.29a.34.34 0 000-.51L6.46.12a.33.33 0 00-.52 0c-.28.29-.2.9-.28 1.3a.53.53 0 01-.13.23L4.09 3.12a.29.29 0 01-.28.09c-.89-.11-1.6-.49-2.27.11-.29.26-.29.43 0 .7l1.31 1.34.15.16-.15.15-2.7 2.69a.36.36 0 000 .54.36.36 0 00.54-.05l2.63-2.68.17-.17.17.16c.45.46.9.91 1.36 1.36.21.21.42.22.59.03z"
+                        clip-rule="evenodd"
+                        d="M4.875 2.588C5.305 2.218 5.889 2 6.647 2a.5.5 0 110 1c-.556 0-.898.155-1.12.346-.228.197-.374.472-.462.784a3.18 3.18 0 00-.106.86h1.449a.5.5 0 010 1H4.992v5.505a.5.5 0 01-1 0V5.99h-.936a.5.5 0 010-1h.903a4.173 4.173 0 01.143-1.13c.123-.435.35-.907.773-1.27zm.111 2.823c0 .001 0 .001 0 0m0 0zm7.059 5.019c-.242.268-.455.59-.553.786-.17.341-.472.705-.766.994-.285.281-.635.565-.932.684a.5.5 0 11-.371-.929c.102-.04.335-.204.6-.467.258-.253.475-.528.575-.729.142-.283.407-.68.704-1.009.15-.165.32-.33.5-.456.168-.118.406-.248.68-.248a.5.5 0 01.013 1c-.004.002-.042.012-.118.066a2.152 2.152 0 00-.332.307z"
+                        fill="#CurrentColor"
+                        fill-rule="evenodd"
+                      />
+                      <path
+                        clip-rule="evenodd"
+                        d="M10.045 10.43c.242.268.455.59.553.786.17.341.473.705.766.994.285.281.635.565.932.684a.5.5 0 10.372-.929c-.103-.04-.335-.204-.602-.467-.257-.253-.473-.528-.574-.729a5.003 5.003 0 00-.704-1.009 3.08 3.08 0 00-.5-.456c-.168-.118-.406-.248-.68-.248a.5.5 0 00-.012 1c.003.002.041.012.118.066a2.1 2.1 0 01.33.307z"
+                        fill="#CurrentColor"
+                        fill-rule="evenodd"
+                      />
+                      <path
+                        clip-rule="evenodd"
+                        d="M8.367 7.805a.5.5 0 01.186.682c-.854 1.494-.652 3.467.013 4.797a.5.5 0 11-.895.447c-.771-1.543-1.049-3.881.013-5.74a.5.5 0 01.683-.186zm5.273 0a.5.5 0 01.683.186c1.062 1.859.784 4.197.013 5.74a.5.5 0 11-.895-.447c.665-1.33.867-3.303.013-4.797a.5.5 0 01.186-.682z"
                         fill="currentColor"
+                        fill-rule="evenodd"
                       />
                     </svg>
                   </span>
@@ -329,16 +351,24 @@ exports[`Azure Slot Deployment step Should render edit view as edit step 1`] = `
             class="Layout--horizontal StyledProps--main MultiTypeInput--main"
           >
             <div
-              class="bp3-input-group MultiTypeInput--input"
+              class="bp3-popover-wrapper MultiTypeInput--input"
             >
-              <input
-                autocomplete="off"
-                class="bp3-input"
-                name="spec.deploymentSlot"
-                placeholder="cd.steps.azureWebAppInfra.deploymentSlotPlaceHolder"
-                type="text"
-                value="DeplpymentSlot_test"
-              />
+              <div
+                class="bp3-popover-target"
+              >
+                <div
+                  class="bp3-input-group"
+                >
+                  <input
+                    autocomplete="off"
+                    class="bp3-input"
+                    name="spec.deploymentSlot"
+                    placeholder="<+expression>"
+                    type="text"
+                    value="DeplpymentSlot_test"
+                  />
+                </div>
+              </div>
             </div>
             <span
               class="bp3-popover-wrapper MultiTypeInput--wrapper"
@@ -347,22 +377,36 @@ exports[`Azure Slot Deployment step Should render edit view as edit step 1`] = `
                 class="bp3-popover-target"
               >
                 <button
-                  class="MultiTypeInput--btn MultiTypeInput--FIXED"
+                  class="MultiTypeInput--btn MultiTypeInput--EXPRESSION"
                   data-testid="multi-type-button"
                 >
                   <span
                     class="bp3-icon StyledProps--main"
-                    data-icon="fixed-input"
+                    data-icon="expression-input"
                   >
                     <svg
-                      height="12"
-                      viewBox="0 0 9 9"
-                      width="12"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      width="16"
                       xmlns="http://www.w3.org/2000/svg"
                     >
                       <path
-                        d="M5.61 7.55c.62-.7.3-1.42.18-2.35a.32.32 0 01.1-.29l1.43-1.42a.76.76 0 01.28-.15c.39-.1 1 0 1.28-.29a.34.34 0 000-.51L6.46.12a.33.33 0 00-.52 0c-.28.29-.2.9-.28 1.3a.53.53 0 01-.13.23L4.09 3.12a.29.29 0 01-.28.09c-.89-.11-1.6-.49-2.27.11-.29.26-.29.43 0 .7l1.31 1.34.15.16-.15.15-2.7 2.69a.36.36 0 000 .54.36.36 0 00.54-.05l2.63-2.68.17-.17.17.16c.45.46.9.91 1.36 1.36.21.21.42.22.59.03z"
+                        clip-rule="evenodd"
+                        d="M4.875 2.588C5.305 2.218 5.889 2 6.647 2a.5.5 0 110 1c-.556 0-.898.155-1.12.346-.228.197-.374.472-.462.784a3.18 3.18 0 00-.106.86h1.449a.5.5 0 010 1H4.992v5.505a.5.5 0 01-1 0V5.99h-.936a.5.5 0 010-1h.903a4.173 4.173 0 01.143-1.13c.123-.435.35-.907.773-1.27zm.111 2.823c0 .001 0 .001 0 0m0 0zm7.059 5.019c-.242.268-.455.59-.553.786-.17.341-.472.705-.766.994-.285.281-.635.565-.932.684a.5.5 0 11-.371-.929c.102-.04.335-.204.6-.467.258-.253.475-.528.575-.729.142-.283.407-.68.704-1.009.15-.165.32-.33.5-.456.168-.118.406-.248.68-.248a.5.5 0 01.013 1c-.004.002-.042.012-.118.066a2.152 2.152 0 00-.332.307z"
+                        fill="#CurrentColor"
+                        fill-rule="evenodd"
+                      />
+                      <path
+                        clip-rule="evenodd"
+                        d="M10.045 10.43c.242.268.455.59.553.786.17.341.473.705.766.994.285.281.635.565.932.684a.5.5 0 10.372-.929c-.103-.04-.335-.204-.602-.467-.257-.253-.473-.528-.574-.729a5.003 5.003 0 00-.704-1.009 3.08 3.08 0 00-.5-.456c-.168-.118-.406-.248-.68-.248a.5.5 0 00-.012 1c.003.002.041.012.118.066a2.1 2.1 0 01.33.307z"
+                        fill="#CurrentColor"
+                        fill-rule="evenodd"
+                      />
+                      <path
+                        clip-rule="evenodd"
+                        d="M8.367 7.805a.5.5 0 01.186.682c-.854 1.494-.652 3.467.013 4.797a.5.5 0 11-.895.447c-.771-1.543-1.049-3.881.013-5.74a.5.5 0 01.683-.186zm5.273 0a.5.5 0 01.683.186c1.062 1.859.784 4.197.013 5.74a.5.5 0 11-.895-.447c.665-1.33.867-3.303.013-4.797a.5.5 0 01.186-.682z"
                         fill="currentColor"
+                        fill-rule="evenodd"
                       />
                     </svg>
                   </span>
@@ -670,22 +714,26 @@ exports[`Azure Slot Deployment step Should render edit view as edit step with ru
           class="bp3-form-content"
         >
           <div
-            class="Layout--horizontal StyledProps--main MultiTypeInput--main MultiTypeInput--disabled"
+            class="Layout--horizontal StyledProps--main MultiTypeInput--main"
           >
             <div
-              class="TextInput--main MultiTypeInput--input"
+              class="bp3-popover-wrapper MultiTypeInput--input"
             >
               <div
-                class="bp3-input-group bp3-disabled"
+                class="bp3-popover-target"
               >
-                <input
-                  class="bp3-input"
-                  disabled=""
-                  name="spec.webApp"
-                  placeholder="<+input>"
-                  type="text"
-                  value="<+input>"
-                />
+                <div
+                  class="bp3-input-group"
+                >
+                  <input
+                    autocomplete="off"
+                    class="bp3-input"
+                    name="spec.webApp"
+                    placeholder="<+expression>"
+                    type="text"
+                    value="<+input>"
+                  />
+                </div>
               </div>
             </div>
             <span
@@ -695,22 +743,36 @@ exports[`Azure Slot Deployment step Should render edit view as edit step with ru
                 class="bp3-popover-target"
               >
                 <button
-                  class="MultiTypeInput--btn MultiTypeInput--RUNTIME"
+                  class="MultiTypeInput--btn MultiTypeInput--EXPRESSION"
                   data-testid="multi-type-button"
                 >
                   <span
                     class="bp3-icon StyledProps--main"
-                    data-icon="runtime-input"
+                    data-icon="expression-input"
                   >
                     <svg
-                      height="12"
-                      viewBox="0 0 10 7.97"
-                      width="12"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      width="16"
                       xmlns="http://www.w3.org/2000/svg"
                     >
                       <path
-                        d="M8.14 4L8 3.72a2.53 2.53 0 01-.12-.3l-.16-.35c-.11-.25-.22-.38-.32-.38s-.28.15-.37.44C7 3.1 7 3.07 7 3a.73.73 0 01.24-.46.66.66 0 01.42-.26c.25 0 .5.35.76 1.05l.07.17.07-.12c.47-.73.86-1.1 1.18-1.1a.71.71 0 01.29.07l-.4.42h-.11c-.24 0-.52.28-.86.83l-.09.16.07.2c.29.79.53 1.18.71 1.18s.31-.12.4-.36q.09.06.09.12t-.27.39a.74.74 0 01-.45.23c-.25 0-.51-.36-.77-1.07l-.12-.25-.1.17c-.44.76-.87 1.14-1.28 1.14a.65.65 0 01-.39-.12L6.84 5a.32.32 0 00.23.1c.25 0 .53-.25.83-.74l.17-.28zm-4-.32L1.7.59h2.47S5 .52 5.35 1a3.28 3.28 0 01.42 1.14h.31L5.94 0H0v.31l3.06 3.74L0 7.62V8h6.08l.38-2.36-.31-.07a2.43 2.43 0 01-.52 1c-.42.48-2 .41-2 .41H1.39z"
-                        fill="current-color"
+                        clip-rule="evenodd"
+                        d="M4.875 2.588C5.305 2.218 5.889 2 6.647 2a.5.5 0 110 1c-.556 0-.898.155-1.12.346-.228.197-.374.472-.462.784a3.18 3.18 0 00-.106.86h1.449a.5.5 0 010 1H4.992v5.505a.5.5 0 01-1 0V5.99h-.936a.5.5 0 010-1h.903a4.173 4.173 0 01.143-1.13c.123-.435.35-.907.773-1.27zm.111 2.823c0 .001 0 .001 0 0m0 0zm7.059 5.019c-.242.268-.455.59-.553.786-.17.341-.472.705-.766.994-.285.281-.635.565-.932.684a.5.5 0 11-.371-.929c.102-.04.335-.204.6-.467.258-.253.475-.528.575-.729.142-.283.407-.68.704-1.009.15-.165.32-.33.5-.456.168-.118.406-.248.68-.248a.5.5 0 01.013 1c-.004.002-.042.012-.118.066a2.152 2.152 0 00-.332.307z"
+                        fill="#CurrentColor"
+                        fill-rule="evenodd"
+                      />
+                      <path
+                        clip-rule="evenodd"
+                        d="M10.045 10.43c.242.268.455.59.553.786.17.341.473.705.766.994.285.281.635.565.932.684a.5.5 0 10.372-.929c-.103-.04-.335-.204-.602-.467-.257-.253-.473-.528-.574-.729a5.003 5.003 0 00-.704-1.009 3.08 3.08 0 00-.5-.456c-.168-.118-.406-.248-.68-.248a.5.5 0 00-.012 1c.003.002.041.012.118.066a2.1 2.1 0 01.33.307z"
+                        fill="#CurrentColor"
+                        fill-rule="evenodd"
+                      />
+                      <path
+                        clip-rule="evenodd"
+                        d="M8.367 7.805a.5.5 0 01.186.682c-.854 1.494-.652 3.467.013 4.797a.5.5 0 11-.895.447c-.771-1.543-1.049-3.881.013-5.74a.5.5 0 01.683-.186zm5.273 0a.5.5 0 01.683.186c1.062 1.859.784 4.197.013 5.74a.5.5 0 11-.895-.447c.665-1.33.867-3.303.013-4.797a.5.5 0 01.186-.682z"
+                        fill="currentColor"
+                        fill-rule="evenodd"
                       />
                     </svg>
                   </span>
@@ -780,22 +842,26 @@ exports[`Azure Slot Deployment step Should render edit view as edit step with ru
           class="bp3-form-content"
         >
           <div
-            class="Layout--horizontal StyledProps--main MultiTypeInput--main MultiTypeInput--disabled"
+            class="Layout--horizontal StyledProps--main MultiTypeInput--main"
           >
             <div
-              class="TextInput--main MultiTypeInput--input"
+              class="bp3-popover-wrapper MultiTypeInput--input"
             >
               <div
-                class="bp3-input-group bp3-disabled"
+                class="bp3-popover-target"
               >
-                <input
-                  class="bp3-input"
-                  disabled=""
-                  name="spec.deploymentSlot"
-                  placeholder="<+input>"
-                  type="text"
-                  value="<+input>"
-                />
+                <div
+                  class="bp3-input-group"
+                >
+                  <input
+                    autocomplete="off"
+                    class="bp3-input"
+                    name="spec.deploymentSlot"
+                    placeholder="<+expression>"
+                    type="text"
+                    value="<+input>"
+                  />
+                </div>
               </div>
             </div>
             <span
@@ -805,22 +871,36 @@ exports[`Azure Slot Deployment step Should render edit view as edit step with ru
                 class="bp3-popover-target"
               >
                 <button
-                  class="MultiTypeInput--btn MultiTypeInput--RUNTIME"
+                  class="MultiTypeInput--btn MultiTypeInput--EXPRESSION"
                   data-testid="multi-type-button"
                 >
                   <span
                     class="bp3-icon StyledProps--main"
-                    data-icon="runtime-input"
+                    data-icon="expression-input"
                   >
                     <svg
-                      height="12"
-                      viewBox="0 0 10 7.97"
-                      width="12"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      width="16"
                       xmlns="http://www.w3.org/2000/svg"
                     >
                       <path
-                        d="M8.14 4L8 3.72a2.53 2.53 0 01-.12-.3l-.16-.35c-.11-.25-.22-.38-.32-.38s-.28.15-.37.44C7 3.1 7 3.07 7 3a.73.73 0 01.24-.46.66.66 0 01.42-.26c.25 0 .5.35.76 1.05l.07.17.07-.12c.47-.73.86-1.1 1.18-1.1a.71.71 0 01.29.07l-.4.42h-.11c-.24 0-.52.28-.86.83l-.09.16.07.2c.29.79.53 1.18.71 1.18s.31-.12.4-.36q.09.06.09.12t-.27.39a.74.74 0 01-.45.23c-.25 0-.51-.36-.77-1.07l-.12-.25-.1.17c-.44.76-.87 1.14-1.28 1.14a.65.65 0 01-.39-.12L6.84 5a.32.32 0 00.23.1c.25 0 .53-.25.83-.74l.17-.28zm-4-.32L1.7.59h2.47S5 .52 5.35 1a3.28 3.28 0 01.42 1.14h.31L5.94 0H0v.31l3.06 3.74L0 7.62V8h6.08l.38-2.36-.31-.07a2.43 2.43 0 01-.52 1c-.42.48-2 .41-2 .41H1.39z"
-                        fill="current-color"
+                        clip-rule="evenodd"
+                        d="M4.875 2.588C5.305 2.218 5.889 2 6.647 2a.5.5 0 110 1c-.556 0-.898.155-1.12.346-.228.197-.374.472-.462.784a3.18 3.18 0 00-.106.86h1.449a.5.5 0 010 1H4.992v5.505a.5.5 0 01-1 0V5.99h-.936a.5.5 0 010-1h.903a4.173 4.173 0 01.143-1.13c.123-.435.35-.907.773-1.27zm.111 2.823c0 .001 0 .001 0 0m0 0zm7.059 5.019c-.242.268-.455.59-.553.786-.17.341-.472.705-.766.994-.285.281-.635.565-.932.684a.5.5 0 11-.371-.929c.102-.04.335-.204.6-.467.258-.253.475-.528.575-.729.142-.283.407-.68.704-1.009.15-.165.32-.33.5-.456.168-.118.406-.248.68-.248a.5.5 0 01.013 1c-.004.002-.042.012-.118.066a2.152 2.152 0 00-.332.307z"
+                        fill="#CurrentColor"
+                        fill-rule="evenodd"
+                      />
+                      <path
+                        clip-rule="evenodd"
+                        d="M10.045 10.43c.242.268.455.59.553.786.17.341.473.705.766.994.285.281.635.565.932.684a.5.5 0 10.372-.929c-.103-.04-.335-.204-.602-.467-.257-.253-.473-.528-.574-.729a5.003 5.003 0 00-.704-1.009 3.08 3.08 0 00-.5-.456c-.168-.118-.406-.248-.68-.248a.5.5 0 00-.012 1c.003.002.041.012.118.066a2.1 2.1 0 01.33.307z"
+                        fill="#CurrentColor"
+                        fill-rule="evenodd"
+                      />
+                      <path
+                        clip-rule="evenodd"
+                        d="M8.367 7.805a.5.5 0 01.186.682c-.854 1.494-.652 3.467.013 4.797a.5.5 0 11-.895.447c-.771-1.543-1.049-3.881.013-5.74a.5.5 0 01.683-.186zm5.273 0a.5.5 0 01.683.186c1.062 1.859.784 4.197.013 5.74a.5.5 0 11-.895-.447c.665-1.33.867-3.303.013-4.797a.5.5 0 01.186-.682z"
+                        fill="currentColor"
+                        fill-rule="evenodd"
                       />
                     </svg>
                   </span>
@@ -1151,16 +1231,24 @@ exports[`Azure Slot Deployment step Should render edit view as new step 1`] = `
             class="Layout--horizontal StyledProps--main MultiTypeInput--main"
           >
             <div
-              class="bp3-input-group MultiTypeInput--input"
+              class="bp3-popover-wrapper MultiTypeInput--input"
             >
-              <input
-                autocomplete="off"
-                class="bp3-input"
-                name="spec.webApp"
-                placeholder="cd.steps.azureWebAppInfra.webAppPlaceholder"
-                type="text"
-                value=""
-              />
+              <div
+                class="bp3-popover-target"
+              >
+                <div
+                  class="bp3-input-group"
+                >
+                  <input
+                    autocomplete="off"
+                    class="bp3-input"
+                    name="spec.webApp"
+                    placeholder="<+expression>"
+                    type="text"
+                    value=""
+                  />
+                </div>
+              </div>
             </div>
             <span
               class="bp3-popover-wrapper MultiTypeInput--wrapper"
@@ -1169,22 +1257,36 @@ exports[`Azure Slot Deployment step Should render edit view as new step 1`] = `
                 class="bp3-popover-target"
               >
                 <button
-                  class="MultiTypeInput--btn MultiTypeInput--FIXED"
+                  class="MultiTypeInput--btn MultiTypeInput--EXPRESSION"
                   data-testid="multi-type-button"
                 >
                   <span
                     class="bp3-icon StyledProps--main"
-                    data-icon="fixed-input"
+                    data-icon="expression-input"
                   >
                     <svg
-                      height="12"
-                      viewBox="0 0 9 9"
-                      width="12"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      width="16"
                       xmlns="http://www.w3.org/2000/svg"
                     >
                       <path
-                        d="M5.61 7.55c.62-.7.3-1.42.18-2.35a.32.32 0 01.1-.29l1.43-1.42a.76.76 0 01.28-.15c.39-.1 1 0 1.28-.29a.34.34 0 000-.51L6.46.12a.33.33 0 00-.52 0c-.28.29-.2.9-.28 1.3a.53.53 0 01-.13.23L4.09 3.12a.29.29 0 01-.28.09c-.89-.11-1.6-.49-2.27.11-.29.26-.29.43 0 .7l1.31 1.34.15.16-.15.15-2.7 2.69a.36.36 0 000 .54.36.36 0 00.54-.05l2.63-2.68.17-.17.17.16c.45.46.9.91 1.36 1.36.21.21.42.22.59.03z"
+                        clip-rule="evenodd"
+                        d="M4.875 2.588C5.305 2.218 5.889 2 6.647 2a.5.5 0 110 1c-.556 0-.898.155-1.12.346-.228.197-.374.472-.462.784a3.18 3.18 0 00-.106.86h1.449a.5.5 0 010 1H4.992v5.505a.5.5 0 01-1 0V5.99h-.936a.5.5 0 010-1h.903a4.173 4.173 0 01.143-1.13c.123-.435.35-.907.773-1.27zm.111 2.823c0 .001 0 .001 0 0m0 0zm7.059 5.019c-.242.268-.455.59-.553.786-.17.341-.472.705-.766.994-.285.281-.635.565-.932.684a.5.5 0 11-.371-.929c.102-.04.335-.204.6-.467.258-.253.475-.528.575-.729.142-.283.407-.68.704-1.009.15-.165.32-.33.5-.456.168-.118.406-.248.68-.248a.5.5 0 01.013 1c-.004.002-.042.012-.118.066a2.152 2.152 0 00-.332.307z"
+                        fill="#CurrentColor"
+                        fill-rule="evenodd"
+                      />
+                      <path
+                        clip-rule="evenodd"
+                        d="M10.045 10.43c.242.268.455.59.553.786.17.341.473.705.766.994.285.281.635.565.932.684a.5.5 0 10.372-.929c-.103-.04-.335-.204-.602-.467-.257-.253-.473-.528-.574-.729a5.003 5.003 0 00-.704-1.009 3.08 3.08 0 00-.5-.456c-.168-.118-.406-.248-.68-.248a.5.5 0 00-.012 1c.003.002.041.012.118.066a2.1 2.1 0 01.33.307z"
+                        fill="#CurrentColor"
+                        fill-rule="evenodd"
+                      />
+                      <path
+                        clip-rule="evenodd"
+                        d="M8.367 7.805a.5.5 0 01.186.682c-.854 1.494-.652 3.467.013 4.797a.5.5 0 11-.895.447c-.771-1.543-1.049-3.881.013-5.74a.5.5 0 01.683-.186zm5.273 0a.5.5 0 01.683.186c1.062 1.859.784 4.197.013 5.74a.5.5 0 11-.895-.447c.665-1.33.867-3.303.013-4.797a.5.5 0 01.186-.682z"
                         fill="currentColor"
+                        fill-rule="evenodd"
                       />
                     </svg>
                   </span>
@@ -1223,16 +1325,24 @@ exports[`Azure Slot Deployment step Should render edit view as new step 1`] = `
             class="Layout--horizontal StyledProps--main MultiTypeInput--main"
           >
             <div
-              class="bp3-input-group MultiTypeInput--input"
+              class="bp3-popover-wrapper MultiTypeInput--input"
             >
-              <input
-                autocomplete="off"
-                class="bp3-input"
-                name="spec.deploymentSlot"
-                placeholder="cd.steps.azureWebAppInfra.deploymentSlotPlaceHolder"
-                type="text"
-                value=""
-              />
+              <div
+                class="bp3-popover-target"
+              >
+                <div
+                  class="bp3-input-group"
+                >
+                  <input
+                    autocomplete="off"
+                    class="bp3-input"
+                    name="spec.deploymentSlot"
+                    placeholder="<+expression>"
+                    type="text"
+                    value=""
+                  />
+                </div>
+              </div>
             </div>
             <span
               class="bp3-popover-wrapper MultiTypeInput--wrapper"
@@ -1241,22 +1351,36 @@ exports[`Azure Slot Deployment step Should render edit view as new step 1`] = `
                 class="bp3-popover-target"
               >
                 <button
-                  class="MultiTypeInput--btn MultiTypeInput--FIXED"
+                  class="MultiTypeInput--btn MultiTypeInput--EXPRESSION"
                   data-testid="multi-type-button"
                 >
                   <span
                     class="bp3-icon StyledProps--main"
-                    data-icon="fixed-input"
+                    data-icon="expression-input"
                   >
                     <svg
-                      height="12"
-                      viewBox="0 0 9 9"
-                      width="12"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      width="16"
                       xmlns="http://www.w3.org/2000/svg"
                     >
                       <path
-                        d="M5.61 7.55c.62-.7.3-1.42.18-2.35a.32.32 0 01.1-.29l1.43-1.42a.76.76 0 01.28-.15c.39-.1 1 0 1.28-.29a.34.34 0 000-.51L6.46.12a.33.33 0 00-.52 0c-.28.29-.2.9-.28 1.3a.53.53 0 01-.13.23L4.09 3.12a.29.29 0 01-.28.09c-.89-.11-1.6-.49-2.27.11-.29.26-.29.43 0 .7l1.31 1.34.15.16-.15.15-2.7 2.69a.36.36 0 000 .54.36.36 0 00.54-.05l2.63-2.68.17-.17.17.16c.45.46.9.91 1.36 1.36.21.21.42.22.59.03z"
+                        clip-rule="evenodd"
+                        d="M4.875 2.588C5.305 2.218 5.889 2 6.647 2a.5.5 0 110 1c-.556 0-.898.155-1.12.346-.228.197-.374.472-.462.784a3.18 3.18 0 00-.106.86h1.449a.5.5 0 010 1H4.992v5.505a.5.5 0 01-1 0V5.99h-.936a.5.5 0 010-1h.903a4.173 4.173 0 01.143-1.13c.123-.435.35-.907.773-1.27zm.111 2.823c0 .001 0 .001 0 0m0 0zm7.059 5.019c-.242.268-.455.59-.553.786-.17.341-.472.705-.766.994-.285.281-.635.565-.932.684a.5.5 0 11-.371-.929c.102-.04.335-.204.6-.467.258-.253.475-.528.575-.729.142-.283.407-.68.704-1.009.15-.165.32-.33.5-.456.168-.118.406-.248.68-.248a.5.5 0 01.013 1c-.004.002-.042.012-.118.066a2.152 2.152 0 00-.332.307z"
+                        fill="#CurrentColor"
+                        fill-rule="evenodd"
+                      />
+                      <path
+                        clip-rule="evenodd"
+                        d="M10.045 10.43c.242.268.455.59.553.786.17.341.473.705.766.994.285.281.635.565.932.684a.5.5 0 10.372-.929c-.103-.04-.335-.204-.602-.467-.257-.253-.473-.528-.574-.729a5.003 5.003 0 00-.704-1.009 3.08 3.08 0 00-.5-.456c-.168-.118-.406-.248-.68-.248a.5.5 0 00-.012 1c.003.002.041.012.118.066a2.1 2.1 0 01.33.307z"
+                        fill="#CurrentColor"
+                        fill-rule="evenodd"
+                      />
+                      <path
+                        clip-rule="evenodd"
+                        d="M8.367 7.805a.5.5 0 01.186.682c-.854 1.494-.652 3.467.013 4.797a.5.5 0 11-.895.447c-.771-1.543-1.049-3.881.013-5.74a.5.5 0 01.683-.186zm5.273 0a.5.5 0 01.683.186c1.062 1.859.784 4.197.013 5.74a.5.5 0 11-.895-.447c.665-1.33.867-3.303.013-4.797a.5.5 0 01.186-.682z"
                         fill="currentColor"
+                        fill-rule="evenodd"
                       />
                     </svg>
                   </span>
@@ -1282,7 +1406,7 @@ exports[`Azure Slot Deployment step Should render input set view 1`] = `
     >
       <div>
         <div
-          class="fieldAndOptions formGroup md"
+          class="formGroup lg"
         >
           <div
             class="bp3-form-group"
@@ -1310,15 +1434,24 @@ exports[`Azure Slot Deployment step Should render input set view 1`] = `
                 class="Layout--horizontal StyledProps--main MultiTypeInput--main"
               >
                 <div
-                  class="bp3-input-group MultiTypeInput--input"
+                  class="bp3-popover-wrapper MultiTypeInput--input"
                 >
-                  <input
-                    autocomplete="off"
-                    class="bp3-input"
-                    name="/abc.spec.webApp"
-                    type="text"
-                    value=""
-                  />
+                  <div
+                    class="bp3-popover-target"
+                  >
+                    <div
+                      class="bp3-input-group"
+                    >
+                      <input
+                        autocomplete="off"
+                        class="bp3-input"
+                        name="/abc.spec.webApp"
+                        placeholder="<+expression>"
+                        type="text"
+                        value=""
+                      />
+                    </div>
+                  </div>
                 </div>
                 <span
                   class="bp3-popover-wrapper MultiTypeInput--wrapper"
@@ -1327,22 +1460,36 @@ exports[`Azure Slot Deployment step Should render input set view 1`] = `
                     class="bp3-popover-target"
                   >
                     <button
-                      class="MultiTypeInput--btn MultiTypeInput--FIXED"
+                      class="MultiTypeInput--btn MultiTypeInput--EXPRESSION"
                       data-testid="multi-type-button"
                     >
                       <span
                         class="bp3-icon StyledProps--main"
-                        data-icon="fixed-input"
+                        data-icon="expression-input"
                       >
                         <svg
-                          height="12"
-                          viewBox="0 0 9 9"
-                          width="12"
+                          height="16"
+                          viewBox="0 0 16 16"
+                          width="16"
                           xmlns="http://www.w3.org/2000/svg"
                         >
                           <path
-                            d="M5.61 7.55c.62-.7.3-1.42.18-2.35a.32.32 0 01.1-.29l1.43-1.42a.76.76 0 01.28-.15c.39-.1 1 0 1.28-.29a.34.34 0 000-.51L6.46.12a.33.33 0 00-.52 0c-.28.29-.2.9-.28 1.3a.53.53 0 01-.13.23L4.09 3.12a.29.29 0 01-.28.09c-.89-.11-1.6-.49-2.27.11-.29.26-.29.43 0 .7l1.31 1.34.15.16-.15.15-2.7 2.69a.36.36 0 000 .54.36.36 0 00.54-.05l2.63-2.68.17-.17.17.16c.45.46.9.91 1.36 1.36.21.21.42.22.59.03z"
+                            clip-rule="evenodd"
+                            d="M4.875 2.588C5.305 2.218 5.889 2 6.647 2a.5.5 0 110 1c-.556 0-.898.155-1.12.346-.228.197-.374.472-.462.784a3.18 3.18 0 00-.106.86h1.449a.5.5 0 010 1H4.992v5.505a.5.5 0 01-1 0V5.99h-.936a.5.5 0 010-1h.903a4.173 4.173 0 01.143-1.13c.123-.435.35-.907.773-1.27zm.111 2.823c0 .001 0 .001 0 0m0 0zm7.059 5.019c-.242.268-.455.59-.553.786-.17.341-.472.705-.766.994-.285.281-.635.565-.932.684a.5.5 0 11-.371-.929c.102-.04.335-.204.6-.467.258-.253.475-.528.575-.729.142-.283.407-.68.704-1.009.15-.165.32-.33.5-.456.168-.118.406-.248.68-.248a.5.5 0 01.013 1c-.004.002-.042.012-.118.066a2.152 2.152 0 00-.332.307z"
+                            fill="#CurrentColor"
+                            fill-rule="evenodd"
+                          />
+                          <path
+                            clip-rule="evenodd"
+                            d="M10.045 10.43c.242.268.455.59.553.786.17.341.473.705.766.994.285.281.635.565.932.684a.5.5 0 10.372-.929c-.103-.04-.335-.204-.602-.467-.257-.253-.473-.528-.574-.729a5.003 5.003 0 00-.704-1.009 3.08 3.08 0 00-.5-.456c-.168-.118-.406-.248-.68-.248a.5.5 0 00-.012 1c.003.002.041.012.118.066a2.1 2.1 0 01.33.307z"
+                            fill="#CurrentColor"
+                            fill-rule="evenodd"
+                          />
+                          <path
+                            clip-rule="evenodd"
+                            d="M8.367 7.805a.5.5 0 01.186.682c-.854 1.494-.652 3.467.013 4.797a.5.5 0 11-.895.447c-.771-1.543-1.049-3.881.013-5.74a.5.5 0 01.683-.186zm5.273 0a.5.5 0 01.683.186c1.062 1.859.784 4.197.013 5.74a.5.5 0 11-.895-.447c.665-1.33.867-3.303.013-4.797a.5.5 0 01.186-.682z"
                             fill="currentColor"
+                            fill-rule="evenodd"
                           />
                         </svg>
                       </span>
@@ -1354,7 +1501,7 @@ exports[`Azure Slot Deployment step Should render input set view 1`] = `
           </div>
         </div>
         <div
-          class="fieldAndOptions formGroup md"
+          class="formGroup lg"
         >
           <div
             class="bp3-form-group"
@@ -1382,15 +1529,24 @@ exports[`Azure Slot Deployment step Should render input set view 1`] = `
                 class="Layout--horizontal StyledProps--main MultiTypeInput--main"
               >
                 <div
-                  class="bp3-input-group MultiTypeInput--input"
+                  class="bp3-popover-wrapper MultiTypeInput--input"
                 >
-                  <input
-                    autocomplete="off"
-                    class="bp3-input"
-                    name="/abc.spec.deploymentSlot"
-                    type="text"
-                    value=""
-                  />
+                  <div
+                    class="bp3-popover-target"
+                  >
+                    <div
+                      class="bp3-input-group"
+                    >
+                      <input
+                        autocomplete="off"
+                        class="bp3-input"
+                        name="/abc.spec.deploymentSlot"
+                        placeholder="<+expression>"
+                        type="text"
+                        value=""
+                      />
+                    </div>
+                  </div>
                 </div>
                 <span
                   class="bp3-popover-wrapper MultiTypeInput--wrapper"
@@ -1399,22 +1555,36 @@ exports[`Azure Slot Deployment step Should render input set view 1`] = `
                     class="bp3-popover-target"
                   >
                     <button
-                      class="MultiTypeInput--btn MultiTypeInput--FIXED"
+                      class="MultiTypeInput--btn MultiTypeInput--EXPRESSION"
                       data-testid="multi-type-button"
                     >
                       <span
                         class="bp3-icon StyledProps--main"
-                        data-icon="fixed-input"
+                        data-icon="expression-input"
                       >
                         <svg
-                          height="12"
-                          viewBox="0 0 9 9"
-                          width="12"
+                          height="16"
+                          viewBox="0 0 16 16"
+                          width="16"
                           xmlns="http://www.w3.org/2000/svg"
                         >
                           <path
-                            d="M5.61 7.55c.62-.7.3-1.42.18-2.35a.32.32 0 01.1-.29l1.43-1.42a.76.76 0 01.28-.15c.39-.1 1 0 1.28-.29a.34.34 0 000-.51L6.46.12a.33.33 0 00-.52 0c-.28.29-.2.9-.28 1.3a.53.53 0 01-.13.23L4.09 3.12a.29.29 0 01-.28.09c-.89-.11-1.6-.49-2.27.11-.29.26-.29.43 0 .7l1.31 1.34.15.16-.15.15-2.7 2.69a.36.36 0 000 .54.36.36 0 00.54-.05l2.63-2.68.17-.17.17.16c.45.46.9.91 1.36 1.36.21.21.42.22.59.03z"
+                            clip-rule="evenodd"
+                            d="M4.875 2.588C5.305 2.218 5.889 2 6.647 2a.5.5 0 110 1c-.556 0-.898.155-1.12.346-.228.197-.374.472-.462.784a3.18 3.18 0 00-.106.86h1.449a.5.5 0 010 1H4.992v5.505a.5.5 0 01-1 0V5.99h-.936a.5.5 0 010-1h.903a4.173 4.173 0 01.143-1.13c.123-.435.35-.907.773-1.27zm.111 2.823c0 .001 0 .001 0 0m0 0zm7.059 5.019c-.242.268-.455.59-.553.786-.17.341-.472.705-.766.994-.285.281-.635.565-.932.684a.5.5 0 11-.371-.929c.102-.04.335-.204.6-.467.258-.253.475-.528.575-.729.142-.283.407-.68.704-1.009.15-.165.32-.33.5-.456.168-.118.406-.248.68-.248a.5.5 0 01.013 1c-.004.002-.042.012-.118.066a2.152 2.152 0 00-.332.307z"
+                            fill="#CurrentColor"
+                            fill-rule="evenodd"
+                          />
+                          <path
+                            clip-rule="evenodd"
+                            d="M10.045 10.43c.242.268.455.59.553.786.17.341.473.705.766.994.285.281.635.565.932.684a.5.5 0 10.372-.929c-.103-.04-.335-.204-.602-.467-.257-.253-.473-.528-.574-.729a5.003 5.003 0 00-.704-1.009 3.08 3.08 0 00-.5-.456c-.168-.118-.406-.248-.68-.248a.5.5 0 00-.012 1c.003.002.041.012.118.066a2.1 2.1 0 01.33.307z"
+                            fill="#CurrentColor"
+                            fill-rule="evenodd"
+                          />
+                          <path
+                            clip-rule="evenodd"
+                            d="M8.367 7.805a.5.5 0 01.186.682c-.854 1.494-.652 3.467.013 4.797a.5.5 0 11-.895.447c-.771-1.543-1.049-3.881.013-5.74a.5.5 0 01.683-.186zm5.273 0a.5.5 0 01.683.186c1.062 1.859.784 4.197.013 5.74a.5.5 0 11-.895-.447c.665-1.33.867-3.303.013-4.797a.5.5 0 01.186-.682z"
                             fill="currentColor"
+                            fill-rule="evenodd"
                           />
                         </svg>
                       </span>

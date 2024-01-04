@@ -838,41 +838,7 @@ exports[`Test Azure Web App Rollback step should render swap slot step view 1`] 
 </div>
 `;
 
-exports[`Test Azure Web App Rollback step should render variable input step 1`] = `
-<div>
-  <div
-    class="OverlaySpinner--overlaySpinner"
-  >
-    <form
-      action="#"
-      class="FormikForm--main"
-    >
-      <div />
-    </form>
-    <p
-      class="StyledProps--font StyledProps--main"
-    >
-      Errors
-    </p>
-    <pre>
-      {}
-    </pre>
-    <button
-      aria-label="Submit"
-      class="bp3-button Button--button StyledProps--font StyledProps--main StyledProps--intent-primary Button--with-current-color"
-      type="button"
-    >
-      <span
-        class="bp3-button-text"
-      >
-        Submit
-      </span>
-    </button>
-  </div>
-</div>
-`;
-
-exports[`Test Azure Web App Rollback step should render variable input step 2`] = `<div />`;
+exports[`Test Azure Web App Rollback step should render variable input step 1`] = `<div />`;
 
 exports[`Test Azure Web App Rollback step should show runtime component 1`] = `
 <div>

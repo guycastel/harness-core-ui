@@ -161,8 +161,10 @@ describe('Test Azure Web App Rollback step', () => {
       isNewStep: false,
       readonly: true
     })
-    const { container } = renderComponent(data(), StepViewType.InputSet)
-    expect(container).toMatchSnapshot()
+    const { getByText, getByPlaceholderText } = renderComponent(data(), StepViewType.InputSet)
+    expect(getByText('cd.steps.azureWebAppInfra.targetSlotTitle')).toBeInTheDocument()
+    expect(getByPlaceholderText('cd.steps.azureWebAppInfra.targetSlotSpecify')).toHaveValue('')
+    expect(getByText('Submit')).toBeInTheDocument()
   })
 
   test('should render variable input step', () => {

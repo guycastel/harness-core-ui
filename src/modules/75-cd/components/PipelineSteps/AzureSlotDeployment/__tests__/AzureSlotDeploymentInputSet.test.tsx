@@ -35,7 +35,7 @@ const template: any = {
 
 describe('Test Azure Slot Deployment input set', () => {
   test('Should render edit view as new step', () => {
-    const { container } = render(
+    const { getByText, getByPlaceholderText } = render(
       <TestWrapper>
         <Formik initialValues={{}} onSubmit={() => undefined} formName="wrapperComponentTestForm">
           <FormikForm>
@@ -54,6 +54,11 @@ describe('Test Azure Slot Deployment input set', () => {
         </Formik>
       </TestWrapper>
     )
-    expect(container).toMatchSnapshot()
+    expect(getByText('cd.serviceDashboard.webApp')).toBeInTheDocument()
+    expect(getByPlaceholderText('cd.steps.azureWebAppInfra.webAppPlaceholder')).toHaveValue('')
+    expect(getByText('cd.serviceDashboard.deploymentSlotTitle')).toBeInTheDocument()
+    expect(getByPlaceholderText('cd.steps.azureWebAppInfra.deploymentSlotPlaceHolder')).toHaveValue('')
+    expect(getByText('pipelineSteps.timeoutLabel')).toBeInTheDocument()
+    expect(getByPlaceholderText('Enter w/d/h/m/s/ms')).toHaveValue('')
   })
 })
