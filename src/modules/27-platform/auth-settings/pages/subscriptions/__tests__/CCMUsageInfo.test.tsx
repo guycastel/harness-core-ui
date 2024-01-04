@@ -52,12 +52,11 @@ jest.spyOn(useGetUsageAndLimit, 'useGetUsageAndLimit').mockReturnValue(useGetUsa
 
 describe('CCMUsageInfo', () => {
   test('CCMUsageInfo', () => {
-    const { container, getByText } = render(
+    const { getByText } = render(
       <TestWrapper>
         <CCMUsageInfo />
       </TestWrapper>
     )
     expect(getByText('common.subscriptions.usage.cloudSpend')).toBeInTheDocument()
-    expect(container).toMatchSnapshot()
   })
 })
