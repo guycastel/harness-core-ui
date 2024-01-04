@@ -127,13 +127,14 @@ const findPositionsForMatchingKeys = (editor: editor.IStandaloneCodeEditor, text
 const getStageYAMLPathForStageIndex = (stageIndex: number): string => `stages.${stageIndex}.spec.steps`
 
 /*  Get root to node '.' separated path for a certain step inside a given stage */
-const getStepYAMLPathForStepInsideAStage = (stageIndex: number, stepIndex: number) =>
+const getStepYAMLPathForStepInsideAStage = (stageIndex: number, stepIndex: number): string =>
   `${getStageYAMLPathForStageIndex(stageIndex)}.${stepIndex}`
 
-const getDefaultStageForModule = (module: Module): Record<string, any> => {
+const getDefaultStageForModule = (module?: Module): Record<string, any> => {
   return {
     name: 'stage',
-    type: `${module.valueOf().toLowerCase()}`,
+    // Project/Org level pipeline to default add custom stage
+    type: `${(module ?? 'custom').valueOf().toLowerCase()}`,
     spec: {
       steps: []
     }
@@ -317,6 +318,19 @@ const getPathFromRange = (range: IRange, symbols: languages.DocumentSymbol[]): s
   return path
 }
 
+const getPathFromPosition = (symbols: languages.DocumentSymbol[], currentPosition: monaco.Position): string[] => {
+  const { lineNumber } = currentPosition
+
+  const symbolsIntersectingWithCursor = symbols.filter(symbol => Range.containsPosition(symbol.range, currentPosition))
+
+  const currentCursorSymbol =
+    symbolsIntersectingWithCursor.length > 0
+      ? symbolsIntersectingWithCursor[symbolsIntersectingWithCursor.length - 1]
+      : symbols[lineNumber - 1]
+
+  return getPathFromRange(currentCursorSymbol.range, symbols)
+}
+
 const getRangeFromPath = (path: string[], symbols: languages.DocumentSymbol[]): IRange | undefined => {
   if (!path.length) return undefined
 
@@ -397,6 +411,18 @@ const useCodeLenses: UseCodeLenses = ({ editorRef, codeLensConfigs }): void => {
 
     return disposable.dispose
   }, [codeLensConfigs, editorRef])
+}
+
+async function getCursorPath(editor?: editor.IStandaloneCodeEditor): Promise<{
+  path: string[]
+}> {
+  const currentPosition = editor?.getPosition()
+  const model = editor?.getModel()
+  if (!model || !currentPosition) return { path: [] }
+  const symbols = await getDocumentSymbols(model)
+  const currentCursorPath = getPathFromPosition(symbols, currentPosition)
+
+  return { path: currentCursorPath }
 }
 
 type UseDecoration = (arg: {
@@ -492,5 +518,6 @@ export {
   getDocumentSymbols,
   getPathFromRange,
   useCodeLenses,
-  useDecoration
+  useDecoration,
+  getCursorPath
 }

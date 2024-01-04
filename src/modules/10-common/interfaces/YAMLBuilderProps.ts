@@ -15,6 +15,7 @@ export interface YamlBuilderHandlerBinding {
   setLatestYaml?: (json: Record<string, any>) => void
   getYAMLValidationErrorMap: () => Map<number, string>
   addUpdatePluginIntoExistingYAML?: (pluginMetadata: PluginAddUpdateMetadata, isPluginUpdate: boolean) => void
+  getCursorPath?: () => Promise<{ path: string[] }>
 }
 
 export type InvocationMapFunction = (
@@ -78,6 +79,7 @@ export interface YamlBuilderProps {
   codeLensConfigs?: CodeLensConfig[]
   /* Used for decorating the code in `selectedPath` */
   selectedPath?: string[]
+  shouldValidate?: boolean
 }
 
 // `range` in `monaco.languages.CompletionItem` is not optional in the latest version,

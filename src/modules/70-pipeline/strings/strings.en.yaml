@@ -2127,3 +2127,12 @@ validations:
 seeDetailsInExecutionView: 'See details in Execution View'
 regionPlaceholderAMI: Select Region
 specifyGitOpsClusters: Specify GitOps Clusters
+stepPanel:
+  useStepTemplate: Use Step Template
+  steps: Steps
+  discardPopover:
+    title: Leaving without saving?
+    subtitle: You will lose all your unsaved changes once you navigate away this page. Leave anyway?
+  noPropertiesFound: No properties found for the entity
+  runHarnessStep: Run Harness step
+  runHarnessStepGroup: Run Harness stepGroup

@@ -62,7 +62,8 @@ import {
   getClosestStepIndexInCurrentStage,
   getValidationErrorMapFromMarkers,
   useCodeLenses,
-  useDecoration
+  useDecoration,
+  getCursorPath
 } from './YAMLBuilderUtils'
 import {
   DEFAULT_EDITOR_HEIGHT,
@@ -180,7 +181,8 @@ const YAMLBuilder: React.FC<YamlBuilderProps> = (props: YamlBuilderProps): JSX.E
     setPluginOpnStatus,
     onValidate,
     codeLensConfigs,
-    selectedPath
+    selectedPath,
+    shouldValidate = true
   } = props
   const comparableYamlJson = parse(defaultTo(comparableYaml, ''))
 
@@ -225,7 +227,14 @@ const YAMLBuilder: React.FC<YamlBuilderProps> = (props: YamlBuilderProps): JSX.E
         },
         getYAMLValidationErrorMap: () => yamlValidationErrorsRef.current,
         addUpdatePluginIntoExistingYAML: (pluginMetadata: PluginAddUpdateMetadata, isPluginUpdate: boolean) =>
-          addUpdatePluginIntoExistingYAML(pluginMetadata, isPluginUpdate)
+          addUpdatePluginIntoExistingYAML(pluginMetadata, isPluginUpdate),
+        getCursorPath: async () => {
+          if (editorRef.current) {
+            const cursorPath = await getCursorPath(editorRef.current)
+            return cursorPath
+          }
+          return { path: [] }
+        }
       } as YamlBuilderHandlerBinding),
     [yamlValidationErrorsRef]
   )
@@ -273,8 +282,8 @@ const YAMLBuilder: React.FC<YamlBuilderProps> = (props: YamlBuilderProps): JSX.E
   }, [existingYaml])
 
   useEffect(() => {
-    setDiagnosticsOptions(getDiagnosticsOptions(schema))
-  }, [schema])
+    setDiagnosticsOptions({ ...getDiagnosticsOptions(schema), validate: shouldValidate })
+  }, [schema, shouldValidate])
 
   /* #endregion */
 

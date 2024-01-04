@@ -5583,6 +5583,13 @@ export interface StringsMap {
   'pipeline.stepGroupVariables': string
   'pipeline.stepLabel': string
   'pipeline.stepNamePlaceholder': string
+  'pipeline.stepPanel.discardPopover.subtitle': string
+  'pipeline.stepPanel.discardPopover.title': string
+  'pipeline.stepPanel.noPropertiesFound': string
+  'pipeline.stepPanel.runHarnessStep': string
+  'pipeline.stepPanel.runHarnessStepGroup': string
+  'pipeline.stepPanel.steps': string
+  'pipeline.stepPanel.useStepTemplate': string
   'pipeline.supplier': string
   'pipeline.syncStep.applyOnly': string
   'pipeline.syncStep.applyOutOfSyncOnly': string
