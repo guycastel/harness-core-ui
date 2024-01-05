@@ -469,9 +469,7 @@ exports[`Manifest Trigger Tests Check chartVersion to be disabled and default va
                                       <div
                                         class="nopadLeft accordionSummary"
                                         id="Stage.stagea.Service.Manifests"
-                                      >
-                                        0
-                                      </div>
+                                      />
                                     </div>
                                   </div>
                                 </div>

@@ -3460,7 +3460,35 @@ exports[`MANIFEST renders the K8 manifest: manifest form skeleton 1`] = `
       class="nopadLeft accordionSummary"
       id="Stage.testStageIdentifier.Service.Manifests"
     >
-      0
+      <div
+        class="subheading"
+      >
+        pipelineSteps.deploy.serviceSpecifications.deploymentTypes.manifests
+      </div>
+      <div>
+        <p
+          class="StyledProps--font StyledProps--main inputheader StyledProps--margin-top-medium"
+        >
+          manifestId
+        </p>
+        <div
+          class="Layout--vertical StyledProps--main inputWidth layoutVerticalSpacing"
+          data-name="manifest"
+        >
+          <div
+            class="inputFieldLayout"
+          />
+          <div
+            class="inputFieldLayout"
+          />
+          <div
+            class="inputFieldLayout"
+          />
+          <div
+            class="inputFieldLayout"
+          />
+        </div>
+      </div>
     </div>
   </div>
 </div>

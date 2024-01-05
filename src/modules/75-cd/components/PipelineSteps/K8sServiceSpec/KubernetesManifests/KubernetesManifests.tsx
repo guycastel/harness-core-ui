@@ -85,11 +85,12 @@ export function KubernetesManifests(props: KubernetesManifestsProps): React.Reac
     manifestObj => get(manifestObj, 'manifest.identifier') === primaryManifestId
   )
 
-  const filteredManifests = isHelm ? filteredManifests_ : props?.template?.manifests
+  const filteredManifests =
+    isHelm && get(props, 'template.manifests.length') > 1 ? filteredManifests_ : props?.template?.manifests
 
   return (
     <div className={cx(css.nopadLeft, css.accordionSummary)} id={`Stage.${props.stageIdentifier}.Service.Manifests`}>
-      {filteredManifests?.length && !props.fromTrigger && (
+      {!!filteredManifests?.length && !props.fromTrigger && (
         <div className={css.subheading}>
           {getString('pipelineSteps.deploy.serviceSpecifications.deploymentTypes.manifests')}
         </div>

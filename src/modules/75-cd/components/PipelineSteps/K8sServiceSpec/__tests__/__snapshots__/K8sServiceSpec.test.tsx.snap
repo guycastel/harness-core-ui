@@ -965,9 +965,7 @@ exports[`K8sServiceSpec tests inputSetMode 1`] = `
     <div
       class="nopadLeft accordionSummary"
       id="Stage.qaStage.Service.Manifests"
-    >
-      0
-    </div>
+    />
     <div
       class="nopadLeft accordionSummary"
       id="Stage.qaStage.Service.Variables"
