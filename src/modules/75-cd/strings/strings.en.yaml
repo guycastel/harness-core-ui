@@ -692,7 +692,7 @@ getStartedWithCD:
   docLink: View documentation
   connectHarness: Connect Harness to your cluster
   prefilghtText: '[optional] Run the preflight script to check your cluster resources or set up a temporary local cluster.'
-  downloadHelmChart: 1. Download Helm Chart and GitOps Agent for Argo CD
+  downloadHelmChart: 1. Download Helm Chart for GitOps Agent and Argo CD
   downloadHelmChartButton: Download Helm Chart
   runToDownload: 2. Run command to apply the file you downloaded
   preflightScript: 'bash <(curl -fsSL https://raw.githubusercontent.com/harness-community/scripts/main/delegate-preflight-checks/cluster-preflight-checks.sh)'

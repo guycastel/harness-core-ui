@@ -11,14 +11,16 @@ import { Color } from '@harness/design-system'
 import CommandBlock from '@modules/10-common/CommandBlock/CommandBlock'
 import { AccountPathProps } from '@modules/10-common/interfaces/RouteInterfaces'
 import { String, useStrings } from 'framework/strings'
+import { KubernetesType } from '@modules/27-platform/delegates/constants'
+import { DEPLOYMENT_TYPE_TO_DIR_MAP } from '../../Constants'
 import { InstallCLIInfo } from './CLISetupStep'
 import ApiKeySetup from './ApiKeySetup'
 import { CDOnboardingSteps, PipelineSetupState, WhereAndHowToDeployType } from '../../types'
 import VerifyGitopsEntities from '../VerificationComponents/VerifyGitopsEntities'
 import { useOnboardingStore } from '../../Store/OnboardingStore'
 import { getCommandStrWithNewline } from '../../utils'
-import { DEPLOYMENT_TYPE_TO_DIR_MAP } from '../../Constants'
 import css from '../../CDOnboardingWizardWithCLI.module.scss'
+
 interface GitopsDeploymentSetupProps {
   state: PipelineSetupState
   onKeyGenerate: (data: PipelineSetupState) => void
@@ -35,8 +37,11 @@ export default function GitopsDeploymentSetup({
   const { stepsProgress } = useOnboardingStore()
   const deploymentData = stepsProgress?.[CDOnboardingSteps.WHAT_TO_DEPLOY]?.stepData
   const agentInfo = stepsProgress?.[CDOnboardingSteps.HOW_N_WHERE_TO_DEPLOY]?.stepData as WhereAndHowToDeployType
+  const isKubernetesManifest = deploymentData?.artifactType?.id === KubernetesType.KUBERNETES_MANIFEST ? true : false
   const dirPath = deploymentData?.artifactSubType?.id
     ? DEPLOYMENT_TYPE_TO_DIR_MAP[deploymentData?.artifactSubType?.id]
+    : isKubernetesManifest
+    ? 'podinfo'
     : DEPLOYMENT_TYPE_TO_DIR_MAP[deploymentData?.artifactType?.id as string]
 
   return (
