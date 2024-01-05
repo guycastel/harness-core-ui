@@ -37,7 +37,6 @@ global:
 replicaCount: 1
 maxSurge: 1
 maxUnavailable: 0
-
 image:
   registry: docker.io
   repository: harness/nextgenui-signed
@@ -46,7 +45,6 @@ image:
   tag: "0.353.10"
   digest: ""
   imagePullSecrets: []
-
 waitForInitContainer:
   image:
     registry: docker.io
@@ -55,10 +53,8 @@ waitForInitContainer:
     tag: "latest"
     digest: ""
     imagePullSecrets: []
-
 nameOverride: ""
 fullnameOverride: ""
-
 serviceAccount:
   # Specifies whether a service account should be created
   create: false
@@ -67,15 +63,11 @@ serviceAccount:
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: "harness-default"
-
 podAnnotations: {}
 podLabels: {}
-
 imagePullSecrets: {}
-
-podSecurityContext:
-  {}
-  # fsGroup: 2000
+podSecurityContext: {}
+# fsGroup: 2000
 
 securityContext:
   runAsUser: 65534
@@ -86,7 +78,6 @@ securityContext:
   # readOnlyRootFilesystem: true
   # runAsNonRoot: true
   # runAsUser: 1000
-
 probes:
   readinessProbe:
     httpGet:
@@ -106,46 +97,36 @@ probes:
       port: ng-ui-port
     periodSeconds: 10
     failureThreshold: 30
-
 service:
   type: ClusterIP
   protocol: TCP
   port: 80
   targetport: 8080
   annotations: {}
-
 ingress:
   annotations: {}
-
 resources:
   limits:
     memory: 200Mi
   requests:
     cpu: 0.2
     memory: 200Mi
-
 autoscaling:
   enabled: false
   minReplicas: 1
   maxReplicas: 100
   targetCPU: ""
   targetMemory: ""
-
 nodeSelector: {}
-
 tolerations: []
-
 affinity: {}
-
 additionalConfigs: {}
-
 # extraVolumes:
 # - name: volume-test
 #   configMap:
 #     name: test-config
 #     readOnly: true
 extraVolumes: []
-
 # extraVolumeMounts:
 #   - name: test-volume-mount
 #     mountPath: /opt/harness/config
@@ -157,3 +138,11 @@ extraVolumeMounts: []
 #   preStop:
 #     exec:
 #       command:
+
+config:
+  API_URL: /gateway
+  DEPLOYMENT_TYPE: ON_PREM
+  HARNESS_ENABLE_NG_AUTH_UI_PLACEHOLDER: "true"
+  HARNESS_BROWSER_ROUTER_ENABLED: "true"
+  HARNESS_CLUSTER_URL: ""
+  SSCA_PATH_PREFIX: /ssca-manager
