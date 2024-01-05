@@ -191,7 +191,7 @@ export function InputSetForm(props: InputSetFormProps): React.ReactElement {
   const [yamlHandler, setYamlHandler] = React.useState<YamlBuilderHandlerBinding | undefined>()
   const [formErrors, setFormErrors] = React.useState<Record<string, any>>({})
   const [resolvedPipeline, setResolvedPipeline] = React.useState<PipelineInfoConfig | undefined>()
-  const { showError } = useToaster()
+  const { showError, clear } = useToaster()
   const { getRBACErrorMessage } = useRBACError()
 
   const getBranchQueryParams = (isMerge?: boolean): { branch?: string; loadFromFallbackBranch?: boolean } => {
@@ -500,31 +500,37 @@ export function InputSetForm(props: InputSetFormProps): React.ReactElement {
   const handleSaveInputSetForm = (): void => {
     if (selectedView === SelectedView.YAML) {
       const latestYaml = defaultTo(yamlHandler?.getLatestYaml(), '')
-      const inputSetDto: InputSetDTO = parse<{ inputSet: InputSetDTO }>(latestYaml)?.inputSet
-      const identifier = inputSetDto.identifier
-      const defaultFilePath = identifier ? `.harness/${identifier}.yaml` : ''
-      const {
-        repo: formikRepo,
-        branch: formikBranch,
-        connectorRef: formikConnectorRef,
-        repoName: formikRepoName,
-        filePath: formikFilePath,
-        storeType: formikStoreType
-      } = defaultTo(formikRef.current?.values, {}) as InputSetDTO & GitContextProps & StoreMetadata
-      handleSubmit(
-        inputSetDto,
-        {
-          repoIdentifier: formikRepo,
-          branch: formikBranch
-        },
-        {
-          connectorRef: (formikConnectorRef as unknown as ConnectorSelectedValue)?.value || formikConnectorRef,
-          repoName: formikRepoName,
+      try {
+        const inputSetDto: InputSetDTO = parse<{ inputSet: InputSetDTO }>(latestYaml)?.inputSet
+        const identifier = inputSetDto.identifier
+        const defaultFilePath = identifier ? `.harness/${identifier}.yaml` : ''
+        const {
+          repo: formikRepo,
           branch: formikBranch,
-          filePath: defaultTo(formikFilePath, defaultFilePath),
+          connectorRef: formikConnectorRef,
+          repoName: formikRepoName,
+          filePath: formikFilePath,
           storeType: formikStoreType
-        }
-      )
+        } = defaultTo(formikRef.current?.values, {}) as InputSetDTO & GitContextProps & StoreMetadata
+        handleSubmit(
+          inputSetDto,
+          {
+            repoIdentifier: formikRepo,
+            branch: formikBranch
+          },
+          {
+            connectorRef: (formikConnectorRef as unknown as ConnectorSelectedValue)?.value || formikConnectorRef,
+            repoName: formikRepoName,
+            branch: formikBranch,
+            filePath: defaultTo(formikFilePath, defaultFilePath),
+            storeType: formikStoreType
+          }
+        )
+      } catch {
+        clear()
+        showError(getString('common.validation.invalidYamlText'))
+        return
+      }
     } else formikRef.current?.submitForm()
   }
 
