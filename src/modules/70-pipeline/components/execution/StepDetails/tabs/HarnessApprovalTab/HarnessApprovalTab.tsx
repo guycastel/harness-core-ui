@@ -6,7 +6,7 @@
  */
 
 import React from 'react'
-import { Button, FormInput, Layout, TextInput, Text } from '@harness/uicore'
+import { Button, FormInput, Layout, TextInput, Text, Icon, Container } from '@harness/uicore'
 import { Formik } from 'formik'
 import cx from 'classnames'
 import { Color } from '@harness/design-system'
@@ -29,6 +29,7 @@ import { isApprovalWaiting } from '@pipeline/utils/approvalUtils'
 import { StepDetails } from '@pipeline/components/execution/StepDetails/common/StepDetails/StepDetails'
 import routes from '@common/RouteDefinitions'
 import { getPrincipalScopeFromDTO } from '@common/components/EntityReference/EntityReference'
+import { LinkifyText } from '@modules/10-common/components/LinkifyText/LinkifyText'
 import { HarnessApprover } from './HarnessApprover/HarnessApprover'
 import css from './HarnessApprovalTab.module.scss'
 
@@ -160,15 +161,21 @@ export function HarnessApprovalTab(props: HarnessApprovalTabProps): React.ReactE
                   <String stringID="pipeline.timeRemainingSuffix" />
                 </div>
               </div>
-              <Text
-                intent="none"
-                font={{ align: 'left' }}
-                style={{ wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}
-                color={Color.PRIMARY_6}
-                icon="code-info"
-              >
-                {approvalData?.details?.approvalMessage}
-              </Text>
+              <Layout.Horizontal spacing="small" flex={{ alignItems: 'flex-start' }}>
+                <Icon name="code-info" />
+                <Container>
+                  <LinkifyText
+                    content={approvalData?.details?.approvalMessage}
+                    textProps={{
+                      style: { wordBreak: 'break-word', whiteSpace: 'pre-wrap' },
+                      intent: 'none',
+                      font: { align: 'left' },
+                      color: Color.GREY_700
+                    }}
+                    linkStyles={css.link}
+                  />
+                </Container>
+              </Layout.Horizontal>
             </div>
           )}
           <StepDetails

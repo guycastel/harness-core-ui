@@ -42,6 +42,11 @@
     font-weight: bold;
     line-height: 2;
   }
+
+  .link {
+    word-break: break-all;
+    color: var(--primary-7) !important;
+  }
 }
 
 .heading {

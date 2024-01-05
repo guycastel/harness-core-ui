@@ -18,6 +18,7 @@ declare const styles: {
   readonly infoHeader: string
   readonly inputs: string
   readonly labels: string
+  readonly link: string
   readonly statusMsg: string
   readonly timer: string
 }
