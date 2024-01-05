@@ -5,8 +5,10 @@
  * https://polyformproject.org/wp-content/uploads/2020/06/PolyForm-Shield-1.0.0.txt.
  */
 import React from 'react'
-import { render } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 import { NAV_MODE } from '@modules/10-common/utils/routeUtils'
+import mockImport from 'framework/utils/mockImport'
+import type { StringsMap } from 'stringTypes'
 import CODERouteDestinations, { buildCODERoutePaths } from '../CODERouteDestinations'
 
 // eslint-disable-next-line jest-no-mock
@@ -17,7 +19,14 @@ jest.mock('react-router-dom', () => ({
   }),
   useRouteMatch: () => ({ params: { accountId: '1234', orgIdentifier: 'abc', projectIdentifier: 'xyz' } }),
   Switch: ({ children }: { children: JSX.Element }) => <>{children}</>,
-  Redirect: () => <></>
+  Redirect: () => <></>,
+  useParams: () => ({ accountId: '1234' }),
+  useLocation: () => ({ search: 'test' })
+}))
+
+jest.mock('@common/hooks', () => ({
+  ...(jest.requireActual('@common/hooks') as any),
+  useQueryParams: jest.fn().mockImplementation(() => ({ returnUrl: '/testing' }))
 }))
 
 jest.mock('@common/router/RouteWithContext/RouteWithContext', () => ({
@@ -26,6 +35,16 @@ jest.mock('@common/router/RouteWithContext/RouteWithContext', () => ({
       {path}/{children}
     </>
   )
+}))
+
+jest.mock('framework/strings', () => ({
+  useStrings: () => ({
+    getString: (key: keyof StringsMap, _vars?: Record<string, any> | undefined) => key
+  })
+}))
+
+jest.mock('@common/hooks/useTelemetry', () => ({
+  useTelemetry: () => ({ identifyUser: jest.fn(), trackEvent: jest.fn() })
 }))
 
 jest.mock('@common/navigation/SideNavV2/SideNavV2.utils', () => ({
@@ -57,11 +76,18 @@ jest.mock('../CodeApp', () => ({
   Webhooks: () => <div>code/Webhooks</div>
 }))
 
+mockImport('@common/hooks/useFeatureFlag', {
+  useFeatureFlags: () => ({ CI_YAML_VERSIONING: true }),
+  useFeatureFlag: () => false
+})
+
 describe('CODERouteDestinations Tests', () => {
   test('buildCODERoutePaths should render correct route paths for Module mode', async () => {
     const routePaths = buildCODERoutePaths(NAV_MODE.MODULE)
 
     expect(routePaths).toEqual({
+      toCODEHome: '/account/:accountId/module/code/home',
+      toCODEHomeTrial: '/account/:accountId/module/code/home/trial',
       toCODERepositories: '/account/:accountId/module/code/orgs/:orgIdentifier/projects/:projectIdentifier/repos',
       toCODERepository: [
         '/account/:accountId/module/code/orgs/:orgIdentifier/projects/:projectIdentifier/repos/:repoName/files/:gitRef*/~/:resourcePath*',
@@ -110,6 +136,8 @@ describe('CODERouteDestinations Tests', () => {
     const routePaths = buildCODERoutePaths(NAV_MODE.ALL)
 
     expect(routePaths).toEqual({
+      toCODEHome: '/account/:accountId/all/code/home',
+      toCODEHomeTrial: '/account/:accountId/all/code/home/trial',
       toCODERepositories: '/account/:accountId/all/code/orgs/:orgIdentifier/projects/:projectIdentifier/repos',
       toCODERepository: [
         '/account/:accountId/all/code/orgs/:orgIdentifier/projects/:projectIdentifier/repos/:repoName/files/:gitRef*/~/:resourcePath*',
@@ -155,6 +183,8 @@ describe('CODERouteDestinations Tests', () => {
 
   test('CODERouteDestinations should render correct routes', async () => {
     const { container } = render(<>{CODERouteDestinations()}</>)
-    expect(container).toMatchSnapshot()
+    await waitFor(() => {
+      expect(container).toMatchSnapshot()
+    })
   })
 })

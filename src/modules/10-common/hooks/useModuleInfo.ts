@@ -22,7 +22,7 @@ export interface UseModuleInfoReturn {
   module?: Module
 }
 
-const pathToMatch = withAccountId(() => '/:module(ci|cd|cf|cv|ce|sto|chaos|iacm|idp-admin|cet|ssca)')({
+const pathToMatch = withAccountId(() => '/:module(ci|cd|cf|cv|ce|sto|chaos|iacm|idp-admin|cet|ssca|code)')({
   accountId: ':accountId'
 })
 const matchModuleFn = match<ModuleInfo>(pathToMatch, { end: false })

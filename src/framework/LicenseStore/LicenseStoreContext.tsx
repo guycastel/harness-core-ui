@@ -44,6 +44,7 @@ export interface LicenseStoreContextProps {
   readonly CV_LICENSE_STATE: LICENSE_STATE_VALUES
   readonly CET_LICENSE_STATE: LICENSE_STATE_VALUES
   readonly SEI_LICENSE_STATE: LICENSE_STATE_VALUES
+  readonly CODE_LICENSE_STATE: LICENSE_STATE_VALUES
 
   updateLicenseStore(data: Partial<Pick<LicenseStoreContextProps, 'licenseInformation'>>): void
 }
@@ -68,7 +69,8 @@ export const LICENSE_STATE_NAMES: { [T in licenseStateNames]: T } = {
   STO_LICENSE_STATE: 'STO_LICENSE_STATE',
   CV_LICENSE_STATE: 'CV_LICENSE_STATE',
   CET_LICENSE_STATE: 'CET_LICENSE_STATE',
-  SEI_LICENSE_STATE: 'SEI_LICENSE_STATE'
+  SEI_LICENSE_STATE: 'SEI_LICENSE_STATE',
+  CODE_LICENSE_STATE: 'CODE_LICENSE_STATE'
 }
 
 export const LicenseStoreContext = React.createContext<LicenseStoreContextProps>({
@@ -83,6 +85,7 @@ export const LicenseStoreContext = React.createContext<LicenseStoreContextProps>
   CV_LICENSE_STATE: LICENSE_STATE_VALUES.NOT_STARTED,
   CET_LICENSE_STATE: LICENSE_STATE_VALUES.NOT_STARTED,
   SEI_LICENSE_STATE: LICENSE_STATE_VALUES.NOT_STARTED,
+  CODE_LICENSE_STATE: LICENSE_STATE_VALUES.NOT_STARTED,
   updateLicenseStore: () => void 0
 })
 
@@ -120,7 +123,8 @@ export function LicenseStoreProvider(props: React.PropsWithChildren<unknown>): R
     STO_LICENSE_STATE: shouldLicensesBeDisabled ? LICENSE_STATE_VALUES.ACTIVE : LICENSE_STATE_VALUES.NOT_STARTED,
     CV_LICENSE_STATE: shouldLicensesBeDisabled ? LICENSE_STATE_VALUES.ACTIVE : LICENSE_STATE_VALUES.NOT_STARTED,
     CET_LICENSE_STATE: shouldLicensesBeDisabled ? LICENSE_STATE_VALUES.ACTIVE : LICENSE_STATE_VALUES.NOT_STARTED,
-    SEI_LICENSE_STATE: shouldLicensesBeDisabled ? LICENSE_STATE_VALUES.ACTIVE : LICENSE_STATE_VALUES.NOT_STARTED
+    SEI_LICENSE_STATE: shouldLicensesBeDisabled ? LICENSE_STATE_VALUES.ACTIVE : LICENSE_STATE_VALUES.NOT_STARTED,
+    CODE_LICENSE_STATE: shouldLicensesBeDisabled ? LICENSE_STATE_VALUES.ACTIVE : LICENSE_STATE_VALUES.NOT_STARTED
   })
 
   const {
@@ -282,6 +286,7 @@ export function LicenseStoreProvider(props: React.PropsWithChildren<unknown>): R
     const CVModuleLicenseData = licenses['CV']
     const CETModuleLicenseData = licenses['CET']
     const SEIModuleLicenseData = licenses['SEI']
+    const CODEModuleLicenseData = licenses['CODE']
 
     const updatedCILicenseState: LICENSE_STATE_VALUES = getLicenseState(CIModuleLicenseData?.expiryTime)
     const updatedFFLicenseState: LICENSE_STATE_VALUES = getLicenseState(FFModuleLicenseData?.expiryTime)
@@ -292,6 +297,7 @@ export function LicenseStoreProvider(props: React.PropsWithChildren<unknown>): R
     const updatedCVLicenseState: LICENSE_STATE_VALUES = getLicenseState(CVModuleLicenseData?.expiryTime)
     const updatedCETLicenseState: LICENSE_STATE_VALUES = getLicenseState(CETModuleLicenseData?.expiryTime)
     const updatedSEILicenseState: LICENSE_STATE_VALUES = getLicenseState(SEIModuleLicenseData?.expiryTime)
+    const updatedCODELicenseState: LICENSE_STATE_VALUES = getLicenseState(CODEModuleLicenseData?.expiryTime)
 
     setState(prevState => ({
       ...prevState,
@@ -304,7 +310,8 @@ export function LicenseStoreProvider(props: React.PropsWithChildren<unknown>): R
       STO_LICENSE_STATE: shouldLicensesBeDisabled ? LICENSE_STATE_VALUES.ACTIVE : updatedSTOLicenseState,
       CV_LICENSE_STATE: shouldLicensesBeDisabled ? LICENSE_STATE_VALUES.ACTIVE : updatedCVLicenseState,
       CET_LICENSE_STATE: shouldLicensesBeDisabled ? LICENSE_STATE_VALUES.ACTIVE : updatedCETLicenseState,
-      SEI_LICENSE_STATE: shouldLicensesBeDisabled ? LICENSE_STATE_VALUES.ACTIVE : updatedSEILicenseState
+      SEI_LICENSE_STATE: shouldLicensesBeDisabled ? LICENSE_STATE_VALUES.ACTIVE : updatedSEILicenseState,
+      CODE_LICENSE_STATE: shouldLicensesBeDisabled ? LICENSE_STATE_VALUES.ACTIVE : updatedCODELicenseState
     }))
 
     if (!getAccountLicensesLoading && !isEmpty(currentUserInfo)) {
@@ -328,6 +335,7 @@ export function LicenseStoreProvider(props: React.PropsWithChildren<unknown>): R
           | 'CV_LICENSE_STATE'
           | 'CET_LICENSE_STATE'
           | 'SEI_LICENSE_STATE'
+          | 'CODE_LICENSE_STATE'
         >
       >
     ): void => {
@@ -340,7 +348,7 @@ export function LicenseStoreProvider(props: React.PropsWithChildren<unknown>): R
       const CVModuleLicenseData = updateData.licenseInformation?.['CV']
       const CETModuleLicenseData = updateData.licenseInformation?.['CET']
       const SEIModuleLicenseData = updateData.licenseInformation?.['SEI']
-
+      const CODEModuleLicenseData = updateData.licenseInformation?.['CODE']
       setState(prevState => ({
         ...prevState,
         licenseInformation: updateData.licenseInformation || prevState.licenseInformation,
@@ -370,7 +378,10 @@ export function LicenseStoreProvider(props: React.PropsWithChildren<unknown>): R
           : prevState.CET_LICENSE_STATE,
         SEI_LICENSE_STATE: SEIModuleLicenseData?.expiryTime
           ? getLicenseState(SEIModuleLicenseData.expiryTime)
-          : prevState.SEI_LICENSE_STATE
+          : prevState.SEI_LICENSE_STATE,
+        CODE_LICENSE_STATE: CODEModuleLicenseData?.expiryTime
+          ? getLicenseState(CODEModuleLicenseData.expiryTime)
+          : prevState.CODE_LICENSE_STATE
       }))
     },
     [getLicenseState]
@@ -402,6 +413,7 @@ export function LicenseStoreProvider(props: React.PropsWithChildren<unknown>): R
         CV_LICENSE_STATE: state.CV_LICENSE_STATE,
         CET_LICENSE_STATE: state.CET_LICENSE_STATE,
         SEI_LICENSE_STATE: state.SEI_LICENSE_STATE,
+        CODE_LICENSE_STATE: state.CODE_LICENSE_STATE,
         licenseInformation: state.licenseInformation,
         versionMap: state.versionMap,
         updateLicenseStore
@@ -435,10 +447,10 @@ export function handleUpdateLicenseStore(
           | 'CV_LICENSE_STATE'
           | 'CET_LICENSE_STATE'
           | 'SEI_LICENSE_STATE'
+          | 'CODE_LICENSE_STATE'
         >
       >
     | undefined
-
   if (module.toUpperCase() === ModuleName.CI) {
     newLicenseInformation[ModuleName.CI] = data
     licenseStoreData = {
@@ -481,6 +493,11 @@ export function handleUpdateLicenseStore(
     }
   } else if (module.toUpperCase() === ModuleName.SEI) {
     newLicenseInformation[ModuleName.SEI] = data
+    licenseStoreData = {
+      licenseInformation: newLicenseInformation
+    }
+  } else if (module.toUpperCase() === ModuleName.CODE) {
+    newLicenseInformation[ModuleName.CODE] = data
     licenseStoreData = {
       licenseInformation: newLicenseInformation
     }

@@ -48,6 +48,8 @@ export const getModuleIcon = (module: ModuleName): IconName => {
       return 'ssca-main'
     case ModuleName.SEI:
       return 'sei-main'
+    case ModuleName.CODE:
+      return 'code'
   }
   return 'nav-project'
 }

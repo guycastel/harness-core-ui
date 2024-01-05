@@ -205,6 +205,7 @@ export const TestWrapper: React.FC<TestWrapperProps> = props => {
                 CV_LICENSE_STATE: LICENSE_STATE_VALUES.ACTIVE,
                 CET_LICENSE_STATE: LICENSE_STATE_VALUES.ACTIVE,
                 SEI_LICENSE_STATE: LICENSE_STATE_VALUES.ACTIVE,
+                CODE_LICENSE_STATE: LICENSE_STATE_VALUES.ACTIVE,
                 updateLicenseStore: () => void 0,
                 ...defaultLicenseStoreValues
               }}

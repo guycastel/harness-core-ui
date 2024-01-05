@@ -142,6 +142,7 @@ export enum PAGE_NAME {
   ErrorTrackingListPage = 'ErrorTrackingListPage',
   OPAPolicyDashboard = 'OPAPolicyDashboard',
   CODEHomePage = 'CODEHomePage',
+  CODETrialHomePage = 'CODETrialHomePage',
   CODERepositories = 'CODERepositories',
   CODERepository = 'CODERepository',
   CODESearch = 'CODESearch',

@@ -63,6 +63,7 @@ gotoCI: 'Go to Continuous Integration'
 gotoSTO: 'Go to Security Tests'
 gotoCHAOS: 'Go to Chaos Engineering'
 gotoCET: 'Go to Continuous Error Tracking'
+gotoCODE: 'Go to Code Repository'
 invite: 'Invite Collaborators'
 urlMessageProject: "Your Project is only accessible to people you've invited"
 urlMessageOrg: "Your organization is only accessible to people you've invited"

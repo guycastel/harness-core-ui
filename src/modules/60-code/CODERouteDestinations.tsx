@@ -12,6 +12,8 @@ import { routesV2 as routes } from '@modules/60-code/RouteDefinitions'
 import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import { Scope } from 'framework/types/types'
 import { RouteWithContext } from '@common/router/RouteWithContext/RouteWithContext'
+import { RedirectToModuleTrialHomeFactory, RedirectToSubscriptionsFactory } from '@common/Redirects'
+import { LICENSE_STATE_NAMES, LicenseRedirectProps } from 'framework/LicenseStore/LicenseStoreContext'
 import { accountPathProps, projectPathProps, NAV_MODE, orgPathProps } from '@common/utils/routeUtils'
 import { ModuleName } from 'framework/types/ModuleName'
 import { PAGE_NAME } from '@common/pages/pageContext/PageName'
@@ -34,10 +36,16 @@ import {
   Webhooks
 } from './CodeApp'
 import { codePathProps } from './RouteDestinations'
+import CODEHomePage from './pages/home/CODEHomePage'
+import CODETrialHomePage from './pages/home/CODETrialHomePage'
 
 export default function CODERouteDestinations(mode = NAV_MODE.MODULE): React.ReactElement {
   const routePaths = buildCODERoutePaths(mode)
-
+  const licenseRedirectData: LicenseRedirectProps = {
+    licenseStateName: LICENSE_STATE_NAMES.CODE_LICENSE_STATE,
+    startTrialRedirect: RedirectToModuleTrialHomeFactory(ModuleName.CODE),
+    expiredTrialRedirect: RedirectToSubscriptionsFactory(ModuleName.CODE)
+  }
   return (
     <Switch>
       <RouteWithContext
@@ -49,6 +57,19 @@ export default function CODERouteDestinations(mode = NAV_MODE.MODULE): React.Rea
         ]}
       >
         <CODERedirect />
+      </RouteWithContext>
+
+      <RouteWithContext path={routePaths.toCODEHomeTrial} pageName={PAGE_NAME.CODETrialHomePage}>
+        <CODETrialHomePage />
+      </RouteWithContext>
+
+      <RouteWithContext
+        licenseRedirectData={licenseRedirectData}
+        exact
+        path={routePaths.toCODEHome}
+        pageName={PAGE_NAME.CODEHomePage}
+      >
+        <CODEHomePage />
       </RouteWithContext>
 
       <RouteWithContext path={routePaths.toCODECompare} pageName={PAGE_NAME.CODEPullRequestsCompare}>
@@ -83,7 +104,12 @@ export default function CODERouteDestinations(mode = NAV_MODE.MODULE): React.Rea
         <Settings />
       </RouteWithContext>
 
-      <RouteWithContext path={routePaths.toCODERepositories} pageName={PAGE_NAME.CODERepositories} exact>
+      <RouteWithContext
+        licenseRedirectData={licenseRedirectData}
+        path={routePaths.toCODERepositories}
+        pageName={PAGE_NAME.CODERepositories}
+        exact
+      >
         <Repositories />
       </RouteWithContext>
 
@@ -107,7 +133,11 @@ export default function CODERouteDestinations(mode = NAV_MODE.MODULE): React.Rea
         <FileEdit />
       </RouteWithContext>
 
-      <RouteWithContext path={routePaths.toCODERepository} pageName={PAGE_NAME.CODERepository}>
+      <RouteWithContext
+        licenseRedirectData={licenseRedirectData}
+        path={routePaths.toCODERepository}
+        pageName={PAGE_NAME.CODERepository}
+      >
         <Repository />
       </RouteWithContext>
     </Switch>
@@ -125,6 +155,14 @@ export const buildCODERoutePaths = (mode: NAV_MODE): Record<string, string | str
   return {
     toCODERepositories: routes.toCODERepositories({
       space: [codePathProps.accountId, codePathProps.orgIdentifier, codePathProps.projectIdentifier].join('/'),
+      mode
+    }),
+    toCODEHome: routes.toCODEHome({
+      space: [codePathProps.accountId].join('/'),
+      mode
+    }),
+    toCODEHomeTrial: routes.toCODEHomeTrial({
+      space: [codePathProps.accountId].join('/'),
       mode
     }),
     toCODERepository: [
@@ -235,8 +273,11 @@ const CODERedirect: React.FC = () => {
       )
     }
   }
+  if (scope === Scope.ORGANIZATION) {
+    return <Redirect to={commonRoutes.toSettings({ orgIdentifier: params?.orgIdentifier, module: CODE })} />
+  }
 
-  return <Redirect to={commonRoutes.toSettings({ orgIdentifier: params?.orgIdentifier, module: CODE })} />
+  return <Redirect to={commonRoutes.toCODEHome({ accountId: params?.accountId, module: CODE })} />
 }
 
 const CODE = 'code'

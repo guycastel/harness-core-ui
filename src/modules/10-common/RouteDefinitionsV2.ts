@@ -545,6 +545,7 @@ const routes = {
   // CODE/Gitness routes
   toCODE: withModeModuleAndScopePrefix(() => `/`),
   toCODEHome: withModeModuleAndScopePrefix(() => `/home`),
+  toCODEHomeTrial: withModeModuleAndScopePrefix(() => `/home/trial`),
 
   // cf routes
   toFeatureFlags: withModeModuleAndScopePrefix<ModulePathParams>(() => '/feature-flags'),

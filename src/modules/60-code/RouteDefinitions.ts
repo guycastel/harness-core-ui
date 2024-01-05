@@ -5,7 +5,7 @@
  * https://polyformproject.org/wp-content/uploads/2020/06/PolyForm-Shield-1.0.0.txt.
  */
 
-import type { ProjectPathProps, RequiredField } from '@common/interfaces/RouteInterfaces'
+import type { AccountPathProps, ProjectPathProps, RequiredField } from '@common/interfaces/RouteInterfaces'
 import routes from '@common/RouteDefinitions'
 import { withModeModuleAndScopePrefix } from '@common/RouteDefinitionsV2'
 import { NAV_MODE } from '@modules/10-common/utils/routeUtils'
@@ -43,6 +43,22 @@ const REPOS_PREFIX = '/repos'
 const CODE = 'code'
 
 export const routesV2 = {
+  toCODEHome: ({ space, mode }: Required<Pick<CODEProps, 'space'>> & NavMode) => {
+    const [accountId] = space.split('/')
+    return withModeModuleAndScopePrefix<AccountPathProps>(() => '/home')({
+      module: CODE,
+      accountId,
+      ...(mode ? { mode } : undefined)
+    })
+  },
+  toCODEHomeTrial: ({ space, mode }: Required<Pick<CODEProps, 'space'>> & NavMode) => {
+    const [accountId] = space.split('/')
+    return withModeModuleAndScopePrefix<AccountPathProps>(() => '/home/trial')({
+      module: CODE,
+      accountId,
+      ...(mode ? { mode } : undefined)
+    })
+  },
   toCODERepositories: ({ space, mode }: Required<Pick<CODEProps, 'space'>> & NavMode) => {
     const [accountId, orgIdentifier, projectIdentifier] = space.split('/')
     return withModeModuleAndScopePrefix<ProjectPathProps>(() => REPOS_PREFIX)({
@@ -282,6 +298,7 @@ export const routesV2 = {
 export default {
   toCODE: routes.toCODE,
   toCODEHome: routes.toCODEHome,
+  toCODEHomeTrial: routes.toCODEHomeTrial,
   toCODERepositories: ({ space }: Required<Pick<CODEProps, 'space'>>) => {
     const [accountId, orgIdentifier, projectIdentifier] = space.split('/')
     return `/account/${accountId}/code/${orgIdentifier}/${projectIdentifier}`

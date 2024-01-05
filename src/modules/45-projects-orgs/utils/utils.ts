@@ -72,6 +72,8 @@ export const getModuleDescriptionsForModuleSelectionDialog = (module: ModuleName
       return 'common.purpose.cv.moduleSelectionSubHeading'
     case ModuleName.CI:
       return 'common.purpose.ci.descriptionOnly'
+    case ModuleName.CODE:
+      return 'common.purpose.code.descriptionOnly'
     case ModuleName.CE:
       return 'common.purpose.ce.moduleSelectionSubHeading'
     case ModuleName.CF:
@@ -159,6 +161,8 @@ export const getModuleFullLengthTitle = (module: ModuleName): keyof StringsMap =
       return 'common.purpose.cet.continuous'
     case ModuleName.SEI:
       return 'common.purpose.sei.fullName'
+    case ModuleName.CODE:
+      return 'common.purpose.code.title'
     default:
       return 'common.purpose.cd.continuous'
   }

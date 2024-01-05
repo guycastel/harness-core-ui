@@ -48,6 +48,9 @@ export const defaultLicensesByModule: {
   // TODO: change to free when free plan is supported
   STO: {
     edition: Editions.ENTERPRISE
+  },
+  CODE: {
+    edition: Editions.FREE
   }
 }
 
@@ -81,6 +84,9 @@ export const getModuleToDefaultURLMap = (
           projectIdentifier: DEFAULT_PROJECT_ID,
           orgIdentifier: DEFAULT_ORG
         }),
+  code: routes.toCODEHome({
+    accountId
+  }),
   cf: routes.toCFOnboarding({
     accountId,
     projectIdentifier: DEFAULT_PROJECT_ID,

@@ -1811,6 +1811,15 @@ const routes = {
 
   toCODE: withAccountId(() => `/code`),
   toCODEHome: withAccountId(() => `/code/home`),
+  toCODEHomeTrial: withAccountId(() => '/code/home/trial'),
+  toCODERepositoriesV1: withAccountId(
+    ({ orgIdentifier, projectIdentifier }: Partial<ProjectPathProps & { module?: string }>) =>
+      `/code/${orgIdentifier}/${projectIdentifier}`
+  ),
+  toCODERepositoriesV2: withAccountId(
+    ({ orgIdentifier, projectIdentifier }: Partial<ProjectPathProps & { module?: string }>) =>
+      `/code/orgs/${orgIdentifier}/projects/${projectIdentifier}/repos`
+  ),
 
   /********************************************************************************************************************/
   toCV: (params: Partial<ProjectPathProps>): string =>

@@ -1,6 +1,11 @@
-homepageHeading: Let Harness take your software release process to the next level with Harness Code
-learnMore: Learn more about Harness Code
+homepageHeading: Let Harness take your software release process to the next level with Harness Code Repository
+learnMore: Learn more about Code Repositroy
 branches: Branches
 pullRequests: Pull Requests
 missingPermission: You are missing the permission for this action.
 backToRepositories: Back to Repositories
+codeTrialHomePage:
+  startTrial:
+    description: Let Harness take your software release process to the next level with Code Repository
+    startBtn:
+      description: Start 14 day CODE Enterprise trial

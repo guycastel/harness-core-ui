@@ -46,7 +46,7 @@ import css from './WelcomePage.module.scss'
 
 export default function WelcomePageV2(props: { getStartedVariant?: string }): JSX.Element {
   const HarnessLogo = HarnessIcons['harness-logo-black']
-  const { CREATE_DEFAULT_PROJECT, AUTO_FREE_MODULE_LICENSE, CVNG_ENABLED } = useFeatureFlags()
+  const { CREATE_DEFAULT_PROJECT, AUTO_FREE_MODULE_LICENSE, CVNG_ENABLED, CODE_ENABLED } = useFeatureFlags()
   const { licenseInformation, updateLicenseStore } = useLicenseStore()
   const { getString } = useStrings()
   const { accountId } = useParams<ProjectPathProps>()
@@ -85,13 +85,14 @@ export default function WelcomePageV2(props: { getStartedVariant?: string }): JS
         cd: true,
         cv: CVNG_ENABLED,
         ci: true,
+        code: CODE_ENABLED,
         cf: true,
         ce: true,
         chaos: true
       }
       return Boolean(moduleStatusMap[moduleSelected])
     },
-    [CVNG_ENABLED]
+    [CVNG_ENABLED, CODE_ENABLED]
   )
 
   const getClickHandle = (
@@ -101,6 +102,7 @@ export default function WelcomePageV2(props: { getStartedVariant?: string }): JS
     switch (moduleSelected) {
       case 'ci':
       case 'cd':
+      case 'code':
       case 'ce':
       case 'cv':
       case 'cf':
@@ -118,6 +120,7 @@ export default function WelcomePageV2(props: { getStartedVariant?: string }): JS
                   defaultExperience: Experiences.NG
                 })
                 const licenseStateName = getLicenseStateNameByModuleType(moduleSelected as Module)
+
                 const hasFreeLicense = licenseInformation[upperCase(moduleSelected)]?.edition === 'FREE'
                 if (!hasFreeLicense) {
                   const licenseResponse = await startFreeLicense(moduleSelected)
@@ -135,6 +138,7 @@ export default function WelcomePageV2(props: { getStartedVariant?: string }): JS
                   moduleSelected as Module,
                   props?.getStartedVariant as PLG_CD_GET_STARTED_VARIANTS
                 )[moduleSelected as Module]
+
                 CREATE_DEFAULT_PROJECT
                   ? history.push(defaultURL)
                   : history.push(routes.toModuleHome({ accountId, module: moduleSelected, source: 'purpose' }))
@@ -156,6 +160,7 @@ export default function WelcomePageV2(props: { getStartedVariant?: string }): JS
     }
   }
   const cdPoints = getString(modulesInfo.cd.points as StringKeys)?.split(',')
+  const codePoints = getString(modulesInfo.code.points as StringKeys)?.split(',')
 
   return (
     <OverlaySpinner show={updatingDefaultExperience || loading} className={css.primaryBg}>
@@ -176,7 +181,7 @@ export default function WelcomePageV2(props: { getStartedVariant?: string }): JS
             <Container className={cx(css.moduleCards)}>
               <Container padding={{ top: 'large' }} flex={{ alignItems: 'start' }} className={cx(css.onboardingCards)}>
                 {getModuleStatus(modulesInfo.ci.module) && (
-                  <Card className={cx(css.width50, css.onboardingCard, css.cardShadow)}>
+                  <Card className={cx(css.width33, css.onboardingCard, css.cardShadow)}>
                     <Layout.Vertical>
                       <Layout.Horizontal>
                         <Heading
@@ -218,7 +223,7 @@ export default function WelcomePageV2(props: { getStartedVariant?: string }): JS
                     </Layout.Horizontal>
                   </Card>
                 )}
-                <Card className={cx(css.width50, css.onboardingCard, css.cardShadow)}>
+                <Card className={cx(css.width33, css.onboardingCard, css.cardShadow)}>
                   <Layout.Vertical>
                     <Layout.Horizontal>
                       <Heading
@@ -262,10 +267,54 @@ export default function WelcomePageV2(props: { getStartedVariant?: string }): JS
                     </Button>
                   </Layout.Horizontal>
                 </Card>
+                <Card className={cx(css.width33, css.onboardingCard, css.cardShadow)}>
+                  <Layout.Vertical>
+                    <Layout.Horizontal>
+                      <Heading
+                        color={Color.BLACK}
+                        font={{ size: 'medium', weight: 'bold' }}
+                        className={css.onboardingHead}
+                      >
+                        <Icon name={modulesInfo.code.icon} size={20} padding={{ right: 'medium' }} />
+
+                        {getString(modulesInfo.code.title)}
+                      </Heading>
+                    </Layout.Horizontal>
+                    <Text padding={{ top: 'medium', bottom: 'large' }} className={css.bodyText} color={Color.BLACK}>
+                      {getString(modulesInfo.code.bodyText)}
+                    </Text>
+                    <ul className={css.bulletPadding}>
+                      {codePoints?.map((point: string, idx: number) => {
+                        return (
+                          <li key={idx}>
+                            <Text
+                              color={Color.BLACK}
+                              iconProps={{ color: Color.BLACK, size: 18 }}
+                              className={cx(css.bodyText, {
+                                [css.alignTop]: idx === cdPoints?.length - 1
+                              })}
+                            >
+                              {point}
+                            </Text>
+                          </li>
+                        )
+                      })}
+                    </ul>
+                  </Layout.Vertical>
+                  <Layout.Horizontal padding={{ top: 'xxlarge' }}>
+                    <Button
+                      variation={ButtonVariation.PRIMARY}
+                      onClick={getClickHandle(modulesInfo.code.module, PLG_ELEMENTS.MODULE_CARD).clickHandle}
+                      disabled={getClickHandle(modulesInfo.code.module, PLG_ELEMENTS.MODULE_CARD).disabled}
+                    >
+                      {getString('getStarted')}
+                    </Button>
+                  </Layout.Horizontal>
+                </Card>
               </Container>
               <Container padding={{ top: 'xlarge' }} flex={{ alignItems: 'start' }} className={cx(css.onboardingCards)}>
                 {Object.values(modulesInfo)
-                  .slice(2)
+                  .slice(3)
                   .map((moduleData: ModuleInfoValue) =>
                     getModuleStatus(moduleData.module) ? (
                       <Card key={moduleData.module} className={cx(css.normalCard, css.onboardingCard, css.cardShadow)}>

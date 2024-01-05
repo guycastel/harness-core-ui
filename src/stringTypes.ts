@@ -974,6 +974,7 @@ export interface StringsMap {
   'common.purpose.ci.descriptionOnly': string
   'common.purpose.ci.integration': string
   'common.purpose.ci.subtitle': string
+  'common.purpose.code.descriptionOnly': string
   'common.purpose.code.name': string
   'common.purpose.code.title': string
   'common.purpose.compare': string
@@ -1575,6 +1576,10 @@ export interface StringsMap {
   'common.welcomePage.ci.points': string
   'common.welcomePage.ci.subTitle': string
   'common.welcomePage.ci.title': string
+  'common.welcomePage.code.bodyText': string
+  'common.welcomePage.code.points': string
+  'common.welcomePage.code.subTitle': string
+  'common.welcomePage.code.title': string
   'common.welcomePage.cv.bodyText': string
   'common.welcomePage.cv.subTitle': string
   'common.welcomePage.cv.title': string
@@ -3884,6 +3889,7 @@ export interface StringsMap {
   'projectsOrgs.gotoCF': string
   'projectsOrgs.gotoCHAOS': string
   'projectsOrgs.gotoCI': string
+  'projectsOrgs.gotoCODE': string
   'projectsOrgs.gotoCV': string
   'projectsOrgs.gotoCloudCosts': string
   'projectsOrgs.gotoDeployments': string
@@ -3993,6 +3999,8 @@ export interface StringsMap {
   'projectsOrgs.youHaveNoProjects': string
   'code.backToRepositories': string
   'code.branches': string
+  'code.codeTrialHomePage.startTrial.description': string
+  'code.codeTrialHomePage.startTrial.startBtn.description': string
   'code.homepageHeading': string
   'code.learnMore': string
   'code.missingPermission': string

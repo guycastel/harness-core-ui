@@ -40,6 +40,13 @@ export const getModuleLink = ({ accountId, orgIdentifier, projectIdentifier, mod
         accountId,
         module: 'ci'
       })
+    case ModuleName.CODE:
+      return routes.toCODERepositoriesV1({
+        projectIdentifier,
+        orgIdentifier,
+        accountId,
+        module: 'code'
+      })
     case ModuleName.CV:
       return routes.toCVSLOs({
         projectIdentifier,
@@ -99,6 +106,14 @@ export const getModuleLinkV2 = ({
         orgIdentifier,
         accountId,
         module: 'ci',
+        mode: 'module'
+      })
+    case ModuleName.CODE: //verify
+      return routesV2.toMode({
+        projectIdentifier,
+        orgIdentifier,
+        accountId,
+        module: 'code',
         mode: 'module'
       })
     case ModuleName.CV:

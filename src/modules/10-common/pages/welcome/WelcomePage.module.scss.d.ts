@@ -40,6 +40,7 @@ declare const styles: {
   readonly selectedModuleInfoCard: string
   readonly sidecard: string
   readonly titleIcon: string
+  readonly width33: string
   readonly width50: string
   readonly width80: string
 }

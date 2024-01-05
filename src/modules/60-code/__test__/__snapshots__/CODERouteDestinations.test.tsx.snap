@@ -6,6 +6,109 @@ exports[`CODERouteDestinations Tests CODERouteDestinations should render correct
   /account/:accountId/module/code/orgs/:orgIdentifier
   /account/:accountId/module/code
   /
+  /account/:accountId/module/code/home/trial
+  /
+  <div
+    class="StyledProps--font StyledProps--main body"
+    style="background: transparent url(test-file-stub) no-repeat;"
+  >
+    <div
+      class="Layout--vertical Layout--layout-spacing-medium StyledProps--main"
+    >
+      <h1
+        class="StyledProps--font StyledProps--font-h1 StyledProps--main StyledProps--font-weight-bold StyledProps--font-size-large StyledProps--color StyledProps--color-black100"
+      >
+        common.purpose.code.title
+      </h1>
+      <div
+        class="Layout--vertical Layout--layout-spacing-small StyledProps--main"
+      >
+        <p
+          class="StyledProps--font StyledProps--main StyledProps--padding-bottom-xxlarge"
+          style="width: 500px;"
+        >
+          code.homepageHeading
+        </p>
+        <a
+          class="learnMore"
+          href="https://developer.harness.io/docs/code-repository"
+          rel="noreferrer"
+          target="_blank"
+        >
+          code.learnMore
+        </a>
+        <button
+          aria-label="common.startFreePlan"
+          class="bp3-button Button--button StyledProps--font StyledProps--main StyledProps--intent-primary Button--with-current-color"
+          style="width: 300px; height: 45px;"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            common.startFreePlan
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+  /account/:accountId/module/code/home
+  /
+  <div
+    class="StyledProps--font StyledProps--main container"
+    style="background: transparent url(test-file-stub) no-repeat;"
+  >
+    <div
+      class="Layout--vertical Layout--layout-spacing-medium StyledProps--main"
+    >
+      <h1
+        class="StyledProps--font StyledProps--font-h1 StyledProps--main StyledProps--font-weight-bold StyledProps--font-size-large StyledProps--color StyledProps--color-black100"
+      >
+        common.purpose.code.title
+      </h1>
+      <p
+        class="StyledProps--font StyledProps--main subTitle StyledProps--color"
+      >
+        code.homepageHeading
+      </p>
+      <a
+        class="bp3-button Button--button StyledProps--font StyledProps--main link StyledProps--color StyledProps--font StyledProps--font-size-normal Button--with-current-color Button--link"
+        href="https://developer.harness.io/docs/category/get-started-with-code"
+        rel="noreferrer noopener"
+        role="button"
+        tabindex="0"
+        target="_blank"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          code.learnMore
+        </span>
+      </a>
+      <div
+        class="Layout--horizontal Layout--layout-spacing-large StyledProps--main StyledProps--flex"
+      >
+        <button
+          class="bp3-button bp3-large Button--button StyledProps--font StyledProps--main Button--with-current-color Button--iconOnly Button--variation Button--variation-primary"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            createProject
+          </span>
+        </button>
+        <p
+          class="StyledProps--font StyledProps--main StyledProps--font-size-medium StyledProps--color StyledProps--color-black"
+        >
+          orSelectExisting
+        </p>
+        <span
+          style="flex-grow: 1;"
+        />
+      </div>
+    </div>
+  </div>
   /account/:accountId/module/code/orgs/:orgIdentifier/projects/:projectIdentifier/repos/:repoName/pulls/compare/:diffRefs*
   /
   <div>

@@ -11,29 +11,33 @@ import { HomePageTemplate } from '@projects-orgs/pages/HomePageTemplate/HomePage
 import { useStrings } from 'framework/strings'
 import type { Project } from 'services/cd-ng'
 import type { AccountPathProps } from '@common/interfaces/RouteInterfaces'
+import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
+import { routesV2 } from '@modules/60-code/RouteDefinitions'
 import routes from '../../RouteDefinitions'
 import bgImageURL from './assets/CODELandingPage.svg'
 
 const CODEHomePage: React.FC = () => {
+  const { CDS_NAV_2_0 } = useFeatureFlags()
   const { getString } = useStrings()
   const { accountId } = useParams<AccountPathProps>()
   const history = useHistory()
-
+  const route = CDS_NAV_2_0 ? routesV2 : routes
   const projectCreateSuccessHandler = (project?: Project): void => {
     if (project) {
       history.push(
-        routes.toCODERepositories({ space: [accountId, project.orgIdentifier, project.identifier].join('/') })
+        route.toCODERepositories({ space: [accountId, project.orgIdentifier, project.identifier].join('/') }) //MODE IS MISSING
       )
     }
   }
 
   return (
     <HomePageTemplate
-      title={getString('common.purpose.code.name')}
+      title={getString('common.purpose.code.title')}
       bgImageUrl={bgImageURL}
       projectCreateSuccessHandler={projectCreateSuccessHandler}
       subTitle={getString('code.homepageHeading')}
       documentText={getString('code.learnMore')}
+      documentURL="https://developer.harness.io/docs/category/get-started-with-code"
     />
   )
 }

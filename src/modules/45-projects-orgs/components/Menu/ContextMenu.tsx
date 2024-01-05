@@ -167,6 +167,19 @@ const ContextMenu: React.FC<ContextMenuProps> = props => {
       })
     )
   }
+
+  const handleCode = (event: React.MouseEvent<HTMLElement, MouseEvent>): void => {
+    event.stopPropagation()
+    setMenuOpen?.(false)
+    history.push(
+      routes.toCODERepositoriesV1({
+        projectIdentifier: project.identifier,
+        orgIdentifier: project.orgIdentifier || /* istanbul ignore next */ '',
+        accountId,
+        module: 'code'
+      })
+    )
+  }
   const { shouldVisible } = useNavModuleInfo(ModuleName.CD)
   return (
     <Menu style={{ minWidth: 'unset' }}>
@@ -190,6 +203,18 @@ const ContextMenu: React.FC<ContextMenuProps> = props => {
             </Layout.Horizontal>
           }
           onClick={handleCI}
+        />
+      ) : null}
+      {licenseInformation['CODE']?.status === LICENSE_STATE_VALUES.ACTIVE &&
+      project.modules?.includes(ModuleName.CODE) ? (
+        <Menu.Item
+          text={
+            <Layout.Horizontal spacing="xsmall">
+              <Icon name="code" size={20} />
+              <Text color={Color.WHITE}>{getString('projectsOrgs.gotoCODE')}</Text>
+            </Layout.Horizontal>
+          }
+          onClick={handleCode}
         />
       ) : null}
       {FF_LICENSE_STATE === LICENSE_STATE_VALUES.ACTIVE && project.modules?.includes(ModuleName.CF) ? (

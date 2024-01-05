@@ -9,6 +9,8 @@ import React, { useEffect } from 'react'
 import { Route, useHistory, useParams } from 'react-router-dom'
 import { RouteWithLayout } from '@common/router'
 import type { SidebarContext } from '@common/navigation/SidebarProvider'
+import { RedirectToModuleTrialHomeFactory, RedirectToSubscriptionsFactory } from '@common/Redirects'
+import { LICENSE_STATE_NAMES, LicenseRedirectProps } from 'framework/LicenseStore/LicenseStoreContext'
 import SideNav from '@code/components/SideNav/SideNav'
 import { PAGE_NAME } from '@common/pages/pageContext/PageName'
 import { projectPathProps } from '@common/utils/routeUtils'
@@ -33,6 +35,7 @@ import {
 } from './CodeApp'
 import routes, { CODEPathProps } from './RouteDefinitions'
 import CODEHomePage from './pages/home/CODEHomePage'
+import CODETrialHomePage from './pages/home/CODETrialHomePage'
 import { useRegisterResourcesForCODE } from './useRegisterResourcesForCODE'
 
 const sidebarProps: SidebarContext = {
@@ -89,7 +92,11 @@ export default function CODERouteDestinations(): React.ReactElement {
   ].join('/')
 
   useRegisterResourcesForCODE()
-
+  const licenseRedirectData: LicenseRedirectProps = {
+    licenseStateName: LICENSE_STATE_NAMES.CODE_LICENSE_STATE,
+    startTrialRedirect: RedirectToModuleTrialHomeFactory(ModuleName.CODE),
+    expiredTrialRedirect: RedirectToSubscriptionsFactory(ModuleName.CODE)
+  }
   return (
     <Route path={routes.toCODE(codePathProps)}>
       <Route path={routes.toCODE(codePathProps)} exact>
@@ -97,6 +104,15 @@ export default function CODERouteDestinations(): React.ReactElement {
       </Route>
 
       <RouteWithLayout
+        path={routes.toCODEHomeTrial(codePathProps)}
+        sidebarProps={sidebarProps}
+        pageName={PAGE_NAME.CODETrialHomePage}
+      >
+        <CODETrialHomePage />
+      </RouteWithLayout>
+
+      <RouteWithLayout
+        licenseRedirectData={licenseRedirectData}
         path={routes.toCODEHome(codePathProps)}
         sidebarProps={sidebarProps}
         pageName={PAGE_NAME.CODEHomePage}
@@ -217,6 +233,7 @@ export default function CODERouteDestinations(): React.ReactElement {
       </RouteWithLayout>
 
       <RouteWithLayout
+        licenseRedirectData={licenseRedirectData}
         path={routes.toCODERepositories({
           space: [codePathProps.accountId, codePathProps.orgIdentifier, codePathProps.projectIdentifier].join('/')
         })}
@@ -274,6 +291,7 @@ export default function CODERouteDestinations(): React.ReactElement {
         <FileEdit />
       </RouteWithLayout>
       <RouteWithLayout
+        licenseRedirectData={licenseRedirectData}
         path={[
           routes.toCODERepository({
             repoPath,

@@ -109,6 +109,14 @@ const getModulesWithSubscriptionsRoutesMap = ({
     [ModuleName.CD, cdOnboardingPath],
     [ModuleName.CI, cdCiPath],
     [
+      ModuleName.CODE,
+      {
+        pathname: routes.toCODEHome({
+          accountId
+        })
+      }
+    ],
+    [
       ModuleName.STO,
       {
         pathname: routes.toSTOProjectOverview({
@@ -313,6 +321,11 @@ export const useModuleSelectModal = ({
   if (licenseInformation[ModuleName.SEI]?.status === LICENSE_STATE_VALUES.ACTIVE) {
     infoCards.push({
       name: ModuleName.SEI
+    })
+  }
+  if (licenseInformation[ModuleName.CODE]?.status === LICENSE_STATE_VALUES.ACTIVE) {
+    infoCards.push({
+      name: ModuleName.CODE
     })
   }
   const { CDS_NAV_2_0 } = useFeatureFlags()

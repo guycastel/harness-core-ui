@@ -361,6 +361,7 @@ purpose:
   code:
     name: Code
     title: Code Repository
+    descriptionOnly: 'Seamlessly drive software delivery processes with Harness Code Repository'
   chaos:
     continuous: Chaos Engineering
     chaos: Chaos
@@ -1567,6 +1568,11 @@ welcomePage:
     subTitle: Intelligent build & test
     bodyText: Build and test with any language on any platform.
     points: Run builds on your own infrastructure or Harness Cloud, Prioritize the tests relevant to your code changes with Test Intelligence™, Track and remediate vulnerabilities on every commit, Tap into thousands configuration templates and community integrations
+  code:
+    title: '{{ $.common.purpose.code.title }}'
+    subTitle: Familiar Git experience, packed with essential feature
+    bodyText: Familiar Git experience, packed with essential features
+    points: Seamlessly drive software delivery processes in Harness, Code reviews integrate into your development workflow, Security & Governance with branch rules and powerful enforcement across repositories, Effortlessly import repositories from Git providers
   cf:
     title: '{{ $.common.purpose.cf.continuous }}'
     subTitle: Manage Features within Pipelines
