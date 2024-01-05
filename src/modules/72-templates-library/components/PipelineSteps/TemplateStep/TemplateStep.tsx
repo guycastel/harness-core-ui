@@ -161,7 +161,7 @@ export class TemplateStep extends PipelineStep<TemplateStepNode> {
     if (step) {
       return step.validateInputSet({
         data: data.template.templateInputs,
-        template: template?.template.templateInputs,
+        template: template?.template?.templateInputs,
         getString,
         viewType
       })
