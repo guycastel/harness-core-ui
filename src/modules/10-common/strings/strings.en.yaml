@@ -220,6 +220,7 @@ validation:
   fileIsRequired: File is required
   yamlFilePath: 'File path can only contain valid file/folder name (should contain alphanumerics, _ and -) separated by / and should end with .yaml.'
   variableAlreadyExists: Variable with same name already exists
+  headerAlreadyExists: Header with same name already exists
   fieldIsRequired: '{{ name }} is required'
   fieldCanNotHaveWhitespace: '{{ name }} should not contain whitespaces'
   fieldMustStartWithAlphanumericAndCanNotHaveSpace: '{{ name }} must start with alphanumerics and should not contain whitespaces, / or &'

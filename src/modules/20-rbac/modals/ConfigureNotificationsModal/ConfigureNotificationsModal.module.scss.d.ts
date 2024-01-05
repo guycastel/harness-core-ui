@@ -13,6 +13,7 @@ declare const styles: {
   readonly crossIcon: string
   readonly dialog: string
   readonly green: string
+  readonly headers: string
   readonly red: string
   readonly statusIcon: string
   readonly title: string

@@ -62,6 +62,9 @@ exports[`<MultiTypeMap /> tests Renders ok with minimal UI 1`] = `
         <div
           class="bp3-form-content"
         >
+          <div
+            class="grid rows"
+          />
           <button
             aria-label="plusAdd"
             class="bp3-button bp3-minimal Button--button StyledProps--font StyledProps--main StyledProps--intent-primary Button--with-current-color Button--without-shadow"
@@ -156,6 +159,19 @@ exports[`<MultiTypeMap /> tests Should render properly 1`] = `
                 >
                   keyLabel
                 </p>
+              </div>
+              <div>
+                <p
+                  class="StyledProps--font StyledProps--main StyledProps--font-variation-form-label StyledProps--margin-bottom-xsmall"
+                >
+                  valueLabel
+                </p>
+              </div>
+            </div>
+            <div
+              class="grid row"
+            >
+              <div>
                 <div
                   class="bp3-form-group marginZero"
                 >
@@ -177,11 +193,6 @@ exports[`<MultiTypeMap /> tests Should render properly 1`] = `
                 </div>
               </div>
               <div>
-                <p
-                  class="StyledProps--font StyledProps--main StyledProps--font-variation-form-label StyledProps--margin-bottom-xsmall"
-                >
-                  valueLabel
-                </p>
                 <div
                   class="grid"
                 >

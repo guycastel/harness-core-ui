@@ -24,6 +24,8 @@ import ConfigureSlackNotifications from '@rbac/modals/ConfigureNotificationsModa
 import ConfigurePagerDutyNotifications from '@rbac/modals/ConfigureNotificationsModal/views/ConfigurePagerDutyNotifications/ConfigurePagerDutyNotifications'
 import ConfigureMSTeamsNotifications from '@rbac/modals/ConfigureNotificationsModal/views/ConfigureMSTeamsNotifications/ConfigureMSTeamsNotifications'
 import ConfigureWebhookNotifications from '@rbac/modals/ConfigureNotificationsModal/views/ConfigureWebhookNotifications/ConfigureWebhookNotifications'
+import { MultiTypeMapType } from '@modules/10-common/components/Map/Map'
+import { getInitialMapValues } from '../NotificationUtils'
 
 export interface NotificationMethodsProps extends StepProps<NotificationRules> {
   typeOptions?: SelectOption[]
@@ -197,7 +199,8 @@ function NotificationMethods({
                 notificationMethod: {
                   type: method.value.toString(),
                   spec: {
-                    webhookUrl: data.webhookUrl
+                    webhookUrl: data.webhookUrl,
+                    ...(data.headers && { headers: data.headers })
                   }
                 }
               })
@@ -211,14 +214,18 @@ function NotificationMethods({
                 notificationMethod: {
                   type: method.value.toString(),
                   spec: {
-                    webhookUrl: data?.webhookUrl
+                    webhookUrl: data?.webhookUrl,
+                    ...(data?.headers && { headers: data.headers })
                   }
                 }
               })
             }
             config={{
               type: NotificationType.Webhook,
-              webhookUrl: (prevStepData?.notificationMethod?.spec as PmsWebhookChannel)?.webhookUrl || ''
+              webhookUrl: (prevStepData?.notificationMethod?.spec as PmsWebhookChannel)?.webhookUrl || '',
+              headers: getInitialMapValues(
+                (prevStepData?.notificationMethod?.spec as PmsWebhookChannel)?.headers || {}
+              ) as MultiTypeMapType
             }}
           />
         ) : null}

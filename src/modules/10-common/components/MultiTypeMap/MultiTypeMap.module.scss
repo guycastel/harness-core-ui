@@ -30,8 +30,8 @@
   margin-bottom: var(--spacing-small);
 
   .row {
-    grid-template-columns: 1fr 1.3fr auto;
+    grid-template-columns: 1fr 1.3fr 42px;
     column-gap: var(--spacing-medium);
-    align-items: end;
+    align-items: start;
   }
 }

@@ -2825,6 +2825,19 @@ exports[`BuildInfraSpecifications snapshot tests for Advanced Panel K8s Build In
                                             >
                                               keyLabel
                                             </p>
+                                          </div>
+                                          <div>
+                                            <p
+                                              class="StyledProps--font StyledProps--main StyledProps--font-variation-form-label StyledProps--margin-bottom-xsmall"
+                                            >
+                                              valueLabel
+                                            </p>
+                                          </div>
+                                        </div>
+                                        <div
+                                          class="grid row"
+                                        >
+                                          <div>
                                             <div
                                               class="bp3-form-group marginZero"
                                             >
@@ -2846,11 +2859,6 @@ exports[`BuildInfraSpecifications snapshot tests for Advanced Panel K8s Build In
                                             </div>
                                           </div>
                                           <div>
-                                            <p
-                                              class="StyledProps--font StyledProps--main StyledProps--font-variation-form-label StyledProps--margin-bottom-xsmall"
-                                            >
-                                              valueLabel
-                                            </p>
                                             <div
                                               class="grid"
                                             >
@@ -3114,6 +3122,9 @@ exports[`BuildInfraSpecifications snapshot tests for Advanced Panel K8s Build In
                                     <div
                                       class="bp3-form-content"
                                     >
+                                      <div
+                                        class="grid rows"
+                                      />
                                       <button
                                         aria-label="plusAdd"
                                         class="bp3-button bp3-minimal Button--button StyledProps--font StyledProps--main StyledProps--intent-primary Button--with-current-color Button--without-shadow"
@@ -3909,6 +3920,19 @@ exports[`BuildInfraSpecifications snapshot tests for Advanced Panel K8s Build In
                                             >
                                               keyLabel
                                             </p>
+                                          </div>
+                                          <div>
+                                            <p
+                                              class="StyledProps--font StyledProps--main StyledProps--font-variation-form-label StyledProps--margin-bottom-xsmall"
+                                            >
+                                              valueLabel
+                                            </p>
+                                          </div>
+                                        </div>
+                                        <div
+                                          class="grid row"
+                                        >
+                                          <div>
                                             <div
                                               class="bp3-form-group marginZero"
                                             >
@@ -3930,11 +3954,6 @@ exports[`BuildInfraSpecifications snapshot tests for Advanced Panel K8s Build In
                                             </div>
                                           </div>
                                           <div>
-                                            <p
-                                              class="StyledProps--font StyledProps--main StyledProps--font-variation-form-label StyledProps--margin-bottom-xsmall"
-                                            >
-                                              valueLabel
-                                            </p>
                                             <div
                                               class="grid"
                                             >

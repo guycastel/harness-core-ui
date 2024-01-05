@@ -1942,6 +1942,9 @@ exports[`Background Step Edit View should render properly 1`] = `
                           <div
                             class="bp3-form-content"
                           >
+                            <div
+                              class="grid rows"
+                            />
                             <button
                               aria-label="plusAdd"
                               class="bp3-button bp3-minimal Button--button StyledProps--font StyledProps--main StyledProps--intent-primary Button--with-current-color Button--without-shadow"
@@ -2045,6 +2048,9 @@ exports[`Background Step Edit View should render properly 1`] = `
                           <div
                             class="bp3-form-content"
                           >
+                            <div
+                              class="grid rows"
+                            />
                             <button
                               aria-label="plusAdd"
                               class="bp3-button bp3-minimal Button--button StyledProps--font StyledProps--main StyledProps--intent-primary Button--with-current-color Button--without-shadow"

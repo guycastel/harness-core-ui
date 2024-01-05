@@ -5,6 +5,8 @@
  * https://polyformproject.org/wp-content/uploads/2020/06/PolyForm-Shield-1.0.0.txt.
  */
 
+import { MultiTypeMapType } from '@modules/10-common/components/Map/Map'
+
 export enum NotificationType {
   Slack = 'Slack',
   Email = 'Email',
@@ -27,8 +29,9 @@ export interface SlackNotificationConfiguration extends NotificationConfiguratio
 }
 
 export interface WebhookNotificationConfiguration {
-  webhookUrl: string
   type: NotificationType
+  webhookUrl: string
+  headers?: MultiTypeMapType
 }
 
 export interface MSTeamsNotificationConfiguration extends NotificationConfiguration {

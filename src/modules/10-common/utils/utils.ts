@@ -15,6 +15,7 @@ import { Editions } from '@common/constants/SubscriptionTypes'
 import type { UserMetadataDTO } from 'services/cd-ng'
 import type { Module } from '@common/interfaces/RouteInterfaces'
 import { useModuleInfo } from '@common/hooks/useModuleInfo'
+import { MapType, MapUIType, MultiTypeMapType } from '../components/Map/Map'
 
 interface SetPageNumberProps {
   setPage: (value: number) => void
@@ -319,4 +320,17 @@ export const getIdentifierWithScopedPrefix = (identifier: string, scope?: Scope)
   }
 
   return identifier
+}
+
+export const processMapValues = (value: MapUIType): MultiTypeMapType => {
+  const map: MapType = {}
+  if (Array.isArray(value)) {
+    value.forEach(mapValue => {
+      if (mapValue.key) {
+        map[mapValue.key] = mapValue.value
+      }
+    })
+  }
+
+  return typeof value === 'string' ? value : map
 }

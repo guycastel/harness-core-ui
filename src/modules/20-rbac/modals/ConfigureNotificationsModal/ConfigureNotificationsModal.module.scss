@@ -52,3 +52,8 @@
   flex: 1 1 auto;
   margin-bottom: 0 !important;
 }
+
+.headers {
+  border: 1px solid var(--grey-200);
+  padding: var(--spacing-small) var(--spacing-medium);
+}

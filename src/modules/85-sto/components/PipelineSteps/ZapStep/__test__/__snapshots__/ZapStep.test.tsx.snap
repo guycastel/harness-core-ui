@@ -1557,6 +1557,19 @@ exports[`Zap Step Edit View edit mode works 1`] = `
                       >
                         keyLabel
                       </p>
+                    </div>
+                    <div>
+                      <p
+                        class="StyledProps--font StyledProps--main StyledProps--font-variation-form-label StyledProps--margin-bottom-xsmall"
+                      >
+                        valueLabel
+                      </p>
+                    </div>
+                  </div>
+                  <div
+                    class="grid row"
+                  >
+                    <div>
                       <div
                         class="bp3-form-group marginZero"
                         data-id="spec.settings[0].key-16"
@@ -1579,11 +1592,6 @@ exports[`Zap Step Edit View edit mode works 1`] = `
                       </div>
                     </div>
                     <div>
-                      <p
-                        class="StyledProps--font StyledProps--main StyledProps--font-variation-form-label StyledProps--margin-bottom-xsmall"
-                      >
-                        valueLabel
-                      </p>
                       <div
                         class="grid"
                       >
@@ -6661,6 +6669,9 @@ exports[`Zap Step Edit View should render properly 1`] = `
               <div
                 class="bp3-form-content"
               >
+                <div
+                  class="grid rows"
+                />
                 <button
                   aria-label="plusAdd"
                   class="bp3-button bp3-minimal Button--button StyledProps--font StyledProps--main StyledProps--intent-primary Button--with-current-color Button--without-shadow"

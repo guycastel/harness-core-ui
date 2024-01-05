@@ -16,7 +16,9 @@ import { useStrings } from 'framework/strings'
 import css from './Map.module.scss'
 
 export type MapType = { [key: string]: string }
+export type MultiTypeMapType = MapType | string
 export type MapUIType = { id: string; key: string; value: string }[]
+export type MultiTypeMapUIType = MapUIType | string
 
 export interface MapProps {
   name: string

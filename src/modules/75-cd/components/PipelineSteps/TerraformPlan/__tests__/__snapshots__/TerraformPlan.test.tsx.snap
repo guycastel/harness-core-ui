@@ -2689,6 +2689,19 @@ exports[`Test TerraformPlan renders more than one var file 1`] = `
                             >
                               keyLabel
                             </p>
+                          </div>
+                          <div>
+                            <p
+                              class="StyledProps--font StyledProps--main StyledProps--font-variation-form-label StyledProps--margin-bottom-xsmall"
+                            >
+                              valueLabel
+                            </p>
+                          </div>
+                        </div>
+                        <div
+                          class="grid row"
+                        >
+                          <div>
                             <div
                               class="bp3-form-group marginZero"
                             >
@@ -2710,11 +2723,6 @@ exports[`Test TerraformPlan renders more than one var file 1`] = `
                             </div>
                           </div>
                           <div>
-                            <p
-                              class="StyledProps--font StyledProps--main StyledProps--font-variation-form-label StyledProps--margin-bottom-xsmall"
-                            >
-                              valueLabel
-                            </p>
                             <div
                               class="grid"
                             >

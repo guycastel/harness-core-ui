@@ -17,10 +17,14 @@ import {
   getMultiTypeFromValue
 } from '@harness/uicore'
 import * as Yup from 'yup'
+import { get, isEmpty } from 'lodash-es'
 import { URLValidationSchema } from '@common/utils/Validation'
 import { NotificationType, WebhookNotificationConfiguration } from '@rbac/interfaces/Notifications'
 import { useStrings } from 'framework/strings'
 import { useFeatureFlags } from '@modules/10-common/hooks/useFeatureFlag'
+import MultiTypeMap from '@common/components/MultiTypeMap/MultiTypeMap'
+import { MapUIType, MultiTypeMapType } from '@modules/10-common/components/Map/Map'
+import { processMapValues } from '@modules/10-common/utils/utils'
 import { TestWebhookNotifications } from './TestWebhookNotification'
 import css from '../../ConfigureNotificationsModal.module.scss'
 
@@ -37,6 +41,7 @@ interface ConfigureWebhookNotificationsProps {
 
 export interface WebhookNotificationData {
   webhookUrl: string
+  headers?: MultiTypeMapType
 }
 
 const ConfigureWebhookNotifications: React.FC<ConfigureWebhookNotificationsProps> = props => {
@@ -51,9 +56,11 @@ const ConfigureWebhookNotifications: React.FC<ConfigureWebhookNotificationsProps
   }
 
   const convertFormData = (formData: WebhookNotificationData): WebhookNotificationData & { type: NotificationType } => {
+    const headersData = processMapValues(formData.headers as unknown as MapUIType)
     return {
       type: NotificationType.Webhook,
-      ...formData
+      webhookUrl: formData.webhookUrl,
+      ...(!isEmpty(headersData) && { headers: headersData })
     }
   }
 
@@ -68,7 +75,29 @@ const ConfigureWebhookNotifications: React.FC<ConfigureWebhookNotificationsProps
             webhookUrl:
               webhookUrlType === MultiTypeInputType.EXPRESSION
                 ? Yup.string().required()
-                : URLValidationSchema(getString)
+                : URLValidationSchema(getString),
+            headers: Yup.lazy((formikHeaderValues): Yup.Schema<unknown> => {
+              return Yup.array().of(
+                Yup.object().shape({
+                  key: Yup.string()
+                    .trim()
+                    .required(getString('common.validation.nameIsRequired'))
+                    .test(
+                      'Check Duplicate Header Name',
+                      getString('common.validation.headerAlreadyExists'),
+                      headerName => {
+                        let count = 0
+                        if (Array.isArray(formikHeaderValues)) {
+                          formikHeaderValues.forEach(val => {
+                            if (get(val, 'key') === headerName) count++
+                          })
+                        }
+                        return count <= 1
+                      }
+                    )
+                })
+              )
+            })
           })}
           initialValues={{
             webhookUrl: '',
@@ -99,6 +128,27 @@ const ConfigureWebhookNotifications: React.FC<ConfigureWebhookNotificationsProps
                     buttonProps={{ disabled: webhookUrlType === MultiTypeInputType.EXPRESSION }}
                   />
                 </Layout.Horizontal>
+                <div className={css.headers}>
+                  <MultiTypeMap
+                    name={'headers'}
+                    valueMultiTextInputProps={{
+                      expressions: props.expressions,
+                      allowableTypes: [MultiTypeInputType.FIXED, MultiTypeInputType.EXPRESSION],
+                      newExpressionComponent: NG_EXPRESSIONS_NEW_INPUT_ELEMENT
+                    }}
+                    multiTypeFieldSelectorProps={{
+                      label: '',
+                      disableTypeSelection: true
+                    }}
+                    configureOptionsProps={{
+                      hideExecutionTimeField: true
+                    }}
+                    keyLabel={getString('name')}
+                    alwaysShowKeyValueLabel
+                    keyValuePlaceholders={[getString('name'), getString('valueLabel')]}
+                    addButtonLabel={getString('common.plusAddName', { name: getString('common.headers') })}
+                  />
+                </div>
                 {props.isStep ? (
                   <Layout.Horizontal spacing="large" className={css.buttonGroupSlack}>
                     <Button

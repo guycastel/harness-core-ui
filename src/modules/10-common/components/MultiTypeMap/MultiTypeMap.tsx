@@ -55,6 +55,8 @@ export interface MultiTypeMapProps {
   valueLabel?: string
   restrictToSingleEntry?: boolean
   keyValuePlaceholders?: Array<string>
+  addButtonLabel?: string
+  alwaysShowKeyValueLabel?: boolean
 }
 
 const MultiTypeMap = (props: MultiTypeMapProps): React.ReactElement => {
@@ -66,6 +68,7 @@ const MultiTypeMap = (props: MultiTypeMapProps): React.ReactElement => {
     disableValueTypeSelection,
     enableConfigureOptions = true,
     enableValueConfigureOptions = false,
+    alwaysShowKeyValueLabel = false,
     configureOptionsProps,
     formik,
     disabled,
@@ -73,19 +76,35 @@ const MultiTypeMap = (props: MultiTypeMapProps): React.ReactElement => {
     valueLabel,
     restrictToSingleEntry,
     keyValuePlaceholders,
+    addButtonLabel,
     ...restProps
   } = props
   const { getString } = useStrings()
+  const { NG_EXPRESSIONS_NEW_INPUT_ELEMENT } = useFeatureFlags()
 
   const getDefaultResetValue = () => {
     return [{ id: uuid('', nameSpace()), key: '', value: '' }]
   }
-
   const value = get(formik?.values, name, getDefaultResetValue()) as MultiTypeMapValue
-
-  const { NG_EXPRESSIONS_NEW_INPUT_ELEMENT } = useFeatureFlags()
-
   const isRuntime = typeof value === 'string' && getMultiTypeFromValue(value) === MultiTypeInputType.RUNTIME
+
+  const KeyValueLabelComponent = React.useMemo(
+    () => (
+      <div className={cx(css.grid, css.row)}>
+        <div>
+          <Text font={{ variation: FontVariation.FORM_LABEL }} margin={{ bottom: 'xsmall' }}>
+            {keyLabel || getString('keyLabel')}
+          </Text>
+        </div>
+        <div>
+          <Text font={{ variation: FontVariation.FORM_LABEL }} margin={{ bottom: 'xsmall' }}>
+            {valueLabel || getString('valueLabel')}
+          </Text>
+        </div>
+      </div>
+    ),
+    [keyLabel, valueLabel]
+  )
 
   return (
     <div
@@ -132,88 +151,82 @@ const MultiTypeMap = (props: MultiTypeMapProps): React.ReactElement => {
             name={name}
             render={({ push, remove }) => (
               <>
-                {Array.isArray(value) && value.length > 0 && (
-                  <div className={cx(css.grid, css.rows)}>
-                    {value.map(({ id }, index: number) => (
-                      <div className={cx(css.grid, css.row)} key={id}>
-                        <div>
-                          {index === 0 && (
-                            <Text font={{ variation: FontVariation.FORM_LABEL }} margin={{ bottom: 'xsmall' }}>
-                              {keyLabel || getString('keyLabel')}
-                            </Text>
-                          )}
-                          <FormInput.Text
-                            className={css.marginZero}
-                            name={`${name}[${index}].key`}
-                            disabled={disabled}
-                            placeholder={keyValuePlaceholders?.[0]}
-                          />
-                        </div>
+                <div className={cx(css.grid, css.rows)}>
+                  {alwaysShowKeyValueLabel && KeyValueLabelComponent}
+                  {Array.isArray(value) && value.length > 0 && (
+                    <>
+                      {!alwaysShowKeyValueLabel && KeyValueLabelComponent}
+                      {value.map(({ id }, index: number) => (
+                        <div className={cx(css.grid, css.row)} key={id}>
+                          <div>
+                            <FormInput.Text
+                              className={css.marginZero}
+                              name={`${name}[${index}].key`}
+                              disabled={disabled}
+                              placeholder={keyValuePlaceholders?.[0]}
+                            />
+                          </div>
 
-                        <div>
-                          {index === 0 && (
-                            <Text font={{ variation: FontVariation.FORM_LABEL }} margin={{ bottom: 'xsmall' }}>
-                              {valueLabel || getString('valueLabel')}
-                            </Text>
-                          )}
-                          <div className={cx(css.grid, enableValueConfigureOptions && css.fieldAndOptions)}>
-                            {disableValueTypeSelection ? (
-                              <FormInput.Text
-                                name={`${name}[${index}].value`}
-                                disabled={disabled}
-                                placeholder={keyValuePlaceholders?.[1]}
-                                className={css.marginZero}
-                              />
-                            ) : (
-                              <>
-                                <FormInput.MultiTextInput
-                                  className={css.marginZero}
-                                  label=""
+                          <div>
+                            <div className={cx(css.grid, enableValueConfigureOptions && css.fieldAndOptions)}>
+                              {disableValueTypeSelection ? (
+                                <FormInput.Text
                                   name={`${name}[${index}].value`}
-                                  multiTextInputProps={{
-                                    allowableTypes: [MultiTypeInputType.FIXED, MultiTypeInputType.EXPRESSION],
-                                    newExpressionComponent: NG_EXPRESSIONS_NEW_INPUT_ELEMENT,
-                                    ...valueMultiTextInputProps
-                                  }}
                                   disabled={disabled}
                                   placeholder={keyValuePlaceholders?.[1]}
+                                  className={css.marginZero}
                                 />
-                                {enableValueConfigureOptions &&
-                                  getMultiTypeFromValue(get(formik?.values, `${name}[${index}].value`, '')) ===
-                                    MultiTypeInputType.RUNTIME && (
-                                    <ConfigureOptions
-                                      value={get(formik?.values, `${name}[${index}].value`, '')}
-                                      type="String"
-                                      variableName={`${name}[${index}].value`}
-                                      onChange={val => formik?.setFieldValue(`${name}[${index}].value`, val)}
-                                      isReadonly={disabled}
-                                      allowedValuesType={ALLOWED_VALUES_TYPE.TEXT}
-                                      {...valueConfigureOptionsProps}
-                                    />
-                                  )}
-                              </>
-                            )}
+                              ) : (
+                                <>
+                                  <FormInput.MultiTextInput
+                                    className={css.marginZero}
+                                    label=""
+                                    name={`${name}[${index}].value`}
+                                    multiTextInputProps={{
+                                      allowableTypes: [MultiTypeInputType.FIXED, MultiTypeInputType.EXPRESSION],
+                                      newExpressionComponent: NG_EXPRESSIONS_NEW_INPUT_ELEMENT,
+                                      ...valueMultiTextInputProps
+                                    }}
+                                    disabled={disabled}
+                                    placeholder={keyValuePlaceholders?.[1]}
+                                  />
+                                  {enableValueConfigureOptions &&
+                                    getMultiTypeFromValue(get(formik?.values, `${name}[${index}].value`, '')) ===
+                                      MultiTypeInputType.RUNTIME && (
+                                      <ConfigureOptions
+                                        value={get(formik?.values, `${name}[${index}].value`, '')}
+                                        type="String"
+                                        variableName={`${name}[${index}].value`}
+                                        onChange={val => formik?.setFieldValue(`${name}[${index}].value`, val)}
+                                        isReadonly={disabled}
+                                        allowedValuesType={ALLOWED_VALUES_TYPE.TEXT}
+                                        {...valueConfigureOptionsProps}
+                                      />
+                                    )}
+                                </>
+                              )}
+                            </div>
                           </div>
-                        </div>
 
-                        <Button
-                          icon="main-trash"
-                          iconProps={{ size: 20 }}
-                          minimal
-                          data-testid={`remove-${name}-[${index}]`}
-                          onClick={() => remove(index)}
-                          disabled={disabled}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                )}
+                          <Button
+                            icon="main-trash"
+                            iconProps={{ size: 20 }}
+                            minimal
+                            data-testid={`remove-${name}-[${index}]`}
+                            onClick={() => remove(index)}
+                            disabled={disabled}
+                          />
+                        </div>
+                      ))}
+                    </>
+                  )}
+                </div>
 
                 {restrictToSingleEntry && Array.isArray(value) && value?.length === 1 ? null : (
                   <Button
                     intent="primary"
                     minimal
-                    text={getString('plusAdd')}
+                    text={addButtonLabel || getString('plusAdd')}
                     data-testid={`add-${name}`}
                     onClick={() => push({ id: uuid('', nameSpace()), key: '', value: '' })}
                     disabled={disabled}

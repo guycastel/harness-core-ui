@@ -6,6 +6,8 @@
  */
 
 import type { MultiSelectOption } from '@harness/uicore'
+import { v4 as nameSpace, v5 as uuid } from 'uuid'
+import { MultiTypeMapType, MultiTypeMapUIType } from '@modules/10-common/components/Map/Map'
 
 export enum Actions {
   Delete = 'Delete',
@@ -42,4 +44,16 @@ export const getValuesFromOptions = (
   }
 
   return selectedOptions || []
+}
+
+export const getInitialMapValues: (value: MultiTypeMapType) => MultiTypeMapUIType = value => {
+  const map =
+    typeof value === 'string'
+      ? value
+      : Object.keys(value || {}).map(key => ({
+          id: uuid('', nameSpace()),
+          key: key,
+          value: value[key]
+        }))
+  return map
 }

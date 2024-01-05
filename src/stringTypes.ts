@@ -1505,6 +1505,7 @@ export interface StringsMap {
   'common.validation.formatMustBeAlphanumeric': string
   'common.validation.groupAttributeIsRequired': string
   'common.validation.harnessFolderNamePatternIsNotValid': string
+  'common.validation.headerAlreadyExists': string
   'common.validation.identifierIsRequired': string
   'common.validation.invalidUsername': string
   'common.validation.invalidYamlText': string
