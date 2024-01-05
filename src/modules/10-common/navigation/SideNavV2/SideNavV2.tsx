@@ -38,7 +38,7 @@ type SectionComponent = React.FunctionComponent<SideNavSectionComponentProps>
 type LinkComponent = React.FunctionComponent<SideNavLinkProps>
 type MainComponent = React.FunctionComponent<SideNavMainProps>
 type CommonScopeLinks = React.FunctionComponent<CommonScopeLinksProps>
-type SettingsTitle = React.FunctionComponent<{ label: keyof StringsMap; __TYPE?: string }>
+type SettingsTitle = React.FunctionComponent<{ label: keyof StringsMap; __type?: string }>
 
 type SideNavComponent<T> = React.FunctionComponent<T> & {
   Scope: ScopeComponent
@@ -59,7 +59,7 @@ interface SideNavScopeProps {
   isRenderedInAccordion?: boolean
   showLinksIfNotPresentInScope?: boolean
   scopeSwitchProps?: Partial<Record<Scope, ScopeSwitchProps>>
-  __TYPE?: string
+  __type?: string
 }
 
 interface SideNavMainProps {
@@ -94,7 +94,7 @@ const getSideNavLinks = (
   scopeSwitchProps?: Partial<Record<Scope, ScopeSwitchProps>>
 ): Record<Scope, LinkInfo[]> => {
   React.Children.map(elements, (child: JSX.Element) => {
-    if (child?.props?.__TYPE === 'SIDENAV_LINK') {
+    if (child?.props?.__type === 'SIDENAV_LINK') {
       if (Array.isArray(scope)) {
         scope.forEach(item => {
           if (!linksMap[item]) {
@@ -157,8 +157,12 @@ const SideNavScope: React.FC<SideNavScopeProps> = props => {
   if (Array.isArray(children)) {
     return (
       <>
-        {children.map(child =>
-          React.cloneElement(child as React.ReactElement, { scope: props.scope, isRenderedInAccordion })
+        {children.map((child, idx) =>
+          React.cloneElement(child as React.ReactElement, {
+            scope: props.scope,
+            isRenderedInAccordion,
+            key: `sideNavScope-${idx}`
+          })
         )}
       </>
     )
@@ -168,7 +172,7 @@ const SideNavScope: React.FC<SideNavScopeProps> = props => {
 }
 
 SideNavScope.defaultProps = {
-  __TYPE: 'SIDENAV_SCOPE'
+  __type: 'SIDENAV_SCOPE'
 }
 
 const SideNavMainComponent: React.FC<SideNavMainProps> = props => {
@@ -251,7 +255,7 @@ const SettingsTitle = (props: { label: keyof StringsMap }): JSX.Element => {
 }
 
 SettingsTitle.defaultProps = {
-  __TYPE: 'SIDENAV_TITLE'
+  __type: 'SIDENAV_TITLE'
 }
 
 const CommonScopeLinks: React.FC<CommonScopeLinksProps> = props => {

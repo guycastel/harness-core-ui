@@ -37,7 +37,7 @@ const filterSideNavScope = (
   components: React.ReactElement[] = []
 ): React.ReactElement[] => {
   React.Children.map(element, child => {
-    if (child?.props?.__TYPE === 'SIDENAV_SCOPE' || child?.props?.__TYPE === 'SIDENAV_TITLE') {
+    if (child?.props?.__type === 'SIDENAV_SCOPE' || child?.props?.__type === 'SIDENAV_TITLE') {
       components.push({
         ...child,
         props: {
@@ -165,7 +165,7 @@ const ModulesAccordion: React.FC<ModulesAccordionProps> = ({ mode = NAV_MODE.ALL
       {visibleModules.map(module => {
         const Component = ModuleRouteConfig[module].sideNavLinks(NAV_MODE.ALL, { sideNavState })
         const availableScopes = filterSideNavScope(Component).filter(
-          scopeObj => scopeObj.props?.__TYPE === 'SIDENAV_SCOPE'
+          scopeObj => scopeObj.props?.__type === 'SIDENAV_SCOPE'
         )
         if (availableScopes.findIndex(scopeObj => scopeObj.props.scope?.indexOf(scope) > -1) === -1) {
           return undefined

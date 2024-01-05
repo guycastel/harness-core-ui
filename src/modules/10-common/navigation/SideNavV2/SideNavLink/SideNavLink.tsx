@@ -29,7 +29,7 @@ export interface SideNavLinkProps extends NavLinkProps {
   scope?: Scope | Scope[]
   isRenderedInAccordion?: boolean
   hidden?: boolean
-  __TYPE?: string
+  __type?: string
   className?: string
   disableHighlightOnActive?: boolean
 }
@@ -212,7 +212,7 @@ export const SideNavLink: React.FC<SideNavLinkProps> = props => {
 }
 
 SideNavLink.defaultProps = {
-  __TYPE: 'SIDENAV_LINK'
+  __type: 'SIDENAV_LINK'
 }
 
 export default SideNavLink
