@@ -38,7 +38,7 @@ import DashboardAPIErrorWidget, {
 } from '@projects-orgs/components/DashboardAPIErrorWidget/DashboardAPIErrorWidget'
 
 import OverviewGlanceCards from '@projects-orgs/components/OverviewGlanceCards/OverviewGlanceCards'
-import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import routesV2 from '@common/RouteDefinitionsV2'
 import css from './LandingDashboardSummaryWidget.module.scss'
 
@@ -206,7 +206,7 @@ const LandingDashboardSummaryWidget: React.FC<LandingDashboardSummaryWidgetProps
   const { accountId } = useParams<ProjectPathProps>()
   const [range] = useState([Date.now() - TimeRangeToDays[selectedTimeRange] * 24 * 60 * 60000, Date.now()])
   const { getString } = useStrings()
-  const { CDS_NAV_2_0: newLeftNav } = useFeatureFlags()
+  const { isNewNavEnabled: newLeftNav } = useAppStore()
 
   const {
     data: response,

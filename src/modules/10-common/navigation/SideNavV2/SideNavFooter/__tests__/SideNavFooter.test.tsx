@@ -27,6 +27,11 @@ jest.mock('services/portal', () => ({
   useLogout1: jest.fn().mockImplementation(() => ({ mutate: mockLogout }))
 }))
 
+jest.mock('services/cd-ng', () => ({
+  ...jest.requireActual('services/cd-ng'),
+  useUpdateUserSettingValue: jest.fn().mockImplementation(() => ({ mutate: jest.fn }))
+}))
+
 const zendeskCreate = {
   loading: false,
   error: null,
@@ -61,7 +66,10 @@ jest.mock('refiner-js', () => {
 const renderComponent = (): RenderResult =>
   render(
     <TestWrapper
-      defaultAppStoreValues={{ currentUserInfo: { name: 'Dev Name', email: 'mail@harness.io', uuid: '123' } }}
+      defaultAppStoreValues={{
+        currentUserInfo: { name: 'Dev Name', email: 'mail@harness.io', uuid: '123' },
+        isNewNavEnabled: true
+      }}
       path="/account/:accountId/orgs/:orgIdentifier/projects/:projectIdentifier"
       pathParams={{ accountId: 'abcd', orgIdentifier: 'abcd', projectIdentifier: 'abcd' }}
     >

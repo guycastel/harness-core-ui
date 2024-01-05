@@ -33,6 +33,7 @@ import {
 import { getGaClientID, getSavedRefererURL } from '@common/utils/utils'
 import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
 import { Module, moduleToModuleNameMapping } from 'framework/types/ModuleName'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import type { PLG_CD_GET_STARTED_VARIANTS } from '@common/components/ConfigureOptions/constants'
 import ModuleCard from './ModuleCard'
 import css from './WelcomePage.module.scss'
@@ -53,7 +54,8 @@ interface SelectModuleListProps {
 
 const SelectModuleList: React.FC<SelectModuleListProps> = ({ onModuleClick, moduleList, getStartedVariant }) => {
   const [selected, setSelected] = useState<Module>('ci')
-  const { CREATE_DEFAULT_PROJECT, AUTO_FREE_MODULE_LICENSE, CDS_NAV_2_0 } = useFeatureFlags()
+  const { isNewNavEnabled } = useAppStore()
+  const { CREATE_DEFAULT_PROJECT, AUTO_FREE_MODULE_LICENSE } = useFeatureFlags()
   const { licenseInformation, updateLicenseStore } = useLicenseStore()
   const { getString } = useStrings()
   const { accountId } = useParams<ProjectPathProps>()
@@ -127,7 +129,7 @@ const SelectModuleList: React.FC<SelectModuleListProps> = ({ onModuleClick, modu
                 )[selected as Module]
                 if (CREATE_DEFAULT_PROJECT) {
                   history.push(defaultURL)
-                } else if (CDS_NAV_2_0) {
+                } else if (isNewNavEnabled) {
                   history.push(routesV2.toModuleHome({ accountId, module: buttonType, source: 'purpose' }))
                 } else {
                   history.push(routes.toModuleHome({ accountId, module: buttonType, source: 'purpose' }))
@@ -136,7 +138,7 @@ const SelectModuleList: React.FC<SelectModuleListProps> = ({ onModuleClick, modu
                 updateDefaultExperience({
                   defaultExperience: Experiences.NG
                 }).then(() => {
-                  if (CDS_NAV_2_0) {
+                  if (isNewNavEnabled) {
                     history.push(routesV2.toModuleHome({ accountId, module: buttonType, source: 'purpose' }))
                   } else {
                     history.push(routes.toModuleHome({ accountId, module: buttonType, source: 'purpose' }))

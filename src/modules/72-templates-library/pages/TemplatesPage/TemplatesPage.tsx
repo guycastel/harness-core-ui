@@ -101,11 +101,12 @@ export default function TemplatesPage(): React.ReactElement {
   const {
     isGitSyncEnabled: isGitSyncEnabledForProject,
     gitSyncEnabledOnlyForFF,
-    supportingTemplatesGitx
+    supportingTemplatesGitx,
+    isNewNavEnabled
   } = useAppStore()
   const isGitSyncEnabled = isGitSyncEnabledForProject && !gitSyncEnabledOnlyForFF
   const scope = getScopeFromDTO({ projectIdentifier, orgIdentifier, accountIdentifier: accountId })
-  const { CVNG_TEMPLATE_MONITORED_SERVICE, NG_SVC_ENV_REDESIGN, CDS_NAV_2_0 } = useFeatureFlags()
+  const { CVNG_TEMPLATE_MONITORED_SERVICE, NG_SVC_ENV_REDESIGN } = useFeatureFlags()
   const { enabled: templateFeatureEnabled } = useFeature({
     featureRequest: {
       featureName: FeatureIdentifier.TEMPLATE_SERVICE
@@ -262,7 +263,7 @@ export default function TemplatesPage(): React.ReactElement {
           </div>
         }
         breadcrumbs={
-          CDS_NAV_2_0 ? (
+          isNewNavEnabled ? (
             <NGBreadcrumbs />
           ) : (
             <NGBreadcrumbs

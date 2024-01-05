@@ -18,7 +18,6 @@ import type { ProjectPathProps, ModulePathParams } from '@common/interfaces/Rout
 import { NGBreadcrumbs } from '@common/components/NGBreadcrumbs/NGBreadcrumbs'
 import { useDocumentTitle } from '@common/hooks/useDocumentTitle'
 import DeprecatedCallout from '@gitsync/components/DeprecatedCallout/DeprecatedCallout'
-import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
 import NewUserView from './newUser/NewUserView'
 
 interface GitSyncPageProps {
@@ -31,8 +30,8 @@ export const GitSyncLandingView: React.FC<GitSyncPageProps> = ({ children }) => 
   const showDeprecatedCallout = isGitSyncEnabled && !gitSyncEnabledOnlyForFF
   const { getString } = useStrings()
   useDocumentTitle(getString('gitManagement'))
-  const { CDS_NAV_2_0 } = useFeatureFlags()
-  const routes = CDS_NAV_2_0 ? routesv2 : routesv1
+  const { isNewNavEnabled } = useAppStore()
+  const routes = isNewNavEnabled ? routesv2 : routesv1
 
   return (
     <>

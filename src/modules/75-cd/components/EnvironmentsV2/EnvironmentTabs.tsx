@@ -13,8 +13,8 @@ import { useStrings } from 'framework/strings'
 
 import routesV1 from '@common/RouteDefinitions'
 import routesV2 from '@common/RouteDefinitionsV2'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import type { ModulePathParams, ProjectPathProps } from '@common/interfaces/RouteInterfaces'
-import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
 
 export default function EnvironmentTabs({
   calledFromSettingsPage
@@ -23,9 +23,9 @@ export default function EnvironmentTabs({
 }): React.ReactElement {
   const { getString } = useStrings()
   const { accountId, orgIdentifier, projectIdentifier, module } = useParams<ProjectPathProps & ModulePathParams>()
-  const { CDS_NAV_2_0 } = useFeatureFlags()
-  const newLeftNavRoute = CDS_NAV_2_0 && calledFromSettingsPage
-  const routes = CDS_NAV_2_0 ? routesV2 : routesV1
+  const { isNewNavEnabled } = useAppStore()
+  const newLeftNavRoute = isNewNavEnabled && calledFromSettingsPage
+  const routes = isNewNavEnabled ? routesV2 : routesV1
 
   const queryParams = {
     accountId,

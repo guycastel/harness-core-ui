@@ -21,6 +21,7 @@ import { fetchServicesMetadata } from '@modules/70-pipeline/components/FormMulti
 import { fetchEnvironmentsMetadata } from '@modules/70-pipeline/components/FormMultiTypeEnvironmentField/Utils'
 import { getRemoteEnvironmentQueryParams } from '@modules/75-cd/components/EnvironmentsV2/utils'
 import { getScopedServiceUrl } from '@modules/70-pipeline/utils/scopedUrlUtils'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import css from './ExecutionListTable.module.scss'
 
 export interface CDExecutionSummaryProps {
@@ -31,7 +32,8 @@ export function CDExecutionSummary(props: CDExecutionSummaryProps): React.ReactE
   const { stageInfo } = props
   const serviceDisplayName = stageInfo.serviceInfo?.displayName
   const { accountId, orgIdentifier, projectIdentifier } = useParams<ProjectPathProps>()
-  const { CDS_SERVICE_GITX, CDS_ENV_GITX, CDS_NAV_2_0 = false } = useFeatureFlags()
+  const { isNewNavEnabled = false } = useAppStore()
+  const { CDS_SERVICE_GITX, CDS_ENV_GITX } = useFeatureFlags()
 
   const [serviceMetadata, setServiceMetadata] = useState<ServiceResponseDTO>({})
   const [environmentMetadata, setEnvironmentMetadata] = useState<EnvironmentResponseDTO>({})
@@ -89,7 +91,7 @@ export function CDExecutionSummary(props: CDExecutionSummaryProps): React.ReactE
                 accountRoutePlacement: 'settings',
                 serviceMetadata
               },
-              CDS_NAV_2_0
+              isNewNavEnabled
             )}
             target="_blank"
             rel="noreferrer noopener"

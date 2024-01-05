@@ -12,7 +12,12 @@ import { Link } from 'react-router-dom'
 
 import { TestWrapper } from '@common/utils/testUtils'
 import featuresFactory from 'framework/featureStore/FeaturesFactory'
-import { useGetLicensesAndSummary, useExtendTrialLicense, useSaveFeedback } from 'services/cd-ng'
+import {
+  useGetLicensesAndSummary,
+  useExtendTrialLicense,
+  useSaveFeedback,
+  useUpdateUserSettingValue
+} from 'services/cd-ng'
 
 import { BANNER_KEY } from '../FeatureBanner'
 import { BannerType } from '../Constants'
@@ -42,6 +47,14 @@ const useGetLicensesAndSummaryMock = useGetLicensesAndSummary as jest.MockedFunc
 useGetLicensesAndSummaryMock.mockImplementation(() => {
   return {
     data: {}
+  }
+})
+
+const useUpdateUserSettingValueMock = useUpdateUserSettingValue as jest.MockedFunction<any>
+useUpdateUserSettingValueMock.mockImplementation(() => {
+  return {
+    data: {},
+    mutate: jest.fn
   }
 })
 
@@ -217,7 +230,7 @@ describe('<DefaultLayout /> tests', () => {
             // defaultAppStoreValues overrides "defaultFeatureFlagValues" in TestWrapper.
             // So, added "featureFlags" key within defaultAppStoreValues obj.
             // When cleaning up FF "CDS_NAV_2_0", remove the entire key "featureFlags"
-            featureFlags: { CDS_NAV_2_0: true }
+            isNewNavEnabled: true
           }}
         >
           <DefaultLayout public={false}>

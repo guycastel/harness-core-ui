@@ -39,7 +39,7 @@ import { TemplateContext } from '@templates-library/components/TemplateStudio/Te
 import { SLODetailsPageTabIds } from '@cv/pages/slos/CVSLODetailsPage/CVSLODetailsPage.types'
 import { isNewTemplate } from '@templates-library/components/TemplateStudio/TemplateStudioUtils'
 import type { MonitoredServiceConfig } from '@cv/components/MonitoredServiceListWidget/MonitoredServiceListWidget.types'
-import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import Service, { ServiceWithRef } from './components/Service/Service'
 import { getInitFormData } from './components/Service/Service.utils'
 import type { MonitoredServiceForm } from './components/Service/Service.types'
@@ -96,7 +96,7 @@ export default function Configurations(
   const [overrideBlockNavigation, setOverrideBlockNavigation] = useState<boolean>(false)
   const [defaultMonitoredService, setDefaultMonitoredService] = useState<MonitoredServiceDTO>()
   const projectRef = useRef(projectIdentifier)
-  const { CDS_NAV_2_0: newLeftNav } = useFeatureFlags()
+  const { isNewNavEnabled: newLeftNav } = useAppStore()
   const isSettingsRoute = newLeftNav && calledFromSettings
 
   const {

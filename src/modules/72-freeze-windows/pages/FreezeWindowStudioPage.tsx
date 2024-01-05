@@ -21,7 +21,7 @@ import { FreezeWindowStudioHeader } from '@freeze-windows/components/FreezeWindo
 import { FreezeWindowStudioSubHeader } from '@freeze-windows/components/FreezeWindowStudioSubHeader/FreezeWindowStudioSubHeader'
 import { FreezeWindowStudioBody } from '@freeze-windows/components/FreezeWindowStudioBody/FreezeWindowStudioBody'
 import { DefaultFreezeId } from '@freeze-windows/context/FreezeWindowReducer'
-import { useFeatureFlags } from '@modules/10-common/hooks/useFeatureFlag'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 
 const _FreezeWindowStudioPage = (): React.ReactElement => {
   const {
@@ -37,7 +37,7 @@ const _FreezeWindowStudioPage = (): React.ReactElement => {
     state: { isYamlEditable, yamlHandler, freezeObj, isUpdated }
   } = React.useContext(FreezeWindowContext)
   const history = useHistory()
-  const { CDS_NAV_2_0 } = useFeatureFlags()
+  const { isNewNavEnabled } = useAppStore()
 
   const resources = useFreezeStudioData()
 
@@ -72,7 +72,7 @@ const _FreezeWindowStudioPage = (): React.ReactElement => {
     return true
   }
 
-  const routes = CDS_NAV_2_0 ? routesv2 : routesv1
+  const routes = isNewNavEnabled ? routesv2 : routesv1
 
   return (
     <>

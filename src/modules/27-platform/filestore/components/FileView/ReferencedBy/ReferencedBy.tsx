@@ -19,15 +19,13 @@ import {
   SelectOption
 } from '@harness/uicore'
 import { useHistory } from 'react-router-dom'
-
 import type { CellProps, Column, Renderer } from 'react-table'
 import { Color } from '@harness/design-system'
 import ReactTimeago from 'react-timeago'
-
-import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
 import { FileStoreContext } from '@filestore/components/FileStoreContext/FileStoreContext'
 import { useStrings } from 'framework/strings'
 import { EntityDetail, EntitySetupUsageDTO, Error, useGetReferencedBy } from 'services/cd-ng'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import {
   EntitySetupUsageDTOColumnData,
   RenderScope
@@ -53,7 +51,7 @@ export default function ReferencedBy(): React.ReactElement {
   const [searchTerm, setSearchTerm] = useState<string | undefined>()
   const [page, setPage] = useState(0)
 
-  const { CDS_NAV_2_0 } = useFeatureFlags()
+  const { isNewNavEnabled } = useAppStore()
 
   const history = useHistory()
 
@@ -142,7 +140,7 @@ export default function ReferencedBy(): React.ReactElement {
 
   const { overrideEntityInfo } = useGetEntityMetadata({
     entityInfo: {},
-    isNewNav: !!CDS_NAV_2_0
+    isNewNav: !!isNewNavEnabled
   })
 
   return (
@@ -190,7 +188,7 @@ export default function ReferencedBy(): React.ReactElement {
             if (node?.referredByEntity?.entityRef?.identifier) {
               const targetUrl = await overrideEntityInfo({
                 entityInfo: node.referredByEntity,
-                isNewNav: !!CDS_NAV_2_0
+                isNewNav: !!isNewNavEnabled
               })
               if (targetUrl) {
                 history.push(targetUrl)

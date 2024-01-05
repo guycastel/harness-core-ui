@@ -16,6 +16,7 @@ import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
 import { useGetCommunity } from '@common/utils/utils'
 import { FeatureFlag } from '@common/featureFlags'
 import { useLicenseStore } from 'framework/LicenseStore/LicenseStoreContext'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import { NAV_MODE } from '@common/utils/routeUtils'
 import type { ModuleLicenseDTO } from '../../../services/cd-ng'
 
@@ -410,8 +411,8 @@ const useNavModuleInfo = (module: NavModuleName) => {
 export const useNavModuleInfoMap = (): Record<NavModuleName, useNavModuleInfoReturnType> => {
   const { accountId } = useParams<AccountPathProps>()
   const featureFlags = useFeatureFlags()
+  const { isNewNavEnabled } = useAppStore()
   const isCommunity = useGetCommunity()
-  const isNewSidenavEnabled = featureFlags.CDS_NAV_2_0
 
   const { licenseInformation } = useLicenseStore()
 
@@ -427,7 +428,7 @@ export const useNavModuleInfoMap = (): Record<NavModuleName, useNavModuleInfoRet
         shouldBeVisible(module, featureFlags, licenseInformation, isCommunity),
         moduleInfoMap[module].color,
         '',
-        isNewSidenavEnabled
+        isNewNavEnabled
       )
     }
   }, {})

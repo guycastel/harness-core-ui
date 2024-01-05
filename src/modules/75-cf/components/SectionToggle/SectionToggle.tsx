@@ -13,15 +13,15 @@ import type { ProjectPathProps } from '@common/interfaces/RouteInterfaces'
 import routes from '@common/RouteDefinitions'
 import useActiveEnvironment from '@cf/hooks/useActiveEnvironment'
 import routes2 from '@common/RouteDefinitionsV2'
-import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 
 const SectionToggle = (): ReactElement => {
   const params = useParams<ProjectPathProps & { accountId: string }>()
   const { getString } = useStrings()
   const { withActiveEnvironment } = useActiveEnvironment()
-  const { CDS_NAV_2_0 } = useFeatureFlags()
+  const { isNewNavEnabled } = useAppStore()
 
-  if (CDS_NAV_2_0)
+  if (isNewNavEnabled)
     return (
       <TabNavigation
         links={[

@@ -63,6 +63,7 @@ import { ApplicationConfigSelectionTypes } from '@pipeline/components/Applicatio
 import { GitSyncForm, GitSyncFormFields } from '@modules/40-gitsync/components/GitSyncForm/GitSyncForm'
 import { StoreType } from '@modules/10-common/constants/GitSyncTypes'
 import { InlineRemoteSelect } from '@modules/10-common/components/InlineRemoteSelect/InlineRemoteSelect'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import ServiceManifestOverride from '../ServiceOverrides/ServiceManifestOverride/ServiceManifestOverride'
 import ServiceConfigFileOverride from '../ServiceOverrides/ServiceConfigFileOverride/ServiceConfigFileOverride'
 import css from '../EnvironmentDetails.module.scss'
@@ -131,9 +132,10 @@ export default function EnvironmentConfiguration({
   const { accountId, orgIdentifier, projectIdentifier } = useParams<ProjectPathProps & EnvironmentPathProps>()
   const history = useHistory()
   const { expressions } = useVariablesExpression()
-  const { CDS_NAV_2_0, CDS_ENV_GITX } = useFeatureFlags()
+  const { isNewNavEnabled } = useAppStore()
+  const { CDS_ENV_GITX } = useFeatureFlags()
   const environmentIdentifier = data?.data?.environment?.identifier
-  const routes = CDS_NAV_2_0 ? routesV2 : routesV1
+  const routes = isNewNavEnabled ? routesV2 : routesV1
   const isGitXEnabledForEnvironments = CDS_ENV_GITX
 
   const resourceAndScope: Pick<PermissionRequest, 'resource' | 'resourceScope'> = {

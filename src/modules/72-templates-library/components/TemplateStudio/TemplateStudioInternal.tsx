@@ -104,15 +104,15 @@ export function TemplateStudioInternal(): React.ReactElement {
   const { showError, showSuccess, clear } = useToaster()
   const history = useHistory()
   const templateFormikRef = React.useRef<TemplateFormikRef | null>(null)
-  const { isGitSyncEnabled: isGitSyncEnabledForProject, gitSyncEnabledOnlyForFF } = useAppStore()
+  const { isGitSyncEnabled: isGitSyncEnabledForProject, gitSyncEnabledOnlyForFF, isNewNavEnabled } = useAppStore()
   const isGitSyncEnabled = isGitSyncEnabledForProject && !gitSyncEnabledOnlyForFF
   const templateStudioSubHeaderHandleRef = React.useRef<TemplateStudioSubHeaderHandle | null>(null)
   const [shouldShowOutOfSyncError, setShouldShowOutOfSyncError] = React.useState(false)
   const [showBanner, setShowBanner] = React.useState<boolean>(false)
 
-  const { PL_AI_SUPPORT_CHATBOT, PL_EULA_ENABLED, CDS_NAV_2_0 } = useFeatureFlags()
+  const { PL_AI_SUPPORT_CHATBOT, PL_EULA_ENABLED } = useFeatureFlags()
   const isAuxNavNotEnabled = !PL_EULA_ENABLED || !PL_AI_SUPPORT_CHATBOT
-  const routes = CDS_NAV_2_0 ? routesV2 : routesV1
+  const routes = isNewNavEnabled ? routesV2 : routesV1
 
   useDocumentTitle([parse(defaultTo(template?.name, getString('common.templates')))])
 

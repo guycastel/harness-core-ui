@@ -13,12 +13,11 @@ import { Text, Container } from '@harness/uicore'
 
 import { defaultTo, isEmpty } from 'lodash-es'
 import { String, useStrings } from 'framework/strings'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 
 import type { PipelineType, PipelinePathProps, ExecutionPathProps } from '@common/interfaces/RouteInterfaces'
 import { formatDatetoLocale } from '@common/utils/dateUtils'
 import { EnvironmentDetailsTab } from '@modules/75-cd/components/EnvironmentsV2/utils'
-
-import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
 import routes from '@common/RouteDefinitions'
 import routesV2 from '@common/RouteDefinitionsV2'
 import { PostProdRollbackCheckDTO } from 'services/cd-ng'
@@ -30,7 +29,7 @@ interface PostProdMessageProps {
 
 export function PostProdMessage({ checkData, pipelineId }: PostProdMessageProps): React.ReactElement {
   const { getString } = useStrings()
-  const { CDS_NAV_2_0 } = useFeatureFlags()
+  const { isNewNavEnabled } = useAppStore()
 
   const { orgIdentifier, projectIdentifier, accountId, module } =
     useParams<PipelineType<PipelinePathProps & ExecutionPathProps>>()
@@ -51,7 +50,7 @@ export function PostProdMessage({ checkData, pipelineId }: PostProdMessageProps)
       sectionId: EnvironmentDetailsTab.CONFIGURATION
     }
 
-    return CDS_NAV_2_0
+    return isNewNavEnabled
       ? routesV2.toSettingsEnvironmentDetails({ ...envParams })
       : routes.toEnvironmentDetails({ ...envParams })
   }

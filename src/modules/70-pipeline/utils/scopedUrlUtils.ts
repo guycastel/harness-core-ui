@@ -36,11 +36,11 @@ export const getScopedServiceUrl = (
       serviceMetadata: ServiceResponseDTO
       scopedServiceIdentifier: string
     },
-  CDS_NAV_2_0: boolean
+  isNewNavEnabled: boolean
 ): string => {
   const serviceScope = getScopeFromValue(scopedServiceIdentifier)
   const serviceId = getIdentifierFromValue(scopedServiceIdentifier)
-  const serviceStudioUrl = CDS_NAV_2_0
+  const serviceStudioUrl = isNewNavEnabled
     ? routesV2.toSettingsServiceDetails({
         accountId,
         ...(serviceScope !== Scope.ACCOUNT && { orgIdentifier }),

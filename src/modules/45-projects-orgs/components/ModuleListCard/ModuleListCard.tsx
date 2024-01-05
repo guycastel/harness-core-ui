@@ -12,11 +12,10 @@ import { Color } from '@harness/design-system'
 import { getModuleIcon } from '@common/utils/utils'
 import { getModulePurpose, getModuleTitle } from '@projects-orgs/utils/utils'
 import { useStrings } from 'framework/strings'
-
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import { ModuleName } from 'framework/types/ModuleName'
 import routes from '@common/RouteDefinitions'
 import routesV2 from '@common/RouteDefinitionsV2'
-import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
 import css from './ModuleListCard.module.scss'
 
 export interface ModuleListCardProps {
@@ -156,7 +155,7 @@ export const getModuleLinkV2 = ({
 const ModuleListCard: React.FC<ModuleListCardProps> = ({ module, accountId, orgIdentifier, projectIdentifier }) => {
   const { getString } = useStrings()
   const history = useHistory()
-  const { CDS_NAV_2_0 } = useFeatureFlags()
+  const { isNewNavEnabled } = useAppStore()
   const purpose = getModulePurpose(module)
 
   return (
@@ -166,7 +165,7 @@ const ModuleListCard: React.FC<ModuleListCardProps> = ({ module, accountId, orgI
         interactive
         onClick={() =>
           history.push(
-            CDS_NAV_2_0
+            isNewNavEnabled
               ? getModuleLinkV2({ module, accountId, orgIdentifier, projectIdentifier })
               : getModuleLink({ module, accountId, orgIdentifier, projectIdentifier })
           )

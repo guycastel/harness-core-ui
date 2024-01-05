@@ -44,7 +44,7 @@ import { getScopedValueFromDTO } from '@common/components/EntityReference/Entity
 import { StoreMetadata, StoreType } from '@modules/10-common/constants/GitSyncTypes'
 import GitRemoteDetails from '@modules/10-common/components/GitRemoteDetails/GitRemoteDetails'
 import { getScopedServiceUrl } from '@modules/70-pipeline/utils/scopedUrlUtils'
-import { useFeatureFlags } from '@modules/10-common/hooks/useFeatureFlag'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import type { FormState, ServiceData } from '../DeployServiceEntityUtils'
 import css from './ServiceEntitiesList.module.scss'
 
@@ -97,10 +97,10 @@ export function ServiceEntityCard(props: ServiceEntityCardProps): React.ReactEle
   const formik = useFormikContext<FormState>()
   const scopedServiceRef = getScopedRefUsingIdentifier(formik, service)
   const [template, setTemplate] = React.useState<any>(serviceInputs?.serviceDefinition?.spec)
+  const { isNewNavEnabled = false } = useAppStore()
   const arifactsSpecPath = `serviceInputs.['${scopedServiceRef}'].serviceDefinition.spec`
   const { storeType, connectorRef } = storeMetadata
   const type = service.serviceDefinition?.type as ServiceDeploymentType
-  const { CDS_NAV_2_0 = false } = useFeatureFlags()
 
   const { accountId, orgIdentifier, projectIdentifier, module } = useParams<PipelineType<PipelinePathProps>>()
 
@@ -159,7 +159,7 @@ export function ServiceEntityCard(props: ServiceEntityCardProps): React.ReactEle
                             module,
                             serviceMetadata: storeMetadata
                           },
-                          CDS_NAV_2_0
+                          isNewNavEnabled
                         )}
                       >
                         <Text color={Color.PRIMARY_7} font="normal" lineClamp={1}>

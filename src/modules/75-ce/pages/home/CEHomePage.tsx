@@ -21,8 +21,8 @@ import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
 import type { ModuleLicenseType } from '@common/constants/SubscriptionTypes'
 
 const CEHomePage: React.FC = () => {
-  const { currentUserInfo } = useAppStore()
-  const { NG_LICENSES_ENABLED, CDS_NAV_2_0: isNewNavEnabled } = useFeatureFlags()
+  const { currentUserInfo, isNewNavEnabled } = useAppStore()
+  const { NG_LICENSES_ENABLED } = useFeatureFlags()
   const { licenseInformation, updateLicenseStore } = useLicenseStore()
 
   const { accountId } = useParams<AccountPathProps>()

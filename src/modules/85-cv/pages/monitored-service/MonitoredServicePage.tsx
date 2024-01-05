@@ -23,6 +23,7 @@ import { FeatureFlag } from '@common/featureFlags'
 import { useFeatureFlag } from '@common/hooks/useFeatureFlag'
 import SRMApp from '@modules/85-cv/SRMApp'
 import { ChildComponentNames } from '@modules/85-cv/interface/SRMCustomMicroFrontendProps.constants'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import Configurations from './components/Configurations/Configurations'
 import { MonitoredServiceEnum } from './MonitoredServicePage.constants'
 import HealthScoreCard from './components/ServiceHealth/components/HealthScoreCard/HealthScoreCard'
@@ -44,9 +45,8 @@ const ServiceHealthAndConfiguration: React.FC = () => {
   const { orgIdentifier, projectIdentifier, accountId, identifier } = useParams<
     ProjectPathProps & { identifier: string }
   >()
-
+  const { isNewNavEnabled: isNav2Enabled } = useAppStore()
   const isSRMLicenseEnabled = useFeatureFlag(FeatureFlag.CVNG_LICENSE_ENFORCEMENT)
-  const isNav2Enabled = useFeatureFlag(FeatureFlag.CDS_NAV_2_0)
   const isMFEEnabled = useFeatureFlag(FeatureFlag.SRM_MICRO_FRONTEND)
 
   const {

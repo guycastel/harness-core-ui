@@ -10,13 +10,13 @@ import { Layout, Container, Text } from '@harness/uicore'
 import cx from 'classnames'
 import { Color, FontVariation } from '@harness/design-system'
 import { Icon } from '@harness/icons'
-import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
 import { PageSpinner } from '@common/components'
 import { DEFAULT_MODULES_ORDER, NavModuleName, useNavModuleInfoMap } from '@common/hooks/useNavModuleInfo'
 import { PreferenceScope, usePreferenceStore } from 'framework/PreferenceStore/PreferenceStoreContext'
 import { String } from 'framework/strings'
 import { useTelemetry } from '@modules/10-common/hooks/useTelemetry'
 import { NavActions } from '@modules/10-common/constants/TrackingConstants'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import ModuleSortableList from './ModuleSortableList/ModuleSortableList'
 import ModuleCarousel from './ModuleDetailsSection/ModuleCarousel'
 import useGetContentfulModules from './useGetContentfulModules'
@@ -93,7 +93,7 @@ const ModulesConfigurationScreen: React.FC<ModulesConfigurationScreenProps> = ({
   const [activeModuleIndex, setActiveModuleIndex] = useState<number>(0)
   const { setPreference: setModuleConfigPreference, preference: { orderedModules = [], selectedModules = [] } = {} } =
     usePreferenceStore<ModulesPreferenceStoreData>(PreferenceScope.USER, MODULES_CONFIG_PREFERENCE_STORE_KEY)
-  const { CDS_NAV_2_0: isLightThemed } = useFeatureFlags()
+  const { isNewNavEnabled: isLightThemed } = useAppStore()
   const { contentfulModuleMap, loading } = useGetContentfulModules(isLightThemed)
   const { trackEvent } = useTelemetry()
   const readOnlyConfig = readOnly && isLightThemed

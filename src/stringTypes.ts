@@ -786,6 +786,9 @@ export interface StringsMap {
   'common.newLines': string
   'common.newMonitoredService': string
   'common.newName': string
+  'common.newNavBetaTitle': string
+  'common.newNavCallout.subtitle': string
+  'common.newNavCallout.title': string
   'common.newVersion': string
   'common.nextExpiringDate': string
   'common.nextStep': string
@@ -1456,6 +1459,7 @@ export interface StringsMap {
   'common.timeframe': string
   'common.timezone': string
   'common.toggle': string
+  'common.toggleNewNavError': string
   'common.tokenName': string
   'common.tokens': string
   'common.totalLines': string
@@ -1468,6 +1472,7 @@ export interface StringsMap {
   'common.triggersLabel': string
   'common.true': string
   'common.tryAgain': string
+  'common.tryitout': string
   'common.types': string
   'common.unknown': string
   'common.unlimited': string

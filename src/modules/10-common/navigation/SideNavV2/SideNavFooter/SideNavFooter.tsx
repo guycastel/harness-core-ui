@@ -6,8 +6,8 @@
  */
 
 import React, { useState } from 'react'
-import { NavLink, matchPath, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
-import { Avatar, Container, Layout, Popover, Text, useToaster } from '@harness/uicore'
+import { NavLink, matchPath, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { Avatar, Container, Layout, Popover, Text, useToaster, Toggle, PageSpinner } from '@harness/uicore'
 import { PopoverInteractionKind, PopoverPosition } from '@blueprintjs/core'
 import { Color, FontVariation } from '@harness/design-system'
 import { get } from 'lodash-es'
@@ -19,21 +19,30 @@ import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import { useStrings } from 'framework/strings'
 import { useLogout1 } from 'services/portal'
 import SecureStorage from 'framework/utils/SecureStorage'
-import { ModulePathParams } from '@common/interfaces/RouteInterfaces'
+import { AccountPathProps, ModulePathParams } from '@common/interfaces/RouteInterfaces'
 import { SIDE_NAV_STATE, useLayoutV2 } from '@modules/10-common/router/RouteWithLayoutV2'
 import { accountPathProps, getRouteParams, modulePathProps, returnUrlParams } from '@common/utils/routeUtils'
 import { getLoginPageURL } from 'framework/utils/SessionUtils'
+import { useUpdateUserSettingValue } from 'services/cd-ng'
+import { useFeatureFlags } from '@modules/10-common/hooks/useFeatureFlag'
 import SideNavLink from '../SideNavLink/SideNavLink'
 import { useGetSelectedScope } from '../SideNavV2.utils'
 import css from './SideNavFooter.module.scss'
 
-const UserProfilePopoverContent: React.FC = () => {
-  const { currentUserInfo: user } = useAppStore()
+export const UserProfilePopoverContent: React.FC = () => {
+  const { CDS_NAV_2_0, CDS_NAV_PREFS } = useFeatureFlags()
+  const { currentUserInfo: user, isNewNavEnabled } = useAppStore()
   const { params } = useGetSelectedScope()
+  const { accountId } = useParams<AccountPathProps>()
   const { getString } = useStrings()
   const { pathname } = useLocation()
   const { showError } = useToaster()
   const history = useHistory()
+  const { mutate: updateUserSetting, loading: loaddingUpdateUserSetting } = useUpdateUserSettingValue({
+    queryParams: {
+      accountIdentifier: accountId
+    }
+  })
   const { mutate: logout } = useLogout1({
     userId: SecureStorage.get('uuid') as string,
     requestOptions: { headers: { 'content-type': 'application/json' } }
@@ -62,63 +71,95 @@ const UserProfilePopoverContent: React.FC = () => {
   }
 
   return (
-    <Container className={css.userProfileContent}>
-      <Layout.Horizontal flex={{ justifyContent: 'flex-start' }} padding={'xlarge'}>
-        <Avatar name={user.name || user.email} email={user.email} size="medium" hoverCard={false} />
-        <Layout.Vertical
-          flex={{ justifyContent: 'flex-start', alignItems: 'flex-start' }}
-          padding={{ left: 'medium' }}
-          width={195}
-        >
-          <Text
-            color={Color.GREY_800}
-            font={{ variation: FontVariation.H5 }}
-            lineClamp={1}
-            style={{ overflow: 'none' }}
+    <>
+      <Container className={css.userProfileContent}>
+        {loaddingUpdateUserSetting && <PageSpinner />}
+        <Layout.Horizontal flex={{ justifyContent: 'flex-start' }} padding={'xlarge'}>
+          <Avatar name={user.name || user.email} email={user.email} size="medium" hoverCard={false} />
+          <Layout.Vertical
+            flex={{ justifyContent: 'flex-start', alignItems: 'flex-start' }}
+            padding={{ left: 'medium' }}
+            width={195}
           >
-            {user.name}
-          </Text>
-          <Text color={Color.GREY_800} font={{ variation: FontVariation.SMALL }} lineClamp={1}>
-            {user.email}
-          </Text>
+            <Text
+              color={Color.GREY_800}
+              font={{ variation: FontVariation.H5 }}
+              lineClamp={1}
+              style={{ overflow: 'none' }}
+            >
+              {user.name}
+            </Text>
+            <Text color={Color.GREY_800} font={{ variation: FontVariation.SMALL }} lineClamp={1}>
+              {user.email}
+            </Text>
+          </Layout.Vertical>
+        </Layout.Horizontal>
+        <Layout.Vertical>
+          <Container className={css.section} padding={{ top: 'small', bottom: 'small' }}>
+            <NavLink
+              to={
+                isNewNavEnabled
+                  ? routes.toUserProfile({ module: match?.params.module, ...params })
+                  : routesV1.toUserProfile({ accountId })
+              }
+              activeClassName={css.selected}
+              className={css.link}
+            >
+              <Text font={{ variation: FontVariation.BODY }} color={Color.GREY_800}>
+                {getString('common.profileOverview')}
+              </Text>
+            </NavLink>
+          </Container>
+          {!CDS_NAV_2_0 && CDS_NAV_PREFS && (
+            <Layout.Horizontal className={css.section} flex>
+              <Text margin={{ left: 'medium' }} font={{ variation: FontVariation.BODY }} color={Color.GREY_800}>
+                {getString('common.newNavBetaTitle')}
+              </Text>
+              <Toggle
+                checked={isNewNavEnabled}
+                onToggle={async enabled => {
+                  try {
+                    await updateUserSetting([
+                      {
+                        identifier: 'enable_new_nav',
+                        value: enabled ? 'true' : 'false',
+                        updateType: 'UPDATE'
+                      }
+                    ])
+                    location.href = '/'
+                  } catch (e) {
+                    showError(getString('common.toggleNewNavError'))
+                  }
+                }}
+              />
+            </Layout.Horizontal>
+          )}
+
+          <Container className={css.section}>
+            <Text
+              className={css.signout}
+              icon="log-out"
+              color={Color.RED_700}
+              iconProps={{ margin: { right: 'small' } }}
+              onClick={signOut}
+              margin={{ left: 'medium' }}
+            >
+              {getString('signOut')}
+            </Text>
+          </Container>
         </Layout.Vertical>
-      </Layout.Horizontal>
-      <Layout.Vertical
-        padding={{ top: 'small', right: 'xlarge', bottom: 'xlarge', left: 'xlarge' }}
-        className={css.section}
-      >
-        <NavLink
-          to={routes.toUserProfile({ module: match?.params.module, ...params })}
-          activeClassName={css.selected}
-          className={css.link}
-        >
-          <Text font={{ variation: FontVariation.BODY }} color={Color.GREY_800}>
-            {getString('common.profileOverview')}
-          </Text>
-        </NavLink>
-        <Text
-          className={css.signout}
-          icon="log-out"
-          color={Color.RED_700}
-          padding="small"
-          iconProps={{ margin: { right: 'medium' } }}
-          margin={{ top: 'small' }}
-          onClick={signOut}
-        >
-          {getString('signOut')}
-        </Text>
-      </Layout.Vertical>
-    </Container>
+      </Container>
+    </>
   )
 }
 
 const SideNavFooter: React.FC = () => {
   const [showResourceCenter, setShowResourceCenter] = useState<boolean>(false)
-  const { currentUserInfo: user } = useAppStore()
   const { getString } = useStrings()
   const { module, ...params } = getRouteParams<ModulePathParams>()
   const { sideNavState } = useLayoutV2()
   const history = useHistory()
+  const { currentUserInfo: user } = useAppStore()
   const match = useRouteMatch(routes.toUserProfile({ module: module, ...params }))
 
   const isCollapsed = sideNavState === SIDE_NAV_STATE.COLLAPSED

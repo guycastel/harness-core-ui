@@ -60,7 +60,7 @@ import { getWindowLocationUrl } from 'framework/utils/WindowLocation'
 
 import { renderTooltipContent } from '@pipeline/utils/DashboardUtils'
 import { NAV_MODE } from '@modules/10-common/utils/routeUtils'
-import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import css from './LandingDashboardDeploymentsWidget.module.scss'
 
 export enum TimeRangeGroupByMapping {
@@ -388,7 +388,7 @@ function LandingDashboardDeploymentsNoContentWidget(
   props: LandingDashboardDeploymentsNoContentWidgetProps
 ): JSX.Element {
   const { loading, response, error, count, accountId, refetch, projectIdentifier, orgIdentifier } = props
-  const { CDS_NAV_2_0 } = useFeatureFlags()
+  const { isNewNavEnabled } = useAppStore()
   if (loading) {
     return (
       <EmptyCard>
@@ -415,7 +415,7 @@ function LandingDashboardDeploymentsNoContentWidget(
             </Text>
           }
           getStartedLink={
-            CDS_NAV_2_0
+            isNewNavEnabled
               ? routesV2.toMode({
                   projectIdentifier,
                   orgIdentifier,
@@ -473,11 +473,11 @@ function LandingDashboardDeploymentsWidget(): React.ReactElement {
   const [groupByValue, setGroupByValues] = useState(TimeRangeGroupByMapping[selectedTimeRange])
   const [sortByValue, setSortByValue] = useState<GetDeploymentStatsOverviewQueryParams['sortBy']>('DEPLOYMENTS')
   const [selectedView, setSelectedView] = useState<ChartType>(ChartType.BAR)
-  const { CDS_NAV_2_0 } = useFeatureFlags()
+  const { isNewNavEnabled } = useAppStore()
 
   const getServiceDetailsLink = (service: ActiveServiceInfo): string => {
     const serviceId = service.serviceInfo?.serviceIdentifier || ''
-    if (CDS_NAV_2_0) {
+    if (isNewNavEnabled) {
       return routesV2.toServiceStudio({
         accountId,
         orgIdentifier: service.orgInfo?.orgIdentifier || '',

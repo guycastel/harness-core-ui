@@ -58,8 +58,8 @@ function PipelinePage({ children }: React.PropsWithChildren<unknown>): React.Rea
     gitSyncEnabledOnlyForFF,
     supportingGitSimplification
   } = useAppStore()
-  const { CDS_NAV_2_0 } = useFeatureFlags()
-  const routes = CDS_NAV_2_0 ? routesv2 : routesv1
+  const { isNewNavEnabled } = useAppStore()
+  const routes = isNewNavEnabled ? routesv2 : routesv1
   const isGitSyncEnabled = isGitSyncEnabledForProject && !gitSyncEnabledOnlyForFF
   const location = useLocation()
   const { trackEvent } = useTelemetry()

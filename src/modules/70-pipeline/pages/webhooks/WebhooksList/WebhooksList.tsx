@@ -26,7 +26,7 @@ import useRBACError from '@rbac/utils/useRBACError/useRBACError'
 import { ModulePathParams, ProjectPathProps } from '@common/interfaces/RouteInterfaces'
 import routesv1 from '@common/RouteDefinitions'
 import routesv2 from '@common/RouteDefinitionsV2'
-import { useFeatureFlags } from '@modules/10-common/hooks/useFeatureFlag'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import {
   Enabled,
   FolderPath,
@@ -62,7 +62,7 @@ export default function WebhooksList({
   const [rowData, setRowData] = React.useState<GitXWebhookResponse>()
   const [editable, setEditable] = React.useState(false)
   const history = useHistory()
-  const { CDS_NAV_2_0: newLeftNav } = useFeatureFlags()
+  const { isNewNavEnabled: newLeftNav } = useAppStore()
   const routes = newLeftNav ? routesv2 : routesv1
   const [showCreateModal, hideCreateModal] = useModalHook(
     /* istanbul ignore next */ () => {

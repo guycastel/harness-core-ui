@@ -11,7 +11,7 @@ import { useParams } from 'react-router-dom'
 import { NGBreadcrumbs } from '@common/components/NGBreadcrumbs/NGBreadcrumbs'
 import type { ProjectPathProps } from '@common/interfaces/RouteInterfaces'
 import { getLinkForAccountResources } from '@common/utils/BreadcrumbUtils'
-import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import { useStrings } from 'framework/strings'
 import { GlobalFreezeToggle, GlobalFreezeToggleProps } from '../GlobalFreezeToggle/GlobalFreezeToggle'
 
@@ -21,7 +21,7 @@ export const FreezeWindowListHeader: FC<GlobalFreezeToggleProps> = ({
 }) => {
   const { getString } = useStrings()
   const { projectIdentifier, orgIdentifier, accountId } = useParams<ProjectPathProps>()
-  const { CDS_NAV_2_0 } = useFeatureFlags()
+  const { isNewNavEnabled } = useAppStore()
 
   return (
     <Page.Header
@@ -32,7 +32,7 @@ export const FreezeWindowListHeader: FC<GlobalFreezeToggleProps> = ({
         </div>
       }
       breadcrumbs={
-        CDS_NAV_2_0 ? (
+        isNewNavEnabled ? (
           <NGBreadcrumbs />
         ) : (
           <NGBreadcrumbs

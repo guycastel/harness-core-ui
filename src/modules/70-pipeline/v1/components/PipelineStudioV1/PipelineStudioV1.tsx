@@ -25,6 +25,7 @@ import type { PipelineInfoConfig } from 'services/pipeline-ng'
 import { useQueryParams } from '@common/hooks'
 import { useLicenseStore } from 'framework/LicenseStore/LicenseStoreContext'
 import type { ModuleLicenseType } from '@common/constants/SubscriptionTypes'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import { getCITrialDialog } from '../../../components/PipelineStudio/CITrial/useCITrialModal'
 import { getPipelineStages } from '../../../components/PipelineStudio/PipelineStagesUtils'
 import { PipelineStudioInternalV1 } from '../PipelineStudioInternalV1/PipelineStudioInternalV1'
@@ -35,8 +36,8 @@ import css from '../../../components/PipelineStudio/PipelineStudio.module.scss'
 export default function PipelineStudioV1(): React.ReactElement {
   const { accountId, projectIdentifier, orgIdentifier, pipelineIdentifier, module } =
     useParams<PipelineType<PipelinePathProps & AccountPathProps>>()
-  const { CDS_NAV_2_0 } = useFeatureFlags()
-  const routes = CDS_NAV_2_0 ? routesv2 : routesv1
+  const { isNewNavEnabled } = useAppStore()
+  const routes = isNewNavEnabled ? routesv2 : routesv1
 
   const { branch, repoIdentifier, repoName, connectorRef, storeType } = useQueryParams<GitQueryParams>()
 

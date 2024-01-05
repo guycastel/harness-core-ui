@@ -170,3 +170,15 @@
     }
   }
 }
+
+.newNavCalloutContainer {
+  display: flex;
+  justify-content: center;
+  background-color: #e8e8ff;
+
+  .cross {
+    position: absolute;
+    right: var(--spacing-small);
+    cursor: pointer;
+  }
+}

@@ -28,6 +28,7 @@ import { ResourceType } from '@rbac/interfaces/ResourceType'
 import { useEntityDeleteErrorHandlerDialog } from '@common/hooks/EntityDeleteErrorHandlerDialog/useEntityDeleteErrorHandlerDialog'
 import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
 import { StoreType } from '@modules/10-common/constants/GitSyncTypes'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import {
   EnvironmentMenu,
   EnvironmentName,
@@ -55,7 +56,8 @@ export default function EnvironmentsList({
   const { getString } = useStrings()
   const history = useHistory()
   const [environmentToDelete, setEnvironmentToDelete] = useState<EnvironmentResponseDTO>({})
-  const { CDS_NAV_2_0: newLeftNav, CDS_ENV_GITX } = useFeatureFlags()
+  const { isNewNavEnabled: newLeftNav } = useAppStore()
+  const { CDS_ENV_GITX } = useFeatureFlags()
 
   const { mutate: deleteItem } = useDeleteEnvironmentV2({
     queryParams: {

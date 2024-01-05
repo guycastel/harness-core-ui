@@ -16,7 +16,7 @@ import routesV2 from '@common/RouteDefinitionsV2'
 import type { ProjectPathProps } from '@common/interfaces/RouteInterfaces'
 import { CountChangeDetails, ResponseExecutionResponseCountOverview, useGetCounts } from 'services/dashboard-service'
 import { TimeRangeToDays, useLandingDashboardContext } from '@common/factories/LandingDashboardContext'
-import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import { useStrings } from 'framework/strings'
 import type { StringsMap } from 'stringTypes'
 import type { UseGetMockData } from '@common/utils/testUtils'
@@ -141,7 +141,7 @@ export interface OverviewGlanceCardsProp {
 const OverviewGlanceCards: React.FC<OverviewGlanceCardsProp> = props => {
   const { glanceCardData, hideCards = [], glanceCardProps, className } = props
   const projectDetailsParams = useParams<ProjectPathProps>()
-  const { CDS_NAV_2_0 } = useFeatureFlags()
+  const { isNewNavEnabled } = useAppStore()
   const { accountId, projectIdentifier, orgIdentifier } = projectDetailsParams
   const { selectedTimeRange } = useLandingDashboardContext()
   const [range] = useState([Date.now() - TimeRangeToDays[selectedTimeRange] * 24 * 60 * 60000, Date.now()])
@@ -210,7 +210,7 @@ const OverviewGlanceCards: React.FC<OverviewGlanceCardsProp> = props => {
           <RenderGlanceCard
             href={
               projectIdentifier &&
-              (CDS_NAV_2_0
+              (isNewNavEnabled
                 ? routesV2.toSettingsServices(projectDetailsParams)
                 : routes.toServices(projectDetailsParams))
             }
@@ -223,7 +223,7 @@ const OverviewGlanceCards: React.FC<OverviewGlanceCardsProp> = props => {
           <RenderGlanceCard
             href={
               projectIdentifier &&
-              (CDS_NAV_2_0
+              (isNewNavEnabled
                 ? routesV2.toSettingsEnvironments(projectDetailsParams)
                 : routes.toEnvironment(projectDetailsParams))
             }

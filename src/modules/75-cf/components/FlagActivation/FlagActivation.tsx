@@ -55,6 +55,7 @@ import TargetingRulesTab from '@cf/pages/feature-flags-detail/targeting-rules-ta
 import { ContainerSpinner } from '@common/components/ContainerSpinner/ContainerSpinner'
 import FlagPipelineTab from '@cf/pages/feature-flags-detail/flag-pipeline-tab/FlagPipelineTab'
 import { TargetAttributesProvider } from '@cf/hooks/useTargetAttributes'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import TabActivity from '../EditFlagTabs/TabActivity'
 import { CFEnvironmentSelect } from '../CFEnvironmentSelect/CFEnvironmentSelect'
 import patch, { ClauseData, getDiff } from '../../utils/instructions'
@@ -122,8 +123,9 @@ const FlagActivation: React.FC<FlagActivationProps> = props => {
     selectedEnvironmentIdentifier: environmentIdentifier
   })
   const { handleError: handleGovernanceError, isGovernanceError } = useGovernance()
+  const { isNewNavEnabled } = useAppStore()
 
-  const { FFM_2134_FF_PIPELINES_TRIGGER, CDS_NAV_2_0 } = useFeatureFlags()
+  const { FFM_2134_FF_PIPELINES_TRIGGER } = useFeatureFlags()
 
   const { gitSyncValidationSchema, gitSyncInitialValues } =
     gitSync?.getGitSyncFormMeta(GIT_COMMIT_MESSAGES.UPDATED_FLAG_RULES) || {}
@@ -425,7 +427,7 @@ const FlagActivation: React.FC<FlagActivationProps> = props => {
 
   useEffect(() => {
     if (tab !== activeTabId) {
-      CDS_NAV_2_0
+      isNewNavEnabled
         ? history.replace(withActiveEnvironment(routesV2.toCFFeatureFlagsDetail(pathParams) + `?tab=${activeTabId}`))
         : history.replace(withActiveEnvironment(routes.toCFFeatureFlagsDetail(pathParams) + `?tab=${activeTabId}`))
     }
@@ -451,7 +453,7 @@ const FlagActivation: React.FC<FlagActivationProps> = props => {
               accountId: accountIdentifier
             }
 
-            const navigateToRoute = CDS_NAV_2_0 ? routesV2.toCFFeatureFlagsDetail : routes.toCFFeatureFlagsDetail
+            const navigateToRoute = isNewNavEnabled ? routesV2.toCFFeatureFlagsDetail : routes.toCFFeatureFlagsDetail
 
             history.replace(withActiveEnvironment(navigateToRoute(navigationParams), response?.data?.identifier))
 

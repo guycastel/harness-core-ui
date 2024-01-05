@@ -15,12 +15,12 @@ import { useStrings } from 'framework/strings'
 import routesV1 from '@common/RouteDefinitions'
 import routesV2 from '@common/RouteDefinitionsV2'
 import type { DiscoveryPathProps, ModulePathParams, ProjectPathProps } from '@common/interfaces/RouteInterfaces'
-import { useFeatureFlags } from '@modules/10-common/hooks/useFeatureFlag'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import css from './NetworkMapTable.module.scss'
 
 const EmptyStateNetworkMap: React.FC = () => {
-  const { CDS_NAV_2_0 } = useFeatureFlags()
-  const routes = CDS_NAV_2_0 ? routesV2 : routesV1
+  const { isNewNavEnabled } = useAppStore()
+  const routes = isNewNavEnabled ? routesV2 : routesV1
   const { getString } = useStrings()
   const history = useHistory()
   const { dAgentId, accountId, orgIdentifier, projectIdentifier, module } = useParams<

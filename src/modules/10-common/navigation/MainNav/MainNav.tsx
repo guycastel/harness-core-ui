@@ -11,22 +11,20 @@ import { NavLink as Link, useParams, useHistory } from 'react-router-dom'
 import type { NavLinkProps } from 'react-router-dom'
 import { Text, Icon, Layout, Avatar, useToggleOpen, Container, Popover } from '@harness/uicore'
 import { Color, FontVariation } from '@harness/design-system'
-import { Classes, PopoverInteractionKind, Position } from '@blueprintjs/core'
+import { Classes, PopoverInteractionKind, PopoverPosition, Position } from '@blueprintjs/core'
 import { String } from 'framework/strings'
 import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import { AccessTypeRenderer, IfPrivateAccess } from 'framework/components/PublicAccess/PublicAccess'
 import { getLoginPageURL } from 'framework/utils/SessionUtils'
-
 import paths from '@common/RouteDefinitions'
-
 import type { ProjectPathProps } from '@common/interfaces/RouteInterfaces'
 import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
 import { ResourceCenter } from '@common/components/ResourceCenter/ResourceCenter'
 import { returnUrlParams } from '@common/utils/routeUtils'
 import ModuleList from '../ModuleList/ModuleList'
 import ModuleConfigurationScreen from '../ModuleConfigurationScreen/ModuleConfigurationScreen'
-
 import ModulesContainer from './ModulesContainer/ModulesContainer'
+import { UserProfilePopoverContent } from '../SideNavV2/SideNavFooter/SideNavFooter'
 import css from './MainNav.module.scss'
 
 const commonLinkProps: Partial<NavLinkProps> = {
@@ -37,7 +35,7 @@ const commonLinkProps: Partial<NavLinkProps> = {
 export default function L1Nav(): React.ReactElement {
   const params = useParams<ProjectPathProps>()
   const history = useHistory()
-  const { NG_DASHBOARDS } = useFeatureFlags()
+  const { NG_DASHBOARDS, CDS_NAV_PREFS } = useFeatureFlags()
   const { isOpen: isModuleListOpen, toggle: toggleModuleList, close: closeModuleList } = useToggleOpen(false)
   const { isOpen: isModuleConfigOpen, toggle: toggleModuleConfig, close: closeModuleConfig } = useToggleOpen(false)
 
@@ -193,18 +191,28 @@ export default function L1Nav(): React.ReactElement {
           </IfPrivateAccess>
           <li className={css.navItem}>
             <IfPrivateAccess>
-              <Link
-                className={cx(css.navLink, css.userLink, css.hoverNavLink)}
-                activeClassName={css.active}
-                to={paths.toUser(params)}
+              <Popover
+                interactionKind={PopoverInteractionKind.HOVER}
+                content={<UserProfilePopoverContent />}
+                popoverClassName={css.width100}
+                targetClassName={css.width100}
+                position={PopoverPosition.RIGHT_BOTTOM}
+                usePortal={false}
+                disabled={!CDS_NAV_PREFS}
               >
-                <Layout.Vertical flex spacing="xsmall">
-                  <Avatar name={user.name || user.email} email={user.email} size="small" hoverCard={false} />
-                  <Text font={{ size: 'xsmall', align: 'center' }} color={Color.WHITE} className={css.hiddenText}>
-                    <String stringID="common.myProfile" />
-                  </Text>
-                </Layout.Vertical>
-              </Link>
+                <Link
+                  className={cx(css.navLink, css.userLink, css.hoverNavLink)}
+                  activeClassName={css.active}
+                  to={paths.toUser(params)}
+                >
+                  <Layout.Vertical flex spacing="xsmall">
+                    <Avatar name={user.name || user.email} email={user.email} size="small" hoverCard={false} />
+                    <Text font={{ size: 'xsmall', align: 'center' }} color={Color.WHITE} className={css.hiddenText}>
+                      <String stringID="common.myProfile" />
+                    </Text>
+                  </Layout.Vertical>
+                </Link>
+              </Popover>
             </IfPrivateAccess>
           </li>
         </ul>

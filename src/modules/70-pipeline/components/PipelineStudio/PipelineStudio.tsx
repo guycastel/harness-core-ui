@@ -37,6 +37,7 @@ import {
 import { IDBProvider } from '@modules/10-common/components/IDBContext/IDBContext'
 import { PipelineProviderY1 } from '@pipeline/y1/components/PipelineContext/PipelineContextY1'
 import { PipelineStudioInternalY1 } from '@pipeline/y1/components/PipelineStudioInternal/PipelineStudioInternalY1'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import { getCDTrialDialog } from './CDTrial/useCDTrialModal'
 import { getCITrialDialog } from './CITrial/useCITrialModal'
 import { getPipelineStages } from './PipelineStagesUtils'
@@ -46,8 +47,8 @@ import css from './PipelineStudio.module.scss'
 function PipelineStudioInner(): React.ReactElement {
   const { accountId, projectIdentifier, orgIdentifier, pipelineIdentifier, module } =
     useParams<PipelineType<PipelinePathProps & AccountPathProps>>()
-  const { CDS_NAV_2_0 } = useFeatureFlags()
-  const routes = CDS_NAV_2_0 ? routesv2 : routesv1
+  const { isNewNavEnabled } = useAppStore()
+  const routes = isNewNavEnabled ? routesv2 : routesv1
 
   const { branch, repoIdentifier, repoName, connectorRef, storeType } = useQueryParams<GitQueryParams>()
   const history = useHistory()

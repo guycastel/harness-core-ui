@@ -32,9 +32,9 @@ import { useServiceContext } from '@cd/context/ServiceContext'
 import RbacButton from '@rbac/components/Button/Button'
 import { ResourceType } from '@rbac/interfaces/ResourceType'
 import { useStrings } from 'framework/strings'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import { PermissionIdentifier } from '@rbac/interfaces/PermissionIdentifier'
 import { NavigationCheck } from '@common/exports'
-import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
 import routesv1 from '@common/RouteDefinitions'
 import routesv2 from '@common/RouteDefinitionsV2'
 import { pipelineModuleParams, projectPathProps, servicePathProps } from '@common/utils/routeUtils'
@@ -90,8 +90,8 @@ function ServiceConfiguration({
   const { isServiceCreateModalView, isServiceEntityModalView } = useServiceContext()
   const { getString } = useStrings()
   const history = useHistory()
-  const { CDS_NAV_2_0 } = useFeatureFlags()
-  const routes = CDS_NAV_2_0 ? routesv2 : routesv1
+  const { isNewNavEnabled } = useAppStore()
+  const routes = isNewNavEnabled ? routesv2 : routesv1
 
   const [selectedView, setSelectedView] = useState<SelectedView>(SelectedView.VISUAL)
   const [yamlHandler, setYamlHandler] = useState<YamlBuilderHandlerBinding | undefined>()

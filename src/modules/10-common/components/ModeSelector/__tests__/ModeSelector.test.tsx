@@ -189,7 +189,7 @@ describe('Mode selector', () => {
 
   test('should render mode selector', async () => {
     const { container } = render(
-      <TestWrapper defaultFeatureFlagValues={{ CDS_NAV_2_0: true }}>
+      <TestWrapper defaultAppStoreValues={{ isNewNavEnabled: true }}>
         <ModeSelector />
       </TestWrapper>
     )
@@ -229,7 +229,7 @@ describe('Mode selector', () => {
 
   test('should open module configuration screen when configure button is clicked', async () => {
     const { container } = render(
-      <TestWrapper defaultFeatureFlagValues={{ CDS_NAV_2_0: true }}>
+      <TestWrapper defaultAppStoreValues={{ isNewNavEnabled: true }}>
         <ModeSelector />
       </TestWrapper>
     )

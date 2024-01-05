@@ -16447,6 +16447,20 @@ export interface ResponseListUserRepoResponse {
   status?: 'SUCCESS' | 'FAILURE' | 'ERROR'
 }
 
+export interface ResponseListUserSettingResponseDTO {
+  correlationId?: string
+  data?: UserSettingResponseDTO[]
+  metaData?: { [key: string]: any }
+  status?: 'SUCCESS' | 'FAILURE' | 'ERROR'
+}
+
+export interface ResponseListUserSettingUpdateResponseDTO {
+  correlationId?: string
+  data?: UserSettingUpdateResponseDTO[]
+  metaData?: { [key: string]: any }
+  status?: 'SUCCESS' | 'FAILURE' | 'ERROR'
+}
+
 export interface ResponseMapEditionSetEditionActionDTO {
   correlationId?: string
   data?: {
@@ -21591,6 +21605,9 @@ export interface UserInfo {
   signupAction?: string
   token?: string
   twoFactorAuthenticationEnabled?: boolean
+  userPreferences?: {
+    [key: string]: string
+  }
   utmInfo?: UtmInfo
   uuid: string
 }
@@ -21647,6 +21664,53 @@ export type UserPrincipal = Principal & {
 export interface UserRepoResponse {
   name?: string
   namespace?: string
+}
+
+export interface UserSettingDTO {
+  allowedValues?: string[]
+  category:
+    | 'CD'
+    | 'CI'
+    | 'CE'
+    | 'CV'
+    | 'CF'
+    | 'STO'
+    | 'CORE'
+    | 'PMS'
+    | 'TEMPLATESERVICE'
+    | 'GOVERNANCE'
+    | 'CHAOS'
+    | 'SCIM'
+    | 'GIT_EXPERIENCE'
+    | 'CONNECTORS'
+    | 'EULA'
+    | 'NOTIFICATIONS'
+    | 'SUPPLY_CHAIN_ASSURANCE'
+  groupIdentifier: string
+  identifier: string
+  userID?: string
+  value?: string
+  valueType: 'String' | 'Boolean' | 'Number'
+}
+
+export interface UserSettingRequestDTO {
+  enableAcrossAccounts?: boolean
+  identifier?: string
+  updateType: 'UPDATE' | 'RESTORE'
+  value?: string
+}
+
+export interface UserSettingResponseDTO {
+  lastModifiedAt?: number
+  userSetting: UserSettingDTO
+}
+
+export interface UserSettingUpdateResponseDTO {
+  errorMessage?: string
+  identifier?: string
+  lastModifiedAt?: number
+  updateStatus?: boolean
+  userSettingDTO: UserSettingDTO
 }
 
 export interface UserSourceCodeManagerAuthentication {
@@ -72950,6 +73014,276 @@ export const unlinkSsoGroupPromise = (
     void,
     UnlinkSsoGroupPathParams
   >('PUT', getConfig('ng/api'), `/user-groups/${userGroupId}/unlink`, props, signal)
+
+export interface GetUserSettingsListQueryParams {
+  accountIdentifier: string
+  category?:
+    | 'CD'
+    | 'CI'
+    | 'CE'
+    | 'CV'
+    | 'CF'
+    | 'STO'
+    | 'CORE'
+    | 'PMS'
+    | 'TEMPLATESERVICE'
+    | 'GOVERNANCE'
+    | 'CHAOS'
+    | 'SCIM'
+    | 'GIT_EXPERIENCE'
+    | 'CONNECTORS'
+    | 'EULA'
+    | 'NOTIFICATIONS'
+    | 'SUPPLY_CHAIN_ASSURANCE'
+  group?: string
+}
+
+export type GetUserSettingsListProps = Omit<
+  GetProps<ResponseListUserSettingResponseDTO, Failure | Error, GetUserSettingsListQueryParams, void>,
+  'path'
+>
+
+/**
+ * Get list of user settings
+ */
+export const GetUserSettingsList = (props: GetUserSettingsListProps) => (
+  <Get<ResponseListUserSettingResponseDTO, Failure | Error, GetUserSettingsListQueryParams, void>
+    path={`/user-settings`}
+    base={getConfig('ng/api')}
+    {...props}
+  />
+)
+
+export type UseGetUserSettingsListProps = Omit<
+  UseGetProps<ResponseListUserSettingResponseDTO, Failure | Error, GetUserSettingsListQueryParams, void>,
+  'path'
+>
+
+/**
+ * Get list of user settings
+ */
+export const useGetUserSettingsList = (props: UseGetUserSettingsListProps) =>
+  useGet<ResponseListUserSettingResponseDTO, Failure | Error, GetUserSettingsListQueryParams, void>(`/user-settings`, {
+    base: getConfig('ng/api'),
+    ...props
+  })
+
+/**
+ * Get list of user settings
+ */
+export const getUserSettingsListPromise = (
+  props: GetUsingFetchProps<ResponseListUserSettingResponseDTO, Failure | Error, GetUserSettingsListQueryParams, void>,
+  signal?: RequestInit['signal']
+) =>
+  getUsingFetch<ResponseListUserSettingResponseDTO, Failure | Error, GetUserSettingsListQueryParams, void>(
+    getConfig('ng/api'),
+    `/user-settings`,
+    props,
+    signal
+  )
+
+export interface UpdateUserSettingValueQueryParams {
+  accountIdentifier: string
+}
+
+export type UpdateUserSettingValueProps = Omit<
+  MutateProps<
+    ResponseListUserSettingUpdateResponseDTO,
+    Failure | Error,
+    UpdateUserSettingValueQueryParams,
+    UserSettingRequestDTO[],
+    void
+  >,
+  'path' | 'verb'
+>
+
+/**
+ * Updates the user settings
+ */
+export const UpdateUserSettingValue = (props: UpdateUserSettingValueProps) => (
+  <Mutate<
+    ResponseListUserSettingUpdateResponseDTO,
+    Failure | Error,
+    UpdateUserSettingValueQueryParams,
+    UserSettingRequestDTO[],
+    void
+  >
+    verb="PUT"
+    path={`/user-settings`}
+    base={getConfig('ng/api')}
+    {...props}
+  />
+)
+
+export type UseUpdateUserSettingValueProps = Omit<
+  UseMutateProps<
+    ResponseListUserSettingUpdateResponseDTO,
+    Failure | Error,
+    UpdateUserSettingValueQueryParams,
+    UserSettingRequestDTO[],
+    void
+  >,
+  'path' | 'verb'
+>
+
+/**
+ * Updates the user settings
+ */
+export const useUpdateUserSettingValue = (props: UseUpdateUserSettingValueProps) =>
+  useMutate<
+    ResponseListUserSettingUpdateResponseDTO,
+    Failure | Error,
+    UpdateUserSettingValueQueryParams,
+    UserSettingRequestDTO[],
+    void
+  >('PUT', `/user-settings`, { base: getConfig('ng/api'), ...props })
+
+/**
+ * Updates the user settings
+ */
+export const updateUserSettingValuePromise = (
+  props: MutateUsingFetchProps<
+    ResponseListUserSettingUpdateResponseDTO,
+    Failure | Error,
+    UpdateUserSettingValueQueryParams,
+    UserSettingRequestDTO[],
+    void
+  >,
+  signal?: RequestInit['signal']
+) =>
+  mutateUsingFetch<
+    ResponseListUserSettingUpdateResponseDTO,
+    Failure | Error,
+    UpdateUserSettingValueQueryParams,
+    UserSettingRequestDTO[],
+    void
+  >('PUT', getConfig('ng/api'), `/user-settings`, props, signal)
+
+export interface GetUserPreferencesListQueryParams {
+  accountIdentifier: string
+}
+
+export type GetUserPreferencesListProps = Omit<
+  GetProps<ResponseMapStringString, Failure | Error, GetUserPreferencesListQueryParams, void>,
+  'path'
+>
+
+/**
+ * Get list of user preferences
+ */
+export const GetUserPreferencesList = (props: GetUserPreferencesListProps) => (
+  <Get<ResponseMapStringString, Failure | Error, GetUserPreferencesListQueryParams, void>
+    path={`/user-settings/get-user-preferences`}
+    base={getConfig('ng/api')}
+    {...props}
+  />
+)
+
+export type UseGetUserPreferencesListProps = Omit<
+  UseGetProps<ResponseMapStringString, Failure | Error, GetUserPreferencesListQueryParams, void>,
+  'path'
+>
+
+/**
+ * Get list of user preferences
+ */
+export const useGetUserPreferencesList = (props: UseGetUserPreferencesListProps) =>
+  useGet<ResponseMapStringString, Failure | Error, GetUserPreferencesListQueryParams, void>(
+    `/user-settings/get-user-preferences`,
+    { base: getConfig('ng/api'), ...props }
+  )
+
+/**
+ * Get list of user preferences
+ */
+export const getUserPreferencesListPromise = (
+  props: GetUsingFetchProps<ResponseMapStringString, Failure | Error, GetUserPreferencesListQueryParams, void>,
+  signal?: RequestInit['signal']
+) =>
+  getUsingFetch<ResponseMapStringString, Failure | Error, GetUserPreferencesListQueryParams, void>(
+    getConfig('ng/api'),
+    `/user-settings/get-user-preferences`,
+    props,
+    signal
+  )
+
+export interface GetUserSettingValueQueryParams {
+  accountIdentifier: string
+}
+
+export interface GetUserSettingValuePathParams {
+  identifier: string
+}
+
+export type GetUserSettingValueProps = Omit<
+  GetProps<
+    ResponseSettingValueResponseDTO,
+    Failure | Error,
+    GetUserSettingValueQueryParams,
+    GetUserSettingValuePathParams
+  >,
+  'path'
+> &
+  GetUserSettingValuePathParams
+
+/**
+ * Resolves and gets a user setting value by Identifier
+ */
+export const GetUserSettingValue = ({ identifier, ...props }: GetUserSettingValueProps) => (
+  <Get<ResponseSettingValueResponseDTO, Failure | Error, GetUserSettingValueQueryParams, GetUserSettingValuePathParams>
+    path={`/user-settings/${identifier}`}
+    base={getConfig('ng/api')}
+    {...props}
+  />
+)
+
+export type UseGetUserSettingValueProps = Omit<
+  UseGetProps<
+    ResponseSettingValueResponseDTO,
+    Failure | Error,
+    GetUserSettingValueQueryParams,
+    GetUserSettingValuePathParams
+  >,
+  'path'
+> &
+  GetUserSettingValuePathParams
+
+/**
+ * Resolves and gets a user setting value by Identifier
+ */
+export const useGetUserSettingValue = ({ identifier, ...props }: UseGetUserSettingValueProps) =>
+  useGet<
+    ResponseSettingValueResponseDTO,
+    Failure | Error,
+    GetUserSettingValueQueryParams,
+    GetUserSettingValuePathParams
+  >((paramsInPath: GetUserSettingValuePathParams) => `/user-settings/${paramsInPath.identifier}`, {
+    base: getConfig('ng/api'),
+    pathParams: { identifier },
+    ...props
+  })
+
+/**
+ * Resolves and gets a user setting value by Identifier
+ */
+export const getUserSettingValuePromise = (
+  {
+    identifier,
+    ...props
+  }: GetUsingFetchProps<
+    ResponseSettingValueResponseDTO,
+    Failure | Error,
+    GetUserSettingValueQueryParams,
+    GetUserSettingValuePathParams
+  > & { identifier: string },
+  signal?: RequestInit['signal']
+) =>
+  getUsingFetch<
+    ResponseSettingValueResponseDTO,
+    Failure | Error,
+    GetUserSettingValueQueryParams,
+    GetUserSettingValuePathParams
+  >(getConfig('ng/api'), `/user-settings/${identifier}`, props, signal)
 
 export interface DeleteUserSourceCodeManagerQueryParams {
   accountIdentifier: string

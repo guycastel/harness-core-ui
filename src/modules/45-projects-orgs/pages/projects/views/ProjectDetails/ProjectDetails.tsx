@@ -22,7 +22,6 @@ import { useProjectModal } from '@projects-orgs/modals/ProjectModal/useProjectMo
 import { useCollaboratorModal } from '@projects-orgs/modals/ProjectModal/useCollaboratorModal'
 import ContextMenu from '@projects-orgs/components/Menu/ContextMenu'
 import TagsRenderer from '@common/components/TagsRenderer/TagsRenderer'
-import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
 import { useDocumentTitle } from '@common/hooks/useDocumentTitle'
 import type { ProjectPathProps } from '@common/interfaces/RouteInterfaces'
 import { NGBreadcrumbs } from '@common/components/NGBreadcrumbs/NGBreadcrumbs'
@@ -55,7 +54,7 @@ const ProjectDetails: React.FC = () => {
   const [menuOpen, setMenuOpen] = useState(false)
   const { selectedTimeRange } = useLandingDashboardContext()
   const [range] = useState([Date.now() - TimeRangeToDays[selectedTimeRange] * 24 * 60 * 60000, Date.now()])
-  const { CDS_NAV_2_0 } = useFeatureFlags()
+  const { isNewNavEnabled } = useAppStore()
   const invitePermission = {
     resourceScope: {
       accountIdentifier: accountId,
@@ -121,7 +120,7 @@ const ProjectDetails: React.FC = () => {
   return (
     <>
       {isGitSyncEnabled && <DeprecatedCallout />}
-      {CDS_NAV_2_0 ? (
+      {isNewNavEnabled ? (
         <ProjectsHeader data={data} refetch={refetch} />
       ) : (
         <Page.Header

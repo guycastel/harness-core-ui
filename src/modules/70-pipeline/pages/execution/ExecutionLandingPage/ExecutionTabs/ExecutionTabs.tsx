@@ -29,6 +29,7 @@ import { useIsPrivateAccess } from 'framework/hooks/usePublicAccess'
 import { SavedExecutionViewTypes } from '@pipeline/components/LogsContent/LogsContent'
 import { isSimplifiedYAMLEnabled } from '@common/utils/utils'
 import type { ExecutionGraph } from 'services/pipeline-ng'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import css from './ExecutionTabs.module.scss'
 
 const TAB_ID_MAP = {
@@ -64,7 +65,8 @@ export default function ExecutionTabs(props: ExecutionTabsProps): React.ReactEle
   const { children, savedExecutionView, setSavedExecutionView } = props
   const { getString } = useStrings()
   const { pipelineExecutionDetail, isPipelineInvalid } = useExecutionContext()
-  const { CI_YAML_VERSIONING, CDS_NAV_2_0 } = useFeatureFlags()
+  const { CI_YAML_VERSIONING } = useFeatureFlags()
+  const { isNewNavEnabled } = useAppStore()
   const initialSelectedView = isSimplifiedYAMLEnabled(module, CI_YAML_VERSIONING)
     ? SavedExecutionViewTypes.LOG
     : savedExecutionView || SavedExecutionViewTypes.GRAPH
@@ -84,7 +86,7 @@ export default function ExecutionTabs(props: ExecutionTabsProps): React.ReactEle
   const canUsePolicyEngine = useAnyEnterpriseLicense()
   const isPrivateAccess = useIsPrivateAccess()
 
-  const routes = CDS_NAV_2_0 ? routesV2 : routesV1
+  const routes = isNewNavEnabled ? routesV2 : routesV1
 
   const routeParams = { ...accountPathProps, ...executionPathProps, ...pipelineModuleParams }
   const isLogView =

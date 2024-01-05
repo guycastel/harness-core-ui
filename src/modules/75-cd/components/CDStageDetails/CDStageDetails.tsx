@@ -38,6 +38,7 @@ import {
 } from '@modules/70-pipeline/components/FormMultiTypeEnvironmentField/Utils'
 import { StoreType } from '@modules/10-common/constants/GitSyncTypes'
 import { getScopedServiceUrl } from '@modules/70-pipeline/utils/scopedUrlUtils'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import { EnvironmentDetailsTab, getRemoteInfrastructureQueryParams } from '../EnvironmentsV2/utils'
 import { InfraDefinitionTabs } from '../EnvironmentsV2/EnvironmentDetails/InfrastructureDefinition/InfraDefinitionDetailsDrawer/InfraDefinitionDetailsDrawer'
 
@@ -121,7 +122,8 @@ export function CDStageDetails(props: StageDetailProps): React.ReactElement {
   const { stage } = props
   const gitOpsApps = get(stage, 'moduleInfo.cd.gitOpsAppSummary.applications') || []
   const { orgIdentifier, projectIdentifier, accountId, module } = useParams<ProjectPathProps & ModulePathParams>()
-  const { CDS_NAV_2_0 = false, CDS_SERVICE_GITX, CDS_ENV_GITX, CDS_INFRA_GITX } = useFeatureFlags()
+  const { CDS_SERVICE_GITX, CDS_ENV_GITX, CDS_INFRA_GITX } = useFeatureFlags()
+  const { isNewNavEnabled = false } = useAppStore()
 
   const gitOpsEnvironments = Array.isArray(get(stage, 'moduleInfo.cd.gitopsExecutionSummary.environments'))
     ? (get(stage, 'moduleInfo.cd.gitopsExecutionSummary') as Required<GitOpsExecutionSummary>).environments.map(
@@ -206,13 +208,13 @@ export function CDStageDetails(props: StageDetailProps): React.ReactElement {
           serviceMetadata,
           accountRoutePlacement: 'settings'
         },
-        CDS_NAV_2_0
+        isNewNavEnabled
       ),
-    [CDS_NAV_2_0, accountId, module, orgIdentifier, projectIdentifier, scopedServiceIdentifier, serviceMetadata]
+    [isNewNavEnabled, accountId, module, orgIdentifier, projectIdentifier, scopedServiceIdentifier, serviceMetadata]
   )
 
   const toEnvironmentDetails =
-    CDS_NAV_2_0 && !module
+    isNewNavEnabled && !module
       ? routesV2.toSettingsEnvironmentDetails({
           accountId,
           ...(infrastructureScope !== Scope.ACCOUNT && { orgIdentifier: orgIdentifier }),
@@ -256,7 +258,7 @@ export function CDStageDetails(props: StageDetailProps): React.ReactElement {
   }
 
   const toEnvironmentInfrastructureDefinitionDetails =
-    CDS_NAV_2_0 && !module
+    isNewNavEnabled && !module
       ? routesV2.toSettingsEnvironmentDetails(environmentInfrastructureDefinationQueryParams)
       : routes.toEnvironmentDetails({
           module,
@@ -299,7 +301,7 @@ export function CDStageDetails(props: StageDetailProps): React.ReactElement {
                   const gitClusters = getGitopsClusters(env?.name as string)
 
                   const toGitOpsEnvironmentDetails =
-                    CDS_NAV_2_0 && !module
+                    isNewNavEnabled && !module
                       ? `${routesV2.toSettingsEnvironmentDetails({
                           accountId,
                           ...(gitOpsEnvironmentScope !== Scope.ACCOUNT && { orgIdentifier: orgIdentifier }),

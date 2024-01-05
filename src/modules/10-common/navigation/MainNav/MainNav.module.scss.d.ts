@@ -33,5 +33,6 @@ declare const styles: {
   readonly top: string
   readonly userLink: string
   readonly userName: string
+  readonly width100: string
 }
 export default styles

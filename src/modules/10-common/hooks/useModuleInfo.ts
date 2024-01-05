@@ -11,8 +11,7 @@ import { match } from 'path-to-regexp'
 
 import type { Module } from 'framework/types/ModuleName'
 import { getRouteParams, withAccountId } from '@common/utils/routeUtils'
-import { FeatureFlag } from '@common/featureFlags'
-import { useFeatureFlag } from './useFeatureFlag'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 
 export interface ModuleInfo {
   module?: Module
@@ -30,10 +29,11 @@ const matchModuleFn = match<ModuleInfo>(pathToMatch, { end: false })
 
 export function useModuleInfo(): UseModuleInfoReturn {
   const { pathname } = useLocation()
+  const { isNewNavEnabled } = useAppStore()
 
   const matchModule = useMemo(() => matchModuleFn(pathname), [pathname])
 
-  if (useFeatureFlag(FeatureFlag.CDS_NAV_2_0)) {
+  if (isNewNavEnabled) {
     return getRouteParams<{ module: Module }>()
   }
 

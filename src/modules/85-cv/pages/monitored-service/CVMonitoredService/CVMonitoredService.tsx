@@ -40,6 +40,7 @@ import ServiceDependencyGraph from '@cv/pages/monitored-service/CVMonitoredServi
 import type { MonitoredServiceConfig } from '@cv/components/MonitoredServiceListWidget/MonitoredServiceListWidget.types'
 import SRMApp from '@modules/85-cv/SRMApp'
 import { FeatureFlag } from '@modules/10-common/featureFlags'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import {
   areFiltersApplied,
   getEnvironmentIdentifier,
@@ -70,7 +71,8 @@ const MonitoredService = (props: MonitoredServiceProps) => {
     orgIdentifier,
     projectIdentifier
   }
-  const { CVNG_TEMPLATE_MONITORED_SERVICE, CDS_NAV_2_0: newLeftNav } = useFeatureFlags()
+  const { isNewNavEnabled: newLeftNav } = useAppStore()
+  const { CVNG_TEMPLATE_MONITORED_SERVICE } = useFeatureFlags()
   const isSettingsRoute = newLeftNav && calledFromSettings
 
   const [page, setPage] = useState(0)

@@ -13,7 +13,7 @@ import { defaultTo, get } from 'lodash-es'
 import { useParams } from 'react-router-dom'
 import { Classes, Popover, PopoverInteractionKind, Position } from '@blueprintjs/core'
 import type { StageElementWrapperConfig } from 'services/pipeline-ng'
-import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import type { PipelineStageElementConfig } from '@pipeline/utils/pipelineTypes'
 import { useStrings } from 'framework/strings'
 import type { AccountPathProps, ModulePathParams } from '@common/interfaces/RouteInterfaces'
@@ -64,7 +64,7 @@ export function ChainedPipelineInfoPopover(
   )
   const { getString } = useStrings()
   const { accountId } = useParams<AccountPathProps & ModulePathParams>()
-  const { CDS_NAV_2_0 } = useFeatureFlags()
+  const { isNewNavEnabled } = useAppStore()
   const entityData = useGetEntityMetadata({
     entityInfo: {
       entityRef: {
@@ -75,7 +75,7 @@ export function ChainedPipelineInfoPopover(
       },
       type: EntityType.Pipelines
     },
-    isNewNav: !!CDS_NAV_2_0
+    isNewNav: !!isNewNavEnabled
   })
 
   return (

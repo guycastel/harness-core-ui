@@ -16,7 +16,10 @@ import SideNavHeaderPublic from '../SideNavHeaderPublic'
 const renderComponent = (): RenderResult =>
   render(
     <TestWrapper
-      defaultAppStoreValues={{ currentUserInfo: { name: 'Dev Name', email: 'mail@harness.io', uuid: '123' } }}
+      defaultAppStoreValues={{
+        currentUserInfo: { name: 'Dev Name', email: 'mail@harness.io', uuid: '123' },
+        isNewNavEnabled: true
+      }}
       path="/account/:accountId/:mode/:module/orgs/:orgIdentifier/projects/:projectIdentifier"
       pathParams={{
         accountId: 'abcd',
@@ -25,7 +28,6 @@ const renderComponent = (): RenderResult =>
         mode: routUtils.NAV_MODE.MODULE,
         module: 'cd'
       }}
-      defaultFeatureFlagValues={{ CDS_NAV_2_0: true }}
     >
       <SideNavHeader />
     </TestWrapper>

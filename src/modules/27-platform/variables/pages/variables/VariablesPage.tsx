@@ -39,6 +39,7 @@ import { ResourceType } from '@rbac/interfaces/ResourceType'
 import { useGetVariablesList } from 'services/cd-ng'
 import { PreferenceScope, usePreferenceStore } from 'framework/PreferenceStore/PreferenceStoreContext'
 import { PAGE_NAME } from '@common/pages/pageContext/PageName'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import VariableListView from './views/VariableListView'
 import css from './VariablesPage.module.scss'
 
@@ -47,7 +48,8 @@ const VariablesPage: React.FC = () => {
   const { getString } = useStrings()
   const variableLabel = getString('common.variables')
   const [searchTerm, setSearchTerm] = useState<string | undefined>()
-  const { PL_NEW_PAGE_SIZE, CDS_NAV_2_0 } = useFeatureFlags()
+  const { PL_NEW_PAGE_SIZE } = useFeatureFlags()
+  const { isNewNavEnabled } = useAppStore()
   const { preference: sortPreference = SortMethod.LastModifiedDesc, setPreference: setSortPreference } =
     usePreferenceStore<SortMethod>(PreferenceScope.USER, `sort-${PAGE_NAME.VariablesPage}`)
   const {
@@ -84,7 +86,7 @@ const VariablesPage: React.FC = () => {
     <>
       <Page.Header
         breadcrumbs={
-          CDS_NAV_2_0 ? (
+          isNewNavEnabled ? (
             <NGBreadcrumbs />
           ) : (
             <NGBreadcrumbs

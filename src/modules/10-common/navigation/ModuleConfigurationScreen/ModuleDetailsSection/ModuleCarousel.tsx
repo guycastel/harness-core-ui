@@ -12,7 +12,7 @@ import { Container, Layout, Text, Carousel } from '@harness/uicore'
 import { Color, FontVariation } from '@harness/design-system'
 import cx from 'classnames'
 import useNavModuleInfo, { NavModuleName } from '@common/hooks/useNavModuleInfo'
-import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import { MassagedModuleData, ModuleContentType } from '../useGetContentfulModules'
 import CarouselImageAndDescription from '../CarousellmageAndDescription/CarousellmageAndDescription'
 import LottieRenderer from '../LottieRenderer/LottieRenderer'
@@ -42,7 +42,7 @@ const ModuleCarousel: React.FC<ModuleCarouselProps> = ({
   const { icon } = useNavModuleInfo(selectedModule)
   const [defaultLottie, setDefaultLottie] = useState<object | undefined>()
   const { label, data = [] } = massagedModuleData || {}
-  const { CDS_NAV_2_0: isLightThemed } = useFeatureFlags()
+  const { isNewNavEnabled: isLightThemed } = useAppStore()
 
   useEffect(() => {
     if (isLightThemed) {

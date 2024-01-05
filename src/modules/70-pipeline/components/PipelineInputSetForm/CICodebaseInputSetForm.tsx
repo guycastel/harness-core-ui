@@ -66,6 +66,7 @@ import {
   isRuntimeInput
 } from '@pipeline/utils/CIUtils'
 import type { StageSelectionData } from '@pipeline/utils/runPipelineUtils'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import { StageType } from '@pipeline/utils/stageHelpers'
 import { getSelectedStagesFromPipeline } from '../PipelineStudio/CommonUtils/CommonUtils'
 import { StepViewType } from '../AbstractSteps/Step'
@@ -344,8 +345,9 @@ function CICodebaseInputSetFormInternal({
   const [codebaseConnector, setCodebaseConnector] = useState<ConnectorInfoDTO>()
   const [isFetchingBranches, setIsFetchingBranches] = useState<boolean>(false)
   const [isDefaultBranchSet, setIsDefaultBranchSet] = useState<boolean>(false)
-  const { CDS_NAV_2_0, NG_EXPRESSIONS_NEW_INPUT_ELEMENT } = useFeatureFlags()
-  const routes = CDS_NAV_2_0 ? routesV2 : routesV1
+  const { NG_EXPRESSIONS_NEW_INPUT_ELEMENT } = useFeatureFlags()
+  const { isNewNavEnabled } = useAppStore()
+  const routes = isNewNavEnabled ? routesV2 : routesV1
   const routeParams = { ...accountPathProps, ...executionPathProps, ...pipelineModuleParams }
 
   const radioLabels = getBuildTypeLabels(getString)

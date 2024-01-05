@@ -13,9 +13,9 @@ import { Page } from '@common/exports'
 import { useStrings } from 'framework/strings'
 import routesv1 from '@common/RouteDefinitions'
 import routesv2 from '@common/RouteDefinitionsV2'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import type { ProjectPathProps, PipelineType } from '@common/interfaces/RouteInterfaces'
 import ScopedTitle from '@common/components/Title/ScopedTitle'
-import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
 
 interface AccessControlLink {
   label: string
@@ -27,8 +27,8 @@ const AccessControlPage: React.FC = ({ children }) => {
   const { accountId, orgIdentifier, projectIdentifier, module } = useParams<PipelineType<ProjectPathProps>>()
   const { getString } = useStrings()
   const { pathname } = useLocation()
-  const { CDS_NAV_2_0 } = useFeatureFlags()
-  const routes = CDS_NAV_2_0 ? routesv2 : routesv1
+  const { isNewNavEnabled } = useAppStore()
+  const routes = isNewNavEnabled ? routesv2 : routesv1
 
   const accessControlLinks: AccessControlLink[] = [
     {

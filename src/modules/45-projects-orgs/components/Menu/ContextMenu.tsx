@@ -23,6 +23,7 @@ import { isFreePlan, useLicenseStore } from 'framework/LicenseStore/LicenseStore
 import type { PermissionRequest } from '@rbac/hooks/usePermission'
 import useNavModuleInfo from '@common/hooks/useNavModuleInfo'
 import { LICENSE_STATE_VALUES } from 'framework/LicenseStore/licenseStoreUtil'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 
 interface ContextMenuProps {
   project: Project
@@ -38,10 +39,11 @@ const ContextMenu: React.FC<ContextMenuProps> = props => {
   const { accountId } = useParams<AccountPathProps>()
   const { getString } = useStrings()
   const { project, editProject, collaborators, setMenuOpen, openDialog } = props
-  const { CVNG_ENABLED, CDS_NAV_2_0 } = useFeatureFlags()
+  const { CVNG_ENABLED } = useFeatureFlags()
+  const { isNewNavEnabled } = useAppStore()
   const { FF_LICENSE_STATE, licenseInformation } = useLicenseStore()
 
-  if (CDS_NAV_2_0 === true) project.modules = []
+  if (isNewNavEnabled === true) project.modules = []
 
   const permissionRequest: Optional<PermissionRequest, 'permission'> = {
     resourceScope: {

@@ -137,7 +137,8 @@ const ConnectorsPage: React.FC<ConnectorsListProps> = ({ catalogueMockData, stat
   const history = useHistory()
   useDocumentTitle(getString('connectorsLabel'))
   const { trackEvent } = useTelemetry()
-  const { PL_FAVORITES, CDS_NAV_2_0 } = useFeatureFlags()
+  const { PL_FAVORITES } = useFeatureFlags()
+  const { isNewNavEnabled } = useAppStore()
   const { data: forceDeleteSettings, error: forceDeleteSettingsError } = useGetSettingValue({
     identifier: SettingType.ENABLE_FORCE_DELETE,
     queryParams: { accountIdentifier: accountId },
@@ -571,7 +572,7 @@ const ConnectorsPage: React.FC<ConnectorsListProps> = ({ catalogueMockData, stat
           />
         }
         breadcrumbs={
-          CDS_NAV_2_0 ? (
+          isNewNavEnabled ? (
             <NGBreadcrumbs />
           ) : (
             <NGBreadcrumbs

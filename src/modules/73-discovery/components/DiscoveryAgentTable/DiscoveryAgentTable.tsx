@@ -32,7 +32,7 @@ import routesV2 from '@common/RouteDefinitionsV2'
 import type { DiscoveryPathProps, ModulePathParams, ProjectPathProps } from '@common/interfaces/RouteInterfaces'
 import type { PaginationPropsWithDefaults } from '@common/hooks/useDefaultPaginationProps'
 import { useStrings } from 'framework/strings'
-import { useFeatureFlags } from '@modules/10-common/hooks/useFeatureFlag'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import { DiscoveryAgentStatus } from '../DelegateAgentStatus/DelegateAgentStatus'
 import css from './DiscoveryAgentTable.module.scss'
 
@@ -43,8 +43,8 @@ interface DiscoveryAgentTableProps {
 }
 
 const Name: Renderer<CellProps<ApiGetAgentResponse>> = /* istanbul ignore next */ ({ row }) => {
-  const { CDS_NAV_2_0 } = useFeatureFlags()
-  const routes = CDS_NAV_2_0 ? routesV2 : routesV1
+  const { isNewNavEnabled } = useAppStore()
+  const routes = isNewNavEnabled ? routesV2 : routesV1
   const { accountId, orgIdentifier, projectIdentifier, module } = useParams<
     ProjectPathProps & ModulePathParams & DiscoveryPathProps
   >()

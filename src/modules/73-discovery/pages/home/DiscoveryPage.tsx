@@ -21,7 +21,7 @@ import { ApiGetAgentResponse, useListAgent } from 'services/servicediscovery'
 import RbacButton from '@rbac/components/Button/Button'
 import DiscoveryAgentTable from '@discovery/components/DiscoveryAgentTable/DiscoveryAgentTable'
 import { useQueryParams } from '@common/hooks'
-import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import { CommonPaginationQueryParams, useDefaultPaginationProps } from '@common/hooks/useDefaultPaginationProps'
 import { DEFAULT_PAGE_INDEX, DEFAULT_PAGE_SIZE } from '@discovery/interface/filters'
 import { ResourceType } from '@rbac/interfaces/ResourceType'
@@ -40,7 +40,7 @@ const DiscoveryPage: React.FC = () => {
 
   //States for pagination
   const { page, size } = useQueryParams<CommonPaginationQueryParams>()
-  const { CDS_NAV_2_0 } = useFeatureFlags()
+  const { isNewNavEnabled } = useAppStore()
 
   const {
     data: discoveryAgentList,
@@ -74,7 +74,7 @@ const DiscoveryPage: React.FC = () => {
     <Container>
       <Page.Header
         breadcrumbs={
-          CDS_NAV_2_0 ? (
+          isNewNavEnabled ? (
             <NGBreadcrumbs />
           ) : (
             <NGBreadcrumbs

@@ -24,6 +24,7 @@ import AidaToolTip from '@dashboards/components/AidaToolTip/AidaToolTip'
 import { DashboardMode } from '@dashboards/types/DashboardTypes.types'
 import { CDBActions, Category } from '@modules/10-common/constants/TrackingConstants'
 import { useTelemetry } from '@modules/10-common/hooks/useTelemetry'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import { useStrings } from 'framework/strings'
 import { GetStarted } from './home/GetStarted'
 import { useDashboardsContext } from './DashboardsContext'
@@ -33,7 +34,8 @@ const DashboardsHeader: React.FC = () => {
   const { getString } = useStrings()
   const { trackEvent } = useTelemetry()
   const { aiTileDetails, breadcrumbs, mode } = useDashboardsContext()
-  const { CDB_AIDA_WIDGET, CDS_NAV_2_0 } = useFeatureFlags()
+  const { CDB_AIDA_WIDGET } = useFeatureFlags()
+  const { isNewNavEnabled } = useAppStore()
   const { updateTitle } = useDocumentTitle(getString('common.dashboards'))
   const { accountId, folderId, viewId } = useParams<{ accountId: string; folderId: string; viewId: string }>()
   const [isOpen, setDrawerOpen] = useState(false)
@@ -122,7 +124,7 @@ const DashboardsHeader: React.FC = () => {
       breadcrumbs={<NGBreadcrumbs links={breadcrumbs} />}
       content={
         <Layout.Horizontal spacing="medium">
-          {!CDS_NAV_2_0 && (
+          {!isNewNavEnabled && (
             <>
               <NavLink
                 className={css.tags}

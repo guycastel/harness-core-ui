@@ -14,8 +14,7 @@ import cdPipelineIllustration from '@pipeline/pages/pipeline-list/images/cd-pipe
 import ciPipelineIllustration from '@pipeline/pages/pipeline-list/images/ci-pipeline-illustration.svg'
 import { useStrings } from 'framework/strings'
 import type { ProjectPathProps, PipelineType, Module } from '@common/interfaces/RouteInterfaces'
-import { FeatureFlag } from '@common/featureFlags'
-import { useFeatureFlag } from '@common/hooks/useFeatureFlag'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import cdExecutionIllustration from '../images/cd-execution-illustration.svg'
 import ciExecutionIllustration from '../images/ci-execution-illustration.svg'
 import { useExecutionListEmptyAction } from './useExecutionListEmptyAction'
@@ -66,8 +65,8 @@ export function OverviewExecutionListEmpty({
   const { hasNoPipelines, loading, EmptyAction } = useExecutionListEmptyAction(!!isPipelineInvalid, onRunPipeline)
   const { executionLabel, pipelineOperation1, pipelineOperation2, executionIllustration, pipelineIllustration } =
     getEmptyStateText(module)
+  const { isNewNavEnabled: newLeftNav } = useAppStore()
 
-  const newLeftNav = useFeatureFlag(FeatureFlag.CDS_NAV_2_0)
   return (
     <ModalDialog
       isOpen={true}

@@ -70,10 +70,6 @@
   .navItem {
     display: block;
 
-    &:hover {
-      background: rgba(0, 146, 228, 0.7);
-    }
-
     &:last-child {
       margin-bottom: 0;
     }
@@ -253,4 +249,9 @@
       fill: var(--primary-6) !important;
     }
   }
+}
+
+.width100 {
+  width: 100%;
+  display: flex;
 }

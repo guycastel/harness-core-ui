@@ -24,7 +24,7 @@ import routesV1 from '@common/RouteDefinitions'
 import routesV2 from '@common/RouteDefinitionsV2'
 import { DiscoveryTabs } from '@discovery/interface/discovery'
 import { useQueryParams } from '@common/hooks'
-import { useFeatureFlags } from '@modules/10-common/hooks/useFeatureFlag'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import NetworkMapTable from './views/network-map/NetworkMapTable'
 import DiscoveryHistory from './views/discovery-history/DiscoveryHistory'
 import Settings from './views/settings/Settings'
@@ -32,8 +32,8 @@ import DiscoveredResources from './views/discovered-resources/DiscoveredResource
 import css from './DiscoveryDetails.module.scss'
 
 const DiscoveryDetails: React.FC = () => {
-  const { CDS_NAV_2_0 } = useFeatureFlags()
-  const routes = CDS_NAV_2_0 ? routesV2 : routesV1
+  const { isNewNavEnabled } = useAppStore()
+  const routes = isNewNavEnabled ? routesV2 : routesV1
   const { accountId, orgIdentifier, projectIdentifier, module, dAgentId } = useParams<
     ProjectPathProps & ModulePathParams & DiscoveryPathProps
   >()

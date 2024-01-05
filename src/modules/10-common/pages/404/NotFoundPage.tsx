@@ -8,25 +8,26 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { Icon, Layout, Heading, Text, Container } from '@harness/uicore'
-import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
 import routes from '@common/RouteDefinitionsV2'
 import { ModulePathParams } from '@common/interfaces/RouteInterfaces'
 import { getRouteParams } from '@common/utils/routeUtils'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 
 interface NotFoundPageProps {
   redirectTo?: string
 }
 
 export default function NotFoundPage(props: NotFoundPageProps): JSX.Element {
-  const { CDS_NAV_2_0 } = useFeatureFlags()
+  const { isNewNavEnabled } = useAppStore()
   const { module } = getRouteParams<ModulePathParams>()
 
+  const homeUrl = isNewNavEnabled ? routes.toMode({ module }) : '/'
   return (
     <Container height="100%" flex={{ align: 'center-center' }}>
       <Layout.Vertical spacing="large" flex={{ align: 'center-center' }}>
         <Heading>404</Heading>
         <Text>Oops, we could not find this page.</Text>
-        <Link to={props.redirectTo ? props.redirectTo : CDS_NAV_2_0 ? routes.toMode({ module }) : '/'}>Go to Home</Link>
+        <Link to={props.redirectTo ? props.redirectTo : homeUrl}>Go to Home</Link>
         <Icon name="harness-logo-black" size={200} />
       </Layout.Vertical>
     </Container>

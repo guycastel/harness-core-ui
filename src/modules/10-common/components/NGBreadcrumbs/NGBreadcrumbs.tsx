@@ -18,7 +18,6 @@ import { useModuleInfo } from '@common/hooks/useModuleInfo'
 
 import paths from '@common/RouteDefinitions'
 import { useStrings } from 'framework/strings'
-import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
 import NGBreadcrumbsV2 from './NGBreadcrumbsV2'
 
 export interface NGBreadcrumbsProps extends BreadcrumbsProps {
@@ -40,18 +39,17 @@ export const NGBreadcrumbs: React.FC<Partial<NGBreadcrumbsProps>> = ({
   customPathParams = {},
   baseUrl
 }) => {
-  const { CDS_NAV_2_0 } = useFeatureFlags()
   const { getString } = useStrings()
   const originalParams = useParams<ProjectPathProps & SecretsPathProps & ModulePathParams>()
   const params = defaults(customPathParams, originalParams)
   const { module } = useModuleInfo()
   const { projectIdentifier, orgIdentifier } = params
-  const { selectedProject, selectedOrg } = useAppStore()
+  const { selectedProject, selectedOrg, isNewNavEnabled } = useAppStore()
   const { pathname } = useLocation()
 
   const resolveUrl = (url: string): string => (baseUrl ? url.replace(new RegExp(`^${baseUrl}`), '') : url)
 
-  if (CDS_NAV_2_0) {
+  if (isNewNavEnabled) {
     return (
       <NGBreadcrumbsV2
         links={links}

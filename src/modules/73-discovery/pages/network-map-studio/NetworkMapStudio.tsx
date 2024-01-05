@@ -50,7 +50,7 @@ import { PermissionIdentifier } from '@rbac/interfaces/PermissionIdentifier'
 import { ApiCreateNetworkMapRequest, useCreateNetworkMap, useGetNetworkMap } from 'services/servicediscovery'
 import { DiscoveryObjectStoreNames, useDiscoveryIndexedDBHook } from '@discovery/hooks/useDiscoveryIndexedDBHook'
 import { DiscoveryTabs } from '@discovery/interface/discovery'
-import { useFeatureFlags } from '@modules/10-common/hooks/useFeatureFlag'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import SelectService from './views/select-service/SelectService'
 import ConfigureNetworkMap from './views/configure/ConfigureNetworkMap'
 import css from './NetworkMapStudio.module.scss'
@@ -64,8 +64,8 @@ export interface FormValues {
 
 export default function NetworkMapStudio(): React.ReactElement {
   const history = useHistory()
-  const { CDS_NAV_2_0 } = useFeatureFlags()
-  const routes = CDS_NAV_2_0 ? routesV2 : routesV1
+  const { isNewNavEnabled } = useAppStore()
+  const routes = isNewNavEnabled ? routesV2 : routesV1
   const { accountId, orgIdentifier, projectIdentifier, module, dAgentId, networkMapId } = useParams<
     ProjectPathProps & ModulePathParams & NetworkMapPathProps
   >()

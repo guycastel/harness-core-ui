@@ -32,6 +32,7 @@ import { Editions, ModuleLicenseType } from '@common/constants/SubscriptionTypes
 import routes from '@common/RouteDefinitions'
 import useNavModuleInfo from '@common/hooks/useNavModuleInfo'
 import { LICENSE_STATE_VALUES } from 'framework/LicenseStore/licenseStoreUtil'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import css from './useModuleSelect.module.scss'
 
 export interface UseModuleSelectModalProps {
@@ -135,7 +136,7 @@ const GoToModuleBtn: React.FC<GoToModuleBtnProps> = props => {
   const { getString } = useStrings()
   const { showError } = useToaster()
   const { licenseInformation, updateLicenseStore } = useLicenseStore()
-  const { CDS_NAV_2_0 } = useFeatureFlags()
+  const { isNewNavEnabled } = useAppStore()
   const FREE_PLAN_ENABLED = !isOnPrem()
   const history = useHistory()
   const { selectedModuleName, projectData } = props
@@ -217,7 +218,7 @@ const GoToModuleBtn: React.FC<GoToModuleBtnProps> = props => {
             ))
         ) {
           history.push(
-            CDS_NAV_2_0
+            isNewNavEnabled
               ? getModuleLinkV2({
                   module: selectedModuleName,
                   orgIdentifier: projectData?.orgIdentifier,

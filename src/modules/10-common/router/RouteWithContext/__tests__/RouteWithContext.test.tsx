@@ -15,7 +15,11 @@ import { LicenseRedirectProps, LICENSE_STATE_NAMES } from 'framework/LicenseStor
 import { LICENSE_STATE_VALUES } from 'framework/LicenseStore/licenseStoreUtil'
 import { RouteWithContext } from '../RouteWithContext'
 
-jest.mock('services/cd-ng')
+jest.mock('services/cd-ng', () => ({
+  ...jest.requireActual('services/cd-ng'),
+  useUpdateUserSettingValue: jest.fn().mockImplementation(() => ({ mutate: jest.fn }))
+}))
+
 const RedirectToModuleTrialHome = (): React.ReactElement => {
   return (
     <Redirect

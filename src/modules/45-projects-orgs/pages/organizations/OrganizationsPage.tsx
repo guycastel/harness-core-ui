@@ -24,7 +24,7 @@ import { PermissionIdentifier } from '@rbac/interfaces/PermissionIdentifier'
 import RbacButton from '@rbac/components/Button/Button'
 import { ResourceType } from '@rbac/interfaces/ResourceType'
 import { FeatureIdentifier } from 'framework/featureStore/FeatureIdentifier'
-import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import css from './OrganizationsPage.module.scss'
 
 interface OrganizationsPageProps {
@@ -35,7 +35,7 @@ const OrganizationsPage: React.FC<OrganizationsPageProps> = ({ onOrgClick }) => 
   const { accountId } = useParams<AccountPathProps>()
   const [searchParam, setSearchParam] = useState<string>()
   const [page, setPage] = useState(0)
-  const { CDS_NAV_2_0 } = useFeatureFlags()
+  const { isNewNavEnabled } = useAppStore()
   const history = useHistory()
   const { getString } = useStrings()
   useDocumentTitle(getString('orgsText'))
@@ -131,7 +131,7 @@ const OrganizationsPage: React.FC<OrganizationsPageProps> = ({ onOrgClick }) => 
                     onOrgClick(org)
                   } else {
                     history.push(
-                      CDS_NAV_2_0
+                      isNewNavEnabled
                         ? routesV2.toProjects({ orgIdentifier: org.organizationResponse.organization.identifier })
                         : routes.toOrganizationDetails({
                             orgIdentifier: org.organizationResponse.organization.identifier as string,

@@ -64,6 +64,7 @@ export interface AppStoreContextProps {
   readonly featureFlags: FeatureFlagMap
   readonly currentMode?: NAV_MODE
   readonly currentModule?: string
+  readonly isNewNavEnabled?: boolean
 
   updateAppStore(
     data: Partial<
@@ -76,6 +77,7 @@ export interface AppStoreContextProps {
         | 'currentUserInfo'
         | 'accountInfo'
         | 'isPublicAccessEnabledOnResources'
+        | 'isNewNavEnabled'
       >
     >
   ): void
@@ -103,6 +105,7 @@ export const AppStoreContext = React.createContext<AppStoreContextProps>({
   updateAppStore: () => void 0,
   isCurrentSessionPublic: false,
   isPublicAccessEnabledOnResources: false,
+  isNewNavEnabled: false,
   setCurrentMode: () => void 0
 })
 
@@ -167,10 +170,11 @@ export function AppStoreProvider({ children }: PropsWithChildren<unknown>): Reac
     connectivityMode: undefined,
     accountInfo: undefined,
     isCurrentSessionPublic: window.publicAccessOnAccount,
-    isPublicAccessEnabledOnResources: false
+    isPublicAccessEnabledOnResources: false,
+    isNewNavEnabled: false
   })
 
-  const { CDS_NAV_2_0 } = state.featureFlags
+  const { isNewNavEnabled } = state
 
   const {
     projectIdentifier: projectNav2,
@@ -179,8 +183,8 @@ export function AppStoreProvider({ children }: PropsWithChildren<unknown>): Reac
     mode
   } = getRouteParams<ProjectPathProps & ModulePathParams & ModePathProps>()
 
-  projectIdentifier = CDS_NAV_2_0 ? projectNav2 : projectIdentifier
-  orgIdentifier = CDS_NAV_2_0 ? orgNav2 : orgIdentifier
+  projectIdentifier = isNewNavEnabled ? projectNav2 : projectIdentifier
+  orgIdentifier = isNewNavEnabled ? orgNav2 : orgIdentifier
   const modeFromPath = mode
 
   const [currentMode, setCurrentMode] = useState<NAV_MODE | undefined>(modeFromPath as NAV_MODE)
@@ -255,7 +259,7 @@ export function AppStoreProvider({ children }: PropsWithChildren<unknown>): Reac
   }
 
   useEffect(() => {
-    if (CDS_NAV_2_0 && mode) {
+    if (isNewNavEnabled && mode) {
       setSavedModeDetails({
         mode: mode as NAV_MODE,
         module: moduleNav2 as Module
@@ -264,7 +268,7 @@ export function AppStoreProvider({ children }: PropsWithChildren<unknown>): Reac
   }, [mode, moduleNav2])
 
   useEffect(() => {
-    if (modeFromPath && currentMode !== modeFromPath && CDS_NAV_2_0) {
+    if (modeFromPath && currentMode !== modeFromPath && isNewNavEnabled) {
       setCurrentMode(modeFromPath as NAV_MODE)
     }
     if (modeFromPath === NAV_MODE.MODULE) {
@@ -272,7 +276,7 @@ export function AppStoreProvider({ children }: PropsWithChildren<unknown>): Reac
     } else {
       setCurrentModule(undefined)
     }
-  }, [modeFromPath, moduleNav2, CDS_NAV_2_0])
+  }, [modeFromPath, moduleNav2, isNewNavEnabled])
 
   useEffect(() => {
     const currentAccount = userInfo?.data?.accounts?.find(account => account.uuid === accountId)
@@ -489,6 +493,18 @@ export function AppStoreProvider({ children }: PropsWithChildren<unknown>): Reac
   }, [accountId])
 
   React.useEffect(() => {
+    if (Object.keys(state.featureFlags).length > 1) {
+      const isNewNavPreferenceEnabled = userInfo?.data?.userPreferences?.['enable_new_nav'] === 'true'
+      if (state.featureFlags['CDS_NAV_2_0'] || isNewNavPreferenceEnabled) {
+        setState(prevState => ({
+          ...prevState,
+          isNewNavEnabled: true
+        }))
+      }
+    }
+  }, [state.featureFlags, userInfo?.data])
+
+  React.useEffect(() => {
     if (userInfo?.data) {
       const user = userInfo.data
       setState(prevState => ({
@@ -510,6 +526,7 @@ export function AppStoreProvider({ children }: PropsWithChildren<unknown>): Reac
         | 'currentUserInfo'
         | 'accountInfo'
         | 'isPublicAccessEnabledOnResources'
+        | 'isNewNavEnabled'
       >
     >
   ): void {
@@ -521,6 +538,7 @@ export function AppStoreProvider({ children }: PropsWithChildren<unknown>): Reac
       connectivityMode: defaultTo(data.connectivityMode, prevState?.connectivityMode),
       currentUserInfo: defaultTo(data.currentUserInfo, prevState?.currentUserInfo),
       accountInfo: defaultTo(data.accountInfo, prevState?.accountInfo),
+      isNewNavEnabled: data.isNewNavEnabled,
       isPublicAccessEnabledOnResources: defaultTo(
         data.isPublicAccessEnabledOnResources,
         prevState?.isPublicAccessEnabledOnResources

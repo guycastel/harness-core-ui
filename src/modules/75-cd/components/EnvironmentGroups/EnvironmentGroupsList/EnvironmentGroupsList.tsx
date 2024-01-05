@@ -21,8 +21,7 @@ import type { ModulePathParams, ProjectPathProps } from '@common/interfaces/Rout
 
 import { ResourceType } from '@rbac/interfaces/ResourceType'
 import { useEntityDeleteErrorHandlerDialog } from '@common/hooks/EntityDeleteErrorHandlerDialog/useEntityDeleteErrorHandlerDialog'
-import { useFeatureFlag } from '@common/hooks/useFeatureFlag'
-import { FeatureFlag } from '@common/featureFlags'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import {
   EditOrDeleteCell,
   EnvironmentGroupName,
@@ -53,7 +52,8 @@ export default function EnvironmentGroupsList({
   const { showSuccess, showError } = useToaster()
   const [expandedSets, setExpandedSets] = useState<Set<string>>(new Set())
   const [curGroupId, setCurGroupId] = useState('')
-  const newLeftNavRoute = useFeatureFlag(FeatureFlag.CDS_NAV_2_0) && calledFromSettingsPage
+  const { isNewNavEnabled } = useAppStore()
+  const newLeftNavRoute = isNewNavEnabled && calledFromSettingsPage
 
   const onEdit = (environmentGroupIdentifier: string): void => {
     const queryParams = {

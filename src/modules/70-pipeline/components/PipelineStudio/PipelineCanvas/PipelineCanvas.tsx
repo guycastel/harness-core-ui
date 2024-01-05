@@ -181,7 +181,8 @@ export function PipelineCanvas({
   } = state
 
   const { getString } = useStrings()
-  const { CDS_PIPELINE_STUDIO_UPGRADES, CDS_NAV_2_0 } = useFeatureFlags()
+  const { isNewNavEnabled } = useAppStore()
+  const { CDS_PIPELINE_STUDIO_UPGRADES } = useFeatureFlags()
   const { accountId, projectIdentifier, orgIdentifier, pipelineIdentifier, module } = useParams<
     PipelineType<PipelinePathProps> & GitQueryParams
   >()
@@ -265,7 +266,7 @@ export function PipelineCanvas({
           module
         },
         defaultTo(pipeline?.identifier, pipelineIdentifier),
-        !!CDS_NAV_2_0
+        !!isNewNavEnabled
       )
         .then((remotePiplineRoute: string) => {
           history.push(remotePiplineRoute)
@@ -849,7 +850,7 @@ export function PipelineCanvas({
               let localUpdated = isUpdated
               const matchDefault = matchPath(nextLocation.pathname, {
                 path: [
-                  ...(CDS_NAV_2_0 ? [toPipelineStudio({ ...accountPathProps, ...pipelinePathProps })] : []),
+                  ...(isNewNavEnabled ? [toPipelineStudio({ ...accountPathProps, ...pipelinePathProps })] : []),
                   toPipelineStudio({ ...accountPathProps, ...pipelinePathProps, ...pipelineModuleParams })
                 ],
                 exact: true

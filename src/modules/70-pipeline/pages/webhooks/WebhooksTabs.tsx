@@ -14,7 +14,7 @@ import { useStrings } from 'framework/strings'
 import routesv1 from '@common/RouteDefinitions'
 import routesv2 from '@common/RouteDefinitionsV2'
 import type { ModulePathParams, ProjectPathProps } from '@common/interfaces/RouteInterfaces'
-import { useFeatureFlags } from '@modules/10-common/hooks/useFeatureFlag'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import { WebhookTabIds } from './utils'
 
 interface WebhooksTabsProps {
@@ -26,7 +26,7 @@ export default function WebhooksTabs(props: WebhooksTabsProps): React.ReactEleme
   const [selectedTabId, setSelectedTabId] = useState<WebhookTabIds>(defaultTabId)
   const { getString } = useStrings()
   const { accountId, orgIdentifier, projectIdentifier, module } = useParams<ProjectPathProps & ModulePathParams>()
-  const { CDS_NAV_2_0: newLeftNav } = useFeatureFlags()
+  const { isNewNavEnabled: newLeftNav } = useAppStore()
   const routes = newLeftNav ? routesv2 : routesv1
   const history = useHistory()
 

@@ -21,7 +21,7 @@ import type { ResponseString } from 'services/cd-ng'
 import { Failure, ResponsePipelineExecutionDetail, useGetExecutionDetailV2 } from 'services/pipeline-ng'
 import { useDeepCompareEffect } from '@common/hooks'
 import commonRoutes from '@common/RouteDefinitions'
-import { useFeatureFlags } from '@modules/10-common/hooks/useFeatureFlag'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import routes, { routesV2 } from './RouteDefinitions'
 import { useLogsContentHook } from './hooks/useLogsContentHook'
 
@@ -89,7 +89,7 @@ const RemoteNewRepoModalButton = lazy(() => import('code/NewRepoModalButton'))
 const CODERemoteComponentMounter: React.FC<{
   component: JSX.Element
 }> = ({ component }) => {
-  const { CDS_NAV_2_0 } = useFeatureFlags()
+  const { isNewNavEnabled } = useAppStore()
   const { getString } = useStrings()
   const { params } = useRouteMatch<ProjectPathProps>()
   const space = useMemo(
@@ -107,7 +107,7 @@ const CODERemoteComponentMounter: React.FC<{
           on401={() => {
             global401HandlerUtils(history)
           }}
-          routes={omit(CDS_NAV_2_0 ? routesV2 : routes, ['toCODE', 'toCODEHome'])}
+          routes={omit(isNewNavEnabled ? routesV2 : routes, ['toCODE', 'toCODEHome'])}
           hooks={{
             useGetToken,
             usePermissionTranslate,

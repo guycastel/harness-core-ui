@@ -22,8 +22,7 @@ import useRBACError from '@rbac/utils/useRBACError/useRBACError'
 
 import { useEntityDeleteErrorHandlerDialog } from '@common/hooks/EntityDeleteErrorHandlerDialog/useEntityDeleteErrorHandlerDialog'
 import { ResourceType } from '@rbac/interfaces/ResourceType'
-import { useFeatureFlag } from '@common/hooks/useFeatureFlag'
-import { FeatureFlag } from '@common/featureFlags'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import { EnvironmentCard } from './EnvironmentCard'
 import { EnvironmentDetailsTab } from '../utils'
 
@@ -44,7 +43,7 @@ export default function EnvironmentsGrid({
   const { getString } = useStrings()
   const history = useHistory()
   const [curEnvId, setCurEnvId] = useState('')
-  const newLeftNav = useFeatureFlag(FeatureFlag.CDS_NAV_2_0)
+  const { isNewNavEnabled: newLeftNav } = useAppStore()
 
   const { mutate: deleteItem } = useDeleteEnvironmentV2({
     queryParams: {

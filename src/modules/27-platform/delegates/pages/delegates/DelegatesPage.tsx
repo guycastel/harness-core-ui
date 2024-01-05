@@ -24,6 +24,7 @@ import type { DelegateProfileDetailsNg } from 'services/cd-ng'
 import { useStrings } from 'framework/strings'
 import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
 import { useLocalStorage } from '@common/hooks'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import css from './DelegatesPage.module.scss'
 
 const DelegatesPage: React.FC = ({ children }) => {
@@ -32,8 +33,9 @@ const DelegatesPage: React.FC = ({ children }) => {
   const { getString } = useStrings()
   const { pathname } = useLocation()
   const [profiles, setProfiles] = useState<DelegateProfileDetailsNg[]>([])
-  const { PL_HELM2_DELEGATE_BANNER, CDS_NAV_2_0 } = useFeatureFlags()
-  const routes = CDS_NAV_2_0 ? routesv2 : routesv1
+  const { PL_HELM2_DELEGATE_BANNER } = useFeatureFlags()
+  const { isNewNavEnabled } = useAppStore()
+  const routes = isNewNavEnabled ? routesv2 : routesv1
   const [isBannerDismissed, setIsBannerDismissed] = useLocalStorage<boolean | undefined>(
     'helmv2_deprecation_banner_dismissed',
     !PL_HELM2_DELEGATE_BANNER,
@@ -111,7 +113,7 @@ const DelegatesPage: React.FC = ({ children }) => {
       )}
       <Page.Header
         breadcrumbs={
-          CDS_NAV_2_0 ? (
+          isNewNavEnabled ? (
             <NGBreadcrumbs />
           ) : (
             <NGBreadcrumbs

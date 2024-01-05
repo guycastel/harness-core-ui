@@ -13,6 +13,7 @@ import { Link, useParams } from 'react-router-dom'
 import { PopoverInteractionKind, Position, Classes } from '@blueprintjs/core'
 import type { IconProps } from '@harness/icons'
 import { defaultTo } from 'lodash-es'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import {
   AUDIT_TRAIL_PAGE_SIZE,
   actionToLabelMap,
@@ -28,7 +29,6 @@ import { useDefaultPaginationProps } from '@common/hooks/useDefaultPaginationPro
 import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
 import { COMMON_DEFAULT_PAGE_SIZE } from '@common/constants/Pagination'
 import EventSummary from '@audit-trail/components/EventSummary/EventSummary'
-
 import css from './AuditLogsListView.module.scss'
 
 const DEFAULT_CELL_PLACEHOLDER = 'N/A'
@@ -87,7 +87,7 @@ const AuditLogsListView: React.FC<AuditLogsListViewProps> = ({ data }) => {
   const [showEventSummary, setShowEventSummary] = useState<boolean>(true)
   const [selectedAuditEvent, setSelectedAuditEvent] = useState<AuditEventDTO | undefined>()
   const { getString } = useStrings()
-  const { CDS_NAV_2_0 } = useFeatureFlags()
+  const { isNewNavEnabled } = useAppStore()
 
   const renderColumnResource: Renderer<CellProps<AuditEventDTO>> = ({ row }) => {
     const { resourceScope, resource, module } = row.original
@@ -103,7 +103,7 @@ const AuditLogsListView: React.FC<AuditLogsListViewProps> = ({ data }) => {
           },
           getModuleNameFromAuditModule(module),
           row.original.auditEventData,
-          CDS_NAV_2_0
+          isNewNavEnabled
         )
       : undefined
 

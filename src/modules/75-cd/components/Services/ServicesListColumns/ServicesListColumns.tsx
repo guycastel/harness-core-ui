@@ -41,6 +41,7 @@ import { NewEditServiceModal } from '@cd/components/PipelineSteps/DeployServiceS
 import { CodeSourceWrapper } from '@pipeline/components/CommonPipelineStages/PipelineStage/utils'
 import useMigrateResource from '@modules/70-pipeline/components/MigrateResource/useMigrateResource'
 import { MigrationType } from '@modules/70-pipeline/components/MigrateResource/MigrateUtils'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import { ServiceTabs, getRemoteServiceQueryParams } from '../utils/ServiceUtils'
 import ServiceDeleteMenuItem from './ServiceDeleteMenuItem'
 import css from './ServicesListColumns.module.scss'
@@ -70,7 +71,7 @@ const ServiceMenu = (props: ServiceItemProps): React.ReactElement => {
   const { getString } = useStrings()
   const history = useHistory()
   const isSvcEnvEntityEnabled = useFeatureFlag(FeatureFlag.NG_SVC_ENV_REDESIGN)
-  const newLeftNav = useFeatureFlag(FeatureFlag.CDS_NAV_2_0)
+  const { isNewNavEnabled: newLeftNav } = useAppStore()
   const gitXEnabled = useFeatureFlag(FeatureFlag.CDS_SERVICE_GITX)
   const [hideReferencedByButton, setHideReferencedByButton] = useState(false)
   const [customErrorMessage, setCustomErrorMessage] = useState<string | undefined>()

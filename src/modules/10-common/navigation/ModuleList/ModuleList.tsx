@@ -21,7 +21,7 @@ import useNavModuleInfo, {
 } from '@common/hooks/useNavModuleInfo'
 import { useModuleInfo } from '@common/hooks/useModuleInfo'
 import { PreferenceScope, usePreferenceStore } from 'framework/PreferenceStore/PreferenceStoreContext'
-import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import NavModule from './NavModule/NavModule'
 import ModuleConfigurationScreen from '../ModuleConfigurationScreen/ModuleConfigurationScreen'
 import {
@@ -128,7 +128,7 @@ const ModuleList: React.FC<ModuleListProps> = ({ isOpen, close, usePortal = true
   const { getString } = useStrings()
   const [activeModuleCarousel, setActiveModuleCarousel] = useState<NavModuleName | undefined>(undefined)
   const [readOnly, setReadOnly] = useState<boolean>(false)
-  const { CDS_NAV_2_0: isLightThemed } = useFeatureFlags()
+  const { isNewNavEnabled: isLightThemed } = useAppStore()
   const { setPreference: setModuleConfigPreference, preference: { orderedModules = [], selectedModules = [] } = {} } =
     usePreferenceStore<ModulesPreferenceStoreData>(PreferenceScope.USER, MODULES_CONFIG_PREFERENCE_STORE_KEY)
   const readOnlyConfig = readOnly && isLightThemed

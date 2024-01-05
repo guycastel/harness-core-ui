@@ -53,6 +53,7 @@ import type { Sort, SortFields } from '@common/utils/listUtils'
 import { useDocumentTitle } from '@common/hooks/useDocumentTitle'
 import routesV2 from '@common/RouteDefinitionsV2'
 import { getDefaultStoreTypeFromSettings, getSettingValue } from '@modules/27-platform/default-settings/utils/utils'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import ServicesGridView from '../ServicesGridView/ServicesGridView'
 import ServicesListView from '../ServicesListView/ServicesListView'
 import {
@@ -75,11 +76,8 @@ export const ServicesListPage = ({
 }: ServicesListPageProps): React.ReactElement => {
   const { accountId, orgIdentifier, projectIdentifier, module } = useParams<ProjectPathProps & ModulePathParams>()
   const isCommunity = useGetCommunity()
-  const {
-    NG_SVC_ENV_REDESIGN: isSvcEnvEntityEnabled,
-    CDS_NAV_2_0: newLeftNav,
-    CDS_SERVICE_GITX: isGitXEnabled
-  } = useFeatureFlags()
+  const { NG_SVC_ENV_REDESIGN: isSvcEnvEntityEnabled, CDS_SERVICE_GITX: isGitXEnabled } = useFeatureFlags()
+  const { isNewNavEnabled: newLeftNav } = useAppStore()
 
   const { getString } = useStrings()
   const { showError } = useToaster()

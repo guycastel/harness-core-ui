@@ -40,7 +40,7 @@ import { getScopeFromDTO } from '@common/components/MultiSelectEntityReference/M
 import { Scope } from '@common/interfaces/SecretsInterface'
 import { ProjectPathProps } from '@common/interfaces/RouteInterfaces'
 import { useDefaultPaginationProps } from '@common/hooks/useDefaultPaginationProps'
-import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import {
   useGetSecretRuntimeUsageQueryParams,
   getScopeSelectOptions,
@@ -94,12 +94,12 @@ const getReferredByEntityScopeId = (scope: Scope, referredByEntity?: ReferredByE
 const RenderColumnEntity: Renderer<CellProps<RuntimeSetupUsageDTOColumnData>> = ({ row }) => {
   const { getString } = useStrings()
 
-  const { CDS_NAV_2_0 } = useFeatureFlags()
+  const { isNewNavEnabled } = useAppStore()
   const data = row.original.detail
 
   const entityData = useGetEntityMetadata({
     entityInfo: data?.referredByEntity,
-    isNewNav: !!CDS_NAV_2_0
+    isNewNav: !!isNewNavEnabled
   })
   const entityName = get(data, 'referredByEntity', '')
   const entityType = get(data, 'referredByEntity.type', '')
@@ -144,7 +144,7 @@ const RenderColumnActivity: Renderer<CellProps<Activity>> = ({ row }) => {
 export const RenderScope: Renderer<CellProps<RuntimeSetupUsageDTOColumnData>> = ({ row }) => {
   const { getString } = useStrings()
 
-  const { CDS_NAV_2_0 } = useFeatureFlags()
+  const { isNewNavEnabled } = useAppStore()
   const data = row.original.detail
   const { accountIdentifier, orgIdentifier, projectIdentifier } = data?.referredByEntity?.entityRef || {
     accountIdentifier: '',
@@ -154,7 +154,7 @@ export const RenderScope: Renderer<CellProps<RuntimeSetupUsageDTOColumnData>> = 
 
   const entityData = useGetEntityMetadata({
     entityInfo: data?.referredByEntity,
-    isNewNav: !!CDS_NAV_2_0
+    isNewNav: !!isNewNavEnabled
   })
 
   const scope = getScopeFromDTO({ accountIdentifier, orgIdentifier, projectIdentifier, identifier: '' })

@@ -40,7 +40,7 @@ import { getReadableDateTime } from '@common/utils/dateUtils'
 import useRBACError, { RBACError } from '@rbac/utils/useRBACError/useRBACError'
 import routesv1 from '@common/RouteDefinitions'
 import routesv2 from '@common/RouteDefinitionsV2'
-import { useFeatureFlags } from '@modules/10-common/hooks/useFeatureFlag'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import { StringsMap } from 'stringTypes'
 import NewWebhookModal from '../NewWebhookModal'
 import { processFolderPaths } from '../utils'
@@ -123,7 +123,7 @@ export default function WebhookLandingPage(): JSX.Element {
   const { getRBACErrorMessage } = useRBACError()
   const history = useHistory()
   const { showSuccess, showError } = useToaster()
-  const { CDS_NAV_2_0: newLeftNav } = useFeatureFlags()
+  const { isNewNavEnabled: newLeftNav } = useAppStore()
   const routes = newLeftNav ? routesv2 : routesv1
 
   const {

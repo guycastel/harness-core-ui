@@ -18,7 +18,6 @@ import {
   WebhookTriggerConfigV2
 } from 'services/pipeline-ng'
 import { useStrings } from 'framework/strings'
-import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
 
 import routesv1 from '@common/RouteDefinitions'
 import routesv2 from '@common/RouteDefinitionsV2'
@@ -29,6 +28,7 @@ import { yamlStringify } from '@common/utils/YamlHelperMethods'
 import useIsNewGitSyncRemotePipeline from '@triggers/components/Triggers/useIsNewGitSyncRemotePipeline'
 import { TriggerBreadcrumbs } from '@triggers/pages/trigger-details/TriggerDetails'
 import { useIsTriggerCreatePermission } from '@triggers/components/Triggers/useIsTriggerCreatePermission'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import { getEnabledStatusTriggerValues, getTriggerIcon } from '../utils/TriggersListUtils'
 import { clearNullUndefined, ResponseStatus } from '../utils/TriggersWizardPageUtils'
 import css from './TriggerLandingPage.module.scss'
@@ -51,8 +51,8 @@ const TriggerLandingPage: React.FC = ({ children }) => {
     >
   >()
   const isNewGitSyncRemotePipeline = useIsNewGitSyncRemotePipeline()
-  const { CDS_NAV_2_0 } = useFeatureFlags()
-  const routes = CDS_NAV_2_0 ? routesv2 : routesv1
+  const { isNewNavEnabled } = useAppStore()
+  const routes = isNewNavEnabled ? routesv2 : routesv1
 
   const {
     data: triggerResponse,

@@ -15,7 +15,7 @@ import { useGetUserProjectInfo } from 'services/cd-ng'
 import routes from '@common/RouteDefinitions'
 import routesV2 from '@common/RouteDefinitionsV2'
 import { NAV_MODE, getRouteParams } from '@common/utils/routeUtils'
-import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import css from './UserSummary.module.scss'
 
 const MyProjectsList: React.FC = () => {
@@ -23,7 +23,7 @@ const MyProjectsList: React.FC = () => {
   const { accountId } = useParams<AccountPathProps>()
   const { module } = getRouteParams<ModulePathParams>()
   const history = useHistory()
-  const { CDS_NAV_2_0 } = useFeatureFlags()
+  const { isNewNavEnabled } = useAppStore()
 
   const {
     data: projects,
@@ -55,7 +55,7 @@ const MyProjectsList: React.FC = () => {
                 className={css.card}
                 interactive
                 onClick={() => {
-                  if (CDS_NAV_2_0) {
+                  if (isNewNavEnabled) {
                     history.push(
                       routesV2.toProjectDetails({
                         accountId,

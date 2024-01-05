@@ -13,6 +13,7 @@ declare const styles: {
   readonly children: string
   readonly closeChat: string
   readonly copilot: string
+  readonly cross: string
   readonly expired: string
   readonly featuresBanner: string
   readonly flex: string
@@ -25,6 +26,7 @@ declare const styles: {
   readonly list: string
   readonly listItem: string
   readonly main: string
+  readonly newNavCalloutContainer: string
   readonly notExpired: string
   readonly open: string
   readonly overUse: string

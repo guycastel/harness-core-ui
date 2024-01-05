@@ -21,7 +21,7 @@ describe('NotFoundPage', () => {
   })
   test('should redirect to overview page', async () => {
     const { getByTestId, getByText } = render(
-      <TestWrapper path="/abc" defaultFeatureFlagValues={{ CDS_NAV_2_0: true }}>
+      <TestWrapper path="/abc" defaultAppStoreValues={{ isNewNavEnabled: true }}>
         <NotFoundPage redirectTo="/overview" />
       </TestWrapper>
     )

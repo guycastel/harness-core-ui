@@ -49,6 +49,7 @@ import { ModuleName } from 'framework/types/ModuleName'
 import ETRoutes from '@cet/RouteDestinations'
 import { LICENSE_STATE_VALUES } from 'framework/LicenseStore/licenseStoreUtil'
 import RoutesV2, { OldNavRedirects } from '@modules/RouteDestinationsV2'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 
 export const AccountSideNavProps: SidebarContext = {
   navComponent: AccountSideNav,
@@ -66,11 +67,11 @@ export default function RouteDestinations(): React.ReactElement {
     CDB_MFE_ENABLED,
     PL_DISCOVERY_ENABLE,
     SEI_ENABLED,
-    CDS_NAV_2_0,
     PL_CENTRAL_NOTIFICATIONS,
     PL_CENTRAL_CERTIFICATES_MANAGEMENT
   } = useFeatureFlags()
   const { licenseInformation } = useLicenseStore()
+  const { isNewNavEnabled } = useAppStore()
 
   const isCVModuleEnabled =
     licenseInformation[ModuleName.CV]?.status === LICENSE_STATE_VALUES.ACTIVE ||
@@ -79,7 +80,7 @@ export default function RouteDestinations(): React.ReactElement {
 
   return (
     <Switch>
-      {CDS_NAV_2_0 ? OldNavRedirects().props.children : undefined}
+      {isNewNavEnabled ? OldNavRedirects().props.children : undefined}
       {commonRoutes.props.children}
       {secretsRoutes.props.children}
       {variableRoutes.props.children}
@@ -116,12 +117,12 @@ export default function RouteDestinations(): React.ReactElement {
       <Route path="/account/:accountId/settings">
         <AuthSettingsRoutes />
       </Route>
-      {!CDS_NAV_2_0 ? (CDB_MFE_ENABLED ? CdbMfeRoutes.props.children : CdbNonMfeRoutes.props.children) : null}
+      {!isNewNavEnabled && (CDB_MFE_ENABLED ? CdbMfeRoutes.props.children : CdbNonMfeRoutes.props.children)}
       {IACM_ENABLED ? IACMRoutes().props.children : null}
       {SSCA_ENABLED ? SSCARoutes.props.children : null}
       {ETRoutes({})?.props.children}
 
-      {CDS_NAV_2_0 ? <RoutesV2 /> : undefined}
+      {isNewNavEnabled ? <RoutesV2 /> : undefined}
 
       <Route path="*">
         <NotFoundPage />

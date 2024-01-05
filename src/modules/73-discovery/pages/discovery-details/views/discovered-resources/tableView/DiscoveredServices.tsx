@@ -31,7 +31,7 @@ import RbacButton from '@rbac/components/Button/Button'
 import { ResourceType } from '@rbac/interfaces/ResourceType'
 import { PermissionIdentifier } from '@rbac/interfaces/PermissionIdentifier'
 import TagCount from '@discovery/components/TagCount/TagCount'
-import { useFeatureFlags } from '@modules/10-common/hooks/useFeatureFlag'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import css from './DiscoveryServices.module.scss'
 
 export interface K8SCustomService extends DatabaseDiscoveredServiceCollection {
@@ -49,8 +49,8 @@ export default function DiscoveredServices({
   search,
   namespace
 }: DiscoveredServicesProps): React.ReactElement {
-  const { CDS_NAV_2_0 } = useFeatureFlags()
-  const routes = CDS_NAV_2_0 ? routesV2 : routesV1
+  const { isNewNavEnabled } = useAppStore()
+  const routes = isNewNavEnabled ? routesV2 : routesV1
   const { dAgentId, accountId, orgIdentifier, projectIdentifier, module } = useParams<
     ProjectPathProps & DiscoveryPathProps & ModulePathParams
   >()

@@ -11,7 +11,7 @@ import { ButtonVariation, FormikForm, getErrorInfoFromErrorObject, Layout, useTo
 import { Formik } from 'formik'
 import * as Yup from 'yup'
 import { NGBreadcrumbs } from '@common/components/NGBreadcrumbs/NGBreadcrumbs'
-
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import ScopedTitle from '@common/components/Title/ScopedTitle'
 import { NavigationCheck, Page } from '@common/exports'
 import type { ModulePathParams, ProjectPathProps } from '@common/interfaces/RouteInterfaces'
@@ -26,7 +26,6 @@ import { ResourceType } from '@rbac/interfaces/ResourceType'
 import { useModuleInfo } from '@common/hooks/useModuleInfo'
 import { useDocumentTitle } from '@common/hooks/useDocumentTitle'
 import type { SettingType } from '@common/constants/Utils'
-import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
 import type { SettingCategory, SettingYupValidation } from '../interfaces/SettingType.types'
 import SettingsCategorySection from '../components/SettingsCategorySection'
 import css from './SettingsList.module.scss'
@@ -108,7 +107,7 @@ const SettingsList = () => {
   const updateValidation = (val: SettingYupValidation) => {
     updateValidationScheme({ ...validationScheme, ...val })
   }
-  const { CDS_NAV_2_0 } = useFeatureFlags()
+  const { isNewNavEnabled } = useAppStore()
   const history = useHistory()
   return (
     <>
@@ -154,7 +153,7 @@ const SettingsList = () => {
                     />
                   }
                   breadcrumbs={
-                    CDS_NAV_2_0 ? (
+                    isNewNavEnabled ? (
                       <NGBreadcrumbs />
                     ) : (
                       <NGBreadcrumbs

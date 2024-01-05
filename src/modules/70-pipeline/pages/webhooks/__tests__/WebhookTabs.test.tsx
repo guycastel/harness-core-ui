@@ -44,7 +44,7 @@ describe('Webhook Tabs Test', () => {
   })
   test('Should render webhook tabs new nav ', async () => {
     const { getByText } = render(
-      <TestWrapper pathParams={{ accountId: 'dummy' }} defaultFeatureFlagValues={{ CDS_NAV_2_0: true }}>
+      <TestWrapper pathParams={{ accountId: 'dummy' }} defaultAppStoreValues={{ isNewNavEnabled: true }}>
         <WebhooksTabs defaultTabId={WebhookTabIds.ListTab} />
       </TestWrapper>
     )

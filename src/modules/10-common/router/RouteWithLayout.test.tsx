@@ -39,7 +39,10 @@ const useGetUsageAndLimitReturnMock = {
     usage: {}
   }
 }
-jest.mock('services/cd-ng')
+jest.mock('services/cd-ng', () => ({
+  ...jest.requireActual('services/cd-ng'),
+  useUpdateUserSettingValue: jest.fn().mockImplementation(() => ({ mutate: jest.fn }))
+}))
 
 beforeEach(() => {
   window.deploymentType = 'SAAS'

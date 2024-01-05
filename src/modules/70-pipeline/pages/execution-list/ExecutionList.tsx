@@ -19,7 +19,7 @@ import type { PipelinePathProps, PipelineType } from '@common/interfaces/RouteIn
 import routesV1 from '@common/RouteDefinitions'
 import routesV2 from '@common/RouteDefinitionsV2'
 import { useGetCommunity } from '@common/utils/utils'
-import { useFeatureFlags } from '@modules/10-common/hooks/useFeatureFlag'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import PipelineBuildExecutionsChart from '@pipeline/components/Dashboards/BuildExecutionsChart/PipelineBuildExecutionsChart'
 import PipelineSummaryCards from '@pipeline/components/Dashboards/PipelineSummaryCards/PipelineSummaryCards'
 import { ExecutionCompareProvider } from '@pipeline/components/ExecutionCompareYaml/ExecutionCompareContext'
@@ -59,12 +59,12 @@ function ExecutionListInternal(props: ExecutionListProps): React.ReactElement {
   const [selectedBranch, setSelectedBranch] = useState<string | undefined>(defaultBranchSelect)
   const { orgIdentifier, projectIdentifier, pipelineIdentifier, accountId } =
     useParams<PipelineType<PipelinePathProps>>()
-  const { CDS_NAV_2_0 } = useFeatureFlags()
+  const { isNewNavEnabled } = useAppStore()
   const queryParams = useExecutionListQueryParams()
   const isAnyFilterApplied = getIsAnyFilterApplied(queryParams)
   const isSavedFilterApplied = getIsSavedFilterApplied(queryParams.filterIdentifier)
 
-  const routes = CDS_NAV_2_0 ? routesV2 : routesV1
+  const routes = isNewNavEnabled ? routesV2 : routesV1
 
   const {
     page,

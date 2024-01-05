@@ -32,6 +32,7 @@ import { ProjectPathProps } from '@common/interfaces/RouteInterfaces'
 import { useQueryParams } from '@common/hooks'
 import ReconcileIcon from '@cv/assets/Running.svg'
 import { NGTemplateInfoConfig } from 'services/template-ng'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import NoResultsView from '@modules/72-templates-library/pages/TemplatesPage/views/NoResultsView/NoResultsView'
 import {
   getIsAgentConfigSectionHidden,
@@ -102,11 +103,8 @@ export default function CommonMonitoredServiceConfigurations(
   } = props
   const formik = useFormikContext<MonitoredServiceForm>()
   const { licenseInformation } = useLicenseStore()
-  const {
-    CET_PLATFORM_MONITORED_SERVICE,
-    CDS_NAV_2_0,
-    SRM_ENABLE_MS_TEMPLATE_RECONCILIATION: showInputsets
-  } = useFeatureFlags()
+  const { CET_PLATFORM_MONITORED_SERVICE, SRM_ENABLE_MS_TEMPLATE_RECONCILIATION: showInputsets } = useFeatureFlags()
+  const { isNewNavEnabled } = useAppStore()
   const isCETLicensePresentAndActive = licenseInformation[ModuleName.CET]?.status === LICENSE_STATE_VALUES.ACTIVE
   const isChangeSrcSectionHidden = getIsChangeSrcSectionHidden(config, identifier)
   const isHealthSrcSectionHidden = getIsHealthSrcSectionHidden(config, identifier)
@@ -207,7 +205,7 @@ export default function CommonMonitoredServiceConfigurations(
       view,
       notificationTime,
       isTemplate,
-      isNav2Enabled: CDS_NAV_2_0
+      isNav2Enabled: isNewNavEnabled
     })
   }
 

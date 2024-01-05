@@ -51,6 +51,7 @@ import { PreferenceScope, usePreferenceStore } from 'framework/PreferenceStore/P
 import { PAGE_NAME } from '@common/pages/pageContext/PageName'
 import { usePermission } from '@rbac/hooks/usePermission'
 import useRBACError from '@modules/20-rbac/utils/useRBACError/useRBACError'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import RBACTooltip from '@rbac/components/RBACTooltip/RBACTooltip'
 import SecretsList from './views/SecretsListView/SecretsList'
 import SecretEmptyState from './secrets-empty-state.png'
@@ -75,7 +76,8 @@ const SecretsPage: React.FC<SecretsPageProps> = ({ mock }) => {
   const history = useHistory()
   const { getString } = useStrings()
   const [searchTerm, setSearchTerm] = useState<string | undefined>()
-  const { PL_NEW_PAGE_SIZE, CDS_NAV_2_0 } = useFeatureFlags()
+  const { PL_NEW_PAGE_SIZE } = useFeatureFlags()
+  const { isNewNavEnabled } = useAppStore()
   const { page: pageIndex, size: pageSize } = useQueryParams<CommonPaginationQueryParams>()
   const { updateQueryParams } = useUpdateQueryParams<CommonPaginationQueryParams>()
   const { preference: sortPreference = SortMethod.LastModifiedDesc, setPreference: setSortPreference } =
@@ -184,7 +186,7 @@ const SecretsPage: React.FC<SecretsPageProps> = ({ mock }) => {
     <>
       <Page.Header
         breadcrumbs={
-          CDS_NAV_2_0 ? (
+          isNewNavEnabled ? (
             <NGBreadcrumbs />
           ) : (
             <NGBreadcrumbs

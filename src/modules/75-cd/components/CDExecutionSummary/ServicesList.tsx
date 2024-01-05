@@ -20,7 +20,7 @@ import type { ServiceExecutionSummary } from 'services/cd-ng'
 import type { ProjectPathProps, ModulePathParams } from '@common/interfaces/RouteInterfaces'
 
 import { getScopedServiceUrl } from '@modules/70-pipeline/utils/scopedUrlUtils'
-import { useFeatureFlags } from '@modules/10-common/hooks/useFeatureFlag'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import { ServicePopoverCard } from '../ServicePopoverCard/ServicePopoverCard'
 import { ServicesTable } from './ServicesTable'
 import css from './CDExecutionSummary.module.scss'
@@ -33,7 +33,8 @@ interface ServicesListProps {
 
 export function ServicesList({ services, limit = 2, className }: ServicesListProps): React.ReactElement {
   const { orgIdentifier, projectIdentifier, accountId, module } = useParams<ProjectPathProps & ModulePathParams>()
-  const { CDS_NAV_2_0 = false } = useFeatureFlags()
+  const { isNewNavEnabled = false } = useAppStore()
+
   return (
     <div className={cx(css.main, className)}>
       <Icon name="services" className={css.servicesIcon} size={18} />
@@ -62,7 +63,7 @@ export function ServicesList({ services, limit = 2, className }: ServicesListPro
                       accountRoutePlacement: 'settings',
                       serviceMetadata: {}
                     },
-                    CDS_NAV_2_0
+                    isNewNavEnabled
                   )}
                 >
                   {service.displayName}

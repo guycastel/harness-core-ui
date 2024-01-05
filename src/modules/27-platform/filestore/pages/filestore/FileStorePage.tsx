@@ -23,11 +23,11 @@ import { useModalHook } from '@harness/use-modal'
 import type { GetDataError } from 'restful-react'
 import type { FormikProps } from 'formik'
 import cx from 'classnames'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import type { FileStoreResourceQueryParams } from '@common/interfaces/RouteInterfaces'
 import { NGBreadcrumbs } from '@common/components/NGBreadcrumbs/NGBreadcrumbs'
 import { Page, StringUtils, useToaster } from '@common/exports'
 import { getLinkForAccountResources } from '@common/utils/BreadcrumbUtils'
-import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
 import { useDocumentTitle } from '@common/hooks/useDocumentTitle'
 import { useStrings } from 'framework/strings'
 import EmptyNodeView from '@filestore/components/EmptyNodeView/EmptyNodeView'
@@ -560,7 +560,7 @@ export const FileStore: React.FC<FileStoreProps> = ({ onNodeChange, isFullScreen
     [refetchFileStoreList, appliedFilter?.filterProperties]
   )
 
-  const { CDS_NAV_2_0 } = useFeatureFlags()
+  const { isNewNavEnabled } = useAppStore()
 
   const { handleUnsavedConfirmation } = useUnsavedConfirmation({
     callback: () => null,
@@ -573,7 +573,7 @@ export const FileStore: React.FC<FileStoreProps> = ({ onNodeChange, isFullScreen
         breadcrumbs={
           <>
             {!isModalView &&
-              (CDS_NAV_2_0 ? (
+              (isNewNavEnabled ? (
                 <NGBreadcrumbs />
               ) : (
                 <NGBreadcrumbs

@@ -63,7 +63,6 @@ import useRBACError from '@rbac/utils/useRBACError/useRBACError'
 import { getPipelineUrl } from '@common/hooks/useGetEntityMetadata'
 import { getDefaultStoreType, getSettingValue } from '@default-settings/utils/utils'
 import { PipelineMetadataForRouter } from '@pipeline/components/CreatePipelineButton/useCreatePipelineModalY1'
-import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
 import { NavigationCheck } from '@modules/10-common/exports'
 import { accountPathProps, pipelineModuleParams, pipelinePathProps } from '@modules/10-common/utils/routeUtils'
 import { usePipelineContextY1 } from '../PipelineContext/PipelineContextY1'
@@ -105,7 +104,7 @@ const runModalProps: IDialogProps = {
 }
 
 export function PipelineCanvasY1(): React.ReactElement {
-  const { supportingGitSimplification } = useAppStore()
+  const { supportingGitSimplification, isNewNavEnabled } = useAppStore()
   const {
     state,
     updatePipeline,
@@ -151,7 +150,6 @@ export function PipelineCanvasY1(): React.ReactElement {
   } = state
 
   const { getString } = useStrings()
-  const { CDS_NAV_2_0 } = useFeatureFlags()
   const { accountId, projectIdentifier, orgIdentifier, pipelineIdentifier, module } = useParams<
     PipelineType<PipelinePathProps> & GitQueryParams
   >()
@@ -225,7 +223,7 @@ export function PipelineCanvasY1(): React.ReactElement {
           branch: gitDetails?.branch
         },
         defaultTo(pipelineMetadata?.identifier, pipeline?.identifier),
-        !!CDS_NAV_2_0
+        !!isNewNavEnabled
       )
         .then((remotePiplineRoute: string) => {
           history.push(remotePiplineRoute)

@@ -23,6 +23,7 @@ import { getGaClientID, getSavedRefererURL, isOnPrem } from '@common/utils/utils
 import { useFeatureFlag } from '@common/hooks/useFeatureFlag'
 import { FeatureFlag } from '@common/featureFlags'
 import { useQueryParams } from '@common/hooks'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import bgImage from './images/cehomebg.svg'
 
 const CETrialHomePage: React.FC = () => {
@@ -35,7 +36,7 @@ const CETrialHomePage: React.FC = () => {
   const module = 'ce' as Module
   const moduleType = 'CE'
   const isDefaultProjectCreated = useFeatureFlag(FeatureFlag.CREATE_DEFAULT_PROJECT)
-  const isNewNavEnabled = useFeatureFlag(FeatureFlag.CDS_NAV_2_0)
+  const { isNewNavEnabled } = useAppStore()
 
   const refererURL = getSavedRefererURL()
   const gaClientID = getGaClientID()

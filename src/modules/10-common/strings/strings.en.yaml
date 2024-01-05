@@ -1764,3 +1764,9 @@ filename: File Name
 toggle: Toggle
 useBase64Encoding: Use Base64 encoded secrets for attestation
 yaml: YAML
+newNavBetaTitle: New Navigation Design (Beta)
+toggleNewNavError: Something went wrong while trying to switch the navigation
+tryitout: Try it out
+newNavCallout:
+  title: Our new navigation experience is here!
+  subtitle: Gain more freedom to choose how you want to work!
