@@ -59,6 +59,36 @@ export const RedirectToMode = ({ mode }: { mode?: NAV_MODE }): React.ReactElemen
   )
 }
 
+const RedirectCodeRoutes = () => {
+  const {
+    module,
+    path: _path = '',
+    projectIdentifier,
+    orgIdentifier
+  } = useParams<ModulePathParams & ProjectPathProps & { path: string }>()
+
+  const { currentMode } = useAppStore()
+
+  const finalMode = currentMode && isNavMode(currentMode) ? currentMode : module ? NAV_MODE.MODULE : NAV_MODE.ADMIN
+
+  const locationParams = useLocation()
+  const path = !_path ? 'repos' : _path !== 'search' ? `repos/${_path}` : _path
+
+  return (
+    <Redirect
+      to={{
+        ...locationParams,
+        pathname: `${routes.toMode({
+          mode: finalMode,
+          orgIdentifier,
+          projectIdentifier,
+          module
+        })}/${path}`
+      }}
+    />
+  )
+}
+
 const RedirectHomeRoutes = (): React.ReactElement => {
   const { accountId, projectIdentifier, orgIdentifier } = useParams<ModulePathParams & ProjectPathProps>()
   const locationParams = useLocation()
@@ -236,13 +266,16 @@ export const OldNavRedirects = (): JSX.Element => {
       <Route
         exact
         path={[
-          '/account/:accountId/:module(cd|ci|cv|cf|ce|code|sto|chaos|iacm|ssca|idp|idp-admin|cet|sei)/orgs/:orgIdentifier/projects/:projectIdentifier/:path*',
-          '/account/:accountId/:module(cd|ci|cv|cf|ce|code|sto|chaos|iacm|ssca|idp|idp-admin|cet|sei)/orgs/:orgIdentifier/:path*',
-          '/account/:accountId/:module(cd|ci|cv|cf|ce|code|sto|chaos|iacm|ssca|idp|idp-admin|cet|sei)/:path*',
-          '/account/:accountId'
+          '/account/:accountId/:module(cd|ci|cv|cf|ce|sto|chaos|iacm|ssca|idp|idp-admin|cet|sei)/orgs/:orgIdentifier/projects/:projectIdentifier/:path*',
+          '/account/:accountId/:module(cd|ci|cv|cf|ce|sto|chaos|iacm|ssca|idp|idp-admin|cet|sei)/orgs/:orgIdentifier/:path*',
+          '/account/:accountId/:module(cd|ci|cv|cf|ce|sto|chaos|iacm|ssca|idp|idp-admin|cet|sei)/:path*'
         ]}
       >
         <RedirectToMode />
+      </Route>
+
+      <Route path={'/account/:accountId/:module(code)/:orgIdentifier/:projectIdentifier/:path*'}>
+        <RedirectCodeRoutes />
       </Route>
     </>
   )
