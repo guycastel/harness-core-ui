@@ -13,7 +13,7 @@ orchestrationStep:
   sbomDrift: SBOM Drift
   detectSbomDrift: Detect SBOM Drift
   detectDriftFrom:
-    lastExecution: Detect drift from the previous successful pipeline execution
+    lastExecution: Detect drift from the last generated SBOM
     baseline: Detect drift from baseline
 enforcementStep:
   verifyAttestation: Verify Attestation
