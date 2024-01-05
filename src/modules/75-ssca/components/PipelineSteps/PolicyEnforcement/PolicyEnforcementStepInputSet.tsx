@@ -15,22 +15,24 @@ import MultiTypeSecretInput from '@secrets/components/MutiTypeSecretInput/MultiT
 import { useStrings } from 'framework/strings'
 import { TimeoutFieldInputSetView } from '@pipeline/components/InputSetView/TimeoutFieldInputSetView/TimeoutFieldInputSetView'
 import { isValueRuntimeInput } from '@common/utils/utils'
-import { StepType } from '@pipeline/components/PipelineSteps/PipelineStepInterface'
+import { TextFieldInputSetView } from '@pipeline/components/InputSetView/TextFieldInputSetView/TextFieldInputSetView'
 import { FormMultiTypeConnectorField } from '@platform/connectors/components/ConnectorReferenceField/FormMultiTypeConnectorField'
 import { Connectors } from '@platform/connectors/constants'
-import type { GitQueryParams, ProjectPathProps } from '@common/interfaces/RouteInterfaces'
-import { useQueryParams } from '@common/hooks/useQueryParams'
-import { TextFieldInputSetView } from '@pipeline/components/InputSetView/TextFieldInputSetView/TextFieldInputSetView'
-import { SscaCdOrchestrationStepData, SscaOrchestrationStepData, SscaStepProps } from './types'
+import { StepType } from '@pipeline/components/PipelineSteps/PipelineStepInterface'
+import { useQueryParams } from '@common/hooks'
+import type { ProjectPathProps, GitQueryParams } from '@common/interfaces/RouteInterfaces'
+import MultiTypePolicySetSelector from '@modules/70-pipeline/components/PipelineSteps/Common/PolicySets/MultiTypePolicySetSelector/MultiTypePolicySetSelector'
+import { SscaStepProps, PolicyEnforcementCdStepData, PolicyEnforcementStepData } from '../common/types'
 import stepCss from '@pipeline/components/PipelineSteps/Steps/Steps.module.scss'
 
-export default function SscaOrchestrationStepInputSet(
-  props: SscaStepProps<SscaCdOrchestrationStepData | SscaOrchestrationStepData>
+export function SBOMEnforceStepInputSet(
+  props: SscaStepProps<PolicyEnforcementCdStepData | PolicyEnforcementStepData>
 ): React.ReactElement {
   const { template, path, readonly, stepViewType, allowableTypes, stepType } = props
   const { getString } = useStrings()
   const prefix = isEmpty(path) ? '' : `${path}.`
   const { expressions } = useVariablesExpression()
+
   const { accountId, projectIdentifier, orgIdentifier } = useParams<ProjectPathProps>()
   const { repoIdentifier, branch } = useQueryParams<GitQueryParams>()
 
@@ -39,7 +41,7 @@ export default function SscaOrchestrationStepInputSet(
       {isValueRuntimeInput(template?.timeout) && (
         <TimeoutFieldInputSetView
           label={getString('pipelineSteps.timeoutLabel')}
-          name={`${isEmpty(path) ? '' : `${path}.`}timeout`}
+          name={`${prefix}timeout`}
           disabled={readonly}
           multiTypeDurationProps={{
             configureOptionsProps: {
@@ -55,18 +57,31 @@ export default function SscaOrchestrationStepInputSet(
         />
       )}
 
-      {isValueRuntimeInput(get(template, 'spec.attestation.privateKey', '')) && (
+      {isValueRuntimeInput(get(template, 'spec.verifyAttestation.spec.publicKey', '')) && (
         <div className={cx(stepCss.formGroup, stepCss.md)}>
           <MultiTypeSecretInput
             type="SecretFile"
             expressions={expressions}
-            name={`${prefix}spec.attestation.privateKey`}
-            label={getString('platform.connectors.serviceNow.privateKey')}
+            name={`${prefix}spec.verifyAttestation.publicKey`}
+            label={getString('ssca.publicKey')}
             disabled={readonly}
           />
         </div>
       )}
-      {stepType === StepType.CdSscaOrchestration ? (
+
+      {isValueRuntimeInput(get(template, 'spec.policy.policySets', '')) && (
+        <div className={cx(stepCss.formGroup, stepCss.md)}>
+          <MultiTypePolicySetSelector
+            name={`${prefix}spec.policy.policySets`}
+            label={getString('common.policiesSets.policyset')}
+            expressions={expressions}
+            allowableTypes={allowableTypes}
+            disabled={readonly}
+          />
+        </div>
+      )}
+
+      {stepType === StepType.PolicyEnforcement ? (
         <>
           {isValueRuntimeInput(get(template, 'spec.infrastructure.spec.connectorRef')) && (
             <div className={cx(stepCss.formGroup, stepCss.md)}>
@@ -150,24 +165,6 @@ export default function SscaOrchestrationStepInputSet(
         </>
       ) : (
         <>
-          {isValueRuntimeInput(get(template, 'spec.ingestion.file')) && (
-            <TextFieldInputSetView
-              name={`${path}spec.ingestion.file`}
-              label={getString('ssca.orchestrationStep.ingestion.file')}
-              disabled={readonly}
-              fieldPath={'spec.ingestion.file'}
-              template={template}
-              multiTextInputProps={{
-                expressions,
-                allowableTypes
-              }}
-              configureOptionsProps={{
-                isExecutionTimeFieldDisabled: isExecutionTimeFieldDisabled(stepViewType)
-              }}
-              className={cx(stepCss.formGroup, stepCss.md)}
-            />
-          )}
-
           {isValueRuntimeInput(get(template, 'spec.resources.limits.cpu')) && (
             <TextFieldInputSetView
               name={`${path}spec.resources.limits.cpu`}

@@ -6,12 +6,13 @@
  */
 
 import { Color, FontVariation } from '@harness/design-system'
-import { Accordion, AllowedTypes, FormInput, Formik, FormikForm, SelectOption, Text } from '@harness/uicore'
+import { Accordion, AllowedTypes, FormInput, Formik, FormikForm, Text } from '@harness/uicore'
 import cx from 'classnames'
 import type { FormikProps } from 'formik'
 import React from 'react'
 import { useParams } from 'react-router-dom'
 import { get } from 'lodash-es'
+import { Divider } from '@blueprintjs/core'
 import { FormMultiTypeDurationField } from '@common/components/MultiTypeDuration/MultiTypeDuration'
 import { MultiTypeTextField } from '@common/components/MultiTypeText/MultiTypeText'
 import { StepFormikFowardRef, StepViewType, setFormikRef } from '@pipeline/components/AbstractSteps/Step'
@@ -38,19 +39,16 @@ import type {
 } from 'services/ci'
 import { ProjectPathProps } from '@common/interfaces/RouteInterfaces'
 import { isValueFixed } from '@modules/10-common/utils/utils'
-import { AllMultiTypeInputTypesForStep } from '../common/utils'
+import { AllMultiTypeInputTypesForStep } from '../common/default-values'
 import {
   editViewValidateFieldsConfig,
   registryConnectedType,
   transformValuesFieldsConfig
-} from './SlsaVerificationStepFunctionConfigs'
-import css from '../common/SscaStep.module.scss'
+} from './SLSAVerificationStepFunctionConfigs'
+import { TypedOptions } from '../common/select-options'
+import css from '../SscaStep.module.scss'
 
-const getTypedOptions = <T extends string>(input: T[]): SelectOption[] => {
-  return input.map(item => ({ label: item, value: item }))
-}
-
-const artifactRegistryOptions = getTypedOptions<string>(Object.keys(registryConnectedType))
+const artifactRegistryOptions = TypedOptions<string>(Object.keys(registryConnectedType))
 
 type Source =
   | {
@@ -67,7 +65,7 @@ type Source =
         tag: string
       }
     }
-export interface SlsaVerificationStepData {
+export interface SLSAVerificationStepData {
   name?: string
   identifier: string
   type: string
@@ -81,20 +79,20 @@ export interface SlsaVerificationStepData {
   }
 }
 
-export interface SlsaVerificationStepProps {
-  initialValues: SlsaVerificationStepData
-  template?: SlsaVerificationStepData
+export interface SLSAVerificationStepProps {
+  initialValues: SLSAVerificationStepData
+  template?: SLSAVerificationStepData
   path?: string
   isNewStep?: boolean
   readonly?: boolean
   stepViewType: StepViewType
-  onUpdate?: (data: SlsaVerificationStepData) => void
-  onChange?: (data: SlsaVerificationStepData) => void
+  onUpdate?: (data: SLSAVerificationStepData) => void
+  onChange?: (data: SLSAVerificationStepData) => void
   allowableTypes: AllowedTypes
-  formik?: FormikProps<SlsaVerificationStepData>
+  formik?: FormikProps<SLSAVerificationStepData>
 }
 
-const SlsaVerificationStepEdit = (
+const _SLSAVerificationStepBase = (
   {
     initialValues,
     onUpdate,
@@ -103,8 +101,8 @@ const SlsaVerificationStepEdit = (
     stepViewType,
     onChange,
     allowableTypes
-  }: SlsaVerificationStepProps,
-  formikRef: StepFormikFowardRef<SlsaVerificationStepData>
+  }: SLSAVerificationStepProps,
+  formikRef: StepFormikFowardRef<SLSAVerificationStepData>
 ): JSX.Element => {
   const { getString } = useStrings()
   const { expressions } = useVariablesExpression()
@@ -126,11 +124,11 @@ const SlsaVerificationStepEdit = (
   const getBase64EncodingEnabled = (data?: SettingValueResponseDTO): boolean => data?.value === 'true'
 
   return (
-    <Formik<SlsaVerificationStepData>
+    <Formik<SLSAVerificationStepData>
       initialValues={getInitialValuesInCorrectFormat(initialValues, transformValuesFieldsConfig)}
-      formName="SlsaVerificationStep"
+      formName="SLSAVerificationStep"
       validate={valuesToValidate => {
-        const schemaValues = getFormValuesInCorrectFormat<SlsaVerificationStepData, SlsaVerificationStepData>(
+        const schemaValues = getFormValuesInCorrectFormat<SLSAVerificationStepData, SLSAVerificationStepData>(
           valuesToValidate,
           transformValuesFieldsConfig
         )
@@ -147,8 +145,8 @@ const SlsaVerificationStepEdit = (
           stepViewType
         )
       }}
-      onSubmit={(_values: SlsaVerificationStepData) => {
-        const schemaValues = getFormValuesInCorrectFormat<SlsaVerificationStepData, SlsaVerificationStepData>(
+      onSubmit={(_values: SLSAVerificationStepData) => {
+        const schemaValues = getFormValuesInCorrectFormat<SLSAVerificationStepData, SLSAVerificationStepData>(
           _values,
           transformValuesFieldsConfig
         )
@@ -165,13 +163,16 @@ const SlsaVerificationStepEdit = (
           <FormikForm>
             <div className={css.stepContainer}>
               {stepViewType !== StepViewType.Template && (
-                <FormInput.InputWithIdentifier
-                  inputName="name"
-                  idName="identifier"
-                  inputLabel={getString('pipelineSteps.stepNameLabel')}
-                  isIdentifierEditable={isNewStep}
-                  inputGroupProps={{ disabled: readonly }}
-                />
+                <div>
+                  <FormInput.InputWithIdentifier
+                    inputName="name"
+                    idName="identifier"
+                    inputLabel={getString('pipelineSteps.stepNameLabel')}
+                    isIdentifierEditable={isNewStep}
+                    inputGroupProps={{ disabled: readonly }}
+                  />
+                  <Divider />
+                </div>
               )}
 
               <Text font={{ variation: FontVariation.FORM_SUB_SECTION }} color={Color.GREY_900}>
@@ -320,10 +321,12 @@ const SlsaVerificationStepEdit = (
                 }}
               />
 
+              <Divider style={{ marginTop: 'var(--spacing-medium)' }} />
+
               <Text
                 font={{ variation: FontVariation.FORM_SUB_SECTION }}
                 color={Color.GREY_900}
-                margin={{ top: 'medium' }}
+                margin={{ top: 'small' }}
               >
                 {getString('ssca.enforcementStep.verifyAttestation')}
               </Text>
@@ -365,4 +368,4 @@ const SlsaVerificationStepEdit = (
   )
 }
 
-export const SlsaVerificationStepEditWithRef = React.forwardRef(SlsaVerificationStepEdit)
+export const SLSAVerificationStepBase = React.forwardRef(_SLSAVerificationStepBase)

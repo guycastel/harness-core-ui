@@ -14,9 +14,9 @@ import { StepType } from '@pipeline/components/PipelineSteps/PipelineStepInterfa
 import { factory, TestStepWidget } from '@pipeline/components/PipelineSteps/Steps/__tests__/StepTestUtil'
 import { doConfigureOptionsTesting, queryByNameAttribute } from '@common/utils/testUtils'
 import { kubernetesConnectorListResponse } from '@modules/27-platform/connectors/components/ConnectorReferenceField/__tests__/mocks'
-import { SscaEnforcementStep } from '../SscaEnforcementStep/SscaEnforcementStep'
-import { SscaEnforcementStepData } from '../common/types'
-import { ciSpecValues, commonDefaultEnforcementSpecValues } from '../common/utils'
+import { PolicyEnforcement } from '../PolicyEnforcement/PolicyEnforcementStep'
+import { PolicyEnforcementStepData } from '../common/types'
+import { ciSpecValues, commonDefaultEnforcementSpecValues } from '../common/default-values'
 
 const fetchConnector = jest.fn().mockReturnValue({ data: kubernetesConnectorListResponse.data?.content?.[1] })
 
@@ -40,10 +40,13 @@ const runtimeValues = {
   timeout: RUNTIME_INPUT_VALUE,
   spec: {
     source: {
-      type: 'image',
+      type: 'repository',
       spec: {
-        connector: RUNTIME_INPUT_VALUE,
-        image: RUNTIME_INPUT_VALUE
+        url: RUNTIME_INPUT_VALUE,
+        path: RUNTIME_INPUT_VALUE,
+        variant: 'branch',
+        variant_type: RUNTIME_INPUT_VALUE,
+        cloned_codebase: RUNTIME_INPUT_VALUE
       }
     },
     verifyAttestation: {
@@ -111,14 +114,14 @@ const emptyInitialValues = {
 
 describe('SBOM Policy Enforcement Step', () => {
   beforeAll(() => {
-    factory.registerStep(new SscaEnforcementStep())
+    factory.registerStep(new PolicyEnforcement())
   })
 
   test('new step | OPA policy FF Off', async () => {
     render(
       <TestStepWidget
         initialValues={emptyInitialValues}
-        type={StepType.SscaEnforcement}
+        type={StepType.PolicyEnforcement}
         stepViewType={StepViewType.Edit}
       />
     )
@@ -131,7 +134,7 @@ describe('SBOM Policy Enforcement Step', () => {
     render(
       <TestStepWidget
         initialValues={emptyInitialValues}
-        type={StepType.SscaEnforcement}
+        type={StepType.PolicyEnforcement}
         stepViewType={StepViewType.Edit}
         testWrapperProps={{
           defaultFeatureFlagValues: { SSCA_ENFORCEMENT_OPA: true }
@@ -148,7 +151,7 @@ describe('SBOM Policy Enforcement Step', () => {
     render(
       <TestStepWidget
         initialValues={existingFixedValues}
-        type={StepType.SscaEnforcement}
+        type={StepType.PolicyEnforcement}
         stepViewType={StepViewType.Edit}
         onUpdate={onUpdate}
         ref={ref}
@@ -176,12 +179,12 @@ describe('SBOM Policy Enforcement Step', () => {
       <TestStepWidget
         initialValues={runtimeValues}
         template={runtimeValues}
-        type={StepType.SscaEnforcement}
+        type={StepType.PolicyEnforcement}
         stepViewType={StepViewType.Edit}
         onUpdate={onUpdate}
         ref={ref}
         testWrapperProps={{
-          defaultFeatureFlagValues: { SSCA_ENFORCEMENT_OPA: true }
+          defaultFeatureFlagValues: { SSCA_ENFORCEMENT_OPA: true, SSCA_REPO_ARTIFACT: true }
         }}
       />
     )
@@ -194,7 +197,7 @@ describe('SBOM Policy Enforcement Step', () => {
       <TestStepWidget
         initialValues={runtimeValues}
         template={runtimeValues}
-        type={StepType.SscaEnforcement}
+        type={StepType.PolicyEnforcement}
         stepViewType={StepViewType.InputSet}
         testWrapperProps={{
           defaultFeatureFlagValues: { SSCA_ENFORCEMENT_OPA: true }
@@ -209,7 +212,7 @@ describe('SBOM Policy Enforcement Step', () => {
     render(
       <TestStepWidget
         initialValues={existingFixedValues}
-        type={StepType.SscaEnforcement}
+        type={StepType.PolicyEnforcement}
         stepViewType={StepViewType.InputVariable}
       />
     )
@@ -219,21 +222,21 @@ describe('SBOM Policy Enforcement Step', () => {
   test('validates error in inputs set', () => {
     const data = {
       data: {
-        type: StepType.SscaEnforcement,
+        type: StepType.PolicyEnforcement,
         ...runtimeValues
       },
       template: {
-        type: StepType.SscaEnforcement,
+        type: StepType.PolicyEnforcement,
         ...runtimeValues
       },
       viewType: StepViewType.DeploymentForm,
       getString: jest.fn().mockImplementation(val => val)
     }
-    const response = new SscaEnforcementStep().validateInputSet(
-      data as unknown as ValidateInputSetProps<SscaEnforcementStepData>
+    const response = new PolicyEnforcement().validateInputSet(
+      data as unknown as ValidateInputSetProps<PolicyEnforcementStepData>
     )
     expect(response).toEqual({})
-    expect(new SscaEnforcementStep().processFormData(runtimeValues)).toEqual(runtimeValues)
+    expect(new PolicyEnforcement().processFormData(runtimeValues)).toEqual(runtimeValues)
   })
 
   test('configure values should work fine for runtime inputs', async () => {
@@ -243,7 +246,7 @@ describe('SBOM Policy Enforcement Step', () => {
       <TestStepWidget
         initialValues={runtimeValues}
         template={runtimeValues}
-        type={StepType.SscaEnforcement}
+        type={StepType.PolicyEnforcement}
         stepViewType={StepViewType.Edit}
         onUpdate={onUpdate}
         readonly={false}

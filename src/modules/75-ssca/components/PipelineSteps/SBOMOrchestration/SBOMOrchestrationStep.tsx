@@ -18,30 +18,30 @@ import { getFormValuesInCorrectFormat } from '@pipeline/components/PipelineSteps
 import { validateInputSet } from '@pipeline/components/PipelineSteps/Steps/StepsValidateUtils'
 import { VariableListTableProps, VariablesListTable } from '@pipeline/components/VariablesListTable/VariablesListTable'
 import type { StringsMap } from 'stringTypes'
+import { commonDefaultOrchestrationSpecValues, ciSpecValues } from '../common/default-values'
+import { SBOMOrchestrationStepData } from '../common/types'
+import { SBOMOrchestrationStepInputSet } from './SBOMOrchestrationStepInputSet'
 import {
-  transformValuesFieldsConfig,
-  getInputSetViewValidateFieldsConfig
-} from '../common/SscaOrchestrationStepFunctionConfigs'
-import { SscaOrchestrationStepEditWithRef } from '../common/SscaOrchestrationStepEdit'
-import SscaOrchestrationStepInputSet from '../common/SscaOrchestrationStepInputSet'
-import { commonDefaultOrchestrationSpecValues, ciSpecValues } from '../common/utils'
-import { SscaOrchestrationStepData } from '../common/types'
+  getInputSetViewValidateFieldsConfig,
+  transformValuesFieldsConfig
+} from './SBOMOrchestrationStepFunctionConfigs'
+import { SBOMOrchestrationStepBase } from './SBOMOrchestrationStepBase'
 
-export class SscaOrchestrationStep extends PipelineStep<SscaOrchestrationStepData> {
+export class SBOMOrchestrationStep extends PipelineStep<SBOMOrchestrationStepData> {
   constructor() {
     super()
     this._hasStepVariables = true
     this.invocationMap = new Map()
   }
 
-  protected type = StepType.SscaOrchestration
+  protected type = StepType.SBOMOrchestration
   protected stepName = 'SBOM Orchestration'
   protected stepIcon: IconName = 'ssca-orchestrate'
   protected stepIconColor = Color.GREY_600
-  protected stepDescription: keyof StringsMap = 'pipeline.stepDescription.SscaOrchestration'
+  protected stepDescription: keyof StringsMap = 'pipeline.stepDescription.SBOMOrchestration'
   protected stepPaletteVisible = false
-  protected defaultValues: SscaOrchestrationStepData = {
-    type: StepType.SscaOrchestration,
+  protected defaultValues: SBOMOrchestrationStepData = {
+    type: StepType.SBOMOrchestration,
     identifier: '',
     spec: {
       ...commonDefaultOrchestrationSpecValues,
@@ -49,8 +49,8 @@ export class SscaOrchestrationStep extends PipelineStep<SscaOrchestrationStepDat
     }
   }
 
-  processFormData<T>(data: T): SscaOrchestrationStepData {
-    return getFormValuesInCorrectFormat<T, SscaOrchestrationStepData>(
+  processFormData<T>(data: T): SBOMOrchestrationStepData {
+    return getFormValuesInCorrectFormat<T, SBOMOrchestrationStepData>(
       data,
       transformValuesFieldsConfig(this?.type, data)
     )
@@ -61,7 +61,7 @@ export class SscaOrchestrationStep extends PipelineStep<SscaOrchestrationStepDat
     template,
     getString,
     viewType
-  }: ValidateInputSetProps<SscaOrchestrationStepData>): FormikErrors<SscaOrchestrationStepData> {
+  }: ValidateInputSetProps<SBOMOrchestrationStepData>): FormikErrors<SBOMOrchestrationStepData> {
     const isRequired = viewType === StepViewType.DeploymentForm || viewType === StepViewType.TriggerForm
     if (getString) {
       return validateInputSet(
@@ -76,7 +76,7 @@ export class SscaOrchestrationStep extends PipelineStep<SscaOrchestrationStepDat
     return {}
   }
 
-  renderStep(props: StepProps<SscaOrchestrationStepData>): JSX.Element {
+  renderStep(props: StepProps<SBOMOrchestrationStepData>): JSX.Element {
     const {
       initialValues,
       onUpdate,
@@ -92,7 +92,7 @@ export class SscaOrchestrationStep extends PipelineStep<SscaOrchestrationStepDat
 
     if (this.isTemplatizedView(stepViewType)) {
       return (
-        <SscaOrchestrationStepInputSet
+        <SBOMOrchestrationStepInputSet
           initialValues={initialValues}
           template={inputSetData?.template}
           path={inputSetData?.path || ''}
@@ -115,7 +115,7 @@ export class SscaOrchestrationStep extends PipelineStep<SscaOrchestrationStepDat
     }
 
     return (
-      <SscaOrchestrationStepEditWithRef
+      <SBOMOrchestrationStepBase
         initialValues={initialValues}
         allowableTypes={allowableTypes}
         onChange={onChange}

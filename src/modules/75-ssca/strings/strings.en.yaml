@@ -1,9 +1,7 @@
 allowDenyList: 'DenyList/AllowList'
 orchestrationStep:
-  sbomGeneration: SBOM Generation
-  sbomIngestion: SBOM Ingestion
   sbomMethod: SBOM Method
-  stepMode: Step Mode
+  Mode: Mode
   sbomTool: SBOM Tool
   sbomFormat: SBOM Format
   artifactSource: Artifact Source
@@ -25,3 +23,8 @@ registryType: Registry Type
 useOpaPolicy: Use OPA Policy
 remediationTracker: Remediation Tracker
 enableAirgap: Enable SSCA Airgap
+container: Container
+variantType: Variant Type
+variantValue: Variant Value
+generation: Generation
+ingestion: Ingestion

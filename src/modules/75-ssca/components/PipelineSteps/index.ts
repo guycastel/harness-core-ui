@@ -6,14 +6,16 @@
  */
 
 import factory from '@pipeline/components/PipelineSteps/PipelineStepFactory'
-import { CdSscaOrchestrationStep } from './CdSscaOrchestrationStep/CdSscaOrchestrationStep'
-import { SscaOrchestrationStep } from './SscaOrchestrationStep/SscaOrchestrationStep'
-import { SscaEnforcementStep } from './SscaEnforcementStep/SscaEnforcementStep'
-import { CdSscaEnforcementStep } from './CdSscaEnforcementStep/CdSscaEnforcementStep'
-import { SlsaVerificationStep } from './SlsaVerificationStep/SlsaVerificationStep'
+import { PolicyEnforcementCdStep } from './PolicyEnforcement/PolicyEnforcementCdStep'
+import { SBOMOrchestrationCdStep } from './SBOMOrchestration/SBOMOrchestrationCdStep'
+import { SLSAVerificationStep } from './SLSAVerification/SLSAVerificationStep'
+import { PolicyEnforcement } from './PolicyEnforcement/PolicyEnforcementStep'
+import { SBOMOrchestrationStep } from './SBOMOrchestration/SBOMOrchestrationStep'
 
-factory.registerStep(new SlsaVerificationStep())
-factory.registerStep(new SscaOrchestrationStep())
-factory.registerStep(new CdSscaOrchestrationStep())
-factory.registerStep(new SscaEnforcementStep())
-factory.registerStep(new CdSscaEnforcementStep())
+factory.registerStep(new SLSAVerificationStep())
+factory.registerStep(new SBOMOrchestrationStep())
+factory.registerStep(new PolicyEnforcement())
+
+//TODO: to be removed after no customer usage
+factory.registerStep(new SBOMOrchestrationCdStep())
+factory.registerStep(new PolicyEnforcementCdStep())

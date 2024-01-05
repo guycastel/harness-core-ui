@@ -5536,6 +5536,7 @@ export interface StringsMap {
   'pipeline.stepDescription.K8sScale': string
   'pipeline.stepDescription.Plugin': string
   'pipeline.stepDescription.Policy': string
+  'pipeline.stepDescription.PolicyEnforcement': string
   'pipeline.stepDescription.Queue': string
   'pipeline.stepDescription.ResourceConstraint': string
   'pipeline.stepDescription.RestoreCacheGCS': string
@@ -5546,7 +5547,9 @@ export interface StringsMap {
   'pipeline.stepDescription.Run': string
   'pipeline.stepDescription.RunTests': string
   'pipeline.stepDescription.S3': string
+  'pipeline.stepDescription.SBOMOrchestration': string
   'pipeline.stepDescription.SHELLSCRIPT': string
+  'pipeline.stepDescription.SLSAVerification': string
   'pipeline.stepDescription.SaveCacheGCS': string
   'pipeline.stepDescription.SaveCacheS3': string
   'pipeline.stepDescription.ServerlessLambdaDeploy': string
@@ -5558,9 +5561,6 @@ export interface StringsMap {
   'pipeline.stepDescription.ServiceNowImportSet': string
   'pipeline.stepDescription.ServiceNowUpdate': string
   'pipeline.stepDescription.ShellScriptProvision': string
-  'pipeline.stepDescription.SlsaVerification': string
-  'pipeline.stepDescription.SscaEnforcement': string
-  'pipeline.stepDescription.SscaOrchestration': string
   'pipeline.stepDescription.SwapRollback': string
   'pipeline.stepDescription.SwapRoute': string
   'pipeline.stepDescription.TASBGAppSetup': string
@@ -9631,10 +9631,14 @@ export interface StringsMap {
   'sei.trellisScore': string
   'ssca.allowDenyList': string
   'ssca.components': string
+  'ssca.container': string
   'ssca.enableAirgap': string
   'ssca.enforcementStep.attestedImage': string
   'ssca.enforcementStep.policyConfiguration': string
   'ssca.enforcementStep.verifyAttestation': string
+  'ssca.generation': string
+  'ssca.ingestion': string
+  'ssca.orchestrationStep.Mode': string
   'ssca.orchestrationStep.artifactSource': string
   'ssca.orchestrationStep.detectDriftFrom.baseline': string
   'ssca.orchestrationStep.detectDriftFrom.lastExecution': string
@@ -9643,15 +9647,14 @@ export interface StringsMap {
   'ssca.orchestrationStep.sbomAttestation': string
   'ssca.orchestrationStep.sbomDrift': string
   'ssca.orchestrationStep.sbomFormat': string
-  'ssca.orchestrationStep.sbomGeneration': string
-  'ssca.orchestrationStep.sbomIngestion': string
   'ssca.orchestrationStep.sbomMethod': string
   'ssca.orchestrationStep.sbomTool': string
-  'ssca.orchestrationStep.stepMode': string
   'ssca.publicKey': string
   'ssca.registryType': string
   'ssca.remediationTracker': string
   'ssca.useOpaPolicy': string
+  'ssca.variantType': string
+  'ssca.variantValue': string
   'cv.CompositeSLO.AddSLO': string
   'cv.CompositeSLO.AddSLOMessage': string
   'cv.CompositeSLO.AddSLOValidation.maxSLOCount': string

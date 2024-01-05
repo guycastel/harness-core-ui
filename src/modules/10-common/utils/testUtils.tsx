@@ -290,8 +290,8 @@ export const TestWrapper: React.FC<TestWrapperProps> = props => {
   )
 }
 
-export const queryByNameAttribute = (name: string, container: HTMLElement): HTMLElement | null =>
-  queryByAttribute('name', container, name)
+export const queryByNameAttribute = (name: string, container: HTMLElement): HTMLElement =>
+  queryByAttribute('name', container, name)!
 
 export const doConfigureOptionsTesting = async (
   cogModal: HTMLElement,

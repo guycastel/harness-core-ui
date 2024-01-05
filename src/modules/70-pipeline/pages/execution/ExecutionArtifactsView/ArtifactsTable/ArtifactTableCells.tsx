@@ -228,7 +228,7 @@ export const SLSAVerificationCell: CellType = ({ row }) => {
 
   return (
     <SLSAVerification
-      hasSlsaVerification={data.node?.stepType === StepType.SlsaVerification}
+      hasSLSAVerification={data.node?.stepType === StepType.SLSAVerification}
       slsaPolicyOutcomeStatus={slsaPolicyOutcomeStatus}
       provenance={data.provenance}
     />
@@ -237,10 +237,10 @@ export const SLSAVerificationCell: CellType = ({ row }) => {
 
 // common component shared to MFE
 export const SLSAVerification: FC<{
-  hasSlsaVerification: boolean
+  hasSLSAVerification: boolean
   slsaPolicyOutcomeStatus: string | undefined
   provenance: unknown
-}> = ({ hasSlsaVerification, slsaPolicyOutcomeStatus, provenance }) => {
+}> = ({ hasSLSAVerification, slsaPolicyOutcomeStatus, provenance }) => {
   const { getString } = useStrings()
 
   const status = slsaPolicyOutcomeStatus as EvaluationStatus
@@ -273,7 +273,7 @@ export const SLSAVerification: FC<{
     }
   }
 
-  return hasSlsaVerification ? (
+  return hasSLSAVerification ? (
     <Layout.Vertical spacing="small" flex={{ alignItems: 'flex-start' }}>
       <ExecutionStatusLabel label={getPolicyEvaluationStatusLabel()} status={getPolicyEvaluationStatus()} />
       <Text font={{ variation: FontVariation.SMALL }} color={Color.GREY_600} lineClamp={1}>

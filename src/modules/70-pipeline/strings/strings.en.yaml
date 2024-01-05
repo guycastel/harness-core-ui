@@ -1416,8 +1416,8 @@ stepDescription:
   AwsLambdaDeployRollback: Roll back the AWS Lambda function.
   TerraformCloudRun: Trigger a run in a Terraform Cloud Workspace.
   TerraformCloudRollback: Trigger a rollback of the latest run on your Terraform Cloud Workspace.
-  SscaOrchestration: Orchestrate SBOM generation for your artifacts and repository
-  SscaEnforcement: Enforce policies based on your SBOM by Allow list/Deny list
+  SBOMOrchestration: Orchestrate SBOM generation for your artifacts and repository
+  PolicyEnforcement: Enforce policies based on your SBOM by Allow list/Deny list
   AwsSamDeploy: Deploy an AWS SAM function.
   AwsSamBuild: Build an AWS SAM function.
   AwsCdkDiff: Aws CDK Diff
@@ -1429,7 +1429,7 @@ stepDescription:
   DownloadManifests: Download manifests using this step.
   ServerlessPrepareRollback: Prepare a rollback of your deployment.
   ServerlessPackage: Package a serverless function.
-  SlsaVerification: Verify SLSA provenance for authenticity and correctness
+  SLSAVerification: Verify SLSA provenance for authenticity and correctness
 
 executionStrategy:
   executionStrategies: Execution Strategies

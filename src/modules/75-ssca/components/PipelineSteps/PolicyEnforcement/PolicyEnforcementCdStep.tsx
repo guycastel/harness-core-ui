@@ -18,30 +18,30 @@ import type { StringsMap } from 'stringTypes'
 import { VariableListTableProps, VariablesListTable } from '@pipeline/components/VariablesListTable/VariablesListTable'
 import { flatObject } from '@pipeline/components/PipelineSteps/Steps/Common/ApprovalCommons'
 import { validateInputSet } from '@pipeline/components/PipelineSteps/Steps/StepsValidateUtils'
-import { SscaCdEnforcementStepData } from '../common/types'
-import { SscaEnforcementStepEditWithRef } from '../common/SscaEnforcementStepEdit'
+import { PolicyEnforcementCdStepData } from '../common/types'
+import { PolicyEnforcementStepBase } from './PolicyEnforcementStepBase'
 import {
   transformValuesFieldsConfig,
   getInputSetViewValidateFieldsConfig
-} from '../common/SscaEnforcementStepFunctionConfigs'
-import SscaEnforcementStepInputSet from '../common/SscaEnforcementStepInputSet'
-import { commonDefaultEnforcementSpecValues, cdSpecValues } from '../common/utils'
+} from './PolicyEnforcementStepFunctionConfigs'
+import { SBOMEnforceStepInputSet } from './PolicyEnforcementStepInputSet'
+import { commonDefaultEnforcementSpecValues, cdSpecValues } from '../common/default-values'
 
-export class CdSscaEnforcementStep extends PipelineStep<SscaCdEnforcementStepData> {
+export class PolicyEnforcementCdStep extends PipelineStep<PolicyEnforcementCdStepData> {
   constructor() {
     super()
     this._hasStepVariables = true
     this.invocationMap = new Map()
   }
 
-  protected type = StepType.CdSscaEnforcement
+  protected type = StepType.PolicyEnforcementCd
   protected stepName = 'SBOM Policy Enforcement'
   protected stepIcon: IconName = 'ssca-enforce'
   protected stepIconColor = Color.GREY_600
-  protected stepDescription: keyof StringsMap = 'pipeline.stepDescription.SscaEnforcement'
+  protected stepDescription: keyof StringsMap = 'pipeline.stepDescription.PolicyEnforcement'
   protected stepPaletteVisible = false
-  protected defaultValues: SscaCdEnforcementStepData = {
-    type: StepType.CdSscaEnforcement,
+  protected defaultValues: PolicyEnforcementCdStepData = {
+    type: StepType.PolicyEnforcement,
     identifier: '',
     spec: {
       ...commonDefaultEnforcementSpecValues,
@@ -50,8 +50,8 @@ export class CdSscaEnforcementStep extends PipelineStep<SscaCdEnforcementStepDat
   }
 
   /* istanbul ignore next */
-  processFormData<T>(data: T): SscaCdEnforcementStepData {
-    return getFormValuesInCorrectFormat<T, SscaCdEnforcementStepData>(data, transformValuesFieldsConfig(this?.type))
+  processFormData<T>(data: T): PolicyEnforcementCdStepData {
+    return getFormValuesInCorrectFormat<T, PolicyEnforcementCdStepData>(data, transformValuesFieldsConfig(this?.type))
   }
 
   validateInputSet({
@@ -59,7 +59,7 @@ export class CdSscaEnforcementStep extends PipelineStep<SscaCdEnforcementStepDat
     template,
     getString,
     viewType
-  }: ValidateInputSetProps<SscaCdEnforcementStepData>): FormikErrors<SscaCdEnforcementStepData> {
+  }: ValidateInputSetProps<PolicyEnforcementCdStepData>): FormikErrors<PolicyEnforcementCdStepData> {
     const isRequired = viewType === StepViewType.DeploymentForm || viewType === StepViewType.TriggerForm
     if (getString) {
       return validateInputSet(
@@ -75,7 +75,7 @@ export class CdSscaEnforcementStep extends PipelineStep<SscaCdEnforcementStepDat
     return {}
   }
 
-  renderStep(props: StepProps<SscaCdEnforcementStepData>): JSX.Element {
+  renderStep(props: StepProps<PolicyEnforcementCdStepData>): JSX.Element {
     const {
       initialValues,
       onUpdate,
@@ -91,7 +91,7 @@ export class CdSscaEnforcementStep extends PipelineStep<SscaCdEnforcementStepDat
 
     if (this.isTemplatizedView(stepViewType)) {
       return (
-        <SscaEnforcementStepInputSet
+        <SBOMEnforceStepInputSet
           initialValues={initialValues}
           template={inputSetData?.template}
           path={inputSetData?.path || ''}
@@ -114,7 +114,7 @@ export class CdSscaEnforcementStep extends PipelineStep<SscaCdEnforcementStepDat
     }
 
     return (
-      <SscaEnforcementStepEditWithRef
+      <PolicyEnforcementStepBase
         initialValues={initialValues}
         allowableTypes={allowableTypes}
         onChange={onChange}

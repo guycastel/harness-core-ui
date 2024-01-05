@@ -9,10 +9,10 @@ import { StepType } from '@pipeline/components/PipelineSteps/PipelineStepInterfa
 import { Types as TransformValuesTypes } from '@pipeline/components/PipelineSteps/Steps/StepsTransformValuesUtils'
 import { Types as ValidationFieldTypes } from '@pipeline/components/PipelineSteps/Steps/StepsValidateUtils'
 
-import { Field, SscaCdOrchestrationStepData, SscaOrchestrationStepData } from './types'
+import { Field, SBOMOrchestrationCdStepData, SBOMOrchestrationStepData } from '../common/types'
 
 export function transformValuesFieldsConfig<StepType, T>(stepType?: StepType, data?: T): Field[] {
-  const _data = data as SscaOrchestrationStepData | SscaCdOrchestrationStepData
+  const _data = data as SBOMOrchestrationStepData | SBOMOrchestrationCdStepData
 
   return [
     {
@@ -48,6 +48,26 @@ export function transformValuesFieldsConfig<StepType, T>(stepType?: StepType, da
       type: TransformValuesTypes.Text
     },
     {
+      name: 'spec.source.spec.url',
+      type: TransformValuesTypes.Text
+    },
+    {
+      name: 'spec.source.spec.path',
+      type: TransformValuesTypes.Text
+    },
+    {
+      name: 'spec.source.spec.variant_type',
+      type: TransformValuesTypes.Text
+    },
+    {
+      name: 'spec.source.spec.variant',
+      type: TransformValuesTypes.Text
+    },
+    {
+      name: 'spec.source.spec.cloned_codebase',
+      type: TransformValuesTypes.Text
+    },
+    {
       name: 'spec.sbom_drift.base',
       type: TransformValuesTypes.Text
     },
@@ -68,7 +88,7 @@ export function transformValuesFieldsConfig<StepType, T>(stepType?: StepType, da
             type: TransformValuesTypes.List
           }
         ]),
-    ...(stepType === StepType.CdSscaOrchestration
+    ...(stepType === StepType.SBOMOrchestrationCd
       ? [
           {
             name: 'spec.infrastructure.type',
@@ -112,7 +132,13 @@ export function transformValuesFieldsConfig<StepType, T>(stepType?: StepType, da
   ]
 }
 
-export const editViewValidateFieldsConfig = (stepType: StepType) => [
+export const editViewValidateFieldsConfig = ({
+  stepType,
+  isRepoArtifact
+}: {
+  stepType: StepType
+  isRepoArtifact: boolean
+}) => [
   {
     name: 'identifier',
     type: ValidationFieldTypes.Identifier,
@@ -162,20 +188,50 @@ export const editViewValidateFieldsConfig = (stepType: StepType) => [
     name: 'spec.source.spec.connector',
     type: ValidationFieldTypes.Text,
     label: 'pipelineSteps.connectorLabel',
-    isRequired: true
+    isRequired: !isRepoArtifact
   },
   {
     name: 'spec.source.spec.image',
     type: ValidationFieldTypes.Text,
     label: 'imageLabel',
-    isRequired: true
+    isRequired: !isRepoArtifact
+  },
+  {
+    name: 'spec.source.spec.url',
+    type: ValidationFieldTypes.Text,
+    label: 'repositoryUrlLabel',
+    isRequired: isRepoArtifact
+  },
+  {
+    name: 'spec.source.spec.path',
+    type: ValidationFieldTypes.Text,
+    label: 'pipelineSteps.sourcePathLabel',
+    isRequired: isRepoArtifact
+  },
+  {
+    name: 'spec.source.spec.variant_type',
+    type: ValidationFieldTypes.List,
+    label: 'ssca.variantType',
+    isRequired: isRepoArtifact
+  },
+  {
+    name: 'spec.source.spec.variant',
+    type: ValidationFieldTypes.Text,
+    label: 'ssca.variantValue',
+    isRequired: isRepoArtifact
+  },
+  {
+    name: 'spec.source.spec.cloned_codebase',
+    type: ValidationFieldTypes.Text,
+    label: 'pipelineSteps.workspace',
+    isRequired: isRepoArtifact
   },
   {
     name: 'spec.sbom_drift.base',
     type: ValidationFieldTypes.Text,
     label: 'ssca.orchestrationStep.detectSbomDrift'
   },
-  ...(stepType === StepType.CdSscaOrchestration
+  ...(stepType === StepType.SBOMOrchestrationCd
     ? [
         {
           name: 'spec.infrastructure.type',
@@ -262,7 +318,7 @@ export const getInputSetViewValidateFieldsConfig =
         type: ValidationFieldTypes.Text,
         label: 'password'
       },
-      ...(stepType === StepType.CdSscaOrchestration
+      ...(stepType === StepType.SBOMOrchestrationCd
         ? [
             {
               name: 'spec.infrastructure.spec.connectorRef',

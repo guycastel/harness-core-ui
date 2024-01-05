@@ -17,19 +17,19 @@ import {
   VerifyAttestation
 } from 'services/pipeline-ng'
 
-export interface SscaCdOrchestrationStepData extends SscaCommonStepData {
+export interface SBOMOrchestrationCdStepData extends SscaCommonStepData {
   spec: CommonSscaOrchestrationStepSpec & CdResourcesSpec
 }
 
-export interface SscaOrchestrationStepData extends SscaCommonStepData {
+export interface SBOMOrchestrationStepData extends SscaCommonStepData {
   spec: CommonSscaOrchestrationStepSpec & CiResourcesSpec
 }
 
-export interface SscaCdEnforcementStepData extends SscaCommonStepData {
+export interface PolicyEnforcementCdStepData extends SscaCommonStepData {
   spec: CommonSscaEnforcementStepSpec & CdResourcesSpec
 }
 
-export interface SscaEnforcementStepData extends SscaCommonStepData {
+export interface PolicyEnforcementStepData extends SscaCommonStepData {
   spec: CommonSscaEnforcementStepSpec & CiResourcesSpec
 }
 

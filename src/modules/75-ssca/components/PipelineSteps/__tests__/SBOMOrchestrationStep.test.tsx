@@ -13,7 +13,7 @@ import { StepViewType, StepFormikRef } from '@pipeline/components/AbstractSteps/
 import { StepType } from '@pipeline/components/PipelineSteps/PipelineStepInterface'
 import { factory, TestStepWidget } from '@pipeline/components/PipelineSteps/Steps/__tests__/StepTestUtil'
 import { queryByNameAttribute, doConfigureOptionsTesting } from '@common/utils/testUtils'
-import { SscaOrchestrationStep } from '../SscaOrchestrationStep/SscaOrchestrationStep'
+import { SBOMOrchestrationStep } from '../SBOMOrchestration/SBOMOrchestrationStep'
 
 jest.mock('@common/components/YAMLBuilder/YamlBuilder')
 
@@ -89,14 +89,14 @@ const fixedValues = {
 
 describe('SBOM Orchestration Step', () => {
   beforeAll(() => {
-    factory.registerStep(new SscaOrchestrationStep())
+    factory.registerStep(new SBOMOrchestrationStep())
   })
 
   test('new step | SBOM Drift FF ON', async () => {
     render(
       <TestStepWidget
         initialValues={{}}
-        type={StepType.SscaOrchestration}
+        type={StepType.SBOMOrchestration}
         stepViewType={StepViewType.Edit}
         isNewStep={true}
         testWrapperProps={{
@@ -109,10 +109,23 @@ describe('SBOM Orchestration Step', () => {
     expect(screen.getByLabelText('ssca.orchestrationStep.detectDriftFrom.lastExecution')).toBeChecked()
   })
 
-  test('existing step', () => {
-    render(<TestStepWidget initialValues={{}} type={StepType.SscaOrchestration} stepViewType={StepViewType.Edit} />)
+  test('existing step', async () => {
+    render(
+      <TestStepWidget
+        initialValues={{}}
+        type={StepType.SBOMOrchestration}
+        stepViewType={StepViewType.Edit}
+        testWrapperProps={{
+          defaultFeatureFlagValues: { SSCA_REPO_ARTIFACT: true }
+        }}
+      />
+    )
     expect(screen.getByText('pipelineSteps.stepNameLabel')).toBeInTheDocument()
     expect(screen.queryByRole('checkbox', { name: 'ssca.orchestrationStep.detectSbomDrift' })).not.toBeInTheDocument()
+
+    expect(screen.queryByText('repositoryUrlLabel')).not.toBeInTheDocument()
+    await userEvent.click(screen.getByLabelText('repository'))
+    expect(await screen.findByText('repositoryUrlLabel')).toBeInTheDocument()
   })
 
   test('edit view renders with runtime inputs', async () => {
@@ -122,7 +135,7 @@ describe('SBOM Orchestration Step', () => {
       <TestStepWidget
         initialValues={runtimeValues}
         template={runtimeValues}
-        type={StepType.SscaOrchestration}
+        type={StepType.SBOMOrchestration}
         stepViewType={StepViewType.Edit}
         onUpdate={onUpdate}
         ref={ref}
@@ -134,7 +147,7 @@ describe('SBOM Orchestration Step', () => {
   })
 
   test('input set view', async () => {
-    render(<TestStepWidget initialValues={{}} type={StepType.SscaOrchestration} stepViewType={StepViewType.InputSet} />)
+    render(<TestStepWidget initialValues={{}} type={StepType.SBOMOrchestration} stepViewType={StepViewType.InputSet} />)
     expect(screen.getByRole('button', { name: 'Submit' })).toBeInTheDocument()
   })
 
@@ -142,7 +155,7 @@ describe('SBOM Orchestration Step', () => {
     render(
       <TestStepWidget
         initialValues={fixedValues}
-        type={StepType.SscaOrchestration}
+        type={StepType.SBOMOrchestration}
         stepViewType={StepViewType.InputVariable}
       />
     )
@@ -156,7 +169,7 @@ describe('SBOM Orchestration Step', () => {
       <TestStepWidget
         initialValues={runtimeValues}
         template={runtimeValues}
-        type={StepType.SscaOrchestration}
+        type={StepType.SBOMOrchestration}
         stepViewType={StepViewType.Edit}
         onUpdate={onUpdate}
         readonly={false}

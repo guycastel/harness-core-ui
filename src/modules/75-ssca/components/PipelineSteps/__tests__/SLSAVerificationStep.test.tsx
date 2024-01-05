@@ -15,7 +15,7 @@ import { StepType } from '@pipeline/components/PipelineSteps/PipelineStepInterfa
 import { factory, TestStepWidget } from '@pipeline/components/PipelineSteps/Steps/__tests__/StepTestUtil'
 import { catalogueData } from '@modules/27-platform/connectors/pages/connectors/__tests__/mockData'
 import { queryByNameAttribute } from '@modules/10-common/utils/testUtils'
-import { SlsaVerificationStep } from '../SlsaVerificationStep/SlsaVerificationStep'
+import { SLSAVerificationStep } from '../SLSAVerification/SLSAVerificationStep'
 
 jest.mock('@common/components/YAMLBuilder/YamlBuilder')
 jest.mock('services/cd-ng', () => ({
@@ -34,7 +34,7 @@ jest.mock('@connectors/pages/connectors/hooks/useGetConnectorsListHook/useGetCon
 }))
 
 const runtimeValues = {
-  identifier: 'SlsaVerification_1',
+  identifier: 'SLSAVerification_1',
   name: 'SLSA Verification',
   timeout: RUNTIME_INPUT_VALUE,
   spec: {
@@ -79,11 +79,11 @@ const fixedValues = {
 
 describe('SLSA Verification Step', () => {
   beforeAll(() => {
-    factory.registerStep(new SlsaVerificationStep())
+    factory.registerStep(new SLSAVerificationStep())
   })
 
   test('edit view as new step', () => {
-    render(<TestStepWidget initialValues={{}} type={StepType.SlsaVerification} stepViewType={StepViewType.Edit} />)
+    render(<TestStepWidget initialValues={{}} type={StepType.SLSAVerification} stepViewType={StepViewType.Edit} />)
     expect(screen.getByText('pipelineSteps.stepNameLabel')).toBeInTheDocument()
   })
 
@@ -94,7 +94,7 @@ describe('SLSA Verification Step', () => {
       <TestStepWidget
         initialValues={runtimeValues}
         template={runtimeValues}
-        type={StepType.SlsaVerification}
+        type={StepType.SLSAVerification}
         stepViewType={StepViewType.Edit}
         onUpdate={onUpdate}
         ref={ref}
@@ -106,17 +106,17 @@ describe('SLSA Verification Step', () => {
   })
 
   test('input set view', async () => {
-    render(<TestStepWidget initialValues={{}} type={StepType.SlsaVerification} stepViewType={StepViewType.InputSet} />)
+    render(<TestStepWidget initialValues={{}} type={StepType.SLSAVerification} stepViewType={StepViewType.InputSet} />)
     expect(screen.getByRole('button', { name: 'Submit' })).toBeInTheDocument()
   })
 
   test('input set view validation for timeout', () => {
-    const response = new SlsaVerificationStep().validateInputSet({
+    const response = new SLSAVerificationStep().validateInputSet({
       data: {
-        name: 'SlsaVerification',
-        identifier: 'SlsaVerification',
+        name: 'SLSAVerification',
+        identifier: 'SLSAVerification',
         timeout: '1s',
-        type: 'SlsaVerification',
+        type: 'SLSAVerification',
         spec: {}
       } as any,
       template: {
@@ -133,7 +133,7 @@ describe('SLSA Verification Step', () => {
     render(
       <TestStepWidget
         initialValues={fixedValues}
-        type={StepType.SlsaVerification}
+        type={StepType.SLSAVerification}
         stepViewType={StepViewType.InputVariable}
       />
     )
@@ -142,7 +142,7 @@ describe('SLSA Verification Step', () => {
 
   test('gcr connector type', async () => {
     const { container } = render(
-      <TestStepWidget initialValues={fixedValues} type={StepType.SlsaVerification} stepViewType={StepViewType.Edit} />
+      <TestStepWidget initialValues={fixedValues} type={StepType.SLSAVerification} stepViewType={StepViewType.Edit} />
     )
 
     expect(screen.getByText('pipelineSteps.stepNameLabel')).toBeInTheDocument()

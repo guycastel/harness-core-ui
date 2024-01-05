@@ -15,11 +15,11 @@ import MultiTypeSecretInput from '@secrets/components/MutiTypeSecretInput/MultiT
 import { useStrings } from 'framework/strings'
 import { TimeoutFieldInputSetView } from '@pipeline/components/InputSetView/TimeoutFieldInputSetView/TimeoutFieldInputSetView'
 import { isValueRuntimeInput } from '@common/utils/utils'
-import { SlsaVerificationStepData, SlsaVerificationStepProps } from './SlsaVerificationStepEdit'
+import { SLSAVerificationStepData, SLSAVerificationStepProps } from './SLSAVerificationStepBase'
 import stepCss from '@pipeline/components/PipelineSteps/Steps/Steps.module.scss'
 
-export default function SlsaVerificationStepInputSet(
-  props: SlsaVerificationStepProps & { formik?: FormikContextType<SlsaVerificationStepData> }
+export default function SLSAVerificationStepInputSet(
+  props: SLSAVerificationStepProps & { formik?: FormikContextType<SLSAVerificationStepData> }
 ): React.ReactElement {
   const { template, path, readonly, stepViewType, allowableTypes } = props
   const { getString } = useStrings()

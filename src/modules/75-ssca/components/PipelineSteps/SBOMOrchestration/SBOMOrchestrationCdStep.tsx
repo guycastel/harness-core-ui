@@ -5,52 +5,56 @@
  * https://polyformproject.org/wp-content/uploads/2020/06/PolyForm-Shield-1.0.0.txt.
  */
 
-import { Color } from '@harness/design-system'
 import type { IconName } from '@harness/icons'
+import { Color } from '@harness/design-system'
 import type { FormikErrors } from 'formik'
-import { defaultTo } from 'lodash-es'
 import React from 'react'
+import { defaultTo } from 'lodash-es'
 import { StepViewType, ValidateInputSetProps } from '@pipeline/components/AbstractSteps/Step'
 import { PipelineStep, StepProps } from '@pipeline/components/PipelineSteps/PipelineStep'
 import { StepType } from '@pipeline/components/PipelineSteps/PipelineStepInterface'
-import { flatObject } from '@pipeline/components/PipelineSteps/Steps/Common/ApprovalCommons'
 import { getFormValuesInCorrectFormat } from '@pipeline/components/PipelineSteps/Steps/StepsTransformValuesUtils'
-import { validateInputSet } from '@pipeline/components/PipelineSteps/Steps/StepsValidateUtils'
-import { VariableListTableProps, VariablesListTable } from '@pipeline/components/VariablesListTable/VariablesListTable'
 import type { StringsMap } from 'stringTypes'
-import { SscaEnforcementStepData } from '../common/types'
-import { SscaEnforcementStepEditWithRef } from '../common/SscaEnforcementStepEdit'
+import { VariableListTableProps, VariablesListTable } from '@pipeline/components/VariablesListTable/VariablesListTable'
+import { flatObject } from '@pipeline/components/PipelineSteps/Steps/Common/ApprovalCommons'
+import { validateInputSet } from '@pipeline/components/PipelineSteps/Steps/StepsValidateUtils'
+import { SBOMOrchestrationCdStepData } from '../common/types'
+import { commonDefaultOrchestrationSpecValues, cdSpecValues } from '../common/default-values'
+import { SBOMOrchestrationStepBase } from './SBOMOrchestrationStepBase'
+import { SBOMOrchestrationStepInputSet } from './SBOMOrchestrationStepInputSet'
 import {
   transformValuesFieldsConfig,
   getInputSetViewValidateFieldsConfig
-} from '../common/SscaEnforcementStepFunctionConfigs'
-import SscaEnforcementStepInputSet from '../common/SscaEnforcementStepInputSet'
-import { commonDefaultEnforcementSpecValues, ciSpecValues } from '../common/utils'
+} from './SBOMOrchestrationStepFunctionConfigs'
 
-export class SscaEnforcementStep extends PipelineStep<SscaEnforcementStepData> {
+export class SBOMOrchestrationCdStep extends PipelineStep<SBOMOrchestrationCdStepData> {
   constructor() {
     super()
     this._hasStepVariables = true
     this.invocationMap = new Map()
   }
 
-  protected type = StepType.SscaEnforcement
-  protected stepName = 'SBOM Policy Enforcement'
-  protected stepIcon: IconName = 'ssca-enforce'
+  protected type = StepType.SBOMOrchestrationCd
+  protected stepName = 'SBOM Orchestration'
+  protected stepIcon: IconName = 'ssca-orchestrate'
   protected stepIconColor = Color.GREY_600
-  protected stepDescription: keyof StringsMap = 'pipeline.stepDescription.SscaEnforcement'
+  protected stepDescription: keyof StringsMap = 'pipeline.stepDescription.SBOMOrchestration'
   protected stepPaletteVisible = false
-  protected defaultValues: SscaEnforcementStepData = {
-    type: StepType.SscaEnforcement,
+  protected defaultValues: SBOMOrchestrationCdStepData = {
+    type: StepType.SBOMOrchestrationCd,
     identifier: '',
     spec: {
-      ...commonDefaultEnforcementSpecValues,
-      ...ciSpecValues
+      ...commonDefaultOrchestrationSpecValues,
+      ...cdSpecValues
     }
   }
 
-  processFormData<T>(data: T): SscaEnforcementStepData {
-    return getFormValuesInCorrectFormat<T, SscaEnforcementStepData>(data, transformValuesFieldsConfig(this?.type))
+  /* istanbul ignore next */
+  processFormData<T>(data: T): SBOMOrchestrationCdStepData {
+    return getFormValuesInCorrectFormat<T, SBOMOrchestrationCdStepData>(
+      data,
+      transformValuesFieldsConfig(this?.type, data)
+    )
   }
 
   validateInputSet({
@@ -58,7 +62,7 @@ export class SscaEnforcementStep extends PipelineStep<SscaEnforcementStepData> {
     template,
     getString,
     viewType
-  }: ValidateInputSetProps<SscaEnforcementStepData>): FormikErrors<SscaEnforcementStepData> {
+  }: ValidateInputSetProps<SBOMOrchestrationCdStepData>): FormikErrors<SBOMOrchestrationCdStepData> {
     const isRequired = viewType === StepViewType.DeploymentForm || viewType === StepViewType.TriggerForm
     if (getString) {
       return validateInputSet(
@@ -70,11 +74,10 @@ export class SscaEnforcementStep extends PipelineStep<SscaEnforcementStepData> {
       )
     }
 
-    /* istanbul ignore next */
     return {}
   }
 
-  renderStep(props: StepProps<SscaEnforcementStepData>): JSX.Element {
+  renderStep(props: StepProps<SBOMOrchestrationCdStepData>): JSX.Element {
     const {
       initialValues,
       onUpdate,
@@ -90,7 +93,7 @@ export class SscaEnforcementStep extends PipelineStep<SscaEnforcementStepData> {
 
     if (this.isTemplatizedView(stepViewType)) {
       return (
-        <SscaEnforcementStepInputSet
+        <SBOMOrchestrationStepInputSet
           initialValues={initialValues}
           template={inputSetData?.template}
           path={inputSetData?.path || ''}
@@ -113,7 +116,7 @@ export class SscaEnforcementStep extends PipelineStep<SscaEnforcementStepData> {
     }
 
     return (
-      <SscaEnforcementStepEditWithRef
+      <SBOMOrchestrationStepBase
         initialValues={initialValues}
         allowableTypes={allowableTypes}
         onChange={onChange}

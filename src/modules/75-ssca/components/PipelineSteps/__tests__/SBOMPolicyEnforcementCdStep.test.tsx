@@ -11,7 +11,7 @@ import { RUNTIME_INPUT_VALUE } from '@harness/uicore'
 import { StepViewType, StepFormikRef } from '@pipeline/components/AbstractSteps/Step'
 import { StepType } from '@pipeline/components/PipelineSteps/PipelineStepInterface'
 import { factory, TestStepWidget } from '@pipeline/components/PipelineSteps/Steps/__tests__/StepTestUtil'
-import { CdSscaEnforcementStep } from '../CdSscaEnforcementStep/CdSscaEnforcementStep'
+import { PolicyEnforcementCdStep } from '../PolicyEnforcement/PolicyEnforcementCdStep'
 
 jest.mock('@common/components/YAMLBuilder/YamlBuilder')
 
@@ -106,11 +106,11 @@ const fixedValues = {
 
 describe('CD SSCA Enforcement Step', () => {
   beforeAll(() => {
-    factory.registerStep(new CdSscaEnforcementStep())
+    factory.registerStep(new PolicyEnforcementCdStep())
   })
 
   test('edit view as new step', () => {
-    render(<TestStepWidget initialValues={{}} type={StepType.CdSscaEnforcement} stepViewType={StepViewType.Edit} />)
+    render(<TestStepWidget initialValues={{}} type={StepType.PolicyEnforcementCd} stepViewType={StepViewType.Edit} />)
     expect(screen.getByText('pipelineSteps.stepNameLabel')).toBeInTheDocument()
   })
 
@@ -121,7 +121,7 @@ describe('CD SSCA Enforcement Step', () => {
       <TestStepWidget
         initialValues={runtimeValues}
         template={runtimeValues}
-        type={StepType.CdSscaEnforcement}
+        type={StepType.PolicyEnforcementCd}
         stepViewType={StepViewType.Edit}
         onUpdate={onUpdate}
         ref={ref}
@@ -133,17 +133,19 @@ describe('CD SSCA Enforcement Step', () => {
   })
 
   test('input set view', async () => {
-    render(<TestStepWidget initialValues={{}} type={StepType.CdSscaEnforcement} stepViewType={StepViewType.InputSet} />)
+    render(
+      <TestStepWidget initialValues={{}} type={StepType.PolicyEnforcementCd} stepViewType={StepViewType.InputSet} />
+    )
     expect(screen.getByRole('button', { name: 'Submit' })).toBeInTheDocument()
   })
 
   test('input set view validation for timeout', () => {
-    const response = new CdSscaEnforcementStep().validateInputSet({
+    const response = new PolicyEnforcementCdStep().validateInputSet({
       data: {
-        name: 'CdSscaEnforcement',
-        identifier: 'CdSscaEnforcement',
+        name: 'PolicyEnforcement',
+        identifier: 'PolicyEnforcement',
         timeout: '1s',
-        type: 'CdSscaEnforcement',
+        type: 'PolicyEnforcement',
         spec: {}
       } as any,
       template: {
@@ -160,7 +162,7 @@ describe('CD SSCA Enforcement Step', () => {
     render(
       <TestStepWidget
         initialValues={fixedValues}
-        type={StepType.CdSscaEnforcement}
+        type={StepType.PolicyEnforcementCd}
         stepViewType={StepViewType.InputVariable}
       />
     )

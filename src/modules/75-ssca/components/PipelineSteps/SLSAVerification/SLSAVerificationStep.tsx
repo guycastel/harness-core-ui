@@ -17,24 +17,24 @@ import type { StringsMap } from 'stringTypes'
 import { VariableListTableProps, VariablesListTable } from '@pipeline/components/VariablesListTable/VariablesListTable'
 import { flatObject } from '@pipeline/components/PipelineSteps/Steps/Common/ApprovalCommons'
 import { validateInputSet } from '@pipeline/components/PipelineSteps/Steps/StepsValidateUtils'
-import { getInputSetViewValidateFieldsConfig, transformValuesFieldsConfig } from './SlsaVerificationStepFunctionConfigs'
-import SlsaVerificationStepInputSet from './SlsaVerificationStepInputSet'
-import { SlsaVerificationStepData, SlsaVerificationStepEditWithRef } from './SlsaVerificationStepEdit'
+import { getInputSetViewValidateFieldsConfig, transformValuesFieldsConfig } from './SLSAVerificationStepFunctionConfigs'
+import SLSAVerificationStepInputSet from './SLSAVerificationStepInputSet'
+import { SLSAVerificationStepData, SLSAVerificationStepBase } from './SLSAVerificationStepBase'
 
-export class SlsaVerificationStep extends PipelineStep<SlsaVerificationStepData> {
+export class SLSAVerificationStep extends PipelineStep<SLSAVerificationStepData> {
   constructor() {
     super()
     this._hasStepVariables = true
     this.invocationMap = new Map()
   }
 
-  protected type = StepType.SlsaVerification
+  protected type = StepType.SLSAVerification
   protected stepName = 'SLSA Verification'
   protected stepIcon: IconName = 'slsa-verification'
-  protected stepDescription: keyof StringsMap = 'pipeline.stepDescription.SlsaVerification'
+  protected stepDescription: keyof StringsMap = 'pipeline.stepDescription.SLSAVerification'
   protected stepPaletteVisible = false
-  protected defaultValues: SlsaVerificationStepData = {
-    type: StepType.SlsaVerification,
+  protected defaultValues: SLSAVerificationStepData = {
+    type: StepType.SLSAVerification,
     identifier: '',
     spec: {
       source: {
@@ -55,8 +55,8 @@ export class SlsaVerificationStep extends PipelineStep<SlsaVerificationStepData>
   }
 
   /* istanbul ignore next */
-  processFormData<T>(data: T): SlsaVerificationStepData {
-    return getFormValuesInCorrectFormat<T, SlsaVerificationStepData>(data, transformValuesFieldsConfig)
+  processFormData<T>(data: T): SLSAVerificationStepData {
+    return getFormValuesInCorrectFormat<T, SLSAVerificationStepData>(data, transformValuesFieldsConfig)
   }
 
   validateInputSet({
@@ -64,7 +64,7 @@ export class SlsaVerificationStep extends PipelineStep<SlsaVerificationStepData>
     template,
     getString,
     viewType
-  }: ValidateInputSetProps<SlsaVerificationStepData>): FormikErrors<SlsaVerificationStepData> {
+  }: ValidateInputSetProps<SLSAVerificationStepData>): FormikErrors<SLSAVerificationStepData> {
     const isRequired = viewType === StepViewType.DeploymentForm || viewType === StepViewType.TriggerForm
     if (getString) {
       return validateInputSet(
@@ -80,7 +80,7 @@ export class SlsaVerificationStep extends PipelineStep<SlsaVerificationStepData>
     return {}
   }
 
-  renderStep(props: StepProps<SlsaVerificationStepData>): JSX.Element {
+  renderStep(props: StepProps<SLSAVerificationStepData>): JSX.Element {
     const {
       initialValues,
       onUpdate,
@@ -96,7 +96,7 @@ export class SlsaVerificationStep extends PipelineStep<SlsaVerificationStepData>
 
     if (this.isTemplatizedView(stepViewType)) {
       return (
-        <SlsaVerificationStepInputSet
+        <SLSAVerificationStepInputSet
           initialValues={initialValues}
           template={inputSetData?.template}
           path={inputSetData?.path || ''}
@@ -118,7 +118,7 @@ export class SlsaVerificationStep extends PipelineStep<SlsaVerificationStepData>
     }
 
     return (
-      <SlsaVerificationStepEditWithRef
+      <SLSAVerificationStepBase
         initialValues={initialValues}
         allowableTypes={allowableTypes}
         onChange={onChange}

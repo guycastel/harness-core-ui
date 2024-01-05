@@ -13,7 +13,7 @@ import { StepViewType, StepFormikRef } from '@pipeline/components/AbstractSteps/
 import { StepType } from '@pipeline/components/PipelineSteps/PipelineStepInterface'
 import { factory, TestStepWidget } from '@pipeline/components/PipelineSteps/Steps/__tests__/StepTestUtil'
 import { doConfigureOptionsTesting, queryByNameAttribute } from '@common/utils/testUtils'
-import { CdSscaOrchestrationStep } from '../CdSscaOrchestrationStep/CdSscaOrchestrationStep'
+import { SBOMOrchestrationCdStep } from '../SBOMOrchestration/SBOMOrchestrationCdStep'
 
 jest.mock('@common/components/YAMLBuilder/YamlBuilder')
 
@@ -102,11 +102,11 @@ const fixedValues = {
 
 describe('CD SSCA Orchestration Step', () => {
   beforeAll(() => {
-    factory.registerStep(new CdSscaOrchestrationStep())
+    factory.registerStep(new SBOMOrchestrationCdStep())
   })
 
   test('edit view as new step', () => {
-    render(<TestStepWidget initialValues={{}} type={StepType.CdSscaOrchestration} stepViewType={StepViewType.Edit} />)
+    render(<TestStepWidget initialValues={{}} type={StepType.SBOMOrchestrationCd} stepViewType={StepViewType.Edit} />)
     expect(screen.getByText('pipelineSteps.stepNameLabel')).toBeInTheDocument()
   })
 
@@ -117,7 +117,7 @@ describe('CD SSCA Orchestration Step', () => {
       <TestStepWidget
         initialValues={runtimeValues}
         template={runtimeValues}
-        type={StepType.CdSscaOrchestration}
+        type={StepType.SBOMOrchestrationCd}
         stepViewType={StepViewType.Edit}
         onUpdate={onUpdate}
         ref={ref}
@@ -130,7 +130,7 @@ describe('CD SSCA Orchestration Step', () => {
 
   test('input set view', async () => {
     render(
-      <TestStepWidget initialValues={{}} type={StepType.CdSscaOrchestration} stepViewType={StepViewType.InputSet} />
+      <TestStepWidget initialValues={{}} type={StepType.SBOMOrchestrationCd} stepViewType={StepViewType.InputSet} />
     )
     expect(screen.getByRole('button', { name: 'Submit' })).toBeInTheDocument()
   })
@@ -139,7 +139,7 @@ describe('CD SSCA Orchestration Step', () => {
     render(
       <TestStepWidget
         initialValues={fixedValues}
-        type={StepType.CdSscaOrchestration}
+        type={StepType.SBOMOrchestrationCd}
         stepViewType={StepViewType.InputVariable}
       />
     )
@@ -153,7 +153,7 @@ describe('CD SSCA Orchestration Step', () => {
       <TestStepWidget
         initialValues={runtimeValues}
         template={runtimeValues}
-        type={StepType.CdSscaOrchestration}
+        type={StepType.SBOMOrchestrationCd}
         stepViewType={StepViewType.Edit}
         onUpdate={onUpdate}
         readonly={false}

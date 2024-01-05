@@ -10,6 +10,8 @@ declare const styles: {
   readonly fileStoreLabel: string
   readonly formGroup: string
   readonly formLabel: string
+  readonly radioBtns: string
   readonly stepContainer: string
+  readonly variantType: string
 }
 export default styles

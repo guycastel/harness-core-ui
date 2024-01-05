@@ -32,6 +32,26 @@ export const transformValuesFieldsConfig = (stepType?: StepType) => [
     type: TransformValuesTypes.Text
   },
   {
+    name: 'spec.source.spec.url',
+    type: TransformValuesTypes.Text
+  },
+  {
+    name: 'spec.source.spec.path',
+    type: TransformValuesTypes.Text
+  },
+  {
+    name: 'spec.source.spec.variant_type',
+    type: TransformValuesTypes.Text
+  },
+  {
+    name: 'spec.source.spec.variant',
+    type: TransformValuesTypes.Text
+  },
+  {
+    name: 'spec.source.spec.cloned_codebase',
+    type: TransformValuesTypes.Text
+  },
+  {
     name: 'spec.verifyAttestation.type',
     type: TransformValuesTypes.Text
   },
@@ -51,7 +71,7 @@ export const transformValuesFieldsConfig = (stepType?: StepType) => [
     name: 'spec.policy.policySets',
     type: TransformValuesTypes.Text
   },
-  ...(stepType === StepType.CdSscaEnforcement
+  ...(stepType === StepType.PolicyEnforcementCd
     ? [
         {
           name: 'spec.infrastructure.type',
@@ -90,7 +110,15 @@ export const transformValuesFieldsConfig = (stepType?: StepType) => [
   }
 ]
 
-export const editViewValidateFieldsConfig = (stepType: StepType, isOpa: boolean) => [
+export const editViewValidateFieldsConfig = ({
+  stepType,
+  isRepoArtifact,
+  isOpa
+}: {
+  stepType: StepType
+  isOpa: boolean
+  isRepoArtifact: boolean
+}) => [
   {
     name: 'identifier',
     type: ValidationFieldTypes.Identifier,
@@ -118,13 +146,43 @@ export const editViewValidateFieldsConfig = (stepType: StepType, isOpa: boolean)
     name: 'spec.source.spec.connector',
     type: ValidationFieldTypes.Text,
     label: 'pipelineSteps.connectorLabel',
-    isRequired: true
+    isRequired: !isRepoArtifact
   },
   {
     name: 'spec.source.spec.image',
     type: ValidationFieldTypes.Text,
     label: 'imageLabel',
-    isRequired: true
+    isRequired: !isRepoArtifact
+  },
+  {
+    name: 'spec.source.spec.url',
+    type: ValidationFieldTypes.Text,
+    label: 'repositoryUrlLabel',
+    isRequired: isRepoArtifact
+  },
+  {
+    name: 'spec.source.spec.path',
+    type: ValidationFieldTypes.Text,
+    label: 'pipelineSteps.sourcePathLabel',
+    isRequired: isRepoArtifact
+  },
+  {
+    name: 'spec.source.spec.variant_type',
+    type: ValidationFieldTypes.List,
+    label: 'ssca.variantType',
+    isRequired: isRepoArtifact
+  },
+  {
+    name: 'spec.source.spec.variant',
+    type: ValidationFieldTypes.Text,
+    label: 'ssca.variantValue',
+    isRequired: isRepoArtifact
+  },
+  {
+    name: 'spec.source.spec.cloned_codebase',
+    type: ValidationFieldTypes.Text,
+    label: 'pipelineSteps.workspace',
+    isRequired: isRepoArtifact
   },
   {
     name: 'spec.policy.store.spec.file',
@@ -138,7 +196,7 @@ export const editViewValidateFieldsConfig = (stepType: StepType, isOpa: boolean)
     label: 'common.policy.policysets',
     isRequired: isOpa
   },
-  ...(stepType === StepType.CdSscaEnforcement
+  ...(stepType === StepType.PolicyEnforcementCd
     ? [
         {
           name: 'spec.infrastructure.type',
@@ -225,7 +283,7 @@ export const getInputSetViewValidateFieldsConfig =
         type: ValidationFieldTypes.Text,
         label: 'common.policy.policysets'
       },
-      ...((stepType === StepType.CdSscaEnforcement
+      ...((stepType === StepType.PolicyEnforcementCd
         ? [
             {
               name: 'spec.infrastructure.spec.connectorRef',

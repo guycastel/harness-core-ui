@@ -23,14 +23,14 @@ import type { FormikProps } from 'formik'
 import { get, set } from 'lodash-es'
 import React, { useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { Divider } from '@blueprintjs/core'
 import { ALLOWED_VALUES_TYPE, ConfigureOptions } from '@common/components/ConfigureOptions/ConfigureOptions'
 import { FormMultiTypeDurationField } from '@common/components/MultiTypeDuration/MultiTypeDuration'
 import { MultiTypeTextField } from '@common/components/MultiTypeText/MultiTypeText'
 import { useQueryParams } from '@common/hooks'
-import type { GitQueryParams } from '@common/interfaces/RouteInterfaces'
+import type { GitQueryParams, ProjectPathProps } from '@common/interfaces/RouteInterfaces'
 import { ConnectorConfigureOptions } from '@platform/connectors/components/ConnectorConfigureOptions/ConnectorConfigureOptions'
 import { FormMultiTypeConnectorField } from '@platform/connectors/components/ConnectorReferenceField/FormMultiTypeConnectorField'
-import { Connectors } from '@platform/connectors/constants'
 import { getIconByType } from '@platform/connectors/pages/connectors/utils/ConnectorUtils'
 import { setFormikRef, StepFormikFowardRef, StepViewType } from '@pipeline/components/AbstractSteps/Step'
 import { StepType } from '@pipeline/components/PipelineSteps/PipelineStepInterface'
@@ -41,47 +41,27 @@ import {
 import { validate } from '@pipeline/components/PipelineSteps/Steps/StepsValidateUtils'
 import { usePipelineContext } from '@pipeline/components/PipelineStudio/PipelineContext/PipelineContext'
 import { useVariablesExpression } from '@pipeline/components/PipelineStudio/PiplineHooks/useVariablesExpression'
-import { useGitScope } from '@pipeline/utils/CIUtils'
 import type { BuildStageElementConfig } from '@pipeline/utils/pipelineTypes'
 import MultiTypeSecretInput from '@secrets/components/MutiTypeSecretInput/MultiTypeSecretInput'
-import { StringKeys, useStrings } from 'framework/strings'
+import { useStrings } from 'framework/strings'
 import type {} from 'services/ci'
-import { SbomOrchestrationTool, SbomSource, SyftSbomOrchestration } from 'services/pipeline-ng'
 import { isExecutionTimeFieldDisabled } from '@pipeline/utils/runPipelineUtils'
 import { isValueRuntimeInput } from '@common/utils/utils'
 import { useFeatureFlags } from '@modules/10-common/hooks/useFeatureFlag'
 import { SettingType } from '@modules/10-common/constants/Utils'
 import { SettingValueResponseDTO, useGetSettingValue } from 'services/cd-ng'
-import { editViewValidateFieldsConfig, transformValuesFieldsConfig } from './SscaOrchestrationStepFunctionConfigs'
-import { SscaCdOrchestrationStepData, SscaOrchestrationStepData, SscaStepProps } from './types'
-import { AllMultiTypeInputTypesForStep } from './utils'
-import css from './SscaStep.module.scss'
+import { editViewValidateFieldsConfig, transformValuesFieldsConfig } from './SBOMOrchestrationStepFunctionConfigs'
+import { SBOMOrchestrationStepData, SBOMOrchestrationCdStepData, SscaStepProps } from '../common/types'
+import { AllMultiTypeInputTypesForStep } from '../common/default-values'
+import { sbomFormats, getSbomDriftModes, getSbomSourcingModes, sbomGenerationTools } from '../common/select-options'
+import { ArtifactSourceSection } from '../common/ArtifactSourceSection'
+import css from '../SscaStep.module.scss'
 
-const getTypedOptions = <T extends string>(input: T[]): SelectOption[] => {
-  return input.map(item => ({ label: item, value: item }))
-}
-
-const SbomStepModes: { label: string; value: string }[] = [
-  { label: 'Generation', value: 'generation' },
-  { label: 'Ingestion', value: 'ingestion' }
-]
-
-export const getSbomDriftModes = (getString: (key: StringKeys) => string): { label: string; value: string }[] => {
-  return [
-    { label: getString('ssca.orchestrationStep.detectDriftFrom.lastExecution'), value: 'last_generated_sbom' },
-    { label: getString('ssca.orchestrationStep.detectDriftFrom.baseline'), value: 'baseline' }
-  ]
-}
-
-const artifactTypeOptions = getTypedOptions<SbomSource['type']>(['image'])
-const sbomGenerationToolOptions = getTypedOptions<SbomOrchestrationTool['type']>(['Syft'])
-const syftSbomFormats: { label: string; value: SyftSbomOrchestration['format'] }[] = [
-  { label: 'SPDX', value: 'spdx-json' },
-  { label: 'CycloneDX', value: 'cyclonedx-json' }
-]
-
-const SscaOrchestrationStepEdit = <T extends SscaOrchestrationStepData | SscaCdOrchestrationStepData>(
-  {
+const _SBOMOrchestrationStepBase = <T extends SBOMOrchestrationStepData | SBOMOrchestrationCdStepData>(
+  props: SscaStepProps<T>,
+  formikRef: StepFormikFowardRef<T>
+): JSX.Element => {
+  const {
     initialValues,
     onUpdate,
     isNewStep = true,
@@ -90,9 +70,7 @@ const SscaOrchestrationStepEdit = <T extends SscaOrchestrationStepData | SscaCdO
     onChange,
     allowableTypes,
     stepType
-  }: SscaStepProps<T>,
-  formikRef: StepFormikFowardRef<T>
-): JSX.Element => {
+  } = props
   const { getString } = useStrings()
   const { expressions } = useVariablesExpression()
   const { SSCA_SBOM_DRIFT } = useFeatureFlags()
@@ -106,14 +84,8 @@ const SscaOrchestrationStepEdit = <T extends SscaOrchestrationStepData | SscaCdO
   const { stage: currentStage } = getStageFromPipeline<BuildStageElementConfig>(
     state.selectionState.selectedStageId || ''
   )
-  const { accountId, projectIdentifier, orgIdentifier } = useParams<{
-    projectIdentifier: string
-    orgIdentifier: string
-    accountId: string
-  }>()
+  const { accountId, projectIdentifier, orgIdentifier } = useParams<ProjectPathProps>()
   const { repoIdentifier, branch } = useQueryParams<GitQueryParams>()
-
-  const gitScope = useGitScope()
 
   const _initialValues = getInitialValuesInCorrectFormat<T, T>(
     initialValues,
@@ -143,7 +115,10 @@ const SscaOrchestrationStepEdit = <T extends SscaOrchestrationStepData | SscaCdO
         onChange?.(schemaValues)
         return validate(
           valuesToValidate,
-          editViewValidateFieldsConfig(stepType),
+          editViewValidateFieldsConfig({
+            stepType,
+            isRepoArtifact: get(valuesToValidate, 'spec.source.type') === 'repository'
+          }),
           {
             initialValues,
             steps: currentStage?.stage?.spec?.execution?.steps || {},
@@ -166,37 +141,37 @@ const SscaOrchestrationStepEdit = <T extends SscaOrchestrationStepData | SscaCdO
           <FormikForm>
             <div className={css.stepContainer}>
               {stepViewType !== StepViewType.Template && (
-                <FormInput.InputWithIdentifier
-                  inputName="name"
-                  idName="identifier"
-                  inputLabel={getString('pipelineSteps.stepNameLabel')}
-                  isIdentifierEditable={isNewStep}
-                  inputGroupProps={{ disabled: readonly }}
-                />
-              )}
-
-              {stepType !== StepType.CdSscaOrchestration && (
-                <>
-                  <Text font={{ variation: FontVariation.FORM_SUB_SECTION }} color={Color.GREY_900}>
-                    {getString('ssca.orchestrationStep.sbomMethod')}
-                  </Text>
-
-                  <FormInput.RadioGroup
-                    items={SbomStepModes}
-                    name="spec.mode"
-                    label={getString('ssca.orchestrationStep.stepMode')}
-                    disabled={readonly}
-                    radioGroup={{ inline: true }}
+                <div>
+                  <FormInput.InputWithIdentifier
+                    inputName="name"
+                    idName="identifier"
+                    inputLabel={getString('pipelineSteps.stepNameLabel')}
+                    isIdentifierEditable={isNewStep}
+                    inputGroupProps={{ disabled: readonly }}
                   />
-                </>
+
+                  <Divider />
+                </div>
               )}
+
+              <Text
+                font={{ variation: FontVariation.FORM_SUB_SECTION }}
+                color={Color.GREY_900}
+                margin={{ top: 'small' }}
+              >
+                {getString('ssca.orchestrationStep.sbomMethod')}
+              </Text>
+
+              <FormInput.RadioGroup
+                items={getSbomSourcingModes(getString)}
+                name="spec.mode"
+                label={getString('ssca.orchestrationStep.Mode')}
+                disabled={readonly}
+                radioGroup={{ inline: true }}
+              />
 
               {get(formik.values, 'spec.mode') === 'ingestion' ? (
                 <>
-                  <Text font={{ variation: FontVariation.FORM_SUB_SECTION }} color={Color.GREY_900}>
-                    {getString('ssca.orchestrationStep.sbomIngestion')}
-                  </Text>
-
                   <MultiTypeTextField
                     name="spec.ingestion.file"
                     label={<Text className={css.formLabel}>{getString('ssca.orchestrationStep.ingestion.file')}</Text>}
@@ -214,87 +189,32 @@ const SscaOrchestrationStepEdit = <T extends SscaOrchestrationStepData | SscaCdO
                 </>
               ) : (
                 <>
-                  <Text font={{ variation: FontVariation.FORM_SUB_SECTION }} color={Color.GREY_900}>
-                    {getString('ssca.orchestrationStep.sbomGeneration')}
-                  </Text>
-
                   <FormInput.Select
-                    items={sbomGenerationToolOptions}
+                    items={sbomGenerationTools}
                     name="spec.tool.type"
                     label={getString('ssca.orchestrationStep.sbomTool')}
                     placeholder={getString('select')}
                     disabled={readonly}
                   />
 
-                  <FormInput.RadioGroup
-                    items={syftSbomFormats}
+                  <FormInput.Select
+                    items={sbomFormats as SelectOption[]}
                     name="spec.tool.spec.format"
                     label={getString('ssca.orchestrationStep.sbomFormat')}
+                    placeholder={getString('select')}
                     disabled={readonly}
-                    radioGroup={{ inline: true }}
                   />
                 </>
               )}
 
-              <Text
-                font={{ variation: FontVariation.FORM_SUB_SECTION }}
-                color={Color.GREY_900}
-                margin={{ top: 'medium' }}
-              >
-                {getString('ssca.orchestrationStep.artifactSource')}
-              </Text>
-
-              <FormInput.Select
-                items={artifactTypeOptions}
-                name="spec.source.type"
-                label={getString('pipeline.artifactsSelection.artifactType')}
-                placeholder={getString('select')}
-                disabled={readonly}
-              />
-
-              <FormMultiTypeConnectorField
-                label={getString('pipelineSteps.connectorLabel')}
-                type={[Connectors.GCP, Connectors.AWS, Connectors.DOCKER, Connectors.AZURE]}
-                name="spec.source.spec.connector"
-                placeholder={getString('select')}
-                accountIdentifier={accountId}
-                projectIdentifier={projectIdentifier}
-                orgIdentifier={orgIdentifier}
-                multiTypeProps={{
-                  expressions,
-                  allowableTypes: AllMultiTypeInputTypesForStep,
-                  disabled: readonly
-                }}
-                gitScope={gitScope}
-                setRefValue
-                configureOptionsProps={{
-                  hideExecutionTimeField: isExecutionTimeFieldDisabledForStep
-                }}
-              />
-
-              <MultiTypeTextField
-                name="spec.source.spec.image"
-                label={
-                  <Text className={css.formLabel} tooltipProps={{ dataTooltipId: 'image' }}>
-                    {getString('imageLabel')}
-                  </Text>
-                }
-                multiTextInputProps={{
-                  disabled: readonly,
-                  multiTextInputProps: {
-                    expressions,
-                    allowableTypes: AllMultiTypeInputTypesForStep
-                  }
-                }}
-                configureOptionsProps={{
-                  hideExecutionTimeField: isExecutionTimeFieldDisabledForStep
-                }}
-              />
+              <Divider style={{ marginBottom: 'var(--spacing-small)' }} />
+              <ArtifactSourceSection {...props} />
+              <Divider style={{ marginTop: 'var(--spacing-large)' }} />
 
               <Text
                 font={{ variation: FontVariation.FORM_SUB_SECTION }}
                 color={Color.GREY_900}
-                margin={{ top: 'medium' }}
+                margin={{ top: 'small' }}
               >
                 {getString('ssca.orchestrationStep.sbomAttestation')}
               </Text>
@@ -326,7 +246,13 @@ const SscaOrchestrationStepEdit = <T extends SscaOrchestrationStepData | SscaCdO
 
               {SSCA_SBOM_DRIFT && (
                 <>
-                  <Text font={{ variation: FontVariation.FORM_SUB_SECTION }} color={Color.GREY_900}>
+                  <Divider />
+
+                  <Text
+                    font={{ variation: FontVariation.FORM_SUB_SECTION }}
+                    color={Color.GREY_900}
+                    margin={{ top: 'small' }}
+                  >
                     {getString('ssca.orchestrationStep.sbomDrift')}
                   </Text>
                   <Checkbox
@@ -355,12 +281,14 @@ const SscaOrchestrationStepEdit = <T extends SscaOrchestrationStepData | SscaCdO
                 </>
               )}
 
-              {stepType === StepType.CdSscaOrchestration && (
+              {stepType === StepType.SBOMOrchestrationCd && (
                 <>
+                  <Divider />
+
                   <Text
                     font={{ variation: FontVariation.FORM_SUB_SECTION }}
                     color={Color.GREY_900}
-                    margin={{ top: 'medium' }}
+                    margin={{ top: 'small' }}
                   >
                     {getString('infrastructureText')}
                   </Text>
@@ -505,7 +433,7 @@ const SscaOrchestrationStepEdit = <T extends SscaOrchestrationStepData | SscaCdO
                         multiTypeDurationProps={{ enableConfigureOptions: true, expressions, allowableTypes }}
                         disabled={readonly}
                       />
-                      {stepType === StepType.SscaOrchestration && (
+                      {stepType === StepType.SBOMOrchestration && (
                         <Layout.Horizontal spacing="small">
                           <FormInput.MultiTextInput
                             name="spec.resources.limits.memory"
@@ -571,4 +499,4 @@ const SscaOrchestrationStepEdit = <T extends SscaOrchestrationStepData | SscaCdO
   )
 }
 
-export const SscaOrchestrationStepEditWithRef = React.forwardRef(SscaOrchestrationStepEdit)
+export const SBOMOrchestrationStepBase = React.forwardRef(_SBOMOrchestrationStepBase)

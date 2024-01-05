@@ -6,21 +6,20 @@
  */
 
 import { Color, FontVariation } from '@harness/design-system'
-import { Accordion, FormInput, Formik, FormikForm, Icon, Layout, SelectOption, Text } from '@harness/uicore'
+import { Accordion, FormInput, Formik, FormikForm, Icon, Layout, Text } from '@harness/uicore'
 import cx from 'classnames'
 import type { FormikProps } from 'formik'
 import { get, set } from 'lodash-es'
 import React from 'react'
 import { useParams } from 'react-router-dom'
+import { Divider } from '@blueprintjs/core'
 import { ConfigureOptions } from '@common/components/ConfigureOptions/ConfigureOptions'
 import { ALLOWED_VALUES_TYPE } from '@common/components/ConfigureOptions/constants'
 import { FormMultiTypeDurationField } from '@common/components/MultiTypeDuration/MultiTypeDuration'
-import { MultiTypeTextField } from '@common/components/MultiTypeText/MultiTypeText'
 import { useQueryParams } from '@common/hooks'
 import type { GitQueryParams, ProjectPathProps } from '@common/interfaces/RouteInterfaces'
 import { ConnectorConfigureOptions } from '@platform/connectors/components/ConnectorConfigureOptions/ConnectorConfigureOptions'
 import { FormMultiTypeConnectorField } from '@platform/connectors/components/ConnectorReferenceField/FormMultiTypeConnectorField'
-import { Connectors } from '@platform/connectors/constants'
 import { getIconByType } from '@platform/connectors/pages/connectors/utils/ConnectorUtils'
 import FileStoreSelectField from '@filestore/components/MultiTypeFileSelect/FileStoreSelect/FileStoreSelectField'
 import { StepFormikFowardRef, StepViewType, setFormikRef } from '@pipeline/components/AbstractSteps/Step'
@@ -32,33 +31,30 @@ import {
 import { validate } from '@pipeline/components/PipelineSteps/Steps/StepsValidateUtils'
 import { usePipelineContext } from '@pipeline/components/PipelineStudio/PipelineContext/PipelineContext'
 import { useVariablesExpression } from '@pipeline/components/PipelineStudio/PiplineHooks/useVariablesExpression'
-import { useGitScope } from '@pipeline/utils/CIUtils'
 import type { BuildStageElementConfig } from '@pipeline/utils/pipelineTypes'
 import MultiTypeSecretInput from '@secrets/components/MutiTypeSecretInput/MultiTypeSecretInput'
 import { useStrings } from 'framework/strings'
-import type { SbomSource } from 'services/ci'
 import { isExecutionTimeFieldDisabled } from '@pipeline/utils/runPipelineUtils'
 import { isValueRuntimeInput } from '@common/utils/utils'
 import MultiTypePolicySetSelector from '@modules/70-pipeline/components/PipelineSteps/Common/PolicySets/MultiTypePolicySetSelector/MultiTypePolicySetSelector'
 import { useFeatureFlags } from '@modules/10-common/hooks/useFeatureFlag'
 import { SettingType } from '@modules/10-common/constants/Utils'
 import { SettingValueResponseDTO, useGetSettingValue } from 'services/cd-ng'
-import { editViewValidateFieldsConfig, transformValuesFieldsConfig } from './SscaEnforcementStepFunctionConfigs'
-import { SscaCdEnforcementStepData, SscaEnforcementStepData, SscaStepProps } from './types'
-import { AllMultiTypeInputTypesForStep, commonDefaultEnforcementSpecValues } from './utils'
-import css from './SscaStep.module.scss'
-
-const getTypedOptions = <T extends string>(input: T[]): SelectOption[] => {
-  return input.map(item => ({ label: item, value: item }))
-}
-
-const artifactTypeOptions = getTypedOptions<SbomSource['type']>(['image'])
+import { editViewValidateFieldsConfig, transformValuesFieldsConfig } from './PolicyEnforcementStepFunctionConfigs'
+import { PolicyEnforcementCdStepData, PolicyEnforcementStepData, SscaStepProps } from '../common/types'
+import { commonDefaultEnforcementSpecValues } from '../common/default-values'
+import { ArtifactSourceSection } from '../common/ArtifactSourceSection'
+import css from '../SscaStep.module.scss'
 
 const setFormikField = (formik: FormikProps<any>, field: string) => (value: unknown) => {
   formik.setFieldValue(field, value)
 }
-const SscaEnforcementStepEdit = <T extends SscaEnforcementStepData | SscaCdEnforcementStepData>(
-  {
+
+const _PolicyEnforcementStepBase = <T extends PolicyEnforcementStepData | PolicyEnforcementCdStepData>(
+  props: SscaStepProps<T>,
+  formikRef: StepFormikFowardRef<T>
+): JSX.Element => {
+  const {
     initialValues,
     onUpdate,
     isNewStep = true,
@@ -67,9 +63,7 @@ const SscaEnforcementStepEdit = <T extends SscaEnforcementStepData | SscaCdEnfor
     onChange,
     allowableTypes,
     stepType
-  }: SscaStepProps<T>,
-  formikRef: StepFormikFowardRef<T>
-): JSX.Element => {
+  } = props
   const { getString } = useStrings()
   const { expressions } = useVariablesExpression()
   const isExecutionTimeFieldDisabledForStep = isExecutionTimeFieldDisabled(stepViewType)
@@ -81,8 +75,6 @@ const SscaEnforcementStepEdit = <T extends SscaEnforcementStepData | SscaCdEnfor
   )
   const { accountId, projectIdentifier, orgIdentifier } = useParams<ProjectPathProps>()
   const { repoIdentifier, branch } = useQueryParams<GitQueryParams>()
-
-  const gitScope = useGitScope()
 
   const _initialValues = getInitialValuesInCorrectFormat<T, T>(initialValues, transformValuesFieldsConfig(stepType))
 
@@ -108,7 +100,11 @@ const SscaEnforcementStepEdit = <T extends SscaEnforcementStepData | SscaCdEnfor
         onChange?.(schemaValues)
         return validate(
           valuesToValidate,
-          editViewValidateFieldsConfig(stepType, !!get(valuesToValidate, 'spec.policy.opa')),
+          editViewValidateFieldsConfig({
+            stepType,
+            isOpa: !!get(valuesToValidate, 'spec.policy.opa'),
+            isRepoArtifact: get(valuesToValidate, 'spec.source.type') === 'repository'
+          }),
           {
             initialValues,
             steps: currentStage?.stage?.spec?.execution?.steps || {},
@@ -131,74 +127,26 @@ const SscaEnforcementStepEdit = <T extends SscaEnforcementStepData | SscaCdEnfor
           <FormikForm>
             <div className={css.stepContainer}>
               {stepViewType !== StepViewType.Template && (
-                <FormInput.InputWithIdentifier
-                  inputName="name"
-                  idName="identifier"
-                  inputLabel={getString('pipelineSteps.stepNameLabel')}
-                  isIdentifierEditable={isNewStep}
-                  inputGroupProps={{ disabled: readonly }}
-                />
+                <div>
+                  <FormInput.InputWithIdentifier
+                    inputName="name"
+                    idName="identifier"
+                    inputLabel={getString('pipelineSteps.stepNameLabel')}
+                    isIdentifierEditable={isNewStep}
+                    inputGroupProps={{ disabled: readonly }}
+                  />
+                  <Divider />
+                </div>
               )}
 
-              <Text
-                font={{ variation: FontVariation.FORM_SUB_SECTION }}
-                color={Color.GREY_900}
-                margin={{ top: 'medium' }}
-              >
-                {getString('ssca.orchestrationStep.artifactSource')}
-              </Text>
+              <ArtifactSourceSection {...props} />
 
-              <FormInput.Select
-                items={artifactTypeOptions}
-                name="spec.source.type"
-                label={getString('pipeline.artifactsSelection.artifactType')}
-                placeholder={getString('select')}
-                disabled={readonly}
-              />
-
-              <FormMultiTypeConnectorField
-                label={getString('pipelineSteps.connectorLabel')}
-                type={[Connectors.GCP, Connectors.AWS, Connectors.DOCKER, Connectors.AZURE]}
-                name="spec.source.spec.connector"
-                placeholder={getString('select')}
-                accountIdentifier={accountId}
-                projectIdentifier={projectIdentifier}
-                orgIdentifier={orgIdentifier}
-                multiTypeProps={{
-                  expressions,
-                  allowableTypes: AllMultiTypeInputTypesForStep,
-                  disabled: readonly
-                }}
-                gitScope={gitScope}
-                setRefValue
-                configureOptionsProps={{
-                  hideExecutionTimeField: isExecutionTimeFieldDisabledForStep
-                }}
-              />
-
-              <MultiTypeTextField
-                name="spec.source.spec.image"
-                label={
-                  <Text className={css.formLabel} tooltipProps={{ dataTooltipId: 'image' }}>
-                    {getString('imageLabel')}
-                  </Text>
-                }
-                multiTextInputProps={{
-                  disabled: readonly,
-                  multiTextInputProps: {
-                    expressions,
-                    allowableTypes: AllMultiTypeInputTypesForStep
-                  }
-                }}
-                configureOptionsProps={{
-                  hideExecutionTimeField: isExecutionTimeFieldDisabledForStep
-                }}
-              />
+              <Divider style={{ marginTop: 'var(--spacing-large)' }} />
 
               <Text
                 font={{ variation: FontVariation.FORM_SUB_SECTION }}
                 color={Color.GREY_900}
-                margin={{ top: 'medium' }}
+                margin={{ top: 'small' }}
               >
                 {getString('ssca.enforcementStep.verifyAttestation')}
               </Text>
@@ -216,10 +164,12 @@ const SscaEnforcementStepEdit = <T extends SscaEnforcementStepData | SscaCdEnfor
                 disabled={readonly}
               />
 
+              <Divider style={{ marginTop: 'var(--spacing-small)' }} />
+
               <Text
                 font={{ variation: FontVariation.FORM_SUB_SECTION }}
                 color={Color.GREY_900}
-                margin={{ top: 'medium' }}
+                margin={{ top: 'small' }}
               >
                 {getString('ssca.enforcementStep.policyConfiguration')}
               </Text>
@@ -255,7 +205,7 @@ const SscaEnforcementStepEdit = <T extends SscaEnforcementStepData | SscaCdEnfor
                 />
               )}
 
-              {stepType === StepType.CdSscaEnforcement && (
+              {stepType === StepType.PolicyEnforcementCd && (
                 <>
                   <Text
                     font={{ variation: FontVariation.FORM_SUB_SECTION }}
@@ -396,7 +346,7 @@ const SscaEnforcementStepEdit = <T extends SscaEnforcementStepData | SscaCdEnfor
                         multiTypeDurationProps={{ enableConfigureOptions: true, expressions, allowableTypes }}
                         disabled={readonly}
                       />
-                      {stepType === StepType.SscaEnforcement && (
+                      {stepType === StepType.PolicyEnforcement && (
                         <Layout.Horizontal spacing="small">
                           <FormInput.MultiTextInput
                             name="spec.resources.limits.memory"
@@ -458,4 +408,4 @@ const SscaEnforcementStepEdit = <T extends SscaEnforcementStepData | SscaCdEnfor
   )
 }
 
-export const SscaEnforcementStepEditWithRef = React.forwardRef(SscaEnforcementStepEdit)
+export const PolicyEnforcementStepBase = React.forwardRef(_PolicyEnforcementStepBase)
