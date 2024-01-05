@@ -55,4 +55,11 @@ describe('shouldIgnoreEvent function', () => {
     const event = {}
     expect(shouldIgnoreEvent(event)).toBe(false)
   })
+
+  test('should return true when errors.originalError includes ResizeObserver loop completed', () => {
+    const event = {
+      originalError: 'ResizeObserver loop completed with undelivered notifications.'
+    }
+    expect(shouldIgnoreEvent(event)).toBe(true)
+  })
 })

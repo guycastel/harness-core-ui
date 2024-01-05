@@ -15,6 +15,14 @@ export const shouldIgnoreEvent = (event: any): boolean => {
     return true
   }
 
+  // Ignore ResizeObserver loop completed with undelivered notifications caused due to plugins or library in chromium browsers
+  if (
+    typeof event.originalError === 'string' &&
+    event.originalError.includes('ResizeObserver loop completed with undelivered notifications.')
+  ) {
+    return true
+  }
+
   // Ignore errors from monaco-editor workers caused due to network issues.
 
   const isMonacoWorkerError = [get(event, 'originalError.stack'), get(event, 'errors.0.errorMessage')].some(text =>
