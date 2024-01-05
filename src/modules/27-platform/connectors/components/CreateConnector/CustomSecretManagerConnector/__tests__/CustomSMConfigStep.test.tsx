@@ -95,8 +95,6 @@ describe('CustomSMConfigStep', () => {
 
     expect(container.querySelector('input[value="hjgjj"]')).toBeDefined()
     expect(container.querySelector('input[value="host"]')).toBeDefined()
-
-    expect(container).toMatchSnapshot()
   })
 
   test('CustomSMConfigStep when onDelegate is false in selected template and execution target as runtimeinput', async () => {
@@ -132,8 +130,6 @@ describe('CustomSMConfigStep', () => {
 
     expect(container.querySelector('input[value="hjgjj"]')).toBeDefined()
     expect(container.querySelector('input[value="host"]')).toBeNull()
-
-    expect(container).toMatchSnapshot()
   })
 
   test('CustomSMConfigStep in Edit mode', async () => {
@@ -159,8 +155,6 @@ describe('CustomSMConfigStep', () => {
 
     expect(container.querySelector('input[value="hjgjj"]')).toBeDefined()
     expect(container.querySelector('input[value="host"]')).toBeNull()
-
-    expect(container).toMatchSnapshot()
   })
   test('CustomSMConfigStep in Edit mode - submit data', async () => {
     const nextStepMock = jest.fn()
@@ -187,10 +181,14 @@ describe('CustomSMConfigStep', () => {
 
     expect(container.querySelector('input[value="hjgjj"]')).toBeDefined()
     expect(container.querySelector('input[value="host"]')).toBeNull()
-    expect(container).toMatchSnapshot()
+    const inputElement = container.querySelector('[name="timeout"]') as HTMLInputElement
+
+    expect(inputElement).toBeInTheDocument()
     act(() => {
       clickSubmit(container)
     })
+    fireEvent.change(inputElement, { target: { value: 22 } })
+
     await waitFor(() => expect(nextStepMock).toHaveBeenCalled())
     expect(nextStepMock).toHaveBeenCalledWith(smConfigStepDataToSubmit)
   })
@@ -236,7 +234,7 @@ describe('CustomSMConfigStep', () => {
     jest
       .spyOn(templateServices, 'getTemplateInputSetYamlPromise')
       .mockImplementation(() => Promise.resolve(inputSetEmpty) as any)
-    const { container, getByText } = render(
+    const { getByText } = render(
       <TestWrapper path="/account/:accountId/resources/connectors" pathParams={{ accountId: 'dummy' }}>
         <CustomSMConfigStep
           {...commonProps}
@@ -253,7 +251,6 @@ describe('CustomSMConfigStep', () => {
       fireEvent.click(selectTemplateBtn)
     })
 
-    await waitFor(() => getByText('targetHost'))
-    expect(container).toMatchSnapshot()
+    await waitFor(() => expect(getByText('targetHost')).toBeInTheDocument())
   })
 })

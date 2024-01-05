@@ -90,3 +90,8 @@
   max-height: 300px;
   overflow: auto;
 }
+
+.textInput {
+  height: var(--spacing-7) !important;
+  width: var(--spacing-12) !important;
+}

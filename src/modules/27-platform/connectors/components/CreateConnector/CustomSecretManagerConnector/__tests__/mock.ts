@@ -69,6 +69,7 @@ export const CustomSMConnector = {
     connectorRef: 'account.sds',
     host: 'changes',
     workingDirectory: 'working directory',
+    timeout: '20',
     template: {
       templateRef: 'Template_Name_3',
       versionLabel: '1',
@@ -112,6 +113,7 @@ export const smConfigStepDataToSubmit = {
         ]
       }
     },
+    timeout: '20',
     testVariables: null,
     default: false
   },
@@ -137,5 +139,6 @@ export const smConfigStepDataToSubmit = {
   },
   executionTarget: { host: 'changes', workingDirectory: 'working directory', connectorRef: 'account.sds' },
   templateJson: {},
-  onDelegate: ''
+  onDelegate: '',
+  timeout: '22'
 }

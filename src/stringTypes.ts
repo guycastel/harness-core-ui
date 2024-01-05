@@ -2796,10 +2796,15 @@ export interface StringsMap {
   'platform.connectors.customLabel': string
   'platform.connectors.customSM.details': string
   'platform.connectors.customSM.executeOnDelegate': string
+  'platform.connectors.customSM.maxTimeoutExceedError': string
+  'platform.connectors.customSM.minTimeoutExceedError': string
   'platform.connectors.customSM.selectTemplate': string
   'platform.connectors.customSM.sshKey': string
   'platform.connectors.customSM.templateRef': string
   'platform.connectors.customSM.templateVersion': string
+  'platform.connectors.customSM.timeout': string
+  'platform.connectors.customSM.timeoutNumberTypeRequiredError': string
+  'platform.connectors.customSM.timeoutRequiredError': string
   'platform.connectors.customSM.validation.template': string
   'platform.connectors.datadog.encryptedAPPKeyLabel': string
   'platform.connectors.datadog.encryptedAPPKeyValidation': string

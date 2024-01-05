@@ -20,6 +20,7 @@ declare const styles: {
   readonly maxHeightScroll: string
   readonly paddingTop8: string
   readonly stepContainer: string
+  readonly textInput: string
   readonly topMargin1: string
 }
 export default styles

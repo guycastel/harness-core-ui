@@ -19,7 +19,10 @@ import {
   MultiTypeInputType,
   ModalErrorHandler,
   ModalErrorHandlerBinding,
-  getErrorInfoFromErrorObject
+  getErrorInfoFromErrorObject,
+  TextInput,
+  HarnessDocTooltip,
+  FormError
 } from '@harness/uicore'
 
 import * as Yup from 'yup'
@@ -77,10 +80,13 @@ const CustomSMConfigStep: React.FC<StepProps<StepCustomSMConfigStepProps> & Step
   getTemplate
 }) => {
   const { getString } = useStrings()
+  const minimumTimeoutInSeconds = 1
+  const maximumTimeoutInSeconds = 3600
 
   const defaultInitialFormData: CustomSMFormInterface = {
     template: undefined,
     templateInputs: {},
+    timeout: '20',
     onDelegate: true,
     executionTarget: {
       host: '',
@@ -185,6 +191,22 @@ const CustomSMConfigStep: React.FC<StepProps<StepCustomSMConfigStepProps> & Step
         validationSchema={Yup.object().shape({
           template: Yup.object().required(getString('platform.connectors.customSM.validation.template')),
           onDelegate: Yup.boolean(),
+          timeout: Yup.number()
+            .integer()
+            .required(getString('platform.connectors.customSM.timeoutRequiredError'))
+            .typeError(getString('platform.connectors.customSM.timeoutNumberTypeRequiredError'))
+            .min(
+              minimumTimeoutInSeconds,
+              getString('platform.connectors.customSM.minTimeoutExceedError', {
+                minimum: minimumTimeoutInSeconds
+              })
+            )
+            .max(
+              maximumTimeoutInSeconds,
+              getString('platform.connectors.customSM.maxTimeoutExceedError', {
+                maximum: maximumTimeoutInSeconds
+              })
+            ),
           executionTarget: Yup.mixed().when('onDelegate', (value: boolean) => {
             if (value !== true)
               return Yup.object().shape({
@@ -246,12 +268,33 @@ const CustomSMConfigStep: React.FC<StepProps<StepCustomSMConfigStepProps> & Step
                     className={commonStyles.maxHeightScroll}
                   />
                 ) : null}
-
                 <FormInput.CheckBox
                   label="Execute on Delegate"
                   name="onDelegate"
                   placeholder={getString('typeLabel')}
                 />
+                <Layout.Horizontal>
+                  <Text
+                    data-tooltip-id={'customSMForm_timeout'}
+                    margin={{ top: 'small' }}
+                    font={{ variation: FontVariation.FORM_LABEL, weight: 'semi-bold', size: 'normal' }}
+                  >
+                    {getString('platform.connectors.customSM.timeout')}
+                    {<HarnessDocTooltip useStandAlone={true} tooltipId={'customSMForm_timeout'} />}
+                  </Text>
+                  <TextInput
+                    wrapperClassName={commonStyles.textInput}
+                    type="number"
+                    value={formik.values.timeout}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                      formik.setFieldValue('timeout', event.target?.value)
+                    }}
+                    min={minimumTimeoutInSeconds}
+                    max={maximumTimeoutInSeconds}
+                    name="timeout"
+                  />
+                </Layout.Horizontal>
+                {formik.errors.timeout && <FormError name="timeoutErrorMsg" errorMessage={formik.errors.timeout} />}
                 {formik.values.onDelegate !== true ? (
                   <>
                     <FormInput.Text

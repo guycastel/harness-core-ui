@@ -7,7 +7,7 @@
 
 import React from 'react'
 import { noop } from 'lodash-es'
-import { render, fireEvent, queryByAttribute, waitFor } from '@testing-library/react'
+import { render, fireEvent, queryByAttribute, waitFor, screen } from '@testing-library/react'
 import { act } from 'react-dom/test-utils'
 import { TestWrapper } from '@common/utils/testUtils'
 import { clickSubmit } from '@common/utils/JestFormHelper'
@@ -95,7 +95,7 @@ describe('CreateCustomSMConnector wizard', () => {
     jest.clearAllMocks()
   })
   test('CreateCustomSMConnector step one', async () => {
-    const { container } = render(
+    const { container, getByText } = render(
       <TestWrapper path="/account/:accountId/resources/connectors" pathParams={{ accountId: 'dummy' }}>
         <CreateCustomSMConnector
           getTemplate={jest.fn()}
@@ -110,7 +110,7 @@ describe('CreateCustomSMConnector wizard', () => {
       clickSubmit(container)
     })
 
-    expect(container).toMatchSnapshot()
+    await waitFor(() => expect(getByText('common.validation.nameIsRequired')).toBeInTheDocument())
   })
 
   test('CreateCustomSMConnector step two', async () => {
@@ -143,12 +143,31 @@ describe('CreateCustomSMConnector wizard', () => {
     act(() => {
       fireEvent.click(selectTemplateBtn)
     })
+
+    // Assert Execute On Delegate
+    const executeOnDelegate = screen.getByText('Execute on Delegate')
+    expect(executeOnDelegate).toBeVisible()
+
+    // Assert Timeout Input element
+    const inputBox = container.querySelector('[name="timeout"]') as HTMLInputElement
+
+    expect(inputBox.getAttribute('value')).toBe('20')
+    expect(inputBox.getAttribute('min')).toBe('1')
+    expect(inputBox.getAttribute('max')).toBe('3600')
+    expect(inputBox.getAttribute('type')).toBe('number')
+
     // step 2
     await waitFor(() => getByText('common.inputVariables'))
+    act(() => {
+      clickSubmit(container)
+    })
+
+    // Assert Fixed value variables to be empty and validation error message to be visible.
+    const validationRequired = screen.getAllByText('common.validation.valueIsRequired')
+    expect(validationRequired).toHaveLength(2)
 
     expect(container.querySelector('input[value="engine"]')).toBeDefined()
     expect(container.querySelector('input[value="key"]')).toBeDefined()
-    expect(container).toMatchSnapshot()
     const backButton = getByText('back')
     act(() => {
       fireEvent.click(backButton)

@@ -250,6 +250,7 @@ export const buildCustomSMPayload = (formData: FormData) => {
       host: !formData.onDelegate ? formData.executionTarget.host : undefined,
       workingDirectory: !formData.onDelegate ? formData.executionTarget.workingDirectory : undefined,
       connectorRef: !formData.onDelegate ? formData.executionTarget.connectorRef : undefined,
+      timeout: formData?.timeout,
       template: {
         templateRef: formData.template.templateRef,
         versionLabel: formData.template.versionLabel,
@@ -266,6 +267,7 @@ export const setupCustomSMFormData = async (connectorInfo: ConnectorInfoDTO): Pr
   return {
     template: connectorInfoSpec.template,
     templateInputs: connectorInfoSpec.template.templateInputs,
+    timeout: connectorInfoSpec?.timeout || '',
     executionTarget: {
       host: connectorInfoSpec?.host || '',
       workingDirectory: connectorInfoSpec?.workingDirectory || '',

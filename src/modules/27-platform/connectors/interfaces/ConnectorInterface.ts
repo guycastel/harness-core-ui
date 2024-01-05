@@ -171,6 +171,7 @@ export interface CustomSMFormInterface {
   onDelegate: boolean
   executionTarget: ExecutionTarget
   templateJson: JsonNode
+  timeout: string
 }
 
 export interface ConnectorModaldata {
