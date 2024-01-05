@@ -992,7 +992,10 @@ export function OverlayInputSetForm({
                               const latestYaml = defaultTo(yamlHandler?.getLatestYaml(), '')
 
                               handleSubmit(
-                                parse<{ overlayInputSet: OverlayInputSetDTO }>(latestYaml)?.overlayInputSet,
+                                {
+                                  ...parse<{ overlayInputSet: OverlayInputSetDTO }>(latestYaml)?.overlayInputSet,
+                                  provider: formikProps.values.provider
+                                },
                                 {
                                   repoIdentifier: formikProps.values.repo,
                                   branch: formikProps.values.branch,

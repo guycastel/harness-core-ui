@@ -513,7 +513,7 @@ export function InputSetForm(props: InputSetFormProps): React.ReactElement {
           storeType: formikStoreType
         } = defaultTo(formikRef.current?.values, {}) as InputSetDTO & GitContextProps & StoreMetadata
         handleSubmit(
-          inputSetDto,
+          { ...inputSetDto, provider: formikRef.current?.values.provider },
           {
             repoIdentifier: formikRepo,
             branch: formikBranch
