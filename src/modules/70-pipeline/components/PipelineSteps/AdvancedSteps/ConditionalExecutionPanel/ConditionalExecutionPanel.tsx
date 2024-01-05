@@ -7,15 +7,8 @@
 
 import React from 'react'
 import cx from 'classnames'
-import {
-  AllowedTypes,
-  Button,
-  ButtonVariation,
-  ConfirmationDialog,
-  FormInput,
-  Layout,
-  useToggleOpen
-} from '@harness/uicore'
+import { AllowedTypes, Button, ConfirmationDialog, FormInput, Layout, useToggleOpen } from '@harness/uicore'
+import { FontVariation } from '@harness/design-system'
 import { useFormikContext } from 'formik'
 import { get, isUndefined, set } from 'lodash-es'
 import produce from 'immer'
@@ -65,12 +58,15 @@ export default function ConditionalExecutionPanel(props: ConditionalExecutionPan
       <Layout.Horizontal flex={{ justifyContent: 'space-between', alignItems: 'center' }}>
         <ConditionalExecutionPanelHeader mode={mode} />
         <Button
-          variation={ButtonVariation.ICON}
-          icon={'main-trash'}
+          intent={'primary'}
           data-testid="delete"
           disabled={isReadonly || isUndefined(value)}
           onClick={openDeleteConfirmation}
-        />
+          minimal
+          font={{ variation: FontVariation.H6 }}
+        >
+          {getString('reset')}
+        </Button>
       </Layout.Horizontal>
       {isValueRuntimeInput(value) ? (
         <FormInput.Text className={css.runtimeInput} name={path} disabled />
