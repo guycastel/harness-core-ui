@@ -12,8 +12,8 @@ import { routesV2 as routes } from '@modules/60-code/RouteDefinitions'
 import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import { Scope } from 'framework/types/types'
 import { RouteWithContext } from '@common/router/RouteWithContext/RouteWithContext'
-import { RedirectToModuleTrialHomeFactory, RedirectToSubscriptionsFactory } from '@common/Redirects'
-import { LICENSE_STATE_NAMES, LicenseRedirectProps } from 'framework/LicenseStore/LicenseStoreContext'
+// import { RedirectToModuleTrialHomeFactory, RedirectToSubscriptionsFactory } from '@common/Redirects'
+// import { LICENSE_STATE_NAMES, LicenseRedirectProps } from 'framework/LicenseStore/LicenseStoreContext'
 import { accountPathProps, projectPathProps, NAV_MODE, orgPathProps } from '@common/utils/routeUtils'
 import { ModuleName } from 'framework/types/ModuleName'
 import { PAGE_NAME } from '@common/pages/pageContext/PageName'
@@ -41,11 +41,11 @@ import CODETrialHomePage from './pages/home/CODETrialHomePage'
 
 export default function CODERouteDestinations(mode = NAV_MODE.MODULE): React.ReactElement {
   const routePaths = buildCODERoutePaths(mode)
-  const licenseRedirectData: LicenseRedirectProps = {
-    licenseStateName: LICENSE_STATE_NAMES.CODE_LICENSE_STATE,
-    startTrialRedirect: RedirectToModuleTrialHomeFactory(ModuleName.CODE),
-    expiredTrialRedirect: RedirectToSubscriptionsFactory(ModuleName.CODE)
-  }
+  // const licenseRedirectData: LicenseRedirectProps = {
+  //   licenseStateName: LICENSE_STATE_NAMES.CODE_LICENSE_STATE,
+  //   startTrialRedirect: RedirectToModuleTrialHomeFactory(ModuleName.CODE),
+  //   expiredTrialRedirect: RedirectToSubscriptionsFactory(ModuleName.CODE)
+  // }
   return (
     <Switch>
       <RouteWithContext
@@ -64,7 +64,7 @@ export default function CODERouteDestinations(mode = NAV_MODE.MODULE): React.Rea
       </RouteWithContext>
 
       <RouteWithContext
-        licenseRedirectData={licenseRedirectData}
+        // licenseRedirectData={licenseRedirectData}
         exact
         path={routePaths.toCODEHome}
         pageName={PAGE_NAME.CODEHomePage}
@@ -105,7 +105,7 @@ export default function CODERouteDestinations(mode = NAV_MODE.MODULE): React.Rea
       </RouteWithContext>
 
       <RouteWithContext
-        licenseRedirectData={licenseRedirectData}
+        // licenseRedirectData={licenseRedirectData}
         path={routePaths.toCODERepositories}
         pageName={PAGE_NAME.CODERepositories}
         exact
@@ -134,7 +134,7 @@ export default function CODERouteDestinations(mode = NAV_MODE.MODULE): React.Rea
       </RouteWithContext>
 
       <RouteWithContext
-        licenseRedirectData={licenseRedirectData}
+        // licenseRedirectData={licenseRedirectData}
         path={routePaths.toCODERepository}
         pageName={PAGE_NAME.CODERepository}
       >
