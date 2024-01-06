@@ -62,11 +62,13 @@ async function initializeDiscoveryDB(
         upgrade(db) {
           for (const store of OBJECT_STORES) {
             try {
-              const dbStore = db.createObjectStore(store.name, store.options)
-              /* istanbul ignore next */
-              if (store.index) {
-                const { name, keyPath, options } = store.index
-                dbStore.createIndex(name, keyPath, options)
+              if (!db.objectStoreNames.contains(store.name)) {
+                const dbStore = db.createObjectStore(store.name, store.options)
+                /* istanbul ignore next */
+                if (store.index) {
+                  const { name, keyPath, options } = store.index
+                  dbStore.createIndex(name, keyPath, options)
+                }
               }
             } catch (exception) {
               /* istanbul ignore next */
