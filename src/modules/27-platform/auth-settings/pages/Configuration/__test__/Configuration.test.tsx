@@ -69,7 +69,7 @@ jest.spyOn(useGetAuthSettings, 'useGetAuthSettings').mockReturnValue(useGetAuthS
 
 describe('Configuration', () => {
   test('Configuration page', () => {
-    const { container } = render(
+    const { getByText, getAllByText } = render(
       <TestWrapper
         path={routes.toAuthenticationSettings({ ...accountPathProps })}
         pathParams={{ accountId: 'testAcc' }}
@@ -78,6 +78,14 @@ describe('Configuration', () => {
         <Configuration />
       </TestWrapper>
     )
-    expect(container).toMatchSnapshot()
+
+    // assertions ensure different auth mechanisms are properly visible
+    expect(getByText('platform.authSettings.accountOrOAuthLogin')).toBeInTheDocument()
+    expect(getByText('platform.authSettings.loginViaSAML')).toBeInTheDocument()
+    expect(getByText('platform.authSettings.loginViaLDAP')).toBeInTheDocument()
+    expect(getByText('platform.authSettings.restrictUsersToEmailDomains')).toBeInTheDocument()
+
+    // 2 labels for SessionInactivityTimeout and AbsoluteSessionTimeout
+    expect(getAllByText('platform.authSettings.sessionTimeoutLabel').length).toBe(2)
   })
 })

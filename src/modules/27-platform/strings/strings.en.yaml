@@ -588,12 +588,13 @@ authSettings:
   twoFAEnforcementDisabled: Two Factor Authentication enforcement has been disabled successfully
   authenticationSettings: Authentication Settings
   updating: Updating, please wait...
-  sessionTimeOut: Session Inactivity Timeout (in minutes)
-  sessionTimeOutErrorMessage: Session Inactivity Timeout cannot be less than {{minimum}} minutes
-  sessionTimOutSaved: Session Inactivity Timeout {{ $.common.savedSuccessfully }}
-  sessionTimeOutErrorMaxMessage: Session Inactivity Timeout cannot be more than {{maximum}} minutes
-  timeoutRequired: Session Inactivity timeout is required
-  timeoutNumberRequired: Session Inactivity timeout should be a number
+  sessionInactivityTimeout: Session Inactivity Timeout
+  absoluteSessionTimeout: Absolute Session Timeout
+  sessionTimeoutLabel: '{{timeoutType}} (in minutes)'
+  sessionTimeOutErrorMessage: '{{timeoutType}} cannot be less than {{minimum}} minutes'
+  sessionTimeOutErrorMaxMessage: '{{timeoutType}} cannot be more than {{maximum}} minutes'
+  timeoutRequired: '{{timeoutType}} is required'
+  timeoutNumberRequired: Timeout value should be a number
   onprem: 'Self Hosted'
   saas: 'SaaS'
   multipleOrganizations: Multiple Organizations

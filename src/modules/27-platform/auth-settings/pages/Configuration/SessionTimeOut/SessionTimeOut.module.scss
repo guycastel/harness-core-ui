@@ -14,5 +14,9 @@
   margin: 0px !important;
 }
 .sessionTimeoutLayout {
-  width: 50% !important;
+  width: 90% !important;
+
+  .label {
+    width: 300px;
+  }
 }

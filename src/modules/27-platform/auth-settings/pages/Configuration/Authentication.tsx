@@ -153,7 +153,10 @@ const Authentication: React.FC = () => {
                 setUpdating={setUpdating}
               />
             )}
-            <SessionTimeOut timeout={data.resource.sessionTimeoutInMinutes} />
+            <SessionTimeOut
+              sessionInactivityTimeout={data.resource.sessionTimeoutInMinutes}
+              absoluteSessionTimeout={data.resource.absoluteSessionTimeoutInMinutes}
+            />
           </React.Fragment>
         )}
       </Page.Body>

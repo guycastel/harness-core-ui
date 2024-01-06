@@ -1,5 +1,7 @@
 import React from 'react'
-import { render, act, fireEvent, waitFor } from '@testing-library/react'
+import { render, act, fireEvent, waitFor, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+
 import { TestWrapper } from '@common/utils/testUtils'
 import { formatMinutesToHigherDimensions } from '@auth-settings/utils'
 import { useSetSessionTimeoutAtAccountLevel } from 'services/cd-ng'
@@ -38,7 +40,7 @@ describe('Session time out settings', () => {
   test('set session timeout', async () => {
     const { container } = render(
       <TestWrapper pathParams={{ accountId: 'testAcc' }}>
-        <SessionTimeOut timeout={30} />
+        <SessionTimeOut sessionInactivityTimeout={30} />
       </TestWrapper>
     )
 
@@ -61,15 +63,20 @@ describe('Session time out settings', () => {
 
     const { container, getByText } = render(
       <TestWrapper pathParams={{ accountId: 'testAcc' }}>
-        <SessionTimeOut timeout={630} />
+        <SessionTimeOut sessionInactivityTimeout={630} absoluteSessionTimeout={10} />
       </TestWrapper>
     )
 
-    const inputBox = container.getElementsByClassName('bp3-input')[0]
+    const inputBoxes = container.getElementsByClassName('bp3-input')
+    expect(inputBoxes.length).toBe(2)
+
+    const inactivityTimeoutInputBox = inputBoxes[0]
+    const absoluteTimeoutInputBox = inputBoxes[1]
     await waitFor(() => {
-      expect(inputBox.getAttribute('value')).toBe('630')
+      expect(inactivityTimeoutInputBox.getAttribute('value')).toBe('630')
+      expect(absoluteTimeoutInputBox.getAttribute('value')).toBe('10')
     })
-    expect(inputBox.getAttribute('value')).toBe('630')
+    expect(inactivityTimeoutInputBox.getAttribute('value')).toBe('630')
     await act(async () => {
       fireEvent.click(getByText('save'))
     })
@@ -84,28 +91,57 @@ describe('Session time out settings', () => {
   })
 
   test('error on save timeout', async () => {
+    const saveSessionTimeoutMock = jest.fn().mockImplementation(() => {
+      return Promise.resolve({ metaData: {}, resource: false, responseMessages: [] })
+    })
     ;(useSetSessionTimeoutAtAccountLevel as jest.Mock).mockImplementation().mockReturnValue({
       error: true,
-      mutate: jest.fn().mockImplementation(() => {
-        return Promise.resolve({ metaData: {}, resource: false, responseMessages: [] })
-      })
+      mutate: saveSessionTimeoutMock
     })
 
     const { container, getByText } = render(
       <TestWrapper pathParams={{ accountId: 'testAcc' }}>
-        <SessionTimeOut timeout={630} />
+        <SessionTimeOut sessionInactivityTimeout={630} absoluteSessionTimeout={15} />
       </TestWrapper>
     )
 
-    const inputBox = container.getElementsByClassName('bp3-input')[0]
-    await waitFor(() => {
-      expect(inputBox.getAttribute('value')).toBe('630')
-    })
-    expect(inputBox.getAttribute('value')).toBe('630')
+    const inputBoxes = container.getElementsByClassName('bp3-input')
+    expect(inputBoxes.length).toBe(2)
 
+    const inactivityTimeoutInputBox = inputBoxes[0]
+    const absoluteTimeoutInputBox = inputBoxes[1]
+    await waitFor(() => {
+      expect(inactivityTimeoutInputBox.getAttribute('value')).toBe('630')
+    })
+    expect(inactivityTimeoutInputBox.getAttribute('value')).toBe('630')
+
+    await userEvent.clear(inactivityTimeoutInputBox)
+    await userEvent.type(inactivityTimeoutInputBox, '50')
+
+    const errorText = 'platform.authSettings.sessionTimeOutErrorMaxMessage'
+
+    // Clear original value and type a value that is larger than MAX allowed value, errorText should be visible
+
+    await userEvent.clear(absoluteTimeoutInputBox)
+    await userEvent.type(absoluteTimeoutInputBox, '9999')
+    await waitFor(() => expect(screen.queryByText(errorText)).toBeInTheDocument())
+
+    // Clear, and re-type a value that is in range. "errorText" should go away.
+    await userEvent.clear(absoluteTimeoutInputBox)
+    await userEvent.type(absoluteTimeoutInputBox, '10')
+    await waitFor(() => expect(screen.queryByText(errorText)).not.toBeInTheDocument())
+
+    // Click on "Save" button
     await act(async () => {
       fireEvent.click(getByText('save'))
     })
+
+    // After save click, API should be called
+    expect(saveSessionTimeoutMock).toHaveBeenCalledWith({
+      absoluteSessionTimeOutInMinutes: '10',
+      sessionTimeOutInMinutes: '50'
+    })
+
     await waitFor(() => {
       expect(showErrorCalled).toBeTruthy()
     })
@@ -123,7 +159,7 @@ describe('Session time out settings', () => {
 
     const { container, getByText } = render(
       <TestWrapper pathParams={{ accountId: 'testAcc' }}>
-        <SessionTimeOut timeout={630} />
+        <SessionTimeOut sessionInactivityTimeout={630} />
       </TestWrapper>
     )
 

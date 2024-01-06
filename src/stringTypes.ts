@@ -1910,6 +1910,7 @@ export interface StringsMap {
   'governance.permissions.governancePolicySets': string
   'platform.authSettings.SAMLProvider': string
   'platform.authSettings.WhitelistedDomainsUpdated': string
+  'platform.authSettings.absoluteSessionTimeout': string
   'platform.authSettings.accountOrOAuthLogin': string
   'platform.authSettings.accountOrOAuthLoginEnabledSuccessfully': string
   'platform.authSettings.addCard': string
@@ -2230,10 +2231,10 @@ export interface StringsMap {
   'platform.authSettings.samlTestSuccessful': string
   'platform.authSettings.selectProvider': string
   'platform.authSettings.selectSAMLProvider': string
-  'platform.authSettings.sessionTimOutSaved': string
-  'platform.authSettings.sessionTimeOut': string
+  'platform.authSettings.sessionInactivityTimeout': string
   'platform.authSettings.sessionTimeOutErrorMaxMessage': string
   'platform.authSettings.sessionTimeOutErrorMessage': string
+  'platform.authSettings.sessionTimeoutLabel': string
   'platform.authSettings.setAsDefaultCard': string
   'platform.authSettings.success.msg': string
   'platform.authSettings.success.title': string

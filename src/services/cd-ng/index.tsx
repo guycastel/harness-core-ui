@@ -478,6 +478,7 @@ export interface AccessControlCheckError {
 }
 
 export interface Account {
+  absoluteSessionTimeOutInMinutes?: number
   accountActivelyUsed?: boolean
   accountEvents?: AccountEvent[]
   accountName: string
@@ -536,6 +537,7 @@ export interface AccountCreditCardValidationResponse {
 }
 
 export interface AccountDTO {
+  absoluteSessionTimeoutInMinutes?: number
   authenticationMechanism?: 'USER_PASSWORD' | 'SAML' | 'LDAP' | 'OAUTH'
   cannyUsernameAbbreviationEnabled?: boolean
   cluster?: string
@@ -1420,6 +1422,7 @@ export type AuditFilterProperties = FilterProperties & {
 }
 
 export interface AuthenticationSettingsResponse {
+  absoluteSessionTimeoutInMinutes?: number
   authenticationMechanism?: 'USER_PASSWORD' | 'SAML' | 'LDAP' | 'OAUTH'
   ngAuthSettings?: NGAuthSettings[]
   oauthEnabled?: boolean
@@ -12182,6 +12185,7 @@ export type MicrosoftTeamsConfigDTO = NotificationSettingConfigDTO & {
 
 export interface ModuleLicenseDTO {
   accountIdentifier?: string
+  addOn?: boolean
   createdAt?: number
   createdBy?: EmbeddedUser
   developerLicenseCount?: number
@@ -19695,6 +19699,7 @@ export interface ServicesYamlMetadataApiInputV2 {
 }
 
 export interface SessionTimeoutSettings {
+  absoluteSessionTimeOutInMinutes?: number
   sessionTimeOutInMinutes: number
 }
 
@@ -22195,9 +22200,11 @@ export type YamlSchemaDetailsWrapperRequestBody = YamlSchemaDetailsWrapper
 
 export type GetBuildDetailsForAcrArtifactWithYamlBodyRequestBody = string
 
-export type ListTagsForAMIArtifactBodyRequestBody = string
+export type DeleteManyFreezesBodyRequestBody = string[]
 
-export type UpdateFreezeStatusBodyRequestBody = string[]
+export type GetAzureSubscriptionsForAcrArtifactWithYamlBodyRequestBody = string
+
+export type ListTagsForAMIArtifactBodyRequestBody = string
 
 export type UpdateHarnessSupportAccessNGBodyRequestBody = boolean
 
@@ -49014,7 +49021,7 @@ export type DeleteManyFreezesProps = Omit<
     ResponseFreezeResponseWrapperDTO,
     Failure | Error,
     DeleteManyFreezesQueryParams,
-    UpdateFreezeStatusBodyRequestBody,
+    DeleteManyFreezesBodyRequestBody,
     void
   >,
   'path' | 'verb'
@@ -49028,7 +49035,7 @@ export const DeleteManyFreezes = (props: DeleteManyFreezesProps) => (
     ResponseFreezeResponseWrapperDTO,
     Failure | Error,
     DeleteManyFreezesQueryParams,
-    UpdateFreezeStatusBodyRequestBody,
+    DeleteManyFreezesBodyRequestBody,
     void
   >
     verb="POST"
@@ -49043,7 +49050,7 @@ export type UseDeleteManyFreezesProps = Omit<
     ResponseFreezeResponseWrapperDTO,
     Failure | Error,
     DeleteManyFreezesQueryParams,
-    UpdateFreezeStatusBodyRequestBody,
+    DeleteManyFreezesBodyRequestBody,
     void
   >,
   'path' | 'verb'
@@ -49057,7 +49064,7 @@ export const useDeleteManyFreezes = (props: UseDeleteManyFreezesProps) =>
     ResponseFreezeResponseWrapperDTO,
     Failure | Error,
     DeleteManyFreezesQueryParams,
-    UpdateFreezeStatusBodyRequestBody,
+    DeleteManyFreezesBodyRequestBody,
     void
   >('POST', `/freeze/delete`, { base: getConfig('ng/api'), ...props })
 
@@ -49069,7 +49076,7 @@ export const deleteManyFreezesPromise = (
     ResponseFreezeResponseWrapperDTO,
     Failure | Error,
     DeleteManyFreezesQueryParams,
-    UpdateFreezeStatusBodyRequestBody,
+    DeleteManyFreezesBodyRequestBody,
     void
   >,
   signal?: RequestInit['signal']
@@ -49078,7 +49085,7 @@ export const deleteManyFreezesPromise = (
     ResponseFreezeResponseWrapperDTO,
     Failure | Error,
     DeleteManyFreezesQueryParams,
-    UpdateFreezeStatusBodyRequestBody,
+    DeleteManyFreezesBodyRequestBody,
     void
   >('POST', getConfig('ng/api'), `/freeze/delete`, props, signal)
 
@@ -49641,7 +49648,7 @@ export type UpdateFreezeStatusProps = Omit<
     ResponseFreezeResponseWrapperDTO,
     Failure | Error,
     UpdateFreezeStatusQueryParams,
-    UpdateFreezeStatusBodyRequestBody,
+    DeleteManyFreezesBodyRequestBody,
     void
   >,
   'path' | 'verb'
@@ -49655,7 +49662,7 @@ export const UpdateFreezeStatus = (props: UpdateFreezeStatusProps) => (
     ResponseFreezeResponseWrapperDTO,
     Failure | Error,
     UpdateFreezeStatusQueryParams,
-    UpdateFreezeStatusBodyRequestBody,
+    DeleteManyFreezesBodyRequestBody,
     void
   >
     verb="POST"
@@ -49670,7 +49677,7 @@ export type UseUpdateFreezeStatusProps = Omit<
     ResponseFreezeResponseWrapperDTO,
     Failure | Error,
     UpdateFreezeStatusQueryParams,
-    UpdateFreezeStatusBodyRequestBody,
+    DeleteManyFreezesBodyRequestBody,
     void
   >,
   'path' | 'verb'
@@ -49684,7 +49691,7 @@ export const useUpdateFreezeStatus = (props: UseUpdateFreezeStatusProps) =>
     ResponseFreezeResponseWrapperDTO,
     Failure | Error,
     UpdateFreezeStatusQueryParams,
-    UpdateFreezeStatusBodyRequestBody,
+    DeleteManyFreezesBodyRequestBody,
     void
   >('POST', `/freeze/updateFreezeStatus`, { base: getConfig('ng/api'), ...props })
 
@@ -49696,7 +49703,7 @@ export const updateFreezeStatusPromise = (
     ResponseFreezeResponseWrapperDTO,
     Failure | Error,
     UpdateFreezeStatusQueryParams,
-    UpdateFreezeStatusBodyRequestBody,
+    DeleteManyFreezesBodyRequestBody,
     void
   >,
   signal?: RequestInit['signal']
@@ -49705,7 +49712,7 @@ export const updateFreezeStatusPromise = (
     ResponseFreezeResponseWrapperDTO,
     Failure | Error,
     UpdateFreezeStatusQueryParams,
-    UpdateFreezeStatusBodyRequestBody,
+    DeleteManyFreezesBodyRequestBody,
     void
   >('POST', getConfig('ng/api'), `/freeze/updateFreezeStatus`, props, signal)
 
