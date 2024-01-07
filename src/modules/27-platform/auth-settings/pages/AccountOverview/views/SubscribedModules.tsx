@@ -40,7 +40,8 @@ const MODULE_ICONS: {
   STO: 'sto-with-dark-text',
   CHAOS: 'chaos-with-dark-text',
   CET: 'cet-with-dark-text',
-  SEI: 'sei-with-dark-text'
+  SEI: 'sei-with-dark-text',
+  IDP: 'idp-with-dark-text'
 }
 
 const ModuleCard: React.FC<ModuleCardProps> = ({ module }) => {

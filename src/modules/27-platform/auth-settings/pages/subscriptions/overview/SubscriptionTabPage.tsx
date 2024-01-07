@@ -26,14 +26,16 @@ enum SubscriptionDataTab {
   BREAKDOWN = 'BREAKDOWN',
   TREND = 'TREND'
 }
-const supportedModules = [ModuleName.CI, ModuleName.CD, ModuleName.SRM]
+const supportedModules = [ModuleName.CI, ModuleName.CD, ModuleName.SRM, ModuleName.IDP]
 
-function SubscriptionTabPage(props: SubscriptionTabPageProps) {
+function SubscriptionTabPage(props: SubscriptionTabPageProps): React.ReactElement | null {
   const { getString } = useStrings()
   const [activeTab, setActiveTab] = React.useState(SubscriptionDataTab.BREAKDOWN)
+
   if (!supportedModules.includes(props.module)) {
-    return <></>
+    return null
   }
+
   const renderHeading = () => {
     switch (props.module) {
       case ModuleName.CD:
@@ -54,6 +56,7 @@ function SubscriptionTabPage(props: SubscriptionTabPageProps) {
           </Layout.Vertical>
         )
       case ModuleName.CI:
+      case ModuleName.IDP:
         return (
           <Heading color={Color.BLACK} font={{ size: 'medium' }} className={pageCss.headerMargin}>
             {getString('common.subscriptions.usage.activeDevelopers')}
@@ -78,6 +81,7 @@ function SubscriptionTabPage(props: SubscriptionTabPageProps) {
         )
     }
   }
+
   return (
     <Card>
       {renderHeading()}

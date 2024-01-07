@@ -128,8 +128,8 @@ module.exports = {
     target: process.env.IDP_SETTINGS_URL || 'https://localhost:8185'
   },
   '/idp/api': {
-    pathRewrite: { '^/idp/api': '/api' },
-    target: process.env.IDP_BE_URL || 'http://localhost:7007'
+    pathRewrite: { '^/idp/api': '' },
+    target: targetLocalHost ? 'http://localhost:12003' : `${baseUrl}/idp/api`
   },
   '/idp': {
     pathRewrite: { '^/idp': '' },

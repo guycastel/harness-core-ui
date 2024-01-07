@@ -32,6 +32,7 @@ declare const styles: {
   readonly frequencyContainer: string
   readonly frequencyCount: string
   readonly headerMargin: string
+  readonly idp: string
   readonly moduleIcons: string
   readonly moduleSelectCard: string
   readonly moduleSelectCards: string

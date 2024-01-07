@@ -257,5 +257,14 @@ module.exports = {
     customProps: {
       base: `{getConfig("pm/api/v1")}`
     }
+  },
+  idp: {
+    output: 'src/services/idp/index.tsx',
+    file: 'src/services/idp/swagger.json',
+    transformer: 'scripts/swagger-transform.js',
+    customImport: `import { getConfig } from "../config";`,
+    customProps: {
+      base: `{getConfig("")}`
+    }
   }
 }

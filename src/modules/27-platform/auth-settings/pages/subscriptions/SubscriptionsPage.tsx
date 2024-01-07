@@ -82,6 +82,10 @@ const MODULE_SELECT_CARDS: ModuleSelectCard[] = [
   {
     icon: 'sei-with-dark-text',
     module: ModuleName.SEI
+  },
+  {
+    icon: 'idp-with-dark-text',
+    module: ModuleName.IDP
   }
 ]
 const SubscriptionsPage: React.FC = () => {
@@ -126,6 +130,10 @@ const SubscriptionsPage: React.FC = () => {
           break
         case ModuleName.SEI:
           licenseInformation[ModuleName.SEI]?.status === LICENSE_STATE_VALUES.ACTIVE && accumulator.push(card)
+          break
+        case ModuleName.IDP:
+          licenseInformation[ModuleName.IDP]?.status === LICENSE_STATE_VALUES.ACTIVE && accumulator.push(card)
+          break
       }
       return accumulator
     },

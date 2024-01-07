@@ -11,6 +11,7 @@ import { ModuleName } from 'framework/types/ModuleName'
 import type { ModuleLicenseDTO } from 'services/cd-ng'
 import CIUsageGraph from './CIUsageGraph'
 import { ServiceLicenseGraphs } from './ServiceLicenseGraphs'
+import IDPUsageGraph from './IDPUsageGraph'
 
 interface SubscriptionGraphViewProps {
   accountId: string
@@ -25,6 +26,8 @@ const getModuleUsagesGraph = (props: SubscriptionGraphViewProps): React.ReactEle
       return <CIUsageGraph {...props} />
     case ModuleName.CD:
       return <ServiceLicenseGraphs {...props} />
+    case ModuleName.IDP:
+      return <IDPUsageGraph {...props} />
     default:
       return undefined
   }

@@ -48,3 +48,4 @@ slackNotifyStep:
 idpManage: IDP Manage
 catalogAccessPolicy: Catalog Access Policies
 layouts: Layouts
+lastAccessedAt: Last accessed at

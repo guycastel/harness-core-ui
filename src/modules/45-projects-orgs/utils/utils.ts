@@ -86,6 +86,8 @@ export const getModuleDescriptionsForModuleSelectionDialog = (module: ModuleName
       return 'common.purpose.cet.moduleSelectionSubHeading'
     case ModuleName.SEI:
       return 'common.purpose.sei.descriptionOnly'
+    case ModuleName.IDP:
+      return 'common.moduleIntro.idp'
   }
 }
 export const getModuleDescription = (module: ModuleName): StringKeys => {
@@ -163,6 +165,8 @@ export const getModuleFullLengthTitle = (module: ModuleName): keyof StringsMap =
       return 'common.purpose.sei.fullName'
     case ModuleName.CODE:
       return 'common.purpose.code.title'
+    case ModuleName.IDP:
+      return 'common.purpose.idp.fullName'
     default:
       return 'common.purpose.cd.continuous'
   }

@@ -23,7 +23,8 @@ import type {
   ChaosModuleLicenseDTO,
   CVModuleLicenseDTO,
   CETModuleLicenseDTO,
-  SEIModuleLicenseDTO
+  SEIModuleLicenseDTO,
+  IDPModuleLicenseDTO
 } from 'services/cd-ng'
 import { useFeatureFlags } from '@modules/10-common/hooks/useFeatureFlag'
 
@@ -301,6 +302,20 @@ function getLicenseCountByModule({
         <Layout.Vertical spacing="medium">
           <Text color={Color.BLACK} font={{ weight: 'semi-bold' }} margin={{ bottom: 5 }}>
             {getString('common.subscriptions.sei.contributors', { contributors: contributors })}
+          </Text>
+        </Layout.Vertical>
+      )
+    }
+    case ModuleName.IDP: {
+      const idpModuleLicenseDTO = licenseData as IDPModuleLicenseDTO
+      const developers =
+        idpModuleLicenseDTO?.numberOfDevelopers === UNLIMITED
+          ? getString('common.unlimited')
+          : idpModuleLicenseDTO?.numberOfDevelopers?.toLocaleString()
+      return (
+        <Layout.Vertical spacing="medium">
+          <Text color={Color.BLACK} font={{ weight: 'semi-bold' }} margin={{ bottom: 5 }}>
+            {getString('common.subscriptions.sto.developers', { developers: developers })}
           </Text>
         </Layout.Vertical>
       )

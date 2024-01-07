@@ -689,6 +689,7 @@ export interface StringsMap {
   'common.module.core': string
   'common.module.cv': string
   'common.module.governance': string
+  'common.module.idp': string
   'common.module.pms': string
   'common.module.sei': string
   'common.module.srm': string
@@ -1369,6 +1370,7 @@ export interface StringsMap {
   'common.subscriptions.usage.ffFFTooltip': string
   'common.subscriptions.usage.freeCredits': string
   'common.subscriptions.usage.header': string
+  'common.subscriptions.usage.idpTooltip': string
   'common.subscriptions.usage.last30days': string
   'common.subscriptions.usage.monthlyUsers': string
   'common.subscriptions.usage.serviceInstances': string
@@ -9606,6 +9608,7 @@ export interface StringsMap {
   'idp.homepage.learnMore': string
   'idp.idpManage': string
   'idp.idpStageHoverText': string
+  'idp.lastAccessedAt': string
   'idp.layout': string
   'idp.layouts': string
   'idp.newKeyValue': string

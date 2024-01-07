@@ -20,7 +20,8 @@ import {
   useGetCDLicenseUsageForServiceInstances,
   useGetCDLicenseUsageForServices,
   CVLicenseSummaryDTO,
-  ChaosModuleLicenseDTO
+  ChaosModuleLicenseDTO,
+  LicensesWithSummaryDTO
 } from 'services/cd-ng'
 import { useDeepCompareEffect } from '@common/hooks'
 import { useGetLicenseUsage as useGetFFUsage } from 'services/cf'
@@ -35,6 +36,12 @@ import { useGetSRMLicenseUsage } from 'services/cv'
 
 import type { CETLicenseUsageDTO } from 'services/cet/cetSchemas'
 import type { UsageResult } from 'services/sto/stoSchemas'
+import { useGetIDPLicenseUsage } from 'services/idp'
+
+//TODO:Use the type from index file
+type IDPLicenseSummaryDTO = LicensesWithSummaryDTO & {
+  totalDevelopers?: number
+}
 
 export interface UsageAndLimitReturn {
   limitData: LimitReturn
@@ -82,6 +89,9 @@ interface UsageProps {
   chaos?: {
     experimentRunsPerMonth?: UsageProp
   }
+  idp?: {
+    activeDevelopers?: UsageProp
+  }
 }
 
 interface LimitProps {
@@ -108,6 +118,9 @@ interface LimitProps {
   }
   chaos?: {
     totalChaosExperimentRuns?: number
+  }
+  idp?: {
+    totalDevelopers?: number
   }
 }
 
@@ -182,6 +195,14 @@ function useGetLimit(module: ModuleName): LimitReturn {
         moduleLimit = {
           chaos: {
             totalChaosExperimentRuns: (limitData?.data as ChaosModuleLicenseDTO)?.totalChaosExperimentRuns
+          }
+        }
+        break
+      }
+      case ModuleName.IDP: {
+        moduleLimit = {
+          idp: {
+            totalDevelopers: (limitData?.data as IDPLicenseSummaryDTO)?.totalDevelopers
           }
         }
         break
@@ -357,6 +378,18 @@ export function useGetUsage(module: ModuleName): UsageReturn {
     lazy: module !== ModuleName.CHAOS
   })
 
+  const {
+    data: idpUsageData,
+    loading: loadingIDPUsage,
+    error: idpUsageError,
+    refetch: refetchIDPUsage
+  } = useGetIDPLicenseUsage({
+    queryParams: {
+      accountIdentifier: accountId
+    },
+    lazy: module !== ModuleName.IDP
+  })
+
   function setUsageByModule(): void {
     switch (module) {
       case ModuleName.CI:
@@ -464,6 +497,18 @@ export function useGetUsage(module: ModuleName): UsageReturn {
           refetchUsage: refetchChaosUsage
         })
         break
+      case ModuleName.IDP:
+        setUsageData({
+          usage: {
+            idp: {
+              activeDevelopers: idpUsageData?.data?.activeDevelopers
+            }
+          },
+          loadingUsage: loadingIDPUsage,
+          usageErrorMsg: idpUsageError?.message,
+          refetchUsage: refetchIDPUsage
+        })
+        break
     }
   }
 
@@ -499,7 +544,8 @@ export function useGetUsage(module: ModuleName): UsageReturn {
     refetchCETUsage,
     chaosUsageData,
     loadingChaosUsage,
-    chaosUsageError
+    chaosUsageError,
+    loadingIDPUsage
   ])
 
   return usageData

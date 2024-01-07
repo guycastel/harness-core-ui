@@ -372,7 +372,7 @@ purpose:
   idp:
     name: Developer Portal
     fullName: Internal Developer Portal
-    shortName: IDP
+    shortName: '{{$.common.module.idp}}'
   cet:
     continuous: Continuous Error Tracking
     criticalEvent: Critical Event
@@ -608,6 +608,7 @@ subscriptions:
     cdServiceTooltip: A Service is an independent unit of software you deploy through Harness CD pipelines. An Active Service is a service deployed in the last 30 days.
     ciUsers: Active CI Developers
     ciTooltip: A Developer is an active code committer observed in the builds managed by Harness CI over last 30 days.
+    idpTooltip: A developer is an active user of IDP regularly accessing the module and visiting pages like Overview, Catalog, Workflows and Scorecards.
     creditTooltip: Available paid build credits that haven't expired yet.
     creditTooltipExpiry: The earliest expiry date on a credit is on {{date}}.
     ffActiveUserTootip: Monthly Active Users (MAUs) are only applicable to client-side applications and are defined as unique end users evaluating flags from client-side SDKs (JavaScript, iOS, Android, C/C++, React, etc) over a 30-day period.
@@ -902,6 +903,7 @@ module:
   cet: CET
   sei: SEI
   srm: SRM
+  idp: IDP
 templateServiceLabel: Template Service
 customPricing: for Custom Pricing
 specified: Specified

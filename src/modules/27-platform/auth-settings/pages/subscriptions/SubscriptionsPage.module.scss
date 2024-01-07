@@ -117,6 +117,11 @@
       background-color: var(--red-50) !important;
       border-color: var(--red-400) !important;
     }
+    &.idp {
+      box-shadow: unset !important;
+      background-color: var(--teal-50) !important;
+      border-color: var(--teal-500) !important;
+    }
   }
 
   :first-child {

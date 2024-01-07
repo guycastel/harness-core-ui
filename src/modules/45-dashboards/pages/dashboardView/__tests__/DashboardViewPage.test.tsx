@@ -26,6 +26,7 @@ const defaultLicenseObj: useLicenseStore.LicenseStoreContextProps = {
   CET_LICENSE_STATE: LICENSE_STATE_VALUES.EXPIRED,
   SEI_LICENSE_STATE: LICENSE_STATE_VALUES.EXPIRED,
   CODE_LICENSE_STATE: LICENSE_STATE_VALUES.EXPIRED,
+  IDP_LICENSE_STATE: LICENSE_STATE_VALUES.EXPIRED,
   updateLicenseStore: jest.fn(),
   licenseInformation: {}
 }

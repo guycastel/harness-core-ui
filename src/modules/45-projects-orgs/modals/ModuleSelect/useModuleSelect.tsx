@@ -328,6 +328,11 @@ export const useModuleSelectModal = ({
       name: ModuleName.CODE
     })
   }
+  if (licenseInformation[ModuleName.IDP]?.status === LICENSE_STATE_VALUES.ACTIVE) {
+    infoCards.push({
+      name: ModuleName.IDP
+    })
+  }
   const { CDS_NAV_2_0 } = useFeatureFlags()
 
   const [showModal, hideModal] = useModalHook(
