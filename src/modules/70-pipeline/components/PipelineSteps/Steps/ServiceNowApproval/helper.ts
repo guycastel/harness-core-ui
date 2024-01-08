@@ -120,3 +120,17 @@ export const getGenuineValue = (
   }
   return undefined
 }
+
+export const handleChangeApprovalConditionField = (
+  selectedField: SelectOption,
+  onChange: (values: ApprovalRejectionCriteria) => void,
+  values: ApprovalRejectionCriteria,
+  i: number
+): void => {
+  if (values.spec.conditions) {
+    const tobeUpdatedConditions = [...values.spec.conditions]
+    tobeUpdatedConditions[i].key = selectedField.value as string
+    tobeUpdatedConditions[i].value = ''
+    onChange({ ...values, spec: { ...values.spec, conditions: tobeUpdatedConditions } })
+  }
+}

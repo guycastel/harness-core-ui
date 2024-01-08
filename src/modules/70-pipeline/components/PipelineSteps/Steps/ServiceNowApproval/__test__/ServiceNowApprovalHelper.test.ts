@@ -9,6 +9,7 @@ import type { ApprovalRejectionCriteria } from '@pipeline/components/PipelineSte
 import { ApprovalRejectionCriteriaType } from '@pipeline/components/PipelineSteps/Steps/Common/types'
 import { handleOperatorChange } from '@pipeline/components/PipelineSteps/Steps/JiraApproval/helper'
 import { getApprovalRejectionCriteriaForSubmit } from '@pipeline/components/PipelineSteps/Steps/Common/ApprovalCommons'
+import { handleChangeApprovalConditionField } from '../helper'
 import { resetForm } from '../types'
 
 describe('Approval Rejection criteria for submit tests', () => {
@@ -143,6 +144,41 @@ describe('Operator onchange tests', () => {
             key: 'state',
             operator: 'not in',
             value: []
+          }
+        ],
+        matchAnyCondition: true
+      }
+    })
+  })
+
+  test('value field should get reset on change of key field', () => {
+    const selectedField = { label: 'Parent', value: 'Parent' },
+      onChange = jest.fn(),
+      values = {
+        type: ApprovalRejectionCriteriaType.KeyValues,
+        spec: {
+          conditions: [
+            {
+              key: 'state',
+              operator: 'equals',
+              value: { label: 'Done', value: 'Done' }
+            }
+          ],
+          matchAnyCondition: true
+        }
+      },
+      index = 0
+
+    handleChangeApprovalConditionField(selectedField, onChange, values, index)
+
+    expect(onChange).toBeCalledWith({
+      type: ApprovalRejectionCriteriaType.KeyValues,
+      spec: {
+        conditions: [
+          {
+            key: 'Parent',
+            operator: 'equals',
+            value: ''
           }
         ],
         matchAnyCondition: true

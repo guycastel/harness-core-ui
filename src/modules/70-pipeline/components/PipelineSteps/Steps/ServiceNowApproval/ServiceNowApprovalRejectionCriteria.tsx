@@ -33,6 +33,8 @@ import type { ServiceNowFieldNG } from 'services/cd-ng'
 import { errorCheck } from '@common/utils/formikHelpers'
 import { handleOperatorChange, operatorValues, setAllowedValuesOptions } from '../JiraApproval/helper'
 import { isApprovalStepFieldDisabled } from '../Common/ApprovalCommons'
+import { handleChangeApprovalConditionField } from './helper'
+
 import stepCss from '@pipeline/components/PipelineSteps/Steps/Steps.module.scss'
 import css from '../Common/ApprovalRejectionCriteria.module.scss'
 
@@ -163,6 +165,9 @@ export function Conditions({
                         name={`${name}[${i}].key`}
                         placeholder={getString('pipeline.keyPlaceholder')}
                         disabled={isApprovalStepFieldDisabled(readonly)}
+                        onChange={(selectedField: SelectOption) => {
+                          handleChangeApprovalConditionField(selectedField, onChange, values, i)
+                        }}
                       />
                     )}
                     <FormInput.Select
