@@ -16,7 +16,8 @@ import {
   TableV2,
   useConfirmationDialog,
   useToaster,
-  ButtonSize
+  ButtonSize,
+  PageSpinner
 } from '@harness/uicore'
 import { Color, FontVariation } from '@harness/design-system'
 import type { CellProps, Renderer, Column } from 'react-table'
@@ -277,6 +278,7 @@ const RenderColumnMenu: Renderer<CellProps<UserGroupAggregateDTO>> = ({ row, col
     module
   } = useParams<ProjectPathProps & ModulePathParams>()
   const [menuOpen, setMenuOpen] = useState(false)
+
   const { getString } = useStrings()
   const { showSuccess, showError } = useToaster()
   const { mutate: deleteUserGroup } = useDeleteUserGroup({
@@ -328,10 +330,27 @@ const RenderColumnMenu: Renderer<CellProps<UserGroupAggregateDTO>> = ({ row, col
     openDeleteDialog()
   }
 
-  const handleEdit = (e: React.MouseEvent<HTMLElement, MouseEvent>): void => {
+  const handleEdit = async (e: React.MouseEvent<HTMLElement, MouseEvent>): Promise<void> => {
     e.stopPropagation()
+    const parentScope = getPrincipalScopeFromDTO(userGroupAggregate.userGroupDTO)
+    ;(column as any).setFetchingUserGroupAggregateDataForEditMenu(true)
+    try {
+      // Get specific UserGroup data so that all users are fetched instead of just 6
+      const userGroupAggregateResponse = await getUserGroupAggregatePromise({
+        identifier: userGroupAggregate.userGroupDTO.identifier,
+        queryParams: {
+          ...getUserGroupQueryParams(accountIdentifier, childOrgIdentifier, childProjectIdentifier, parentScope),
+          roleAssignmentScopeOrgIdentifier: orgIdentifier,
+          roleAssignmentScopeProjectIdentifier: projectIdentifier
+        }
+      })
+      ;(column as any).openUserGroupModal(userGroupAggregateResponse.data)
+    } catch (err) {
+      showError(err?.message || err?.msg || getString('somethingWentWrong'))
+    } finally {
+      ;(column as any).setFetchingUserGroupAggregateDataForEditMenu(false)
+    }
     setMenuOpen(false)
-    ;(column as any).openUserGroupModal(userGroupAggregate)
   }
 
   const userGroupInherited = isUserGroupInherited(accountIdentifier, childOrgIdentifier, childProjectIdentifier, data)
@@ -437,6 +456,9 @@ const UserGroupsListView: React.FC<UserGroupsListViewProps> = props => {
   const { data, reload, openRoleAssignmentModal, openUserGroupModal } = props
   const { accountId, orgIdentifier, projectIdentifier, module } = useParams<PipelineType<ProjectPathProps>>()
   const { getString } = useStrings()
+  const [fetchingUserGroupAggregateDataForEditMenu, setFetchingUserGroupAggregateDataForEditMenu] =
+    useState<boolean>(false)
+
   const history = useHistory()
   const columns: Column<UserGroupAggregateDTO>[] = useMemo(
     () => [
@@ -472,7 +494,8 @@ const UserGroupsListView: React.FC<UserGroupsListViewProps> = props => {
         reload: reload,
         openUserGroupModal: openUserGroupModal,
         disableSortBy: true,
-        openRoleAssignmentModal
+        openRoleAssignmentModal,
+        setFetchingUserGroupAggregateDataForEditMenu
       }
     ],
     [openRoleAssignmentModal, openUserGroupModal, reload]
@@ -486,7 +509,9 @@ const UserGroupsListView: React.FC<UserGroupsListViewProps> = props => {
     pageIndex: data?.data?.pageIndex || 0
   })
 
-  return (
+  return fetchingUserGroupAggregateDataForEditMenu ? (
+    <PageSpinner />
+  ) : (
     <TableV2<UserGroupAggregateDTO>
       className={css.table}
       columns={columns}

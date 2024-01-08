@@ -50,6 +50,7 @@ const UserGroupForm: React.FC<UserGroupModalData> = props => {
   const { data: userGroupAggregateData, onSubmit, isEdit, isAddMember, onCancel } = props
   const userGroupData = userGroupAggregateData?.userGroupDTO
   const isNotificationsDataPresent = !isEmpty(userGroupData?.notificationConfigs)
+  const isSsoLinked = !!userGroupData?.ssoLinked
 
   const { accountId, orgIdentifier, projectIdentifier } = useParams<ProjectPathProps>()
   const { getRBACErrorMessage } = useRBACError()
@@ -96,10 +97,23 @@ const UserGroupForm: React.FC<UserGroupModalData> = props => {
     const values = cloneDeep(formData)
     const userDetails = values.userList?.map((user: MultiSelectOption) => user.value as string)
     delete values.userList
-    const dataToSubmit: UserGroupDTO = values
+
+    let dataToSubmit: UserGroupDTO = values
     if (userDetails) dataToSubmit['users']?.push(...userDetails)
     if (isNotificationsDataPresent) {
       dataToSubmit['notificationConfigs'] = userGroupData?.notificationConfigs
+    }
+    if (isSsoLinked) {
+      const { ssoLinked, ssoGroupName, ssoGroupId, linkedSsoType, linkedSsoId, linkedSsoDisplayName } = userGroupData
+      dataToSubmit = {
+        ...dataToSubmit,
+        ssoLinked,
+        ssoGroupName,
+        ssoGroupId,
+        linkedSsoType,
+        linkedSsoId,
+        linkedSsoDisplayName
+      }
     }
 
     try {
