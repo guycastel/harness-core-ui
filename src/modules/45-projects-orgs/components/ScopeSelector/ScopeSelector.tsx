@@ -132,7 +132,14 @@ export const ScopeSelector: React.FC<ScopeSelectorProps> = props => {
             {scopeInfoMap[selectedScope].label}
           </Text>
         </Layout.Horizontal>
-        <Text className={css.textEllipsis} color={Color.GREY_1000} font={{ variation: FontVariation.BODY }}>
+        <Text
+          color={Color.GREY_1000}
+          font={{ variation: FontVariation.BODY }}
+          lineClamp={1}
+          tooltipProps={{
+            disabled: true
+          }}
+        >
           {scopeInfoMap[selectedScope].name}
         </Text>
       </>
