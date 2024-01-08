@@ -136,6 +136,9 @@ const SubscribedModules: React.FC = () => {
       case ModuleName.CET: {
         return licenseStatus === LICENSE_STATE_VALUES.ACTIVE
       }
+      case ModuleName.IDP: {
+        return licenseStatus === LICENSE_STATE_VALUES.ACTIVE
+      }
       default:
         return undefined
     }

@@ -99,7 +99,7 @@ function IDPUsageGraph(props: IDPUsageGraphProps): React.ReactElement {
 
   const summaryCardsData: SummaryCardData[] = [
     {
-      title: getString('common.monthlyPeak'),
+      title: getString(reportType === 'MONTHLY' ? 'common.yearlyPeak' : 'common.monthlyPeak'),
       count: maxValue,
       className: pageCss.peakClass
     },

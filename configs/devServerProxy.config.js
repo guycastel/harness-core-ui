@@ -129,7 +129,7 @@ module.exports = {
   },
   '/idp/api': {
     pathRewrite: { '^/idp/api': '' },
-    target: targetLocalHost ? 'http://localhost:12003' : `${baseUrl}/idp/api`
+    target: targetLocalHost ? 'http://localhost:12003/idp/api' : `${baseUrl}/idp/api`
   },
   '/idp': {
     pathRewrite: { '^/idp': '' },
