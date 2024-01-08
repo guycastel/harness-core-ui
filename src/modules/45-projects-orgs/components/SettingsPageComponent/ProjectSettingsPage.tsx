@@ -337,12 +337,6 @@ export const ProjectSettingsPage: React.FC = () => {
               route={routesV2.toFreezeWindows({ accountId, orgIdentifier, projectIdentifier, module })}
               hidden={!showDeploymentFreeze}
             />
-            <SettingsResourceCard
-              label={<String stringID="common.auditTrail" />}
-              id={SettingsResources.AuditTrails}
-              icon={'list-blue'}
-              route={routesV2.toAuditTrailSettings({ accountId, orgIdentifier, projectIdentifier, module })}
-            />
           </SettingsPage.group>
           <SettingsPage.group
             id={SettingsResourcesCategory.ExternalTickets}

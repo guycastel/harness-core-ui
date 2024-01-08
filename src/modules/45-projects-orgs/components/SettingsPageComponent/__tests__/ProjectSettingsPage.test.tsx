@@ -92,6 +92,5 @@ describe('Project Settings Page', () => {
     expect(queryByText('roles')).toBeInTheDocument()
     expect(queryByText('common.governance')).toBeInTheDocument()
     expect(queryByText('common.freezeWindows')).toBeInTheDocument()
-    expect(queryByText('common.auditTrail')).toBeInTheDocument()
   })
 })
