@@ -49,6 +49,7 @@ export function TemplateReferenceByTabPanel(props: Props): React.ReactElement {
   return (
     <EntityUsageListingPage
       withSearchBarInPageHeader
+      hidePageNumbers
       pageHeaderClassName={css.referencedByHeader}
       pageBodyClassName={css.referencedByBody}
       searchTerm={searchTerm}

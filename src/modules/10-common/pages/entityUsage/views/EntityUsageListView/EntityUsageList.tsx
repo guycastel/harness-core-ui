@@ -34,6 +34,7 @@ interface EntityUsageListProps {
   entityData: ResponsePageEntitySetupUsageDTO | null
   gotoPage: (pageNumber: number) => void
   withNoSpaceAroundTable?: boolean
+  hidePageNumbers?: boolean
 }
 
 interface ReferredByEntity extends EntityDetail {
@@ -200,7 +201,12 @@ export const RenderGitDetails: Renderer<CellProps<EntitySetupUsageDTO>> = ({ row
   ) : null
 }
 
-const EntityUsageList: React.FC<EntityUsageListProps> = ({ entityData, gotoPage, withNoSpaceAroundTable = false }) => {
+const EntityUsageList: React.FC<EntityUsageListProps> = ({
+  entityData,
+  gotoPage,
+  withNoSpaceAroundTable = false,
+  hidePageNumbers = false
+}) => {
   const data: EntitySetupUsageDTO[] = entityData?.data?.content || []
   const { getString } = useStrings()
 
@@ -259,6 +265,7 @@ const EntityUsageList: React.FC<EntityUsageListProps> = ({ entityData, gotoPage,
         pageSize: entityData?.data?.pageSize || 10,
         pageCount: entityData?.data?.totalPages || 0,
         pageIndex: entityData?.data?.pageIndex || 0,
+        hidePageNumbers: hidePageNumbers,
         gotoPage
       }}
     />

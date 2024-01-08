@@ -21,6 +21,7 @@ export enum UsageType {
 
 export interface EntityUsageListingPageProps {
   withSearchBarInPageHeader: boolean
+  hidePageNumbers?: boolean
   pageHeaderClassName?: string
   pageBodyClassName?: string
   searchTerm?: string
@@ -39,6 +40,7 @@ export interface EntityUsageListingPageProps {
 
 export default function EntityUsageListingPage({
   withSearchBarInPageHeader,
+  hidePageNumbers = false,
   pageHeaderClassName,
   pageBodyClassName,
   searchTerm,
@@ -108,6 +110,7 @@ export default function EntityUsageListingPage({
             <EntityUsageList
               entityData={data as ResponsePageEntitySetupUsageDTO}
               gotoPage={pageNumber => setPage(pageNumber)}
+              hidePageNumbers={hidePageNumbers}
             />
           )
         ) : (
@@ -137,6 +140,7 @@ export default function EntityUsageListingPage({
                 entityData={data as ResponsePageEntitySetupUsageDTO}
                 gotoPage={pageNumber => setPage(pageNumber)}
                 withNoSpaceAroundTable={!withSearchBarInPageHeader}
+                hidePageNumbers={hidePageNumbers}
               />
             )}
           </Layout.Vertical>
