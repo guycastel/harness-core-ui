@@ -42,6 +42,9 @@ import { FeatureFlagsProvider } from 'framework/FeatureFlags/FeatureFlagsProvide
 import './App.scss'
 
 const RouteDestinations = React.lazy(() => import('modules/RouteDestinations'))
+const DowntimeNotification = React.lazy(
+  () => import('modules/10-common/pages/DowntimeNotification/DowntimeNotification')
+)
 
 const NOT_WHITELISTED_IP_MESSAGE = 'NOT_WHITELISTED_IP_MESSAGE'
 const UNAUTHORIZED = 'UNAUTHORIZED'
@@ -330,6 +333,7 @@ export function AppWithAuthentication(props: AppProps): React.ReactElement {
                           <PermissionsProvider>
                             <SideNavProvider>
                               <Suspense fallback={<PageSpinner />}>
+                                <DowntimeNotification />
                                 <RouteDestinations />
                               </Suspense>
                             </SideNavProvider>

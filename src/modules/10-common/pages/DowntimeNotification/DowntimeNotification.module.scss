@@ -1,0 +1,107 @@
+/*
+ * Copyright 2024 Harness Inc. All rights reserved.
+ * Use of this source code is governed by the PolyForm Shield 1.0.0 license
+ * that can be found in the licenses directory at the root of this repository, also available at
+ * https://polyformproject.org/wp-content/uploads/2020/06/PolyForm-Shield-1.0.0.txt.
+ */
+
+.toaster {
+  :global(.bp3-toast) {
+    margin: var(--spacing-3);
+    min-width: 500px;
+    min-height: 120px;
+    color: var(--grey-700);
+    display: flex;
+    align-items: center;
+    border-radius: var(--spacing-3);
+  }
+
+  :global(.bp3-toast .bp3-toast-message) {
+    padding: var(--spacing-5) var(--spacing-7);
+    min-width: 500px;
+    min-height: 120px;
+  }
+
+  :global(.bp3-toast .bp3-button-group) {
+    display: none;
+  }
+
+  :global(.bp3-toast) {
+    border: 1px solid var(--primary-5);
+    border-radius: var(--spacing-2);
+    border-left: var(--spacing-2) solid var(--primary-5);
+    background-color: var(--primary-bg) !important;
+
+    &.danger {
+      background-color: var(--red-50) !important;
+      border: 1px solid var(--red-600);
+      border-left: var(--spacing-2) solid var(--red-600);
+    }
+
+    &.warning {
+      background-color: var(--yellow-50) !important;
+      border: 1px solid var(--yellow-900);
+      border-left: var(--spacing-2) solid var(--yellow-900);
+    }
+
+    &.partial {
+      background-color: var(--orange-50) !important;
+      border: 1px solid var(--orange-600);
+      border-left: var(--spacing-2) solid var(--orange-600);
+    }
+  }
+}
+
+.affectedComponents {
+  strong {
+    font-weight: 500;
+  }
+}
+.actionBtn {
+  :global(.bp3-tag.bp3-intent-danger) {
+    background-color: var(--red-50) !important;
+    border: 1px solid var(--red-200) !important;
+  }
+  padding-top: var(--spacing-3) !important;
+}
+
+.statusLinkBtn {
+  font-size: 13px !important;
+}
+
+.incidentStatusTag {
+  background-color: var(--primary-bg) !important;
+  p {
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    color: var(--primary-7) !important;
+  }
+
+  padding: var(--spacing-2) !important;
+  border: 1px solid var(--primary-2);
+  border-radius: var(--spacing-2);
+
+  &.danger {
+    background-color: var(--red-50) !important;
+    border: 1px solid var(--red-200);
+    p {
+      color: var(--red-900) !important;
+    }
+  }
+
+  &.warning {
+    background-color: var(--yellow-50) !important;
+    border: 1px solid var(--yellow-400);
+    p {
+      color: var(--yellow-900) !important;
+    }
+  }
+
+  &.partial {
+    background-color: var(--orange-50) !important;
+    border: 1px solid var(--orange-300);
+    p {
+      color: var(--orange-700) !important;
+    }
+  }
+}
