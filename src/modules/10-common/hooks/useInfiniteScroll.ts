@@ -33,10 +33,10 @@ interface InfiniteScrollProps {
   lazy?: boolean
 }
 
-interface InfiniteScrollReturnProps {
+interface InfiniteScrollReturnProps<T> {
   fetching: boolean
   error: string
-  items: any
+  items: T[]
   hasMore: MutableRefObject<boolean>
   offsetToFetch: MutableRefObject<number>
   loadItems: () => void
@@ -57,9 +57,9 @@ loadItems
  - Fetch data based on a given offset and limit and/or a search term
  - Function that accepts a page number/offset/searchTerm variable. It will call the underlying API function with the offset/searchTerm variable
 */
-export const useInfiniteScroll = (props: InfiniteScrollProps): InfiniteScrollReturnProps => {
+export const useInfiniteScroll = <T = any>(props: InfiniteScrollProps): InfiniteScrollReturnProps<T> => {
   const { getItems, limit = DEFAULT_PAGE_SIZE, searchTerm, lazy = false } = props
-  const [items, setItems] = useState<any>([])
+  const [items, setItems] = useState<T[]>([])
   const [fetching, setFetching] = useState(false)
   const [error, setError] = useState('')
   const hasMore = useRef(false)

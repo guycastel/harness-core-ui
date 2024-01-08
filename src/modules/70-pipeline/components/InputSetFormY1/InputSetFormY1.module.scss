@@ -1,0 +1,88 @@
+/*
+ * Copyright 2023 Harness Inc. All rights reserved.
+ * Use of this source code is governed by the PolyForm Shield 1.0.0 license
+ * that can be found in the licenses directory at the root of this repository, also available at
+ * https://polyformproject.org/wp-content/uploads/2020/06/PolyForm-Shield-1.0.0.txt.
+ */
+
+.section {
+  background-color: var(--white) !important;
+  box-shadow: 0px 0.5px 2px 0px rgba(40, 41, 61, 0.15);
+  border-radius: 4px;
+  margin: var(--spacing-large) !important;
+  padding: var(--spacing-medium) var(--spacing-xlarge) !important;
+}
+
+.inputsSection {
+  display: flex;
+}
+
+.nameId {
+  // style only name field
+  [class*='InputWithIdentifier--txtNameContainer'] {
+    max-width: 295px;
+  }
+}
+
+.inputSetListHolder {
+  flex: 0 0 200px;
+  padding-right: var(--spacing-medium) !important;
+}
+
+.inputSetPreviewHolder {
+  flex: 1 1 auto !important;
+  flex-direction: column;
+  padding-left: var(--spacing-large) !important;
+  padding-right: var(--spacing-medium) !important;
+  border-left: 1px solid rgba(40, 41, 61, 0.15);
+}
+
+.selectedInputSetListHolder {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: var(--spacing-small);
+  border-bottom: 1px solid rgba(40, 41, 61, 0.15);
+  min-height: 60px;
+}
+
+.selectedInputSetList {
+  margin-left: var(--spacing-large);
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.listHolderClassName {
+  max-height: 400px;
+  overflow: auto;
+}
+
+.inputsForm {
+  box-shadow: none !important;
+}
+
+.editor {
+  width: 100%;
+}
+
+.orderBy {
+  text-transform: uppercase;
+}
+
+.gitForm {
+  max-width: 300px;
+  padding-left: 0 !important;
+}
+
+.manageHolder {
+  margin: var(--spacing-xxlarge) var(--spacing-large) var(--spacing-medium) var(--spacing-large) !important;
+  align-items: center;
+
+  > * {
+    margin-right: var(--spacing-medium) !important;
+  }
+}
+
+.manageInputs {
+  margin: var(--spacing-medium) 0 var(--spacing-small) 0 !important;
+}

@@ -8,19 +8,6 @@
 import { InputSetOnCreateUpdate } from '@modules/70-pipeline/utils/inputSetUtils'
 import { InputSetDTO } from '@modules/70-pipeline/utils/types'
 
-export interface InputSetKVPairs {
-  [key: string]: unknown
-}
-
-export interface InputSetMetadata {
-  identifier?: string
-  name?: string
-  description?: string
-  tags?: {
-    [key: string]: string
-  }
-}
-
 export interface InputSetFormProps<T = unknown> extends InputSetOnCreateUpdate<T> {
   executionView?: boolean
 

@@ -16,7 +16,7 @@ import { ContainerSpinner } from '@modules/10-common/components/ContainerSpinner
 import { useFeatureFlags } from '@modules/10-common/hooks/useFeatureFlag'
 import { InputSetFormProps } from './types'
 import { InputSetForm } from './InputSetForm'
-import { InputSetFormY1 } from './InputSetFormY1'
+import { InputSetFormY1 } from '../InputSetFormY1/InputSetFormY1'
 
 function EnhancedInputSetFormInner(props: InputSetFormProps): React.ReactElement {
   const { projectIdentifier, orgIdentifier, accountId, pipelineIdentifier } = useParams<

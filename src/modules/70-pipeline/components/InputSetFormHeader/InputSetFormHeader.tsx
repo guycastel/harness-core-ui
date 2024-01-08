@@ -46,7 +46,7 @@ import {
   EntityCachedCopy,
   EntityCachedCopyHandle
 } from '../PipelineStudio/PipelineCanvas/EntityCachedCopy/EntityCachedCopy'
-import css from './InputSetForm.module.scss'
+import css from './InputSetFormHeader.module.scss'
 
 export interface InputSetFormHeaderProps {
   isEdit: boolean
@@ -121,6 +121,10 @@ export function InputSetFormHeader(props: InputSetFormHeaderProps): React.ReactE
     inputCachedCopyRef.current?.showConfirmationModal()
   }
 
+  const title = isEdit
+    ? getString('inputSets.editTitle', { name: inputSet.name })
+    : getString('inputSets.newInputSetLabel')
+
   return (
     <GitSyncStoreProvider>
       <PageHeader
@@ -138,9 +142,7 @@ export function InputSetFormHeader(props: InputSetFormHeaderProps): React.ReactE
                 margin={{ right: 'medium' }}
                 className={cx(isEdit && storeType === StoreType.REMOTE ? css.editTitle : '')}
               >
-                {isEdit
-                  ? getString('inputSets.editTitle', { name: inputSet.name })
-                  : getString('inputSets.newInputSetLabel')}
+                {title}
               </Text>
             </Layout.Horizontal>
             {isGitSyncEnabled && isEdit && (

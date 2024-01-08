@@ -146,7 +146,22 @@ export function RenderValue({
       )}
       {(isEmpty(invalidInputSetReferences) || isNil(invalidInputSetReferences)) && (
         <div className={cx(css.renderSelectedValue, selectedValueClass)}>
-          <SelectedInputSetList value={value} setSelectedInputSets={setSelectedInputSets} onChange={onChange} />
+          <SelectedInputSetList
+            value={value.map(item => ({
+              data: item,
+              label: item.label,
+              type: item.type as unknown as string,
+              value: item.value
+            }))}
+            onChange={selectedItems => {
+              const selectedInputSets = selectedItems?.map(item => item.data)
+              setSelectedInputSets(selectedInputSets)
+              onChange?.(selectedInputSets)
+            }}
+            isDisabled={item =>
+              !(item.data?.idType === MultiTypeInputType.EXPRESSION && item.data?.label?.split('.').length === 5)
+            }
+          />
         </div>
       )}
       {value && value.length > 1 && (

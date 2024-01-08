@@ -69,7 +69,7 @@ import { useSaveInputSetV1 } from './useSaveInputSetV1'
 import { InputsYaml, useInputSetsV1 } from '../RunPipelineModalV1/useInputSetsV1'
 import FormikInputSetFormV1 from './FormikInputSetFormV1'
 import type { PipelineV1InfoConfig } from '../RunPipelineModalV1/RunPipelineFormV1'
-import css from '../../../components/InputSetForm/InputSetForm.module.scss'
+import css from '../../../components/InputSetFormHeader/InputSetFormHeader.module.scss'
 
 const getDefaultInputSet = (orgIdentifier: string, projectIdentifier: string) => ({
   name: '',

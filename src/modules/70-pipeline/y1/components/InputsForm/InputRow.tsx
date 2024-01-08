@@ -22,7 +22,7 @@ export interface InputRowProps {
 }
 
 export function InputRow({ input }: InputRowProps): React.ReactElement {
-  const { name, type, desc } = input
+  const { name, type, desc, readonly } = input
 
   return (
     <div className={css.inputRow}>
@@ -52,7 +52,7 @@ export function InputRow({ input }: InputRowProps): React.ReactElement {
           path={input.name}
           allowableTypes={[MultiTypeInputType.FIXED, MultiTypeInputType.EXPRESSION]}
           factory={inputComponentFactory}
-          readonly={false}
+          readonly={readonly}
           input={input}
         />
       </Container>

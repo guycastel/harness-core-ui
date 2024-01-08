@@ -40,7 +40,6 @@ export type ExistingProvide = 'existing' | 'provide'
 
 export interface VisualViewY1Props {
   runtimeInputs: UIInputs
-  runtimeInputsInitialValues: { [key: string]: unknown }
   inputsSchemaLoading: boolean
   executionView?: boolean
   existingProvide: ExistingProvide
@@ -85,7 +84,6 @@ export interface VisualViewY1Props {
 export default function VisualViewY1(props: VisualViewY1Props): React.ReactElement {
   const {
     runtimeInputs,
-    runtimeInputsInitialValues,
     inputsSchemaLoading,
     executionView,
     existingProvide,
@@ -222,12 +220,7 @@ export default function VisualViewY1(props: VisualViewY1Props): React.ReactEleme
                 ) : null}
               </Layout.Vertical>
             )}
-            <InputsForm
-              className={css.inputsForm}
-              initialValues={runtimeInputsInitialValues}
-              inputs={runtimeInputs}
-              onChange={() => undefined}
-            />
+            <InputsForm className={css.inputsForm} inputs={runtimeInputs} />
             {/* TODO: Keep this for reference - delete it before merging into develop 
             {showPipelineInputSetForm() ? (
               // <PipelineInputSetFormWrapper

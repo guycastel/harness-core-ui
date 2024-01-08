@@ -56,7 +56,7 @@ import { getGitProvider } from '@modules/10-common/components/GitProviderSelect/
 import { FormikInputSetForm } from './FormikInputSetForm'
 import { useSaveInputSet } from './useSaveInputSet'
 import { PipelineVariablesContextProvider } from '../PipelineVariablesContext/PipelineVariablesContext'
-import { InputSetFormHeader } from './InputSetFormHeader'
+import { InputSetFormHeader } from '../InputSetFormHeader/InputSetFormHeader'
 import { InputSetFormProps } from './types'
 
 const getDefaultInputSet = (

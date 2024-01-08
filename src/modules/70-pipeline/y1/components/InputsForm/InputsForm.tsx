@@ -15,8 +15,6 @@ export type InputsFormValues = { [key: string]: unknown }
 
 export interface InputsFormProps {
   inputs: UIInputs
-  initialValues: InputsFormValues
-  onChange: (values: InputsFormValues) => void
   className?: string
 }
 

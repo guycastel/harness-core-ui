@@ -998,6 +998,11 @@ inputSets:
   selectedOutOf: Selected {{selected}} out of {{all}}
   manageInputsInProgress: Save is disabled while manage inputs is active. Apply or cancel manage inputs to save input set.
   emptyStringInfoTooltip: Values that are left empty will be null by default. To pass an empty string, you may enter double quotation ("")
+  noInputSetSelected: No input sets selected.
+  selectInputSet: Select input set
+  searchOrEnterExpression: Search or enter expression
+  orderBy: Order by
+  manageListOfInputs: You may manage your list of inputs here.
 provisionerSteps: Provisioner Steps
 addStage:
   title: Select Stage Type

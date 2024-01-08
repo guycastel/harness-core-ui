@@ -5,38 +5,6 @@
  * https://polyformproject.org/wp-content/uploads/2020/06/PolyForm-Shield-1.0.0.txt.
  */
 
-.optionBtns {
-  display: inline-block;
-  position: absolute;
-  left: 50%;
-  transform: translate(-50%, 0);
-}
-
-.gitRemoteDetails {
-  display: inline-flex;
-  min-width: 250px;
-  align-items: center;
-  padding-left: 12px !important;
-  border: 1px solid var(--grey-200);
-  border-radius: var(--spacing-2);
-  margin-left: var(--spacing-medium) !important;
-}
-
-.noCacheDetails {
-  min-width: 210px !important;
-}
-
-.reconcileMenu {
-  display: inline-block;
-  position: absolute;
-  right: 12%;
-  transform: translate(50%, 0);
-}
-
-.editTitle {
-  max-width: 320px;
-}
-
 .collapseDiv div {
   border-top: none;
   padding: 0;
@@ -53,14 +21,6 @@
 
 .drag {
   cursor: move;
-}
-
-.pageHeaderStyles {
-  > div {
-    &:first-child {
-      flex-grow: 1;
-    }
-  }
 }
 
 .dragging {
@@ -117,25 +77,6 @@
   .inputSetcard {
     margin: var(--spacing-large);
   }
-}
-.manageHolder {
-  margin: var(--spacing-xxlarge) var(--spacing-large) var(--spacing-medium) var(--spacing-large) !important;
-  align-items: center;
-
-  > * {
-    margin-right: var(--spacing-medium) !important;
-  }
-}
-.manageTitle {
-  color: var(--black) !important;
-  font-size: 16px !important;
-}
-.metadataHolder {
-  background-color: var(--white) !important;
-  box-shadow: 0px 0.5px 2px 0px rgba(40, 41, 61, 0.15);
-  border-radius: 4px;
-  margin: var(--spacing-large) !important;
-  padding: var(--spacing-medium) var(--spacing-xlarge) !important;
 }
 .nameiddescription {
   padding-left: var(--spacing-medium) !important;
@@ -200,32 +141,4 @@
       }
     }
   }
-}
-
-.unsavedChanges {
-  & > :global(.bp3-button-text) {
-    color: var(--orange-600) !important;
-    text-decoration: underline;
-    text-decoration-color: var(--orange-600);
-    font-size: var(--font-size-small) !important;
-  }
-  line-height: 15px;
-
-  &::before {
-    content: '';
-    width: 10px;
-    height: 10px;
-    border-radius: 100%;
-    background: var(--orange-600);
-    display: inline-block;
-    margin: 0 4px;
-  }
-}
-
-.inputsForm {
-  margin: var(--spacing-large);
-}
-
-.yamlVersionBadge {
-  margin-right: var(--spacing-small);
 }

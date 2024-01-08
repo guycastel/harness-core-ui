@@ -726,7 +726,7 @@ function RunPipelineFormBasic({
         org: orgIdentifier,
         pipeline: pipelineMetadata?.identifier as string,
         project: projectIdentifier,
-        body: { inputs_yaml: yamlStringify(valuesPipeline) },
+        body: { inputs_yaml: yamlStringify({ inputs: valuesPipeline }) },
         queryParams: {}
       })
       const data = response?.content
@@ -1132,7 +1132,6 @@ function RunPipelineFormBasic({
                   {selectedView === SelectedView.VISUAL ? (
                     <VisualViewY1
                       runtimeInputs={runtimeInputs}
-                      runtimeInputsInitialValues={values}
                       inputsSchemaLoading={inputsSchemaLoading}
                       executionView={executionView}
                       selectedInputSets={selectedInputSets}

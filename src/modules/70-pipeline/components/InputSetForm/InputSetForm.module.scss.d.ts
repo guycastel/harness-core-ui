@@ -14,31 +14,19 @@ declare const styles: {
   readonly drag: string
   readonly dragOver: string
   readonly dragging: string
-  readonly editTitle: string
   readonly editor: string
   readonly errorHeader: string
   readonly footer: string
   readonly formInModal: string
   readonly gitContextForm: string
-  readonly gitRemoteDetails: string
   readonly gitRemoteDetailsForm: string
   readonly inModal: string
   readonly inputSetForm: string
   readonly inputSetcard: string
-  readonly inputsForm: string
   readonly inputsetGrid: string
-  readonly manageHolder: string
-  readonly manageTitle: string
-  readonly metadataHolder: string
   readonly nameiddescription: string
-  readonly noCacheDetails: string
-  readonly optionBtns: string
-  readonly pageHeaderStyles: string
-  readonly reconcileMenu: string
   readonly saveCancelBtn: string
   readonly treeSidebar: string
-  readonly unsavedChanges: string
   readonly withError: string
-  readonly yamlVersionBadge: string
 }
 export default styles

@@ -5,32 +5,37 @@
  * https://polyformproject.org/wp-content/uploads/2020/06/PolyForm-Shield-1.0.0.txt.
  */
 
-import React, { Dispatch, SetStateAction } from 'react'
+import React from 'react'
 import { clone } from 'lodash-es'
-import { Button, Layout, Text, MultiTypeInputType, Icon } from '@harness/uicore'
+import { Button, Layout, Text, Icon } from '@harness/uicore'
 import { PopoverPosition } from '@blueprintjs/core'
 import { Color } from '@harness/design-system'
-import { getIconByType, InputSetValue, onDragEnd, onDragLeave, onDragOver, onDragStart } from './utils'
+import { getIconByType, onDragEnd, onDragLeave, onDragOver, onDragStart } from './utils'
 import css from './InputSetSelector.module.scss'
 
-export function SelectedInputSetList({
-  value,
-  setSelectedInputSets,
-  onChange
-}: {
-  value: InputSetValue[]
-  setSelectedInputSets: Dispatch<SetStateAction<InputSetValue[]>>
-  onChange?: (value?: InputSetValue[]) => void
-}): JSX.Element {
+export interface SelectedInputSetListValue<T = unknown> {
+  type: string
+  label: string
+  value: string | number | symbol
+  data: T
+}
+
+export interface SelectedInputSetListProps<T> {
+  value: Array<SelectedInputSetListValue<T>>
+  onChange?: (value: Array<SelectedInputSetListValue<T>>) => void
+  isDisabled?: (item: SelectedInputSetListValue<T>) => boolean
+}
+
+export function SelectedInputSetList<T>({ value, onChange, isDisabled }: SelectedInputSetListProps<T>): JSX.Element {
   const onDrop = React.useCallback(
-    (event: React.DragEvent<HTMLLIElement>, droppedLocation: InputSetValue) => {
+    (event: React.DragEvent<HTMLLIElement>, droppedLocation: SelectedInputSetListValue<T>) => {
       if (event.preventDefault) {
         event.preventDefault()
       }
       const data = event.dataTransfer.getData('data')
       if (data) {
         try {
-          const dropInputSet: InputSetValue = JSON.parse(data)
+          const dropInputSet: SelectedInputSetListValue = JSON.parse(data)
           const selected = clone(value)
           const droppedItem = selected.filter(item => item.value === dropInputSet.value)[0]
           if (droppedItem) {
@@ -38,7 +43,6 @@ export function SelectedInputSetList({
             const droppedLocationIndex = selected.indexOf(droppedLocation)
             selected.splice(droppedItemIndex, 1)
             selected.splice(droppedLocationIndex, 0, droppedItem)
-            setSelectedInputSets(selected)
             onChange?.(selected)
           }
           // eslint-disable-next-line no-empty
@@ -73,7 +77,6 @@ export function SelectedInputSetList({
               onClick: event => {
                 event.stopPropagation()
                 const valuesAfterRemoval = value.filter(inputset => inputset.value !== item.value)
-                setSelectedInputSets(valuesAfterRemoval)
                 onChange?.(valuesAfterRemoval)
               },
               style: {
@@ -97,7 +100,7 @@ export function SelectedInputSetList({
                   tooltipProps={{
                     isDark: true,
                     position: PopoverPosition.TOP,
-                    disabled: !(item?.idType === MultiTypeInputType.EXPRESSION && item.label.split('.').length === 5)
+                    disabled: isDisabled?.(item)
                   }}
                 >
                   {item.label}

@@ -27,7 +27,10 @@ import {
 const defaultInputMetadata: UIInputMetadata = { type: 'string', internal_type: 'string' }
 const multiFieldPropertyDefaultInputMetadata: UIInputMetadata = { type: 'string', internal_type: 'text_area' }
 
-export function generateInputsFromMetadataResponse(data: PipelineInputSchemaDetailsResponseBody | undefined): UIInputs {
+export function generateInputsFromMetadataResponse(
+  data: PipelineInputSchemaDetailsResponseBody | undefined,
+  options?: { readonly?: boolean }
+): UIInputs {
   const runtimeInputs = data?.inputs
   if (!runtimeInputs || runtimeInputs.length === 0) {
     return { inputs: [], hasInputs: false }
@@ -47,7 +50,8 @@ export function generateInputsFromMetadataResponse(data: PipelineInputSchemaDeta
       dependencies: processDependencies(runtimeInput.metadata?.dependencies),
       metadata: metadataData.metadata,
       allMetadata: metadataData.allMetadata,
-      hasMultiUsage: metadataData.hasMultiUsage
+      hasMultiUsage: metadataData.hasMultiUsage,
+      readonly: options?.readonly
     }
   })
 

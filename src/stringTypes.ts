@@ -4850,12 +4850,17 @@ export interface StringsMap {
   'pipeline.inputSets.lastApplied': string
   'pipeline.inputSets.manageInputSetTooltip': string
   'pipeline.inputSets.manageInputsInProgress': string
+  'pipeline.inputSets.manageListOfInputs': string
+  'pipeline.inputSets.noInputSetSelected': string
   'pipeline.inputSets.noInputSetsCreated': string
   'pipeline.inputSets.noReconcileOccured': string
   'pipeline.inputSets.noRuntimeInputsCurrently': string
   'pipeline.inputSets.noRuntimeInputsWhileExecution': string
+  'pipeline.inputSets.orderBy': string
   'pipeline.inputSets.overlayISHelperText': string
   'pipeline.inputSets.overlayISUpdated': string
+  'pipeline.inputSets.searchOrEnterExpression': string
+  'pipeline.inputSets.selectInputSet': string
   'pipeline.inputSets.selectPlaceholder': string
   'pipeline.inputSets.selectedOutOf': string
   'pipeline.inputs.description': string

@@ -53,6 +53,7 @@ import { useMutateAsGet, useQueryParams, useUpdateQueryParams } from '@common/ho
 import { useGetPipelineSummaryQuery } from 'services/pipeline-rq'
 import { PreferenceScope, usePreferenceStore } from 'framework/PreferenceStore/PreferenceStoreContext'
 import { PAGE_NAME } from '@common/pages/pageContext/PageName'
+import { YamlVersion } from '@modules/70-pipeline/common/hooks/useYamlVersion'
 import { InputSetListView } from './InputSetListView'
 import { InputSetListQueryParams, useInputSetListQueryParamOptions } from './Util'
 import css from './InputSetList.module.scss'
@@ -129,27 +130,6 @@ function InputSetList(): React.ReactElement {
 
   let inputsError: { data: Error }
 
-  useEffect(() => {
-    if (isSimplifiedYAMLEnabled(module, CI_YAML_VERSIONING)) {
-      setIsLoading(true)
-      getPipelineInputs({
-        org: orgIdentifier,
-        project: projectIdentifier,
-        pipeline: pipelineIdentifier,
-        queryParams: {
-          repo_name: repoIdentifier,
-          branch_name: branch,
-          connector_ref: connectorRef
-        }
-      })
-        .then(response => {
-          setPipelineInputs(response.content)
-        })
-        .catch(err => (inputsError = err))
-        .finally(() => setIsLoading(false))
-    }
-  }, [CI_YAML_VERSIONING])
-
   const {
     data: pipelineMetadata,
     isFetching: loadingPipelineSummary,
@@ -169,6 +149,32 @@ function InputSetList(): React.ReactElement {
     { staleTime: 5 * 60 * 1000 }
   )
 
+  useEffect(() => {
+    if (pipelineMetadata) {
+      if (
+        isSimplifiedYAMLEnabled(module, CI_YAML_VERSIONING) ||
+        (CDS_YAML_SIMPLIFICATION && pipelineMetadata?.data?.yamlVersion === '1')
+      ) {
+        setIsLoading(true)
+        getPipelineInputs({
+          org: orgIdentifier,
+          project: projectIdentifier,
+          pipeline: pipelineIdentifier,
+          queryParams: {
+            repo_name: repoIdentifier,
+            branch_name: branch,
+            connector_ref: connectorRef
+          }
+        })
+          .then(response => {
+            setPipelineInputs(response.content)
+          })
+          .catch(err => (inputsError = err))
+          .finally(() => setIsLoading(false))
+      }
+    }
+  }, [pipelineMetadata])
+
   const isPipelineInvalid = useMemo(() => {
     if (pipelineMetadata?.data && !pipelineMetadata?.data?.entityValidityDetails?.valid) {
       return true
@@ -186,12 +192,17 @@ function InputSetList(): React.ReactElement {
   // These flags will be used to disable the Add Input set buttons in the page.
   const [pipelineHasRuntimeInputs, setPipelineHasRuntimeInputs] = useState(true)
   useEffect(() => {
-    const pipelineHasNoRuntimeInputs =
-      ((!isSimplifiedYAMLEnabled(module, CI_YAML_VERSIONING) && !template?.data?.inputSetTemplateYaml) ||
+    let pipelineHasNoRuntimeInputs
+    if (CDS_YAML_SIMPLIFICATION && pipelineMetadata?.data?.yamlVersion === YamlVersion[1]) {
+      // TODO: replace with api call
+      pipelineHasNoRuntimeInputs = false
+    } else {
+      pipelineHasNoRuntimeInputs =
+        (!isSimplifiedYAMLEnabled(module, CI_YAML_VERSIONING) && !template?.data?.inputSetTemplateYaml) ||
         (isSimplifiedYAMLEnabled(module, CI_YAML_VERSIONING) &&
           isEmpty(pipelineInputs?.inputs) &&
-          isEmpty(pipelineInputs.options?.clone))) &&
-      !(CDS_YAML_SIMPLIFICATION && pipelineMetadata?.data?.yamlVersion === '1')
+          isEmpty(pipelineInputs.options?.clone))
+    }
 
     setPipelineHasRuntimeInputs(!pipelineHasNoRuntimeInputs)
   }, [template, pipelineInputs])
@@ -361,15 +372,16 @@ function InputSetList(): React.ReactElement {
               isSimplifiedYAMLEnabled(module, CI_YAML_VERSIONING) ? goToInputSetFormV1() : goToInputSetForm()
             }}
           />
-          {(inputSet?.data?.content as InputSetSummaryResponse[])?.length > 0 && (
-            <MenuItem
-              text={getString('inputSets.overlayInputSet')}
-              onClick={() => {
-                setSelectedInputSet({ identifier: '', repoIdentifier, branch })
-                showOverlayInputSetForm()
-              }}
-            />
-          )}
+          {(inputSet?.data?.content as InputSetSummaryResponse[])?.length > 0 &&
+            defaultTo(pipelineMetadata?.data?.yamlVersion, '0') === '0' && (
+              <MenuItem
+                text={getString('inputSets.overlayInputSet')}
+                onClick={() => {
+                  setSelectedInputSet({ identifier: '', repoIdentifier, branch })
+                  showOverlayInputSetForm()
+                }}
+              />
+            )}
 
           {storeType === StoreType.REMOTE && (
             <MenuItem text={getString('common.importFromGit')} onClick={showImportResourceModal} />

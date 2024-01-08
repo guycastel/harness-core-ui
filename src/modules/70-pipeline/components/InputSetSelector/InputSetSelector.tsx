@@ -15,7 +15,8 @@ import {
   PageSpinner,
   Container,
   Button,
-  Pagination
+  Pagination,
+  MultiTypeInputType
 } from '@harness/uicore'
 import { Color } from '@harness/design-system'
 import { clone, defaultTo, isEmpty, includes, isNil, get } from 'lodash-es'
@@ -386,7 +387,20 @@ export function InputSetSelector({
           <Container className={css.overlayIsHelperTextContainer} border={{ bottom: true }}>
             <Text className={css.overlayIsHelperText}>{getString('pipeline.inputSets.overlayISHelperText')}</Text>
             <div className={cx(css.renderSelectedValue, css.renderPopoverSelectedValue, selectedValueClass)}>
-              <SelectedInputSetList value={selectedInputSets} setSelectedInputSets={setSelectedInputSets} />
+              <SelectedInputSetList
+                value={selectedInputSets.map(item => ({
+                  data: item,
+                  label: item.label,
+                  type: item.type as unknown as string,
+                  value: item.value
+                }))}
+                onChange={selectedItems => {
+                  setSelectedInputSets(selectedItems?.map(item => item.data) ?? [])
+                }}
+                isDisabled={item =>
+                  !(item.data?.idType === MultiTypeInputType.EXPRESSION && item.data?.label?.split('.').length === 5)
+                }
+              />
             </div>
           </Container>
           {!inputSets ? (

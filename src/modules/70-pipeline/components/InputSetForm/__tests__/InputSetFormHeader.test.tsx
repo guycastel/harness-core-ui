@@ -6,7 +6,7 @@ import routes from '@common/RouteDefinitions'
 import { accountPathProps, inputSetFormPathProps, pipelineModuleParams } from '@modules/10-common/utils/routeUtils'
 import { defaultAppStoreValues } from '@modules/10-common/utils/DefaultAppStoreData'
 import { gitConfigs, sourceCodeManagers } from '@modules/27-platform/connectors/mocks/mock'
-import { InputSetFormHeader, InputSetFormHeaderProps } from '../InputSetFormHeader'
+import { InputSetFormHeader, InputSetFormHeaderProps } from '../../InputSetFormHeader/InputSetFormHeader'
 
 const TEST_INPUT_SET_FORM_PATH = routes.toInputSetForm({
   ...accountPathProps,

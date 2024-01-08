@@ -76,6 +76,7 @@ export const pipelineInputsSchema1UI: UIInputs = {
         type: 'string'
       },
       name: 'input-1',
+      readonly: undefined,
       required: false,
       type: 'String',
       default: undefined

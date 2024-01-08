@@ -31,6 +31,7 @@ export interface UIRuntimeInput extends RuntimeInput {
   hasMultiUsage: boolean
   label?: string
   internal_type?: string
+  readonly?: boolean
 }
 
 export interface UIInputMetadata {

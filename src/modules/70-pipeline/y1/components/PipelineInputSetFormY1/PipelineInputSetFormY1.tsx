@@ -28,14 +28,25 @@ export type InputsFormValues = { [key: string]: unknown }
 export interface PipelineInputsFormY1Props {
   inputs: UIInputs
   readonly: boolean
+  prefix?: string
   className?: string
   manageInputsActive?: boolean
   selectedInputs?: string[]
   onSelectedInputsChange?: (selectedInputs: string[]) => void
+  disabled?: boolean
 }
 
 export function PipelineInputsFormY1(props: PipelineInputsFormY1Props): React.ReactElement {
-  const { inputs, readonly, manageInputsActive, selectedInputs = [], onSelectedInputsChange, className } = props
+  const {
+    inputs,
+    readonly,
+    prefix = '',
+    manageInputsActive,
+    selectedInputs = [],
+    onSelectedInputsChange,
+    className,
+    disabled
+  } = props
 
   const commonCheckBoxProps: CommonCheckboxProps = {
     checked: selectedInputs.length !== 0,
@@ -54,12 +65,16 @@ export function PipelineInputsFormY1(props: PipelineInputsFormY1Props): React.Re
       <InputRowHeader manageInputsActive={manageInputsActive} commonCheckBoxProps={commonCheckBoxProps} />
       {inputs.inputs.map(input => {
         const selected = manageInputsActive && selectedInputs.includes(input.name)
-        const rowDisabled = manageInputsActive && !selectedInputs.includes(input.name)
+        const rowDisabled = disabled || (manageInputsActive && !selectedInputs.includes(input.name))
 
         return (
           <InputRow
-            key={input.name}
-            input={input}
+            key={`${input.name}`}
+            prefix={prefix}
+            input={{
+              ...input,
+              readonly: input.readonly || disabled
+            }}
             readonly={readonly}
             manageInputsActive={manageInputsActive}
             selected={selected}
@@ -83,6 +98,7 @@ export function PipelineInputsFormY1(props: PipelineInputsFormY1Props): React.Re
 export interface InputRowProps {
   input: UIRuntimeInput
   readonly: boolean
+  prefix?: string
   manageInputsActive?: boolean
   selected?: boolean
   setSelected?: (value: boolean) => void
@@ -90,7 +106,7 @@ export interface InputRowProps {
 }
 
 export function InputRow(props: InputRowProps): React.ReactElement {
-  const { input, readonly, manageInputsActive, selected, setSelected, rowDisabled } = props
+  const { input, readonly, manageInputsActive, selected, setSelected, rowDisabled, prefix = '' } = props
   const { name, type, desc } = input
 
   return (
@@ -126,7 +142,7 @@ export function InputRow(props: InputRowProps): React.ReactElement {
       </Container>
       <Container>
         <InputComponentRenderer
-          path={input.name}
+          path={`${prefix}${input.name}`}
           allowableTypes={[MultiTypeInputType.FIXED, MultiTypeInputType.RUNTIME, MultiTypeInputType.EXPRESSION]}
           factory={inputComponentFactory}
           readonly={readonly}

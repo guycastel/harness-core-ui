@@ -8,7 +8,10 @@
 import { IconName, SelectOption, MultiTypeInputType } from '@harness/uicore'
 import { clone, remove } from 'lodash-es'
 import type { EntityGitDetails, InputSetSummaryResponse } from 'services/pipeline-ng'
+import { SelectedInputSetListValue } from './SelectedInputSetList'
 import css from './InputSetSelector.module.scss'
+
+export const INPUT_SET_SELECTOR_PAGE_SIZE = 100
 
 type InputSetLocal = InputSetSummaryResponse & SelectOption
 export interface InputSetValue extends InputSetLocal {
@@ -27,11 +30,11 @@ export interface InputSetErrorMetaData {
   branch?: string
 }
 
-export const getIconByType = (type: InputSetSummaryResponse['inputSetType']): IconName => {
+export const getIconByType = (type: 'INPUT_SET' | 'OVERLAY_INPUT_SET' | string | undefined): IconName => {
   return type === 'OVERLAY_INPUT_SET' ? 'step-group' : 'yaml-builder-input-sets'
 }
 
-export const onDragStart = (event: React.DragEvent<HTMLLIElement>, row: InputSetValue): void => {
+export const onDragStart = (event: React.DragEvent<HTMLLIElement>, row: SelectedInputSetListValue): void => {
   event.dataTransfer.setData('data', JSON.stringify(row))
   event.currentTarget.classList.add(css.dragging)
 }
@@ -73,5 +76,3 @@ export const removeInvalidInputSet = (selectedInputSets: InputSetValue[], inputS
   remove(clonedInputSets, set => set.value === inputSetId)
   return clonedInputSets
 }
-
-export const INPUT_SET_SELECTOR_PAGE_SIZE = 100
