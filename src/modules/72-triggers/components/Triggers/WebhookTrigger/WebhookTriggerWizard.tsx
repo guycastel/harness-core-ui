@@ -672,6 +672,7 @@ export default function WebhookTriggerWizard(
           ) || {}
 
         let pipelineJson = undefined
+        let pipelineOverride = undefined
 
         if (inputYaml) {
           try {
@@ -682,6 +683,11 @@ export default function WebhookTriggerWizard(
                 originalPipelineVariables: resolvedMergedPipeline?.variables,
                 currentPipelineVariables: pipelineJson.variables
               })
+            }
+            // Add inputYaml from from yaml to pipelineOverride to override input sets values
+            // As of now Pipeline inputs override is possible only from yaml view
+            if (inputSetRefs?.length) {
+              pipelineOverride = pipelineJson
             }
           } catch (e) {
             // set error
@@ -699,6 +705,7 @@ export default function WebhookTriggerWizard(
           ...(sourceRepoForYaml === GitSourceProviders.Github.value && { encryptedWebhookSecretIdentifier }),
           stagesToExecute,
           pipeline: pipelineJson,
+          pipelineOverride,
           sourceRepo: sourceRepoForYaml,
           triggerType: 'Webhook',
           event,
@@ -790,6 +797,7 @@ export default function WebhookTriggerWizard(
         } = triggerResponseJson
 
         let pipelineJson = undefined
+        let pipelineOverride = undefined
 
         if (inputYaml) {
           try {
@@ -800,6 +808,11 @@ export default function WebhookTriggerWizard(
                 originalPipelineVariables: resolvedMergedPipeline?.variables,
                 currentPipelineVariables: pipelineJson.variables
               })
+            }
+            // Add inputYaml from from yaml to pipelineOverride to override input sets values
+            // As of now Pipeline inputs override is possible only from yaml view
+            if (inputSetRefs?.length) {
+              pipelineOverride = pipelineJson
             }
           } catch (e) {
             // set error
@@ -816,6 +829,7 @@ export default function WebhookTriggerWizard(
           tags,
           stagesToExecute,
           pipeline: pipelineJson,
+          pipelineOverride,
           sourceRepo: sourceRepoForCustomYaml,
           triggerType: 'Webhook',
           secureToken: authToken?.spec?.value,
@@ -895,6 +909,7 @@ export default function WebhookTriggerWizard(
       stagesToExecute,
       tags,
       pipeline: pipelineRuntimeInput,
+      pipelineOverride,
       sourceRepo: formikValueSourceRepo,
       triggerType: formikValueTriggerType,
       repoName,
@@ -1017,7 +1032,12 @@ export default function WebhookTriggerWizard(
         pipelineBranchName: isNewGitSyncRemotePipeline ? pipelineBranchName : null,
         // Pass inputYaml or inputSetRefs if there is any pipeline runtime input
         ...(isAnyPipelineRuntimeInput && {
-          inputYaml: stringifyPipelineRuntimeInput,
+          // pass pipelineOverride values to inputYaml if user has added inputYaml along with inputSetRefs
+          inputYaml: inputSetRefs.length
+            ? !isEmpty(pipelineOverride)
+              ? yamlStringify({ pipeline: pipelineOverride })
+              : undefined
+            : stringifyPipelineRuntimeInput,
           inputSetRefs: inputSetRefs.length ? inputSetRefs : undefined
         })
       } as NGTriggerConfigV2
@@ -1067,7 +1087,12 @@ export default function WebhookTriggerWizard(
         pipelineBranchName: isNewGitSyncRemotePipeline ? pipelineBranchName : null,
         // Pass inputYaml or inputSetRefs if there is any pipeline runtime input
         ...(isAnyPipelineRuntimeInput && {
-          inputYaml: stringifyPipelineRuntimeInput,
+          // pass pipelineOverride values to inputYaml if user has added inputYaml along with inputSetRefs
+          inputYaml: inputSetRefs.length
+            ? !isEmpty(pipelineOverride)
+              ? yamlStringify({ pipeline: pipelineOverride })
+              : undefined
+            : stringifyPipelineRuntimeInput,
           inputSetRefs: inputSetRefs.length ? inputSetRefs : undefined
         })
       } as NGTriggerConfigV2
@@ -1110,10 +1135,6 @@ export default function WebhookTriggerWizard(
     }
     if (res?.source?.spec?.spec && !res.source.spec.spec.event) {
       delete res.source.spec.spec.event
-    }
-
-    if (values.inputSetRefs?.length || values.inputSetSelected?.length) {
-      delete res.inputYaml
     }
 
     if (values.inputSetSelected?.length) {
@@ -1321,10 +1342,6 @@ export default function WebhookTriggerWizard(
   }, [])
 
   const submitTrigger = async (triggerYaml: NGTriggerConfigV2 | TriggerConfigDTO): Promise<void> => {
-    if (triggerYaml.inputSetRefs?.length) {
-      delete triggerYaml.inputYaml
-    }
-
     if (isNewGitSyncRemotePipeline) {
       // Set pipelineBranchName to proper expression when it's left empty
       if (!(triggerYaml.pipelineBranchName || '').trim()) {

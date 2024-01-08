@@ -49,6 +49,7 @@ export interface FlatOnEditValuesInterface {
     [key: string]: string
   }
   pipeline?: PipelineInfoConfig
+  pipelineOverride?: PipelineInfoConfig
   triggerType: TriggerType
   manifestType?: string
   artifactType?: string
@@ -81,6 +82,7 @@ export interface FlatValidScheduleFormikValuesInterface {
   target?: string
   targetIdentifier?: string
   pipeline: PipelineInfoConfig
+  pipelineOverride?: PipelineInfoConfig
   resolvedPipeline?: PipelineInfoConfig
   sourceRepo: string
   triggerType: TriggerType

@@ -2281,6 +2281,7 @@ export const getArtifactManifestTriggerYaml = ({
     stagesToExecute,
     tags,
     pipeline: pipelineRuntimeInput,
+    pipelineOverride,
     originalPipeline,
     triggerType: formikValueTriggerType,
     event,
@@ -2403,7 +2404,12 @@ export const getArtifactManifestTriggerYaml = ({
     pipelineBranchName: _gitAwareForTriggerEnabled ? pipelineBranchName : null,
     // Pass inputYaml or inputSetRefs if there is any pipeline runtime input
     ...(isAnyPipelineRuntimeInput && {
-      inputYaml: stringifyPipelineRuntimeInput,
+      // pass pipelineOverride values to inputYaml if user has added inputYaml along with inputSetRefs
+      inputYaml: inputSetRefs.length
+        ? !isEmpty(pipelineOverride)
+          ? yamlStringify({ pipeline: pipelineOverride })
+          : undefined
+        : stringifyPipelineRuntimeInput,
       inputSetRefs: inputSetRefs.length ? inputSetRefs : undefined
     })
   }

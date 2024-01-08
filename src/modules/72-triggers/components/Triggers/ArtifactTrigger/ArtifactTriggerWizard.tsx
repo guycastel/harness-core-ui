@@ -283,10 +283,6 @@ const ArtifactTriggerWizard = (props: { children: JSX.Element[]; isSimplifiedYAM
       isAnyPipelineRuntimeInput
     })
 
-    if (values.inputSetRefs?.length || values.inputSetSelected?.length) {
-      delete res.inputYaml
-    }
-
     if (values.inputSetSelected?.length) {
       res.inputSetRefs = values.inputSetSelected.map((inputSet: InputSetValue) => inputSet.value)
     }
@@ -535,6 +531,7 @@ const ArtifactTriggerWizard = (props: { children: JSX.Element[]; isSimplifiedYAM
           }
 
       let pipelineJson = undefined
+      let pipelineOverride = undefined
 
       if (inputYaml) {
         try {
@@ -545,6 +542,11 @@ const ArtifactTriggerWizard = (props: { children: JSX.Element[]; isSimplifiedYAM
               originalPipelineVariables: resolvedMergedPipeline?.variables,
               currentPipelineVariables: pipelineJson.variables
             })
+          }
+          // Add inputYaml from from yaml to pipelineOverride to override input sets values
+          // As of now Pipeline inputs override is possible only from yaml view
+          if (inputSetRefs?.length) {
+            pipelineOverride = pipelineJson
           }
         } catch (e) {
           // set error
@@ -573,6 +575,7 @@ const ArtifactTriggerWizard = (props: { children: JSX.Element[]; isSimplifiedYAM
         tags,
         source: triggerSource,
         pipeline: pipelineJson,
+        pipelineOverride,
         triggerType: triggerSourceType,
         stageId: source?.spec?.stageIdentifier,
         inputSetTemplateYamlObj: parse(template?.data?.inputSetTemplateYaml || ''),
@@ -681,10 +684,6 @@ const ArtifactTriggerWizard = (props: { children: JSX.Element[]; isSimplifiedYAM
   // TriggerConfigDTO is NGTriggerConfigV2 with optional identifier
   const submitTrigger = async (triggerYaml: NGTriggerConfigV2 | TriggerConfigDTO): Promise<void> => {
     setErrorToasterMessage('')
-
-    if (triggerYaml.inputSetRefs?.length) {
-      delete triggerYaml.inputYaml
-    }
 
     if (isNewGitSyncRemotePipeline) {
       // Set pipelineBranchName to proper expression when it's left empty

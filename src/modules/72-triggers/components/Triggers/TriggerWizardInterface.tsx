@@ -29,6 +29,7 @@ export interface FlatValidWebhookFormikValuesInterface {
   target?: string
   targetIdentifier?: string
   pipeline: PipelineInfoConfig
+  pipelineOverride?: PipelineInfoConfig
   resolvedPipeline?: PipelineInfoConfig
   sourceRepo: string
   triggerType: TriggerType

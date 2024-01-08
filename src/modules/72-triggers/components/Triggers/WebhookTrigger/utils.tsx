@@ -187,6 +187,7 @@ export interface FlatOnEditValuesInterface {
     [key: string]: string
   }
   pipeline?: PipelineInfoConfig
+  pipelineOverride?: PipelineInfoConfig
   triggerType: TriggerType
   manifestType?: string
   artifactType?: string

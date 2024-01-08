@@ -65,6 +65,7 @@ export interface FlatOnEditValuesInterface {
   }
   source?: NGTriggerSourceV2
   pipeline: PipelineInfoConfig
+  pipelineOverride?: PipelineInfoConfig
   triggerType: TriggerType
   manifestType?: string
   artifactType?: string
@@ -127,6 +128,7 @@ export interface FlatValidWebhookFormikValuesInterface {
   target?: string
   targetIdentifier?: string
   pipeline: PipelineInfoConfig
+  pipelineOverride?: PipelineInfoConfig
   originalPipeline: PipelineInfoConfig
   resolvedPipeline?: PipelineInfoConfig
   sourceRepo: string
@@ -164,6 +166,7 @@ export interface FlatValidScheduleFormikValuesInterface {
   target?: string
   targetIdentifier?: string
   pipeline: PipelineInfoConfig
+  pipelineOverride?: PipelineInfoConfig
   resolvedPipeline?: PipelineInfoConfig
   sourceRepo: string
   triggerType: TriggerType

@@ -373,10 +373,6 @@ const TriggersWizardPage = (): JSX.Element => {
     }
 
     if (res) {
-      if (values.inputSetRefs?.length || values.inputSetSelected?.length) {
-        delete res.inputYaml
-      }
-
       if (values.inputSetSelected?.length) {
         res.inputSetRefs = values.inputSetSelected.map((inputSet: InputSetValue) => inputSet.value)
       }
@@ -603,6 +599,7 @@ const TriggersWizardPage = (): JSX.Element => {
       tags,
       stagesToExecute,
       pipeline: pipelineRuntimeInput,
+      pipelineOverride,
       sourceRepo: formikValueSourceRepo,
       triggerType: formikValueTriggerType,
       repoName,
@@ -726,7 +723,12 @@ const TriggersWizardPage = (): JSX.Element => {
         pipelineBranchName: isNewGitSyncRemotePipeline ? pipelineBranchName : null,
         // Pass inputYaml or inputSetRefs if there is any pipeline runtime input
         ...(isAnyPipelineRuntimeInput && {
-          inputYaml: stringifyPipelineRuntimeInput,
+          // pass pipelineOverride values to inputYaml if user has added inputYaml along with inputSetRefs
+          inputYaml: inputSetRefs.length
+            ? !isEmpty(pipelineOverride)
+              ? yamlStringify({ pipeline: pipelineOverride })
+              : undefined
+            : stringifyPipelineRuntimeInput,
           inputSetRefs: inputSetRefs.length ? inputSetRefs : undefined
         })
       } as NGTriggerConfigV2
@@ -776,7 +778,12 @@ const TriggersWizardPage = (): JSX.Element => {
         pipelineBranchName: isNewGitSyncRemotePipeline ? pipelineBranchName : null,
         // Pass inputYaml or inputSetRefs if there is any pipeline runtime input
         ...(isAnyPipelineRuntimeInput && {
-          inputYaml: stringifyPipelineRuntimeInput,
+          // pass pipelineOverride values to inputYaml if user has added inputYaml along with inputSetRefs
+          inputYaml: inputSetRefs.length
+            ? !isEmpty(pipelineOverride)
+              ? yamlStringify({ pipeline: pipelineOverride })
+              : undefined
+            : stringifyPipelineRuntimeInput,
           inputSetRefs: inputSetRefs.length ? inputSetRefs : undefined
         })
       } as NGTriggerConfigV2
@@ -876,6 +883,7 @@ const TriggersWizardPage = (): JSX.Element => {
           ) || {}
 
         let pipelineJson = undefined
+        let pipelineOverride = undefined
 
         if (inputYaml) {
           try {
@@ -886,6 +894,11 @@ const TriggersWizardPage = (): JSX.Element => {
                 originalPipelineVariables: resolvedMergedPipeline?.variables,
                 currentPipelineVariables: pipelineJson.variables
               })
+            }
+            // Add inputYaml from from yaml to pipelineOverride to override input sets values
+            // As of now Pipeline inputs override is possible only from yaml view
+            if (inputSetRefs?.length) {
+              pipelineOverride = pipelineJson
             }
           } catch (e) {
             // set error
@@ -903,6 +916,7 @@ const TriggersWizardPage = (): JSX.Element => {
           tags,
           ...(sourceRepo === GitSourceProviders.Github.value && { encryptedWebhookSecretIdentifier }),
           pipeline: pipelineJson,
+          pipelineOverride,
           sourceRepo,
           triggerType: 'Webhook',
           event,
@@ -993,6 +1007,7 @@ const TriggersWizardPage = (): JSX.Element => {
         } = triggerResponseJson
 
         let pipelineJson = undefined
+        let pipelineOverride = undefined
 
         if (inputYaml) {
           try {
@@ -1003,6 +1018,11 @@ const TriggersWizardPage = (): JSX.Element => {
                 originalPipelineVariables: resolvedMergedPipeline?.variables,
                 currentPipelineVariables: pipelineJson.variables
               })
+            }
+            // Add inputYaml from from yaml to pipelineOverride to override input sets values
+            // As of now Pipeline inputs override is possible only from yaml view
+            if (inputSetRefs?.length) {
+              pipelineOverride = pipelineJson
             }
           } catch (e) {
             // set error
@@ -1019,6 +1039,7 @@ const TriggersWizardPage = (): JSX.Element => {
           stagesToExecute,
           tags,
           pipeline: pipelineJson,
+          pipelineOverride,
           sourceRepo,
           triggerType: 'Webhook',
           headerConditions,
@@ -1067,6 +1088,7 @@ const TriggersWizardPage = (): JSX.Element => {
       } = triggerResponseJson
 
       let pipelineJson = undefined
+      let pipelineOverride = undefined
 
       if (inputYaml) {
         try {
@@ -1077,6 +1099,11 @@ const TriggersWizardPage = (): JSX.Element => {
               originalPipelineVariables: resolvedMergedPipeline?.variables,
               currentPipelineVariables: pipelineJson.variables
             })
+          }
+          // Add inputYaml from from yaml to pipelineOverride to override input sets values
+          // As of now Pipeline inputs override is possible only from yaml view
+          if (inputSetRefs?.length) {
+            pipelineOverride = pipelineJson
           }
         } catch (e) {
           // set error
@@ -1097,6 +1124,7 @@ const TriggersWizardPage = (): JSX.Element => {
         stagesToExecute,
         tags,
         pipeline: pipelineJson,
+        pipelineOverride,
         triggerType: 'Scheduled',
         expression,
         pipelineBranchName,
@@ -1164,6 +1192,7 @@ const TriggersWizardPage = (): JSX.Element => {
       }
 
       let pipelineJson = undefined
+      let pipelineOverride = undefined
 
       if (inputYaml) {
         try {
@@ -1174,6 +1203,11 @@ const TriggersWizardPage = (): JSX.Element => {
               originalPipelineVariables: resolvedMergedPipeline?.variables,
               currentPipelineVariables: pipelineJson.variables
             })
+          }
+          // Add inputYaml from from yaml to pipelineOverride to override input sets values
+          // As of now Pipeline inputs override is possible only from yaml view
+          if (inputSetRefs?.length) {
+            pipelineOverride = pipelineJson
           }
         } catch (e) {
           // set error
@@ -1200,6 +1234,7 @@ const TriggersWizardPage = (): JSX.Element => {
         description,
         tags,
         pipeline: pipelineJson,
+        pipelineOverride,
         triggerType: triggerType,
         manifestType: selectedArtifact?.type,
         stageId: source?.spec?.stageIdentifier,
@@ -1240,6 +1275,7 @@ const TriggersWizardPage = (): JSX.Element => {
       description,
       tags,
       pipeline: pipelineRuntimeInput,
+      pipelineOverride,
       triggerType: formikValueTriggerType,
       expression,
       cronFormat,
@@ -1280,7 +1316,12 @@ const TriggersWizardPage = (): JSX.Element => {
       pipelineBranchName: isNewGitSyncRemotePipeline ? pipelineBranchName : undefined,
       // Pass inputYaml or inputSetRefs if there is any pipeline runtime input
       ...(isAnyPipelineRuntimeInput && {
-        inputYaml: stringifyPipelineRuntimeInput,
+        // pass pipelineOverride values to inputYaml if user has added inputYaml along with inputSetRefs
+        inputYaml: inputSetRefs.length
+          ? !isEmpty(pipelineOverride)
+            ? yamlStringify({ pipeline: pipelineOverride })
+            : undefined
+          : stringifyPipelineRuntimeInput,
         inputSetRefs: inputSetRefs.length ? inputSetRefs : undefined
       })
     })
@@ -1370,10 +1411,6 @@ const TriggersWizardPage = (): JSX.Element => {
   // TriggerConfigDTO is NGTriggerConfigV2 with optional identifier
   const submitTrigger = async (triggerYaml: NGTriggerConfigV2 | TriggerConfigDTO): Promise<void> => {
     setErrorToasterMessage('')
-
-    if (triggerYaml.inputSetRefs?.length) {
-      delete triggerYaml.inputYaml
-    }
 
     if (isNewGitSyncRemotePipeline) {
       // Set pipelineBranchName to proper expression when it's left empty
