@@ -26,7 +26,7 @@ const RedirectToConfiguration = ({ mode }: { mode: NAV_MODE }): React.ReactEleme
 
 function AuthSettingsRouteDestinations({ mode }: { mode: NAV_MODE }): React.ReactElement {
   const urqlClient = React.useCallback(() => {
-    const url = 'https://harness.dragonson.com/graphql'
+    const url = 'https://cms.harness.io/graphql'
     return createClient({
       url,
       exchanges: [dedupExchange, requestPolicyExchange({}), cacheExchange, fetchExchange],

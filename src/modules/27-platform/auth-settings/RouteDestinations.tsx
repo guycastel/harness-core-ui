@@ -94,7 +94,7 @@ const RedirectToOverview = (): React.ReactElement => {
 
 const AuthSettingsRoutes: React.FC = () => {
   const urqlClient = React.useCallback(() => {
-    const url = 'https://harness.dragonson.com/graphql'
+    const url = 'https://cms.harness.io/graphql'
     return createClient({
       url,
       exchanges: [dedupExchange, requestPolicyExchange({}), cacheExchange, fetchExchange],
