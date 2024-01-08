@@ -26,6 +26,7 @@ import {
   Icon
 } from '@harness/uicore'
 import { Color } from '@harness/design-system'
+import { isUndefined } from 'lodash-es'
 import { useQueryParams, useUpdateQueryParams } from '@common/hooks'
 import { useGetProjectAggregateDTOList } from 'services/cd-ng'
 import type { Project, ProjectAggregateDTO } from 'services/cd-ng'
@@ -149,6 +150,9 @@ const ProjectsListPage: React.FC<ProjectsListPageProps> = ({ onProjectClick }) =
           <OrgDropdown
             value={{ value: orgFilter, label: orgFilter }}
             onChange={item => {
+              if (isUndefined(item.value)) {
+                return
+              }
               if (item.value === '') {
                 clearOrgFilterPreference()
               } else {
