@@ -1,15 +1,5 @@
 import React, { lazy, useEffect, useState } from 'react'
-import {
-  Button,
-  ButtonVariation,
-  Dialog,
-  Layout,
-  Text,
-  ButtonSize,
-  shouldShowError,
-  getErrorInfoFromErrorObject,
-  useToaster
-} from '@harness/uicore'
+import { Button, ButtonVariation, Dialog, Layout, Text, ButtonSize } from '@harness/uicore'
 // eslint-disable-next-line no-restricted-imports
 import { Color, FontVariation } from '@harness/design-system'
 import { useParams } from 'react-router-dom'
@@ -18,9 +8,11 @@ import { useStrings } from 'framework/strings'
 import {
   AgentServiceForServerGetDeployYamlQueryParams,
   V1Agent,
+  V1AgentType,
   useAgentServiceForServerCreate,
   useAgentServiceForServerGetDeployHelmChart
 } from 'services/gitops'
+import type { V1AgentOperator } from 'services/gitops'
 import { usePolling } from '@common/hooks/usePolling'
 import { useTelemetry } from '@common/hooks/useTelemetry'
 import CommandBlock from '@modules/10-common/CommandBlock/CommandBlock'
@@ -61,7 +53,6 @@ export default function CreateGitopsAgentModal({
   const { trackEvent } = useTelemetry()
   const { stepsProgress } = useOnboardingStore()
   const linkRef = React.useRef<HTMLAnchorElement>(null)
-  const { showError } = useToaster()
 
   const { mutate: createAgent } = useAgentServiceForServerCreate({})
   const { projectIdentifier, orgIdentifier, accountId } = useParams<ProjectPathProps>()
@@ -70,6 +61,18 @@ export default function CreateGitopsAgentModal({
     return {
       status: response
     }
+  }
+  const agent = {
+    accountIdentifier: accountId,
+    projectIdentifier: projectIdentifier,
+    orgIdentifier: orgIdentifier,
+    identifier: 'harnessagent',
+    name: 'harness-agent',
+    metadata: {
+      namespace: 'harness-gitops'
+    },
+    type: 'MANAGED_ARGO_PROVIDER' as V1AgentType,
+    operator: 'ARGO' as V1AgentOperator
   }
   const [isDownloadDisabed, setIsDownloadDisabed] = useState<boolean>(true)
   const [isVerifiedOnce] = useState<boolean>(false)
@@ -96,10 +99,10 @@ export default function CreateGitopsAgentModal({
         onAgentCreated(res.status)
         setIsDownloadDisabed(false)
       })
-      .catch(e => {
-        if (shouldShowError(e)) {
-          showError(getErrorInfoFromErrorObject(e))
-        }
+      .catch(() => {
+        refetchHelmChart()
+        onAgentCreated(agent)
+        setIsDownloadDisabed(false)
       })
   }, [])
 
