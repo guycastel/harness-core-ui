@@ -538,7 +538,7 @@ export function AppStoreProvider({ children }: PropsWithChildren<unknown>): Reac
       connectivityMode: defaultTo(data.connectivityMode, prevState?.connectivityMode),
       currentUserInfo: defaultTo(data.currentUserInfo, prevState?.currentUserInfo),
       accountInfo: defaultTo(data.accountInfo, prevState?.accountInfo),
-      isNewNavEnabled: data.isNewNavEnabled,
+      isNewNavEnabled: defaultTo(data.isNewNavEnabled, prevState?.isNewNavEnabled),
       isPublicAccessEnabledOnResources: defaultTo(
         data.isPublicAccessEnabledOnResources,
         prevState?.isPublicAccessEnabledOnResources
