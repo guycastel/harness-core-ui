@@ -5,11 +5,13 @@
  * https://polyformproject.org/wp-content/uploads/2020/06/PolyForm-Shield-1.0.0.txt.
  */
 
-import type { SelectOption } from '@harness/uicore'
 import * as Yup from 'yup'
+import { isEmpty } from 'lodash-es'
+import type { SelectOption } from '@harness/uicore'
 import type { UseStringsReturn } from 'framework/strings'
 import type { ShellScriptStepInfo, StepElementConfig } from 'services/pipeline-ng'
 import { StepType } from '@modules/70-pipeline/components/PipelineSteps/PipelineStepInterface'
+import { isValueExpression, isValueRuntimeInput } from '@modules/10-common/utils/utils'
 
 export const scriptInputType: SelectOption[] = [
   { label: 'String', value: 'String' },
@@ -36,11 +38,23 @@ export const variableSchema = (
   Yup.array().of(
     Yup.object({
       name: Yup.string().required(getString('common.validation.nameIsRequired')),
-      value: Yup.string().when('type', {
-        is: val => val === 'Secret' && type === StepType.SHELLSCRIPT,
-        then: Yup.string().trim().required(getString('common.validation.valueIsRequired')),
-        otherwise: Yup.string().optional()
-      }),
+      value: Yup.string()
+        .when('type', {
+          is: val => val === 'Secret' && type === StepType.SHELLSCRIPT,
+          then: Yup.string().trim().required(getString('common.validation.valueIsRequired'))
+        })
+        .when('type', {
+          is: typeVal => typeVal === 'Number' && type === StepType.SHELLSCRIPT,
+          then: Yup.string()
+            .trim()
+            .test('validate-for-number', getString('common.validation.valueMustBeANumber'), val => {
+              if (isEmpty(val)) return true
+              if (isValueRuntimeInput(val)) return true
+              if (isValueExpression(val)) return true
+              if (isNaN(val)) return false
+              return true
+            })
+        }),
       type: Yup.string().trim().required(getString('common.validation.typeIsRequired'))
     })
   )

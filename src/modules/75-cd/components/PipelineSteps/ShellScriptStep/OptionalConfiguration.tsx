@@ -22,7 +22,7 @@ import {
 } from '@harness/uicore'
 import { useParams } from 'react-router-dom'
 import { v4 as uuid } from 'uuid'
-import { get, isEmpty } from 'lodash-es'
+import { defaultTo, get, isEmpty } from 'lodash-es'
 
 import cx from 'classnames'
 
@@ -496,7 +496,7 @@ export function OptionalVariables({
         ) : (
           <ConfigureOptions
             value={variableValue}
-            type="String"
+            type={defaultTo(variableType, 'String')}
             variableName={variableName}
             onChange={value => setFieldValue(variablePath, value)}
             isReadonly={readonly}

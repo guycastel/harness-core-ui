@@ -6,7 +6,8 @@
  */
 
 import React from 'react'
-import { act, fireEvent, queryByAttribute, render } from '@testing-library/react'
+import { act, fireEvent, queryByAttribute, render, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 
 import { StepViewType, StepFormikRef } from '@pipeline/components/AbstractSteps/Step'
 import { StepType } from '@pipeline/components/PipelineSteps/PipelineStepInterface'
@@ -443,5 +444,74 @@ describe('Test Shell Script Step', () => {
       />
     )
     expect(container).toMatchSnapshot()
+  })
+
+  test('should validate for valid number for env variable of type number', async () => {
+    const onUpdate = jest.fn()
+    const ref = React.createRef<StepFormikRef<unknown>>()
+
+    const initialValues = {
+      type: 'ShellScript',
+      identifier: 'SSH',
+      name: 'SSH',
+      spec: {
+        shell: 'Bash',
+        onDelegate: false,
+        source: {
+          type: 'Inline',
+          spec: {
+            script: 'test script'
+          }
+        },
+        executionTarget: {
+          host: 'targethost',
+          connectorRef: 'connectorRef',
+          workingDirectory: './temp'
+        },
+        environmentVariables: [
+          {
+            name: 'testInput1',
+            type: 'Number',
+            value: '123'
+          }
+        ],
+        outputVariables: []
+      }
+    }
+
+    const { container, getByText, queryByText } = render(
+      <TestStepWidget
+        initialValues={initialValues}
+        type={StepType.SHELLSCRIPT}
+        stepViewType={StepViewType.Edit}
+        onUpdate={onUpdate}
+        ref={ref}
+      />
+    )
+
+    const queryByNameAttribute = (name: string): HTMLElement | null => queryByAttribute('name', container, name)
+    expect(getByText('common.optionalConfig')).toBeInTheDocument()
+    await userEvent.click(getByText('common.optionalConfig'))
+
+    const valueInput = queryByNameAttribute('spec.environmentVariables[0].value') as HTMLInputElement
+    expect(valueInput).toBeInTheDocument()
+    expect(valueInput.value).toBe('123')
+    fireEvent.change(valueInput, { target: { value: 'test' } })
+    expect(valueInput.value).toBe('test')
+
+    act(() => {
+      ref.current?.submitForm()
+    })
+    await waitFor(() => expect(onUpdate).not.toBeCalled())
+    expect(getByText('common.validation.valueMustBeANumber')).toBeInTheDocument()
+
+    fireEvent.change(valueInput, { target: { value: '1234' } })
+    expect(valueInput.value).toBe('1234')
+
+    act(() => {
+      ref.current?.submitForm()
+    })
+    await waitFor(() => expect(onUpdate).toBeCalled())
+    expect(queryByText('common.validation.valueMustBeANumber')).not.toBeInTheDocument()
   })
 })
