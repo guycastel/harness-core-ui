@@ -13,7 +13,7 @@
 
   .triangle {
     transform: rotate(-90deg);
-    color: var(--grey-0);
+    color: var(--black);
   }
 
   &.collapse {
@@ -35,7 +35,7 @@
       right: -18px;
     }
     .triangle {
-      color: var(--grey-0);
+      color: var(--black);
     }
   }
 }

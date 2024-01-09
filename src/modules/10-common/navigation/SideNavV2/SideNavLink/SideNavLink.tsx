@@ -160,7 +160,7 @@ export const SideNavLink: React.FC<SideNavLinkProps> = props => {
   const renderText = () => {
     if (!isCollapsed || isRenderedInAccordion) {
       return (
-        <Text font={{ variation: FontVariation.BODY }} color={Color.GREY_800}>
+        <Text font={{ variation: FontVariation.BODY }} color={Color.GREY_300}>
           {label}
         </Text>
       )

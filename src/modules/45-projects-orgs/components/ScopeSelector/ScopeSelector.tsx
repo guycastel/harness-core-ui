@@ -112,7 +112,7 @@ export const ScopeSelector: React.FC<ScopeSelectorProps> = props => {
           <Text className={css.scopeLabelText} color={Color.GREY_350}>
             {getString('projectLabel').toUpperCase()}
           </Text>
-          <Text color={Color.GREY_800} font={{ variation: FontVariation.BODY }}>
+          <Text color={isScopeSelectorOpen ? Color.GREY_800 : Color.WHITE} font={{ variation: FontVariation.BODY }}>
             {getString('selectProject')}
           </Text>
         </Layout.Vertical>
@@ -123,17 +123,17 @@ export const ScopeSelector: React.FC<ScopeSelectorProps> = props => {
       <>
         <Layout.Horizontal flex={{ justifyContent: 'flex-start' }}>
           <Icon
-            color={Color.GREY_350}
+            color={Color.GREY_400}
             name={scopeSelected ? getScopeIcon(scopeSelected) : 'nav-project'}
             size={12}
             margin={{ right: 'xsmall' }}
           />
-          <Text className={css.scopeLabelText} color={Color.GREY_350}>
+          <Text className={css.scopeLabelText} color={Color.GREY_400}>
             {scopeInfoMap[selectedScope].label}
           </Text>
         </Layout.Horizontal>
         <Text
-          color={Color.GREY_1000}
+          className={css.scopeValueText}
           font={{ variation: FontVariation.BODY }}
           lineClamp={1}
           tooltipProps={{
@@ -254,7 +254,7 @@ export const ScopeSelector: React.FC<ScopeSelectorProps> = props => {
           <Button
             minimal
             rightIcon={isCollapsed ? undefined : 'chevron-right'}
-            iconProps={{ color: Color.GREY_400 }}
+            iconProps={{ color: isScopeSelectorOpen ? Color.PRIMARY_4 : Color.GREY_400 }}
             className={cx(css.selectButton, {
               [css.active]: isScopeSelectorOpen,
               [css.collapsed]: isCollapsed
@@ -268,7 +268,7 @@ export const ScopeSelector: React.FC<ScopeSelectorProps> = props => {
             }}
             tooltip={
               !selectedScope ? (
-                <Text padding="small" color={Color.WHITE}>
+                <Text padding="small" color={isScopeSelectorOpen ? Color.BLACK : Color.GREY_400}>
                   {getString('selectProject')}
                 </Text>
               ) : (

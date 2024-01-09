@@ -80,14 +80,8 @@ const ModuleSummary: React.FC<{ module: NavModuleName; selectedModule?: string }
       content={
         <Layout.Vertical className={cx(css.module, css.linksPopover)} padding="small">
           <Layout.Horizontal className={cx(css.popoverHeader, { [css.active]: isActive })} margin={{ bottom: 'small' }}>
-            <Icon
-              className={css.moduleIcon}
-              name={icon}
-              size={20}
-              margin={{ right: 'small' }}
-              style={{ fill: `var(${color})` }}
-            />
-            <Text color={isActive ? Color.PRIMARY_8 : Color.GREY_700} font={{ variation: FontVariation.BODY2 }}>
+            <Icon className={css.moduleIcon} name={icon} size={20} margin={{ right: 'small' }} />
+            <Text color={isActive ? Color.PRIMARY_4 : Color.GREY_300} font={{ variation: FontVariation.BODY2 }}>
               {getString(shortLabel)}
             </Text>
           </Layout.Horizontal>
@@ -108,7 +102,11 @@ const ModuleSummary: React.FC<{ module: NavModuleName; selectedModule?: string }
           style={{ fill: `var(${color})` }}
         />
         {!isCollapsed && (
-          <Text color={isActive ? Color.PRIMARY_8 : Color.GREY_700} font={{ variation: FontVariation.BODY2 }}>
+          <Text
+            className={css.moduleName}
+            color={isActive ? Color.PRIMARY_4 : Color.GREY_300}
+            font={{ variation: FontVariation.BODY2 }}
+          >
             {getString(shortLabel)}
           </Text>
         )}
@@ -162,20 +160,23 @@ const ModulesAccordion: React.FC<ModulesAccordionProps> = ({ mode = NAV_MODE.ALL
       detailsClassName={css.accordionDetails}
       ref={accordionRef}
     >
-      {visibleModules.map(module => {
+      {orderedModules.map(module => {
         const Component = ModuleRouteConfig[module].sideNavLinks(NAV_MODE.ALL, { sideNavState })
         const availableScopes = filterSideNavScope(Component).filter(
           scopeObj => scopeObj.props?.__type === 'SIDENAV_SCOPE'
         )
-        if (availableScopes.findIndex(scopeObj => scopeObj.props.scope?.indexOf(scope) > -1) === -1) {
-          return undefined
-        }
+
+        const shouldModuleBeVisible =
+          visibleModules.indexOf(module) > -1 &&
+          availableScopes.findIndex(scopeObj => scopeObj.props.scope?.indexOf(scope) > -1) > -1
 
         return (
           <Accordion.Panel
             key={module}
             id={module}
+            addDomId={true}
             disabled={isCollapsed}
+            className={!shouldModuleBeVisible ? css.hidden : undefined}
             summary={<ModuleSummary module={module} selectedModule={selectedModule} />}
             details={
               <Container className={css.module} padding={{ left: 'small' }}>

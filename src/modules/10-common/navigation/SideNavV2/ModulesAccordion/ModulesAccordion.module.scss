@@ -1,3 +1,10 @@
+/*
+ * Copyright 2024 Harness Inc. All rights reserved.
+ * Use of this source code is governed by the PolyForm Shield 1.0.0 license
+ * that can be found in the licenses directory at the root of this repository, also available at
+ * https://polyformproject.org/wp-content/uploads/2020/06/PolyForm-Shield-1.0.0.txt.
+ */
+
 .accordion {
   flex: 1;
   overflow-y: scroll;
@@ -49,20 +56,21 @@
           .moduleIcon {
             svg {
               path {
-                fill: var(--primary-7);
+                fill: var(--primary-4);
               }
             }
           }
           &.sideNavCollapsed {
-            background-color: rgba(210, 230, 255);
+            background-color: var(--primary-9-dark);
             border-radius: 4px;
           }
         }
 
         .moduleIcon {
+          opacity: 0.8;
           svg {
             path {
-              fill: #7890b2;
+              fill: var(--grey-400);
             }
 
             &:hover {
@@ -78,7 +86,21 @@
       }
 
       &:hover {
-        background-color: rgba(210, 230, 255);
+        background-color: var(--primary-9-dark);
+
+        &:not(.active) {
+          .moduleIcon {
+            svg {
+              path {
+                fill: var(--grey-100);
+              }
+            }
+          }
+
+          .moduleName {
+            color: var(--grey-100) !important;
+          }
+        }
       }
 
       .chevron {
@@ -101,7 +123,7 @@
 
   .accordionDetails {
     margin-left: var(--spacing-xlarge);
-    border-left: 1px solid var(--grey-200);
+    border-left: 1px solid var(--grey-700);
   }
 
   &.sideNavCollapsed {
@@ -117,21 +139,21 @@
 
     .summary {
       &.active {
-        background-color: rgba(210, 230, 255);
+        background-color: var(--primary-9-dark);
       }
     }
   }
 }
 
 .linksPopover {
-  background: #f5f8fb !important;
+  background: #0b1a30 !important;
 
   .popoverHeader {
     padding: var(--spacing-small) !important;
     &.active {
       svg {
         path {
-          fill: var(--primary-7);
+          fill: var(--primary-4);
         }
       }
     }
@@ -156,4 +178,8 @@
 .popover {
   transform: translate3d(10px, 0px, 0px) !important;
   box-shadow: 0px 2px 4px 0px rgba(96, 97, 112, 0.16), 0px 0px 1px 0px rgba(40, 41, 61, 0.04) !important;
+}
+
+.hidden {
+  display: none;
 }

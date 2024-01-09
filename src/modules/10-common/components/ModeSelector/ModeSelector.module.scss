@@ -15,11 +15,10 @@
   &:hover,
   &.active {
     background-color: var(--primary-2) !important;
-    opacity: 0.8;
 
     .nineDotIcon {
       svg path {
-        fill: var(--primary-7);
+        fill: var(--primary-6);
       }
     }
   }

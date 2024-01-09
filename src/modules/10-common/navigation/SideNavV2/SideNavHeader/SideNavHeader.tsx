@@ -81,14 +81,14 @@ const SideNavHeader: React.FC = () => {
           ) : (
             <Icon
               className={cx({ [css.harnessLogo]: !icon })}
-              name={icon || 'harness-logo-black'}
+              name={icon || 'harness-logo-white'}
               size={icon ? 32 : 100}
               margin={{ right: 'small' }}
             />
           )}
 
           {label && !isCollapsed && (
-            <Text color={Color.GREY_800} font={{ variation: FontVariation.BODY2 }} className={css.label}>
+            <Text color={Color.WHITE} font={{ variation: FontVariation.BODY2 }} className={css.label}>
               {getString(label)}
             </Text>
           )}

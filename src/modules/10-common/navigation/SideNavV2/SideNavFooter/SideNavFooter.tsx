@@ -202,7 +202,7 @@ const SideNavFooter: React.FC = () => {
         >
           <Avatar name={user.name || user.email} email={user.email} size="small" hoverCard={false} />
           {!isCollapsed && (
-            <Text font={{ variation: FontVariation.BODY2 }} color={Color.BLACK} lineClamp={1}>
+            <Text font={{ variation: FontVariation.BODY2 }} color={Color.GREY_300} lineClamp={1}>
               {user.name || user.email}
             </Text>
           )}

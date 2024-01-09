@@ -54,7 +54,7 @@ const renderComponentPublic = (sideNavState: SIDE_NAV_STATE = SIDE_NAV_STATE.EXP
 describe('Sidenav header', () => {
   test('should render', () => {
     const { container } = renderComponent()
-    expect(queryByAttribute('data-icon', container, 'harness-logo-black')).toBeInTheDocument()
+    expect(queryByAttribute('data-icon', container, 'harness-logo-white')).toBeInTheDocument()
     expect(queryByAttribute('data-icon', container, 'nine-dot-options')).toBeInTheDocument()
   })
   test('collapsed state', () => {

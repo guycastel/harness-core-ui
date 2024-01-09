@@ -6,8 +6,9 @@
  */
 
 import React from 'react'
-import { useHistory, useParams, matchPath, useLocation } from 'react-router-dom'
-import { Button, ButtonSize, ButtonVariation, Container } from '@harness/uicore'
+import { useHistory, useParams, matchPath, useLocation, Link } from 'react-router-dom'
+import { Container, Text } from '@harness/uicore'
+import { Color, FontVariation } from '@harness/design-system'
 import { SideNav } from '@common/navigation/SideNavV2/SideNavV2'
 import { Scope } from 'framework/types/types'
 import routes from '@common/RouteDefinitionsV2'
@@ -137,16 +138,11 @@ const CDSideNavLinks = (mode: NAV_MODE, sideNavProps?: ModuleLinksProps): React.
       <SideNav.CommonScopeLinks mode={mode} module={module} />
       {sideNavProps?.sideNavState === SIDE_NAV_STATE.EXPANDED && (
         <Container className={css.flex1}>
-          <Button
-            className={css.launchButton}
-            variation={ButtonVariation.SECONDARY}
-            size={ButtonSize.SMALL}
-            onClick={() => {
-              window.location.href = `/#/account/${accountId}/dashboard`
-            }}
-          >
-            {getString('cd.cdLaunchText')}
-          </Button>
+          <Link className={css.launchButton} to={`/#/account/${accountId}/dashboard`}>
+            <Text font={{ variation: FontVariation.BODY }} color={Color.PRIMARY_4}>
+              {getString('cd.cdLaunchText')}
+            </Text>
+          </Link>
         </Container>
       )}
     </SideNav.Main>

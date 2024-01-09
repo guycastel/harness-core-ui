@@ -12,9 +12,11 @@ declare const styles: {
   readonly active: string
   readonly chevron: string
   readonly container: string
+  readonly hidden: string
   readonly linksPopover: string
   readonly module: string
   readonly moduleIcon: string
+  readonly moduleName: string
   readonly panel: string
   readonly popover: string
   readonly popoverHeader: string

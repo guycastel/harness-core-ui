@@ -28,6 +28,7 @@ declare const styles: {
   readonly row: string
   readonly scopeLabelText: string
   readonly scopePopoverContainer: string
+  readonly scopeValueText: string
   readonly selectButton: string
   readonly selectContainer: string
   readonly selectedProject: string

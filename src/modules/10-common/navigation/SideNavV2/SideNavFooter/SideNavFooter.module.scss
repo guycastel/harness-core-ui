@@ -9,13 +9,13 @@
   @mixin hover-style {
     text-decoration: none;
     color: var(--primary-8);
-    background-color: rgba(210, 230, 255);
+    background-color: var(--primary-9-dark);
   }
 
   position: relative;
   height: 100px;
   bottom: 0px;
-  border-top: 1px solid var(--grey-200);
+  border-top: 1px solid var(--grey-700);
   .helpLink {
     margin-top: var(--spacing-small);
 
@@ -31,7 +31,7 @@
     cursor: pointer;
     &.active {
       color: var(--primary-8);
-      background-color: rgba(210, 230, 255);
+      background-color: var(--primary-9-dark);
     }
     border-radius: 4px;
     &:hover {
