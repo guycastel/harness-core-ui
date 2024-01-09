@@ -14,7 +14,6 @@ fi
 sed -i "s|<\!-- apiurl -->|<script>window.apiUrl = '$API_URL'</script>|" index.html
 sed -i "s|<\!-- IDPUrl -->|<script>window.IDPUrl = '$IDP_URL'</script>|" index.html
 sed -i "s|HARNESS_ENABLE_NG_AUTH_UI_PLACEHOLDER|$HARNESS_ENABLE_NG_AUTH_UI_PLACEHOLDER|" index.html
-sed -i "s|HARNESS_BROWSER_ROUTER_ENABLED|$HARNESS_BROWSER_ROUTER_ENABLED|" index.html
 sed -i "s|HARNESS_NO_AUTH_HEADER|$HARNESS_NO_AUTH_HEADER|" index.html
 sed -i "s|HARNESS_ENABLE_APPDY_EUM_PLACEHOLDER|$HARNESS_ENABLE_APPDY_EUM_PLACEHOLDER|" index.html
 sed -i "s|HARNESS_ENABLE_CDN_PLACEHOLDER|$HARNESS_ENABLE_CDN_PLACEHOLDER|" index.html
@@ -64,11 +63,11 @@ if [ "$HARNESS_ENABLE_CDN_PLACEHOLDER" = "true" ]
 then
   sed -i "s|\"static\/main\.\(.*\)\.js\"|\"//static.harness.io/ng-static/main.\1.js\"|" index.html
   sed -i "s|\"static\/styles\.\(.*\)\.css\"|\"//static.harness.io/ng-static/styles.\1.css\"|" index.html
-elif  [ "$HARNESS_BROWSER_ROUTER_ENABLED" = "true" ]
-then
+else
   sed -i "s|\"static\/main\.\(.*\)\.js\"|\"$HARNESS_NAME_SPACE_URL/ng/static/main.\1.js\"|" index.html
   sed -i "s|\"static\/styles\.\(.*\)\.css\"|\"$HARNESS_NAME_SPACE_URL/ng/static/styles.\1.css\"|" index.html
 fi
+
 if [ "$DEPLOYMENT_TYPE" != "ON_PREM" ]
 then
   sed -i "s|<\!-- externalFilesForSaaS -->|<link href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600\&display=swap' rel='stylesheet' />\n<link href='https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;700\&display=swap' rel='stylesheet' />\n<link href='https://fonts.googleapis.com/css2?family=Reenie+Beanie\&display=swap' rel='stylesheet' />\n<link id='favicon-x-icon' rel='icon' type='image/x-icon' href='https://static.harness.io/ng-static/images/favicon.ico' />\n<link id='favicon-png' rel='icon' type='image/png' href='https://static.harness.io/ng-static/images/favicon.png' />\n<link id='favicon-apple-touch' rel='apple-touch-icon' href='https://static.harness.io/ng-static/images/favicon.png' />|" index.html
