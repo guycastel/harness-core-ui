@@ -81,8 +81,7 @@ export const getEditViewValidateFieldsConfig = ({ isRepoNameRequired = false }: 
   {
     name: 'spec.connectorRef',
     type: ValidationFieldTypes.Text,
-    label: 'connector',
-    isRequired: true
+    label: 'connector'
   },
   {
     name: 'spec.repoName',

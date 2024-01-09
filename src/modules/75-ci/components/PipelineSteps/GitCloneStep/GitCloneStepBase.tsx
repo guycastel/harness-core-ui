@@ -15,6 +15,8 @@ import type { StepFormikFowardRef } from '@pipeline/components/AbstractSteps/Ste
 import { setFormikRef } from '@pipeline/components/AbstractSteps/Step'
 import { useQueryParams } from '@common/hooks'
 import type { GitQueryParams, PipelineType } from '@common/interfaces/RouteInterfaces'
+import { getGitProviderCards } from '@modules/10-common/components/GitProviderSelect/GitProviderSelect'
+import { useFeatureFlags } from '@modules/10-common/hooks/useFeatureFlag'
 import { usePipelineContext } from '@pipeline/components/PipelineStudio/PipelineContext/PipelineContext'
 import { useStrings } from 'framework/strings'
 import StepCommonFields from '@ci/components/PipelineSteps/StepCommonFields/StepCommonFields'
@@ -74,6 +76,13 @@ export const GitCloneStepBase = (
 
   const connectorId = getIdentifierFromValue(initialValues.spec?.connectorRef || '')
   const initialScope = getScopeFromValue(initialValues.spec?.connectorRef || '')
+  const { CODE_ENABLED } = useFeatureFlags()
+  const initialValuesWithProvider = Object.assign({}, initialValues, {
+    provider:
+      !CODE_ENABLED || initialValues?.spec?.connectorRef
+        ? getGitProviderCards(getString)[1]
+        : getGitProviderCards(getString)[0]
+  })
 
   const {
     data: connector,
@@ -117,7 +126,7 @@ export const GitCloneStepBase = (
   return (
     <Formik
       initialValues={getInitialValuesInCorrectFormat<GitCloneStepData, GitCloneStepDataUI>(
-        initialValues,
+        initialValuesWithProvider,
         transformValuesFieldsConfig,
         { imagePullPolicyOptions: getImagePullPolicyOptions(getString) }
       )}

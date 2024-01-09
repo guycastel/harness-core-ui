@@ -15,6 +15,7 @@ import { Color } from '@harness/design-system'
 import { MultiTypeTextField, MultiTypeTextProps } from '@common/components/MultiTypeText/MultiTypeText'
 import MultiTypeList from '@common/components/MultiTypeList/MultiTypeList'
 import { FormMultiTypeCheckboxField, FormMultiTypeTextAreaField } from '@common/components'
+import { useFeatureFlags } from '@modules/10-common/hooks/useFeatureFlag'
 import {
   useGitScope,
   shouldRenderRunTimeInputViewWithAllowedValues,
@@ -73,6 +74,8 @@ export const CIStep: React.FC<CIStepProps> = props => {
   const { expressions } = useVariablesExpression()
   const prefix = isEmpty(path) ? '' : `${path}.`
   const { NG_EXPRESSIONS_NEW_INPUT_ELEMENT } = useFeatureFlags()
+
+  const { CODE_ENABLED } = useFeatureFlags()
 
   const stepCss = stepViewType === StepViewType.DeploymentForm ? css.sm : css.lg
   // connectorAndRepoName inherently has margin
@@ -320,7 +323,8 @@ export const CIStep: React.FC<CIStepProps> = props => {
               connectorAndRepoNamePath: `${prefix}spec`,
               allowableTypes: isInputSetView ? AllMultiTypeInputTypesForInputSet : AllMultiTypeInputTypesForStep,
               codeBaseInputFieldFormName: { repoName: `${prefix}spec.repoName` },
-              configureOptionsProps: { hideExecutionTimeField: true }
+              configureOptionsProps: { hideExecutionTimeField: true },
+              isCodeEnabled: CODE_ENABLED
             }}
           />
         </Container>

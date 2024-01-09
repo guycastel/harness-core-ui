@@ -107,9 +107,11 @@ export default function CloneCodebaseForm({
   const { data: gitnessRepositoriesData, loading: fetchingGitnessRepos } = useListRepos({
     space_ref: `${accountId}/${orgIdentifier}/${projectIdentifier}/+`
   })
-
   const gitProvider =
-    get(values, 'provider') ?? (isCodeEnabled ? getGitProviderCards(getString)[0] : getGitProviderCards(getString)[1])
+    get(values, 'provider') ??
+    (isCodeEnabled && !values?.spec?.connectorRef
+      ? getGitProviderCards(getString)[0]
+      : getGitProviderCards(getString)[1])
   const connectorFieldName = connectorAndRepoNamePath ? `${connectorAndRepoNamePath}.connectorRef` : 'connectorRef'
   const connectorValue = get(values, connectorFieldName)
   const repoNameFieldName = connectorAndRepoNamePath ? `${connectorAndRepoNamePath}.repoName` : 'repoName'
