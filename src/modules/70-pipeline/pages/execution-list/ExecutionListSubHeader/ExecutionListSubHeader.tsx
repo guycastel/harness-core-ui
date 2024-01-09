@@ -62,6 +62,8 @@ interface ExecutionListSubHeaderProps {
   repoName?: string
 }
 
+const ExecutionListFilterMemo = React.memo(ExecutionListFilter)
+
 function _ExecutionListSubHeader(
   props: Pick<ExecutionListProps, 'isPipelineInvalid' | 'onRunPipeline' | 'showBranchFilter' | 'isExecutionPage'> &
     ExecutionListSubHeaderProps,
@@ -212,7 +214,7 @@ function _ExecutionListSubHeader(
             ref={ref}
             key={[accountId, orgIdentifier, projectIdentifier].join()}
           />
-          <ExecutionListFilter />
+          <ExecutionListFilterMemo />
         </div>
       )}
     </Page.SubHeader>
