@@ -257,7 +257,7 @@ describe('Manifest Trigger Tests', () => {
       'pipeline.stages[0].stage.spec.serviceConfig.serviceDefinition.spec.manifests[1].manifest.spec.chartVersion',
       container
     ) as HTMLInputElement
-    expect(chartVersionElem).not.toBeInTheDocument()
+    expect(chartVersionElem).toBeInTheDocument()
     expect(container).toMatchSnapshot()
   })
 

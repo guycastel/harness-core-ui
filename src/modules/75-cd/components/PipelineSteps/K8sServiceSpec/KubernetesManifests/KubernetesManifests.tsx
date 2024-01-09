@@ -86,7 +86,9 @@ export function KubernetesManifests(props: KubernetesManifestsProps): React.Reac
   )
 
   const filteredManifests =
-    isHelm && get(props, 'template.manifests.length') > 1 ? filteredManifests_ : props?.template?.manifests
+    isHelm && get(props, 'template.manifests.length') > 1 && primaryManifestId
+      ? filteredManifests_
+      : props?.template?.manifests
 
   return (
     <div className={cx(css.nopadLeft, css.accordionSummary)} id={`Stage.${props.stageIdentifier}.Service.Manifests`}>
