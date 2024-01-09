@@ -112,6 +112,7 @@ export const FormMultiTypeRadioGroup: React.FC<FormMultiTypeRadioGroupProps> = p
         options={options}
         {...restMultiProps}
         onChange={(val, valueType, type) => {
+          if (disabled) return
           formik?.setFieldValue(name, val)
           onChange?.(val, valueType, type)
         }}

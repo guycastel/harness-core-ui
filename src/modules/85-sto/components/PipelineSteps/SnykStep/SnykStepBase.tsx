@@ -105,6 +105,7 @@ export const SnykStepBase = (
         return (
           <FormikForm>
             <CIStep
+              readonly={readonly}
               isNewStep={isNewStep}
               stepViewType={stepViewType}
               allowableTypes={allowableTypes}
@@ -116,6 +117,7 @@ export const SnykStepBase = (
             />
 
             <SecurityScanFields
+              readonly={readonly}
               allowableTypes={allowableTypes}
               formik={formik}
               scanConfigReadonly
@@ -123,18 +125,19 @@ export const SnykStepBase = (
             />
 
             <SecurityTargetFields
+              readonly={readonly}
               allowableTypes={allowableTypes}
               formik={formik}
               targetTypeSelectItems={targetTypeSelectItems}
             />
 
-            <SecurityImageFields allowableTypes={allowableTypes} formik={formik} />
+            <SecurityImageFields readonly={readonly} allowableTypes={allowableTypes} formik={formik} />
 
-            <SecurityIngestionFields allowableTypes={allowableTypes} formik={formik} />
+            <SecurityIngestionFields readonly={readonly} allowableTypes={allowableTypes} formik={formik} />
 
             <SecurityAuthFields allowableTypes={allowableTypes} formik={formik} />
 
-            <SbomFields allowableTypes={allowableTypes} formik={formik} />
+            <SbomFields readonly={readonly} allowableTypes={allowableTypes} formik={formik} />
 
             <AdditionalFields
               readonly={readonly}

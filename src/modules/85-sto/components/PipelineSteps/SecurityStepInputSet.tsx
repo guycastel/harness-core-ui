@@ -71,6 +71,7 @@ const SecurityStepInputSetBasic: React.FC<SecurityStepProps> = ({
         template={template}
       />
       <InputSetFields
+        readonly={readonly}
         allowableTypes={AllMultiTypeInputTypesForInputSet}
         formik={formik}
         prefix={prefix}

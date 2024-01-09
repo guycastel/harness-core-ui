@@ -83,6 +83,7 @@ export const BanditStepBase = (
         return (
           <FormikForm>
             <CIStep
+              readonly={readonly}
               isNewStep={isNewStep}
               stepViewType={stepViewType}
               allowableTypes={allowableTypes}
@@ -94,6 +95,7 @@ export const BanditStepBase = (
             />
 
             <SecurityScanFields
+              readonly={readonly}
               allowableTypes={allowableTypes}
               formik={formik}
               scanConfigReadonly
@@ -101,12 +103,13 @@ export const BanditStepBase = (
             />
 
             <SecurityTargetFields
+              readonly={readonly}
               allowableTypes={allowableTypes}
               formik={formik}
               targetTypeSelectItems={[REPOSITORY_TARGET_TYPE]}
             />
 
-            <SecurityIngestionFields allowableTypes={allowableTypes} formik={formik} />
+            <SecurityIngestionFields readonly={readonly} allowableTypes={allowableTypes} formik={formik} />
 
             <AdditionalFields
               readonly={readonly}

@@ -105,6 +105,7 @@ export const SonarqubeStepBase = (
         return (
           <FormikForm>
             <CIStep
+              readonly={readonly}
               isNewStep={isNewStep}
               stepViewType={stepViewType}
               allowableTypes={allowableTypes}
@@ -115,17 +116,19 @@ export const SonarqubeStepBase = (
               formik={formik}
             />
             <SecurityScanFields
+              readonly={readonly}
               allowableTypes={allowableTypes}
               formik={formik}
               scanConfigReadonly
               scanModeSelectItems={[ORCHESTRATION_SCAN_MODE, EXTRACTION_SCAN_MODE, INGESTION_SCAN_MODE]}
             />
             <SecurityTargetFields
+              readonly={readonly}
               allowableTypes={allowableTypes}
               formik={formik}
               targetTypeSelectItems={targetTypeSelectItems}
             />
-            <SecurityIngestionFields allowableTypes={allowableTypes} formik={formik} />
+            <SecurityIngestionFields readonly={readonly} allowableTypes={allowableTypes} formik={formik} />
             <SecurityAuthFields
               showFields={{
                 ssl: true,
@@ -137,6 +140,7 @@ export const SonarqubeStepBase = (
             {/* product_project_key : optional product_project_key: required for extraction */}
             <>
               <SecurityField
+                readonly={readonly}
                 allowableTypes={allowableTypes}
                 formik={formik}
                 enableFields={{

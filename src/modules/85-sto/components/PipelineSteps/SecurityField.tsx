@@ -34,6 +34,7 @@ export type CustomTooltipFieldProps = {
   }
 }
 export interface SecurityFieldProps<T> {
+  readonly?: boolean
   enableFields: {
     [key: string]: {
       [key: string]: any
@@ -44,7 +45,6 @@ export interface SecurityFieldProps<T> {
       selectItems?: SelectItems[]
       hide?: boolean
       tooltipId?: string
-      readonly?: boolean
       fieldType?: 'input' | 'checkbox' | 'dropdown' | 'radio'
       radioItems?: FormMultiTypeRadioGroupProps['options']
     }
@@ -91,7 +91,7 @@ const renderLabel = (props: LabelProps) => {
 }
 
 function SecurityField<T>(props: SecurityFieldProps<T>) {
-  const { enableFields, formik, allowableTypes, customTooltipFields } = props
+  const { enableFields, formik, allowableTypes, customTooltipFields, readonly } = props
   const fields = Object.entries(enableFields)
   const { getString } = useStrings()
   const { expressions } = useVariablesExpression()
@@ -110,7 +110,6 @@ function SecurityField<T>(props: SecurityFieldProps<T>) {
           tooltipId: _tooltipId = '',
           inputProps,
           fieldType,
-          readonly,
           radioItems
         } = fieldProps
 
@@ -134,6 +133,7 @@ function SecurityField<T>(props: SecurityFieldProps<T>) {
                   selectItems: selectItems,
                   placeholder: getString('select'),
                   multiTypeInputProps: {
+                    disabled: readonly,
                     expressions,
                     allowableTypes,
                     selectProps: { items: selectItems },
@@ -171,6 +171,7 @@ function SecurityField<T>(props: SecurityFieldProps<T>) {
           return (
             <Container key={fieldName} className={cx(stepCss.formGroup, stepCss.lg)}>
               <FormMultiTypeRadioGroupField
+                disabled={readonly}
                 name={fieldName}
                 options={radioItems}
                 label={getString(label)}
@@ -197,8 +198,10 @@ function SecurityField<T>(props: SecurityFieldProps<T>) {
               formik={formik}
               label={renderLabel({ label, optional, tooltipId, getString })}
               multiTextInputProps={{
+                disabled: readonly,
                 ...inputProps,
                 multiTextInputProps: {
+                  disabled: readonly,
                   allowableTypes,
                   expressions,
                   newExpressionComponent: NG_EXPRESSIONS_NEW_INPUT_ELEMENT,

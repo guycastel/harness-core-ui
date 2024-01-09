@@ -118,6 +118,7 @@ export const NmapStepBase = (
         return (
           <FormikForm>
             <CIStep
+              readonly={readonly}
               isNewStep={isNewStep}
               stepViewType={stepViewType}
               allowableTypes={allowableTypes}
@@ -129,6 +130,7 @@ export const NmapStepBase = (
             />
 
             <SecurityScanFields
+              readonly={readonly}
               allowableTypes={allowableTypes}
               formik={formik}
               scanModeSelectItems={scanModeSelectItems}
@@ -136,14 +138,16 @@ export const NmapStepBase = (
             />
 
             <SecurityTargetFields
+              readonly={readonly}
               allowableTypes={allowableTypes}
               formik={formik}
               targetTypeSelectItems={[INSTANCE_TARGET_TYPE]}
             />
 
-            <SecurityIngestionFields allowableTypes={allowableTypes} formik={formik} />
+            <SecurityIngestionFields readonly={readonly} allowableTypes={allowableTypes} formik={formik} />
 
             <SecurityInstanceFields
+              readonly={readonly}
               allowableTypes={allowableTypes}
               formik={formik}
               showFields={{ domain: true, protocol: true, path: true, port: true }}

@@ -89,6 +89,7 @@ export const NiktoStepBase = (
         return (
           <FormikForm>
             <CIStep
+              readonly={readonly}
               isNewStep={isNewStep}
               stepViewType={stepViewType}
               allowableTypes={allowableTypes}
@@ -100,6 +101,7 @@ export const NiktoStepBase = (
             />
 
             <SecurityScanFields
+              readonly={readonly}
               allowableTypes={allowableTypes}
               formik={formik}
               scanModeSelectItems={[ORCHESTRATION_SCAN_MODE, INGESTION_SCAN_MODE]}
@@ -107,14 +109,16 @@ export const NiktoStepBase = (
             />
 
             <SecurityTargetFields
+              readonly={readonly}
               allowableTypes={allowableTypes}
               formik={formik}
               targetTypeSelectItems={[INSTANCE_TARGET_TYPE]}
             />
 
-            <SecurityIngestionFields allowableTypes={allowableTypes} formik={formik} />
+            <SecurityIngestionFields readonly={readonly} allowableTypes={allowableTypes} formik={formik} />
 
             <SecurityInstanceFields
+              readonly={readonly}
               allowableTypes={allowableTypes}
               formik={formik}
               showFields={{ domain: true, protocol: true, path: true, port: true }}

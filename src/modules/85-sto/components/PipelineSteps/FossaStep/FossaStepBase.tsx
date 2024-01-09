@@ -89,6 +89,7 @@ export const FossaStepBase = (
         return (
           <FormikForm>
             <CIStep
+              readonly={readonly}
               isNewStep={isNewStep}
               stepViewType={stepViewType}
               allowableTypes={allowableTypes}
@@ -100,6 +101,7 @@ export const FossaStepBase = (
             />
 
             <SecurityScanFields
+              readonly={readonly}
               allowableTypes={allowableTypes}
               formik={formik}
               scanConfigReadonly
@@ -107,6 +109,7 @@ export const FossaStepBase = (
             />
 
             <SecurityTargetFields
+              readonly={readonly}
               allowableTypes={allowableTypes}
               formik={formik}
               targetTypeSelectItems={[
@@ -117,7 +120,7 @@ export const FossaStepBase = (
               ]}
             />
 
-            <SecurityIngestionFields allowableTypes={allowableTypes} formik={formik} />
+            <SecurityIngestionFields readonly={readonly} allowableTypes={allowableTypes} formik={formik} />
 
             <AdditionalFields
               readonly={readonly}

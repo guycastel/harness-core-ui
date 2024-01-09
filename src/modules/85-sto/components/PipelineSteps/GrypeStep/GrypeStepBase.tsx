@@ -104,6 +104,7 @@ export const GrypeStepBase = (
         return (
           <FormikForm>
             <CIStep
+              readonly={readonly}
               isNewStep={isNewStep}
               stepViewType={stepViewType}
               allowableTypes={allowableTypes}
@@ -115,6 +116,7 @@ export const GrypeStepBase = (
             />
 
             <SecurityScanFields
+              readonly={readonly}
               allowableTypes={allowableTypes}
               formik={formik}
               scanConfigReadonly
@@ -122,14 +124,15 @@ export const GrypeStepBase = (
             />
 
             <SecurityTargetFields
+              readonly={readonly}
               allowableTypes={allowableTypes}
               formik={formik}
               targetTypeSelectItems={targetTypeSelectItems}
             />
 
-            <SecurityImageFields allowableTypes={allowableTypes} formik={formik} />
+            <SecurityImageFields readonly={readonly} allowableTypes={allowableTypes} formik={formik} />
 
-            <SecurityIngestionFields allowableTypes={allowableTypes} formik={formik} />
+            <SecurityIngestionFields readonly={readonly} allowableTypes={allowableTypes} formik={formik} />
 
             <AdditionalFields
               readonly={readonly}

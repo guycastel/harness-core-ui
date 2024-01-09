@@ -87,8 +87,8 @@ export const ZeroNorthStepBase = (
         return (
           <FormikForm>
             <CIStep
-              isNewStep={isNewStep}
               readonly={readonly}
+              isNewStep={isNewStep}
               stepViewType={stepViewType}
               allowableTypes={allowableTypes}
               enableFields={{

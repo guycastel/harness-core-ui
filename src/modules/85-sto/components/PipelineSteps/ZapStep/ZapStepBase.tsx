@@ -113,6 +113,7 @@ export const ZapStepBase = (
         return (
           <FormikForm>
             <CIStep
+              readonly={readonly}
               isNewStep={isNewStep}
               stepViewType={stepViewType}
               allowableTypes={allowableTypes}
@@ -124,6 +125,7 @@ export const ZapStepBase = (
             />
 
             <SecurityScanFields
+              readonly={readonly}
               allowableTypes={allowableTypes}
               formik={formik}
               scanModeSelectItems={[ORCHESTRATION_SCAN_MODE, INGESTION_SCAN_MODE]}
@@ -131,16 +133,18 @@ export const ZapStepBase = (
             />
 
             <SecurityTargetFields
+              readonly={readonly}
               allowableTypes={allowableTypes}
               formik={formik}
               targetTypeSelectItems={[INSTANCE_TARGET_TYPE]}
             />
 
-            <SecurityImageFields allowableTypes={allowableTypes} formik={formik} />
+            <SecurityImageFields readonly={readonly} allowableTypes={allowableTypes} formik={formik} />
 
-            <SecurityIngestionFields allowableTypes={allowableTypes} formik={formik} />
+            <SecurityIngestionFields readonly={readonly} allowableTypes={allowableTypes} formik={formik} />
 
             <SecurityInstanceFields
+              readonly={readonly}
               allowableTypes={allowableTypes}
               formik={formik}
               showFields={{ domain: true, path: true, port: true, protocol: true }}
@@ -149,6 +153,7 @@ export const ZapStepBase = (
             {formik.values.spec.mode === 'orchestration' && (
               <>
                 <SecurityField
+                  readonly={readonly}
                   allowableTypes={allowableTypes}
                   formik={formik}
                   enableFields={{
@@ -174,6 +179,7 @@ export const ZapStepBase = (
 
             <>
               <SecurityField
+                readonly={readonly}
                 allowableTypes={allowableTypes}
                 formik={formik}
                 enableFields={{

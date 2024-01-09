@@ -105,6 +105,7 @@ export const SysdigStepBase = (
         return (
           <FormikForm>
             <CIStep
+              readonly={readonly}
               isNewStep={isNewStep}
               stepViewType={stepViewType}
               allowableTypes={allowableTypes}
@@ -116,6 +117,7 @@ export const SysdigStepBase = (
             />
 
             <SecurityScanFields
+              readonly={readonly}
               allowableTypes={allowableTypes}
               formik={formik}
               scanConfigReadonly
@@ -123,14 +125,15 @@ export const SysdigStepBase = (
             />
 
             <SecurityTargetFields
+              readonly={readonly}
               allowableTypes={allowableTypes}
               formik={formik}
               targetTypeSelectItems={targetTypeSelectItems}
             />
 
-            <SecurityImageFields allowableTypes={allowableTypes} formik={formik} />
+            <SecurityImageFields readonly={readonly} allowableTypes={allowableTypes} formik={formik} />
 
-            <SecurityIngestionFields allowableTypes={allowableTypes} formik={formik} />
+            <SecurityIngestionFields readonly={readonly} allowableTypes={allowableTypes} formik={formik} />
 
             <SecurityAuthFields
               showFields={{ access_id: false, domain: true }}

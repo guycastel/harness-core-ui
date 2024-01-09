@@ -113,6 +113,7 @@ export const PrismaCloudStepBase = (
         return (
           <FormikForm>
             <CIStep
+              readonly={readonly}
               isNewStep={isNewStep}
               stepViewType={stepViewType}
               allowableTypes={allowableTypes}
@@ -124,6 +125,7 @@ export const PrismaCloudStepBase = (
             />
 
             <SecurityScanFields
+              readonly={readonly}
               allowableTypes={allowableTypes}
               formik={formik}
               scanConfigReadonly
@@ -131,14 +133,15 @@ export const PrismaCloudStepBase = (
             />
 
             <SecurityTargetFields
+              readonly={readonly}
               allowableTypes={allowableTypes}
               formik={formik}
               targetTypeSelectItems={[CONTAINER_TARGET_TYPE]}
             />
 
-            <SecurityImageFields allowableTypes={allowableTypes} formik={formik} />
+            <SecurityImageFields readonly={readonly} allowableTypes={allowableTypes} formik={formik} />
 
-            <SecurityIngestionFields allowableTypes={allowableTypes} formik={formik} />
+            <SecurityIngestionFields readonly={readonly} allowableTypes={allowableTypes} formik={formik} />
 
             <SecurityAuthFields
               showFields={{ access_id: true, domain: true }}
@@ -150,6 +153,7 @@ export const PrismaCloudStepBase = (
             {formik.values.spec.mode === 'extraction' && (
               <>
                 <SecurityField
+                  readonly={readonly}
                   allowableTypes={allowableTypes}
                   formik={formik}
                   enableFields={{

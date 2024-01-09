@@ -120,6 +120,7 @@ export const BlackduckStepBase = (
         return (
           <FormikForm>
             <CIStep
+              readonly={readonly}
               isNewStep={isNewStep}
               stepViewType={stepViewType}
               allowableTypes={allowableTypes}
@@ -131,6 +132,7 @@ export const BlackduckStepBase = (
             />
 
             <SecurityScanFields
+              readonly={readonly}
               allowableTypes={allowableTypes}
               formik={formik}
               scanConfigReadonly
@@ -138,14 +140,15 @@ export const BlackduckStepBase = (
             />
 
             <SecurityTargetFields
+              readonly={readonly}
               allowableTypes={allowableTypes}
               formik={formik}
               targetTypeSelectItems={targetTypeSelectItems}
             />
 
-            <SecurityImageFields allowableTypes={allowableTypes} formik={formik} />
+            <SecurityImageFields readonly={readonly} allowableTypes={allowableTypes} formik={formik} />
 
-            <SecurityIngestionFields allowableTypes={allowableTypes} formik={formik} />
+            <SecurityIngestionFields readonly={readonly} allowableTypes={allowableTypes} formik={formik} />
 
             <SecurityAuthFields
               showFields={{
@@ -162,6 +165,7 @@ export const BlackduckStepBase = (
             {formik.values.spec.mode !== INGESTION_SCAN_MODE.value && (
               <>
                 <SecurityField
+                  readonly={readonly}
                   allowableTypes={allowableTypes}
                   formik={formik}
                   enableFields={{
@@ -184,7 +188,7 @@ export const BlackduckStepBase = (
               </>
             )}
 
-            <SbomFields allowableTypes={allowableTypes} formik={formik} />
+            <SbomFields readonly={readonly} allowableTypes={allowableTypes} formik={formik} />
 
             <AdditionalFields
               readonly={readonly}

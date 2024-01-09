@@ -91,6 +91,7 @@ export const AWSECRStepBase = (
         return (
           <FormikForm>
             <CIStep
+              readonly={readonly}
               isNewStep={isNewStep}
               stepViewType={stepViewType}
               allowableTypes={allowableTypes}
@@ -102,6 +103,7 @@ export const AWSECRStepBase = (
             />
 
             <SecurityScanFields
+              readonly={readonly}
               allowableTypes={allowableTypes}
               formik={formik}
               scanConfigReadonly
@@ -109,6 +111,7 @@ export const AWSECRStepBase = (
             />
 
             <SecurityTargetFields
+              readonly={readonly}
               allowableTypes={allowableTypes}
               formik={formik}
               targetTypeSelectItems={[CONTAINER_TARGET_TYPE]}
@@ -116,6 +119,7 @@ export const AWSECRStepBase = (
 
             <>
               <SecurityField
+                readonly={readonly}
                 allowableTypes={allowableTypes}
                 formik={formik}
                 enableFields={{

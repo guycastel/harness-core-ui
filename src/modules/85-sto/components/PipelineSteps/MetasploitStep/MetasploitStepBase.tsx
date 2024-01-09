@@ -103,6 +103,7 @@ export const MetasploitStepBase = (
         return (
           <FormikForm>
             <CIStep
+              readonly={readonly}
               isNewStep={isNewStep}
               stepViewType={stepViewType}
               allowableTypes={allowableTypes}
@@ -114,6 +115,7 @@ export const MetasploitStepBase = (
             />
 
             <SecurityScanFields
+              readonly={readonly}
               allowableTypes={allowableTypes}
               formik={formik}
               scanModeSelectItems={scanModeSelectItems}
@@ -125,20 +127,23 @@ export const MetasploitStepBase = (
             />
 
             <SecurityTargetFields
+              readonly={readonly}
               allowableTypes={allowableTypes}
               formik={formik}
               targetTypeSelectItems={[INSTANCE_TARGET_TYPE]}
             />
 
-            <SecurityIngestionFields allowableTypes={allowableTypes} formik={formik} />
+            <SecurityIngestionFields readonly={readonly} allowableTypes={allowableTypes} formik={formik} />
 
             <SecurityInstanceFields
+              readonly={readonly}
               allowableTypes={allowableTypes}
               formik={formik}
               showFields={{ domain: true, protocol: true, path: true, port: true }}
             />
 
             <SecurityField
+              readonly={readonly}
               allowableTypes={allowableTypes}
               formik={formik}
               enableFields={{

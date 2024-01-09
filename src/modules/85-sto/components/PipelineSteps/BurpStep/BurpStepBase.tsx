@@ -110,6 +110,7 @@ export const BurpStepBase = (
         return (
           <FormikForm>
             <CIStep
+              readonly={readonly}
               isNewStep={isNewStep}
               stepViewType={stepViewType}
               allowableTypes={allowableTypes}
@@ -121,6 +122,7 @@ export const BurpStepBase = (
             />
 
             <SecurityScanFields
+              readonly={readonly}
               allowableTypes={allowableTypes}
               formik={formik}
               scanModeSelectItems={scanModeSelectItems}
@@ -128,6 +130,7 @@ export const BurpStepBase = (
             />
 
             <SecurityTargetFields
+              readonly={readonly}
               allowableTypes={allowableTypes}
               formik={formik}
               targetTypeSelectItems={[INSTANCE_TARGET_TYPE]}
@@ -141,9 +144,10 @@ export const BurpStepBase = (
               formik={formik}
             />
 
-            <SecurityIngestionFields allowableTypes={allowableTypes} formik={formik} />
+            <SecurityIngestionFields readonly={readonly} allowableTypes={allowableTypes} formik={formik} />
 
             <SecurityInstanceFields
+              readonly={readonly}
               allowableTypes={allowableTypes}
               formik={formik}
               showFields={{ domain: true, protocol: true, path: true, port: true, username: true, password: true }}
@@ -153,6 +157,7 @@ export const BurpStepBase = (
             {formik.values.spec.mode === EXTRACTION_SCAN_MODE.value && (
               <>
                 <SecurityField
+                  readonly={readonly}
                   allowableTypes={allowableTypes}
                   formik={formik}
                   enableFields={{
@@ -178,6 +183,7 @@ export const BurpStepBase = (
             {/* tool args are not required and thus shouldn't be an option to users */}
             <>
               <SecurityField
+                readonly={readonly}
                 allowableTypes={allowableTypes}
                 formik={formik}
                 enableFields={{

@@ -99,6 +99,7 @@ export const CheckmarxStepBase = (
         return (
           <FormikForm>
             <CIStep
+              readonly={readonly}
               isNewStep={isNewStep}
               stepViewType={stepViewType}
               allowableTypes={allowableTypes}
@@ -110,6 +111,7 @@ export const CheckmarxStepBase = (
             />
 
             <SecurityScanFields
+              readonly={readonly}
               allowableTypes={allowableTypes}
               formik={formik}
               scanConfigReadonly
@@ -117,14 +119,15 @@ export const CheckmarxStepBase = (
             />
 
             <SecurityTargetFields
+              readonly={readonly}
               allowableTypes={allowableTypes}
               formik={formik}
               targetTypeSelectItems={[REPOSITORY_TARGET_TYPE]}
             />
 
-            <SecurityImageFields allowableTypes={allowableTypes} formik={formik} />
+            <SecurityImageFields readonly={readonly} allowableTypes={allowableTypes} formik={formik} />
 
-            <SecurityIngestionFields allowableTypes={allowableTypes} formik={formik} />
+            <SecurityIngestionFields readonly={readonly} allowableTypes={allowableTypes} formik={formik} />
 
             <SecurityAuthFields
               showFields={{
@@ -139,6 +142,7 @@ export const CheckmarxStepBase = (
             {(formik.values.spec.mode === 'orchestration' || formik.values.spec.mode === 'extraction') && (
               <>
                 <SecurityField
+                  readonly={readonly}
                   allowableTypes={allowableTypes}
                   formik={formik}
                   enableFields={{
