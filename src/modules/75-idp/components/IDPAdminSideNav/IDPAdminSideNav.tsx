@@ -7,19 +7,23 @@
 
 import React, { useEffect, useState } from 'react'
 import { Layout } from '@harness/uicore'
-import { useParams } from 'react-router-dom'
+import { useHistory, useParams } from 'react-router-dom'
 import { useGetStatusInfoTypeV2Query } from '@harnessio/react-idp-service-client'
 import { isEmpty } from 'lodash-es'
 import { SidebarLink } from '@common/navigation/SideNav/SideNav'
 import { useStrings } from 'framework/strings'
 import routes from '@common/RouteDefinitions'
 import type { AccountPathProps, ProjectPathProps } from '@common/interfaces/RouteInterfaces'
+import { ProjectSelector } from '@modules/45-projects-orgs/components/ProjectSelector/ProjectSelector'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import css from './IDPAdminSideNav.module.scss'
 
 export default function IDPAdminSideNav(): React.ReactElement {
   const { getString } = useStrings()
   const { accountId } = useParams<AccountPathProps>()
   const params = useParams<ProjectPathProps>()
+  const { updateAppStore, selectedProject } = useAppStore()
+  const history = useHistory()
 
   const { data } = useGetStatusInfoTypeV2Query(
     { type: 'onboarding' },
@@ -56,6 +60,42 @@ export default function IDPAdminSideNav(): React.ReactElement {
           <SidebarLink label={getString('accessControl')} to={routes.toIDPAccessControl(params)} />
           <SidebarLink label={getString('connectorsLabel')} to={routes.toConnectorsPage(params)} />
           <SidebarLink label={getString('idp.urlAllowList')} to={routes.toIDPAllowListURL(params)} />
+
+          <div className={css.projectScopeItems} />
+          <ProjectSelector
+            onSelect={selected => {
+              updateAppStore({ selectedProject: selected })
+              history.push(
+                routes.toIDPPipelines({
+                  ...params,
+                  projectIdentifier: selected?.identifier,
+                  orgIdentifier: selected?.orgIdentifier
+                })
+              )
+            }}
+          />
+          <SidebarLink
+            label={getString('pipelines')}
+            to={
+              selectedProject
+                ? routes.toIDPPipelines({
+                    ...params,
+                    projectIdentifier: selectedProject?.identifier,
+                    orgIdentifier: selectedProject?.orgIdentifier
+                  })
+                : routes.toIDPProjectSetup(params)
+            }
+          />
+          {selectedProject && (
+            <SidebarLink
+              label={getString('common.pipelineExecution')}
+              to={routes.toIDPDeployments({
+                ...params,
+                projectIdentifier: selectedProject?.identifier,
+                orgIdentifier: selectedProject?.orgIdentifier
+              })}
+            />
+          )}
         </>
       )}
     </Layout.Vertical>

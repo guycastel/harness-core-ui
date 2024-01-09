@@ -20,7 +20,7 @@ jest.mock('@harnessio/react-idp-service-client', () => ({
 
 describe('IDP Sidenav', () => {
   test('render', () => {
-    const { container, getByText } = render(
+    const { getByText } = render(
       <TestWrapper
         path={routes.toIDPAdmin({
           ...accountPathProps,
@@ -37,6 +37,10 @@ describe('IDP Sidenav', () => {
       </TestWrapper>
     )
     expect(getByText('common.plugins')).toBeVisible()
-    expect(container).toMatchSnapshot()
+    expect(getByText('idp.urlAllowList')).toBeVisible()
+    expect(getByText('connectorsLabel')).toBeVisible()
+    expect(getByText('accessControl')).toBeVisible()
+    expect(getByText('selectProject')).toBeVisible()
+    expect(getByText('pipelines')).toBeVisible()
   })
 })
