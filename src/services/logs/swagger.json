@@ -88,6 +88,27 @@
           },
           {
             "in": "query",
+            "name": "orgId",
+            "description": "Org ID to retrieve logs for",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "projectId",
+            "description": "Project ID to retrieve logs for",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "pipelineId",
+            "description": "Pipeline ID to retrieve logs for",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
             "name": "key",
             "description": "Unique key to retrieve logs for",
             "required": true,
@@ -146,6 +167,27 @@
           },
           {
             "in": "query",
+            "name": "orgId",
+            "description": "Org ID to retrieve logs for",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "projectId",
+            "description": "Project ID to retrieve logs for",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "pipelineId",
+            "description": "Pipeline ID to retrieve logs for",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
             "name": "key",
             "description": "Unique key to retrieve logs for",
             "required": true,
@@ -155,7 +197,7 @@
             "in": "query",
             "name": "X-Harness-Token",
             "description": "Account level token to ensure allowed access",
-            "required": true,
+            "required": false,
             "type": "string"
           }
         ],

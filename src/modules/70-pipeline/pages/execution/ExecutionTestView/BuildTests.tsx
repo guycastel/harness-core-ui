@@ -23,6 +23,7 @@ import {
 import { PageSpinner } from '@common/components'
 import { useExecutionContext } from '@pipeline/context/ExecutionContext'
 import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
+import { useIsPublicAccess } from 'framework/hooks/usePublicAccess'
 import { BuildZeroState } from './BuildZeroState'
 import { TestsExecution } from './TestsExecution'
 import { TestsOverview } from './TestsOverview'
@@ -39,10 +40,7 @@ import {
   UI,
   StepTypes
 } from './TestsUtils'
-// import { TestsCoverage } from './TestsCoverage'
 import css from './BuildTests.module.scss'
-
-/* eslint-enable @typescript-eslint/no-shadow */
 
 interface BuildTestsProps {
   reportSummaryMock?: TestReportSummary
@@ -353,7 +351,7 @@ export function Reports({
 function BuildTests({ reportSummaryMock, testOverviewMock }: BuildTestsProps): React.ReactElement | null {
   const context = useExecutionContext()
   const { getString } = useStrings()
-
+  const isCurrentSessionPublic = useIsPublicAccess()
   const { accountId, orgIdentifier, projectIdentifier } = useParams<{
     projectIdentifier: string
     orgIdentifier: string
@@ -436,11 +434,11 @@ function BuildTests({ reportSummaryMock, testOverviewMock }: BuildTestsProps): R
   })
 
   useEffect(() => {
-    if (status && serviceToken) {
+    if (status && (serviceToken || isCurrentSessionPublic)) {
       fetchReportInfo()
       fetchTestInfo()
     }
-  }, [status, serviceToken])
+  }, [status, serviceToken, isCurrentSessionPublic])
 
   useEffect(() => {
     if (reportInfoData && testInfoData) {
@@ -569,7 +567,7 @@ function BuildTests({ reportSummaryMock, testOverviewMock }: BuildTestsProps): R
         onClick={() => {
           refetchServiceToken()
 
-          if (serviceToken) {
+          if (serviceToken || isCurrentSessionPublic) {
             fetchReportInfo()
             fetchTestInfo()
 

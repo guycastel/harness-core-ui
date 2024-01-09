@@ -20,12 +20,12 @@ import {
   getArtifactGroups
 } from '@pipeline/pages/execution/ExecutionArtifactsView/ExecutionArtifactsView'
 import type { Artifact } from '@pipeline/pages/execution/ExecutionArtifactsView/ArtifactsComponent/ArtifactsComponent'
-
+import { useIsPublicAccess } from 'framework/hooks/usePublicAccess'
 import css from './CIStageDetails.module.scss'
 
 export function CIStageDetails(props: StageDetailProps): React.ReactElement {
   const context = useExecutionContext()
-
+  const isCurrentSessionPublic = useIsPublicAccess()
   const executionSummary = get(context, 'pipelineExecutionDetail.pipelineExecutionSummary')
   const executionGraph = get(context, 'pipelineExecutionDetail.executionGraph')
   const stageSetupIds = getStageSetupIds(executionSummary as PipelineExecutionSummary)
@@ -78,10 +78,10 @@ export function CIStageDetails(props: StageDetailProps): React.ReactElement {
   })
 
   useEffect(() => {
-    if (status && serviceToken) {
+    if (status && (serviceToken || isCurrentSessionPublic)) {
       fetchReportSummary()
     }
-  }, [status, serviceToken, props.stage?.nodeIdentifier])
+  }, [status, serviceToken, props.stage?.nodeIdentifier, isCurrentSessionPublic])
 
   return (
     <div className={css.container}>

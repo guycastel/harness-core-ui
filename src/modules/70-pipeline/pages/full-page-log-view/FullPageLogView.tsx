@@ -31,8 +31,15 @@ export interface LogsData {
 }
 
 export default function FullPageLogView(): React.ReactElement {
-  const { stageIdentifier, stepIndentifier, accountId, orgIdentifier, projectIdentifier, executionIdentifier } =
-    useParams<PipelineLogsPathProps>()
+  const {
+    stageIdentifier,
+    stepIndentifier,
+    accountId,
+    orgIdentifier,
+    projectIdentifier,
+    executionIdentifier,
+    pipelineIdentifier
+  } = useParams<PipelineLogsPathProps>()
   const { getString } = useStrings()
   const [logsData, setLogsData] = React.useState<LogsData[]>([])
   const [logsDataLoading, setLogsDataLoading] = React.useState(false)
@@ -93,6 +100,9 @@ export default function FullPageLogView(): React.ReactElement {
             {
               queryParams: {
                 accountID: accountId,
+                orgId: orgIdentifier,
+                pipelineId: pipelineIdentifier,
+                projectId: projectIdentifier,
                 'X-Harness-Token': '',
                 key
               },

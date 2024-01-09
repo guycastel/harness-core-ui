@@ -11,7 +11,7 @@ import { Button, Container, Layout, Text, CardSelect, Tabs, Pagination, Page, Pa
 import { Color, FontVariation } from '@harness/design-system'
 import moment from 'moment'
 import { DatabaseInstallationCollection, useListInstallation } from 'services/servicediscovery'
-import type { DiscoveryPathProps, ProjectPathProps } from '@common/interfaces/RouteInterfaces'
+import type { DiscoveryPathProps, PipelinePathProps } from '@common/interfaces/RouteInterfaces'
 import { SimpleLogViewer } from '@common/components/LogViewer/SimpleLogViewer'
 import { DiscoveryAgentStatus } from '@discovery/components/DelegateAgentStatus/DelegateAgentStatus'
 import { useStrings } from 'framework/strings'
@@ -28,7 +28,9 @@ const logger = loggerFor(ModuleName.CHAOS)
 
 const DiscoveryHistory: React.FC = () => {
   const { getString } = useStrings()
-  const { dAgentId, accountId, orgIdentifier, projectIdentifier } = useParams<ProjectPathProps & DiscoveryPathProps>()
+  const { dAgentId, accountId, orgIdentifier, projectIdentifier, pipelineIdentifier } = useParams<
+    PipelinePathProps & DiscoveryPathProps
+  >()
   const { data: tokenData } = useGetToken({ queryParams: { accountID: accountId } })
   const [logsToken, setLogsToken] = React.useState<string>()
   const [dAgentLogs, setDAgentLogs] = React.useState<DAgentLogs>()
@@ -52,6 +54,9 @@ const DiscoveryHistory: React.FC = () => {
       const data = (await logBlobPromise({
         queryParams: {
           accountID: accountId,
+          orgId: orgIdentifier,
+          pipelineId: pipelineIdentifier,
+          projectId: projectIdentifier,
           'X-Harness-Token': '',
           key: id
         },

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Harness Inc. All rights reserved.
+ * Copyright 2023 Harness Inc. All rights reserved.
  * Use of this source code is governed by the PolyForm Shield 1.0.0 license
  * that can be found in the licenses directory at the root of this repository, also available at
  * https://polyformproject.org/wp-content/uploads/2020/06/PolyForm-Shield-1.0.0.txt.
@@ -11,6 +11,7 @@ import React from 'react'
 import { Get, GetProps, Mutate, MutateProps, useGet, UseGetProps, useMutate, UseMutateProps } from 'restful-react'
 
 import { getConfig, getUsingFetch, GetUsingFetchProps, mutateUsingFetch, MutateUsingFetchProps } from '../config'
+export const SPEC_VERSION = '1.0.0'
 
 export interface Platform {
   arch?: 'Amd64' | 'Arm64'
@@ -74,7 +75,7 @@ export type GetTokenProps = Omit<GetProps<void, void, GetTokenQueryParams, void>
  * Generate an account level token to be used for log APIs
  */
 export const GetToken = (props: GetTokenProps) => (
-  <Get<void, void, GetTokenQueryParams, void> path="/token" base={getConfig('log-service')} {...props} />
+  <Get<void, void, GetTokenQueryParams, void> path={`/token`} base={getConfig('log-service')} {...props} />
 )
 
 export type UseGetTokenProps = Omit<UseGetProps<void, void, GetTokenQueryParams, void>, 'path'>
@@ -103,6 +104,18 @@ export interface LogStreamQueryParams {
    */
   accountID: string
   /**
+   * Org ID to retrieve logs for
+   */
+  orgId?: string
+  /**
+   * Project ID to retrieve logs for
+   */
+  projectId?: string
+  /**
+   * Pipeline ID to retrieve logs for
+   */
+  pipelineId?: string
+  /**
    * Unique key to retrieve logs for
    */
   key: string
@@ -120,7 +133,7 @@ export type LogStreamProps = Omit<GetProps<Line, Error, LogStreamQueryParams, vo
  * Stream back log response using server sent events (SSE)
  */
 export const LogStream = (props: LogStreamProps) => (
-  <Get<Line, Error, LogStreamQueryParams, void> path="/stream" base={getConfig('log-service')} {...props} />
+  <Get<Line, Error, LogStreamQueryParams, void> path={`/stream`} base={getConfig('log-service')} {...props} />
 )
 
 export type UseLogStreamProps = Omit<UseGetProps<Line, Error, LogStreamQueryParams, void>, 'path'>
@@ -149,13 +162,25 @@ export interface LogBlobQueryParams {
    */
   accountID: string
   /**
+   * Org ID to retrieve logs for
+   */
+  orgId?: string
+  /**
+   * Project ID to retrieve logs for
+   */
+  projectId?: string
+  /**
+   * Pipeline ID to retrieve logs for
+   */
+  pipelineId?: string
+  /**
    * Unique key to retrieve logs for
    */
   key: string
   /**
    * Account level token to ensure allowed access
    */
-  'X-Harness-Token': string
+  'X-Harness-Token'?: string
 }
 
 interface RcaQueryParams {
@@ -209,7 +234,7 @@ export type LogBlobProps = Omit<GetProps<void, void, LogBlobQueryParams, void>, 
  * Retrieve log response from blob storage
  */
 export const LogBlob = (props: LogBlobProps) => (
-  <Get<void, void, LogBlobQueryParams, void> path="/blob" base={getConfig('log-service')} {...props} />
+  <Get<void, void, LogBlobQueryParams, void> path={`/blob`} base={getConfig('log-service')} {...props} />
 )
 
 export type UseLogBlobProps = Omit<UseGetProps<void, void, LogBlobQueryParams, void>, 'path'>

@@ -14,12 +14,20 @@ import { useDeepCompareEffect } from '@common/hooks'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function useLogsContentHook(logKeys: string[], deps: any[]): any {
-  const { accountId } = useParams<ExecutionPathProps>()
+  const { accountId, orgIdentifier, pipelineIdentifier, projectIdentifier } = useParams<ExecutionPathProps>()
   const { logsToken, setLogsToken } = useExecutionContext()
   const { data: tokenData } = useGetToken({ queryParams: { accountID: accountId }, lazy: !!logsToken })
   const logsTokenRef = React.useRef('')
 
   const [blobDataCur, setBlobDataCur] = useState<Record<string, unknown>>()
+
+  const commonQueryParams = {
+    accountID: accountId,
+    orgId: orgIdentifier,
+    pipelineId: pipelineIdentifier,
+    projectId: projectIdentifier
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async function getBlobData(id: string): Promise<any> {
     // if token is not found, schedule the call for later
@@ -27,7 +35,7 @@ export function useLogsContentHook(logKeys: string[], deps: any[]): any {
     try {
       const data = await logBlobPromise({
         queryParams: {
-          accountID: accountId,
+          ...commonQueryParams,
           'X-Harness-Token': '',
           key: id
         },

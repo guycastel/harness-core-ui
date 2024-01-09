@@ -72,8 +72,11 @@ describe('useLogsContent tests', () => {
       })
     })
 
-    expect(EventSourcePolyfill).toHaveBeenCalledWith('/log-service/stream?accountID=undefined&key=logKey1', {
-      headers: { Authorization: 'Bearer ', 'X-Harness-Token': 'logs_token' }
-    })
+    expect(EventSourcePolyfill).toHaveBeenCalledWith(
+      '/log-service/stream?accountID=undefined&orgId=undefined&projectId=undefined&pipelineId=undefined&key=logKey1',
+      {
+        headers: { Authorization: 'Bearer ', 'X-Harness-Token': 'logs_token' }
+      }
+    )
   })
 })

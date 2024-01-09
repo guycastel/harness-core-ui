@@ -17,6 +17,7 @@ import SessionToken from 'framework/utils/SessionToken'
 import { useExecutionContext } from '@pipeline/context/ExecutionContext'
 import { useDeepCompareEffect } from '@common/hooks'
 
+import { useIsPublicAccess } from 'framework/hooks/usePublicAccess'
 import type { ActionType, State, Action } from './LogsState/types'
 import { reducer } from './LogsState'
 import { useActionCreator, UseActionCreatorReturn } from './LogsState/actions'
@@ -32,7 +33,10 @@ export interface UseLogsContentReturn {
 export interface StartStreamProps {
   queryParams: {
     key: string
-    accountId: string
+    accountID: string
+    orgId?: string
+    projectId?: string
+    pipelineId?: string
   }
   headers: Record<string, string>
   key: string
@@ -43,12 +47,19 @@ const STREAM_ENDPOINT = `${window.apiUrl || ''}/log-service/stream`
 
 export function useLogsContent(): UseLogsContentReturn {
   const requestQueue = React.useRef(new PQueue())
-  const { accountId } = useParams<ExecutionPathProps>()
+  const {
+    accountId,
+
+    orgIdentifier,
+    pipelineIdentifier,
+    projectIdentifier
+  } = useParams<ExecutionPathProps>()
   const [state, dispatch] = React.useReducer<LogsReducer>(reducer, getDefaultReducerState())
   const actions = useActionCreator(dispatch)
   const { logsToken, setLogsToken } = useExecutionContext()
   const { data: tokenData } = useGetToken({ queryParams: { accountID: accountId }, lazy: !!logsToken })
   const eventSource = React.useRef<null | EventSource>(null)
+  const isCurrentSessionPublic = useIsPublicAccess()
   /**
    * Here we are utilizing the concept of double buffering in case of streaming logs
    * https://www.computerhope.com/jargon/d/doublebu.htm
@@ -87,7 +98,7 @@ export function useLogsContent(): UseLogsContentReturn {
       actions.updateSectionData({ data: '', id: props.key })
 
       const currentEventSource = new EventSourcePolyfill(
-        `${STREAM_ENDPOINT}?accountID=${props.queryParams.accountId}&key=${props.queryParams.key}`,
+        `${STREAM_ENDPOINT}?accountID=${props.queryParams.accountID}&orgId=${props.queryParams.orgId}&projectId=${props.queryParams.projectId}&pipelineId=${props.queryParams.pipelineId}&key=${props.queryParams.key}`,
         { headers: props.headers }
       ) as EventSource
 
@@ -116,6 +127,12 @@ export function useLogsContent(): UseLogsContentReturn {
     [closeStream, actions]
   )
 
+  const commonQueryParams = {
+    accountID: accountId,
+    orgId: orgIdentifier,
+    pipelineId: pipelineIdentifier,
+    projectId: projectIdentifier
+  }
   // need to save token in a ref due to scoping issues
   const logsTokenRef = React.useRef('')
   const timerRef = React.useRef<null | number>(null)
@@ -128,7 +145,8 @@ export function useLogsContent(): UseLogsContentReturn {
       }
 
       // if token is not found, schedule the call for later
-      if (!logsTokenRef.current) {
+      // Do not block the blob call in case of publicAccess
+      if (!logsTokenRef.current && !isCurrentSessionPublic) {
         timerRef.current = window.setTimeout(() => getBlobData(id), 300)
         return
       }
@@ -139,7 +157,7 @@ export function useLogsContent(): UseLogsContentReturn {
         const data = (await logBlobPromise(
           {
             queryParams: {
-              accountID: accountId,
+              ...commonQueryParams,
               'X-Harness-Token': '',
               key: id
             },
@@ -166,7 +184,8 @@ export function useLogsContent(): UseLogsContentReturn {
 
   function getStream(logKey: string): void {
     // if token is not found, schedule the call for later
-    if (!logsTokenRef.current) {
+    // Do not block the blob call in case of publicAccess
+    if (!logsTokenRef.current && !isCurrentSessionPublic) {
       timerRef.current = window.setTimeout(() => getStream(logKey), 300)
       return
     }
@@ -179,7 +198,7 @@ export function useLogsContent(): UseLogsContentReturn {
     }
     startStream({
       queryParams: {
-        accountId,
+        ...commonQueryParams,
         key: encodeURIComponent(logKey)
       },
       headers,
