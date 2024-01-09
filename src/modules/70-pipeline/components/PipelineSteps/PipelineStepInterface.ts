@@ -273,7 +273,8 @@ export enum StepType {
   SlackNotify = 'SlackNotify',
   // yaml-simplification v1 step types
   'shell-script' = 'ShellScript',
-  http = 'Http'
+  http = 'Http',
+  OsvScanner = 'OsvScanner'
 }
 
 export interface PipelineInfrastructureV2 extends PipelineInfrastructure {

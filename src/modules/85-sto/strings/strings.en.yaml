@@ -36,6 +36,7 @@ stepDescription:
   Coverity: Use Coverity to test for vulnerabilities.
   Anchore: Use Anchore Enterprise to test for vulnerabilities.
   AquaSecurity: Use Aqua Security to test for vulnerabilities.
+  OsvScanner: Use Osv Scanner to test for vulnerabilities.
 stepField:
   mode: Scan Mode
   config: Scan Configuration

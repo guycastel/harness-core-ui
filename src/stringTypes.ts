@@ -10969,6 +10969,7 @@ export interface StringsMap {
   'sto.stepDescription.Nikto': string
   'sto.stepDescription.Nmap': string
   'sto.stepDescription.OWASP': string
+  'sto.stepDescription.OsvScanner': string
   'sto.stepDescription.Owasp': string
   'sto.stepDescription.PrismaCloud': string
   'sto.stepDescription.Prowler': string
