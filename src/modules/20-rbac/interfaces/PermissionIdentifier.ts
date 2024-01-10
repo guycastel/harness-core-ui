@@ -84,6 +84,7 @@ export enum PermissionIdentifier {
   DELETE_FILE = 'core_file_delete',
   VIEW_FILE = 'core_file_view',
   ACCESS_FILE = 'core_file_access',
+  VIEW_AUDIT = 'core_audit_view',
 
   // FEATURE FLAG PERMISSIONS
   DELETE_FF_FEATUREFLAG = 'ff_featureflag_delete',

@@ -29,6 +29,16 @@ RbacFactory.registerResourceTypeHandler(ResourceType.STREAMING_DESTINATION, {
   }
 })
 
+RbacFactory.registerResourceTypeHandler(ResourceType.AUDIT, {
+  icon: 'audit-log-created',
+  label: 'auditTrail.auditLogs',
+  labelSingular: 'auditTrail.auditLogs',
+  category: ResourceCategory.ADMINSTRATIVE_FUNCTIONS,
+  permissionLabels: {
+    [PermissionIdentifier.VIEW_AUDIT]: <String stringID="rbac.permissionLabels.view" />
+  }
+})
+
 export default (
   <>
     <RouteWithLayout sidebarProps={AccountSideNavProps} path={routes.toAuditTrail({ ...accountPathProps })} exact>
