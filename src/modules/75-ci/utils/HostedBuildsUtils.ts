@@ -9,6 +9,7 @@ import { cloneDeep, get, isEmpty, omit, set, unset } from 'lodash-es'
 import { parse } from 'yaml'
 import type { ConnectorInfoDTO, ConnectorRequestBody, ConnectorResponse, UserRepoResponse } from 'services/cd-ng'
 import type { PipelineConfig } from 'services/pipeline-ng'
+import type { DelegateGroupDetails } from 'services/portal'
 import type { UseStringsReturn } from 'framework/strings'
 import { getScopedValueFromDTO } from '@common/components/EntityReference/EntityReference.types'
 import { GitSuffixRegex } from '@common/utils/StringUtils'
@@ -19,6 +20,7 @@ import {
   BuildCodebaseType,
   DefaultBuildValues
 } from '@pipeline/components/PipelineInputSetForm/CICodebaseInputSetForm'
+import { ArchTypes, OsTypes } from '@modules/70-pipeline/utils/constants'
 import {
   BitbucketPRTriggerActions,
   GitHubPRTriggerActions,
@@ -26,7 +28,8 @@ import {
   DEFAULT_STAGE_ID,
   DOCKER_REGISTRY_CONNECTOR_REF,
   ACCOUNT_SCOPE_PREFIX,
-  CodebaseProperties
+  CodebaseProperties,
+  LocalRunnerOsArchTypes
 } from '../pages/get-started-with-ci/InfraProvisioningWizard/Constants'
 
 export const DELEGATE_SELECTOR_FOR_HARNESS_PROVISIONED_DELEGATE = 'harness-kubernetes-delegate'
@@ -335,22 +338,37 @@ export const getCIStarterPipelineV1 = (): Record<string, any> => {
   }
 }
 
-export const getCIStarterPipeline = (yamlVersion: YAMLVersion, infraType?: string): PipelineConfig => {
-  return yamlVersion === YAMLVersion.V1 ? getCIStarterPipelineV1() : getCloudPipelinePayloadWithCodebase(infraType)
+export const getCIStarterPipeline = (
+  yamlVersion: YAMLVersion,
+  infraType?: string,
+  localRunnerOsArch?: LocalRunnerOsArchTypes
+): PipelineConfig => {
+  return yamlVersion === YAMLVersion.V1
+    ? getCIStarterPipelineV1()
+    : getCloudPipelinePayloadWithCodebase(infraType, localRunnerOsArch)
 }
 
-export const getCloudPipelinePayloadWithoutCodebase = (infraType?: string): PipelineConfig => {
+export const getCloudPipelinePayloadWithoutCodebase = (
+  infraType?: string,
+  localRunnerOsArch?: LocalRunnerOsArchTypes
+): PipelineConfig => {
   const originalPipeline = getPipelinePayloadWithoutCodebase()
   set(originalPipeline, 'pipeline.stages.0.stage.spec.infrastructure', undefined)
   set(originalPipeline, 'pipeline.stages.0.stage.spec.execution.steps.0.step.spec.image', undefined)
   set(originalPipeline, 'pipeline.stages.0.stage.spec.execution.steps.0.step.spec.connectorRef', undefined)
-  set(originalPipeline, 'pipeline.stages.0.stage.spec.platform', { os: 'Linux', arch: 'Amd64' })
+  set(originalPipeline, 'pipeline.stages.0.stage.spec.platform', {
+    os: localRunnerOsArch?.osType ?? 'Linux',
+    arch: localRunnerOsArch?.archType ?? 'Amd64'
+  })
   set(originalPipeline, 'pipeline.stages.0.stage.spec.runtime', { type: infraType ?? 'Cloud', spec: {} })
   return originalPipeline
 }
 
-export const getCloudPipelinePayloadWithCodebase = (infraType?: string): PipelineConfig => {
-  const originalPipeline = getCloudPipelinePayloadWithoutCodebase(infraType)
+export const getCloudPipelinePayloadWithCodebase = (
+  infraType?: string,
+  localRunnerOsArch?: LocalRunnerOsArchTypes
+): PipelineConfig => {
+  const originalPipeline = getCloudPipelinePayloadWithoutCodebase(infraType, localRunnerOsArch)
   return set(
     set(originalPipeline, 'pipeline.properties', CodebaseProperties),
     'pipeline.stages.0.stage.spec.cloneCodebase',
@@ -448,16 +466,50 @@ const GIT_PROVIDER_BASE_URL = new Map<ConnectorInfoDTO['type'], string>([
   [Connectors.BITBUCKET, 'bitbucket.org']
 ])
 
-export const updateRuntimeTypeToDocker = (pipelineYaml: PipelineConfig) => {
+export const updateRuntimeOsArch = (pipelineYaml: PipelineConfig, localRunnerOsArch?: LocalRunnerOsArchTypes) => {
   const clonedPipeline = cloneDeep(pipelineYaml)
   // Iterate over each stage in the 'stages' array
   clonedPipeline.pipeline?.stages?.forEach((stage, index) => {
     // Construct the path to the 'runtime.type' property using the index
     if (!isEmpty(stage)) {
-      const path = `pipeline.stages.${index}.stage.spec.runtime.type`
-      set(clonedPipeline, path, 'Docker')
+      const RuntimePath = `pipeline.stages.${index}.stage.spec.runtime.type`
+      set(clonedPipeline, RuntimePath, 'Docker')
+      if (localRunnerOsArch?.osType && localRunnerOsArch?.archType) {
+        const OsPath = `pipeline.stages.${index}.stage.spec.platform.os`
+        set(clonedPipeline, OsPath, localRunnerOsArch.osType)
+        const ArchPath = `pipeline.stages.${index}.stage.spec.platform.arch`
+        set(clonedPipeline, ArchPath, localRunnerOsArch.archType)
+      }
     }
   })
 
   return clonedPipeline
+}
+
+export const getOsArchFromDelegateTags = (delegateDetails: DelegateGroupDetails) => {
+  const delegateTags = delegateDetails?.groupCustomSelectors
+  let osType: OsTypes | undefined
+  let archType: ArchTypes | undefined
+
+  const OsChecker = new Map<string, OsTypes>([
+    [OsTypes.Linux.toLowerCase(), OsTypes.Linux],
+    [OsTypes.MacOS.toLowerCase(), OsTypes.MacOS],
+    [OsTypes.Windows.toLowerCase(), OsTypes.Windows]
+  ])
+
+  const ArchChecker = new Map<string, ArchTypes>([
+    [ArchTypes.Arm64.toLowerCase(), ArchTypes.Arm64],
+    [ArchTypes.Amd64.toLowerCase(), ArchTypes.Amd64]
+  ])
+
+  for (const item of delegateTags ?? []) {
+    const [osPart, archPart] = item.split('-')
+    if (OsChecker.has(osPart) && ArchChecker.has(archPart)) {
+      osType = OsChecker.get(osPart)
+      archType = ArchChecker.get(archPart)
+      break
+    }
+  }
+
+  return { osType, archType }
 }

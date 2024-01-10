@@ -23,11 +23,14 @@ import { Color, FontVariation } from '@harness/design-system'
 import { noop } from 'lodash-es'
 import { useStrings } from 'framework/strings'
 import { useDockerRunnerCommand } from 'services/ci'
+import { RestResponseDelegateGroupDetails, getDelegateGroupByIdentifierPromise } from 'services/portal'
 import CommandBlock from '@modules/10-common/CommandBlock/CommandBlock'
 import { useTelemetry } from '@common/hooks/useTelemetry'
 import { CIOnboardingActions } from '@common/constants/TrackingConstants'
 import VerifyDelegateConnection from '@modules/27-platform/delegates/pages/delegates/delegateCommandLineCreation/components/VerifyDelegateConnection'
 import { DelegateCommonProblemTypes } from '@modules/27-platform/delegates/constants'
+import { getOsArchFromDelegateTags } from '@modules/75-ci/utils/HostedBuildsUtils'
+import { LocalRunnerOsArchTypes } from './InfraProvisioningWizard/Constants'
 import css from './GetStartedWithCI.module.scss'
 
 export enum GetStartedInfraTypes {
@@ -39,6 +42,7 @@ interface CreditCardOnboardingProps {
   setShowLocalInfraSetup: (value: boolean) => void
   openCreditCardModal: () => void
 }
+const DefaultDockerDelegateIdentifier = '_docker_delegate'
 
 export const CreditCardOnboarding = (props: CreditCardOnboardingProps): React.ReactElement => {
   const [selectedInfra, setSelectedInfra] = useState<GetStartedInfraTypes>()
@@ -119,10 +123,11 @@ export const CreditCardOnboarding = (props: CreditCardOnboardingProps): React.Re
 }
 
 interface LocalInfraOnboardingProps {
+  accountId: string
   setShowLocalInfraSetup: (value: boolean) => void
   setShowCreditCardFlow: (value: boolean) => void
-  accountId: string
   setUseLocalRunnerInfra: (value: boolean) => void
+  setLocalRunnerOsArch: (value: LocalRunnerOsArchTypes) => void
 }
 
 export const LocalInfraOnboarding = (props: LocalInfraOnboardingProps): React.ReactElement => {
@@ -224,6 +229,19 @@ export const LocalInfraOnboarding = (props: LocalInfraOnboardingProps): React.Re
                     setIsTestInfraEnabled(true)
                     setIsFinishEnabled(true)
                     trackEvent(CIOnboardingActions.LocalRunnerSetupSuccessful, {})
+                    try {
+                      getDelegateGroupByIdentifierPromise({
+                        identifier: DefaultDockerDelegateIdentifier,
+                        queryParams: { accountId: props.accountId }
+                      }).then((response: RestResponseDelegateGroupDetails) => {
+                        if (response?.resource) {
+                          const OsArch = getOsArchFromDelegateTags(response.resource)
+                          props.setLocalRunnerOsArch(OsArch)
+                        }
+                      })
+                    } catch (e) {
+                      // ignore error
+                    }
                   }}
                   onErrorHandler={() => {
                     setIsLocalInfraVerified(false)

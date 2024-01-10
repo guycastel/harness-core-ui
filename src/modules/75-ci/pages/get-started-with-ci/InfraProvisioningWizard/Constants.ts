@@ -10,8 +10,12 @@ import type { BitbucketPRSpec, GithubPRSpec, GitlabPRSpec } from 'services/pipel
 import type { ConnectorInfoDTO, SecretDTOV2 } from 'services/cd-ng'
 import type { StringsMap } from 'stringTypes'
 import { Connectors } from '@platform/connectors/constants'
+import { ArchTypes, OsTypes } from '@modules/70-pipeline/utils/constants'
 import type { SelectBuildLocationForwardRef } from './SelectBuildLocation'
-
+export interface LocalRunnerOsArchTypes {
+  osType: OsTypes | undefined
+  archType: ArchTypes | undefined
+}
 export interface InfraProvisioningWizardProps {
   precursorData?: {
     preSelectedGitConnector?: ConnectorInfoDTO
@@ -22,6 +26,7 @@ export interface InfraProvisioningWizardProps {
   enableImportYAMLOption?: boolean
   dummyGitnessHarnessConnector?: ConnectorInfoDTO
   useLocalRunnerInfra?: boolean
+  localRunnerOsArch?: LocalRunnerOsArchTypes
 }
 
 export const enum Hosting {

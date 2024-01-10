@@ -21,7 +21,8 @@ import {
   getNamespaceFromGitConnectorURL,
   getValidRepoName,
   sortConnectorsByLastConnectedAtTsDescOrder,
-  updateUrlAndRepoInGitConnector
+  updateUrlAndRepoInGitConnector,
+  getOsArchFromDelegateTags
 } from '../HostedBuildsUtils'
 import {
   GitHubPRTriggerActions,
@@ -603,5 +604,33 @@ describe('Test HostedBuildsUtils methods', () => {
     )
     expect(get(updatedConnector, 'spec.url')).toBe('https://github.com/test-namespace')
     expect(get(updatedConnector, 'spec.validationRepo')).toBe('test-repo')
+  })
+
+  test('Test getOsArchFromDelegateTags method', () => {
+    const delegateDetailsMac = {
+      groupCustomSelectors: ['docker-delegate', 'macos-arm64']
+    }
+    const delegateDetailsWindows = {
+      groupCustomSelectors: ['docker-delegate', 'windows-arm64']
+    }
+    const delegateDetailsLinux = {
+      groupCustomSelectors: ['docker-delegate', 'linux-amd64']
+    }
+    const delegateDetailsEmpty = {
+      groupCustomSelectors: ['docker-delegate']
+    }
+
+    let LocalRunnerOsArch = getOsArchFromDelegateTags(delegateDetailsMac)
+    expect(LocalRunnerOsArch).toBeDefined()
+    expect(LocalRunnerOsArch).toStrictEqual({ osType: 'MacOS', archType: 'Arm64' })
+    LocalRunnerOsArch = getOsArchFromDelegateTags(delegateDetailsWindows)
+    expect(LocalRunnerOsArch).toBeDefined()
+    expect(LocalRunnerOsArch).toStrictEqual({ osType: 'Windows', archType: 'Arm64' })
+    LocalRunnerOsArch = getOsArchFromDelegateTags(delegateDetailsLinux)
+    expect(LocalRunnerOsArch).toBeDefined()
+    expect(LocalRunnerOsArch).toStrictEqual({ osType: 'Linux', archType: 'Amd64' })
+    LocalRunnerOsArch = getOsArchFromDelegateTags(delegateDetailsEmpty)
+    expect(LocalRunnerOsArch.osType).toBeUndefined()
+    expect(LocalRunnerOsArch.archType).toBeUndefined()
   })
 })

@@ -49,7 +49,7 @@ import { CIOnboardingActions } from '@common/constants/TrackingConstants'
 import { Connectors } from '@platform/connectors/constants'
 import { useCreditCardWidget } from '@platform/auth-settings/pages/Billing/CreditCardWidget'
 import { InfraProvisioningWizard } from './InfraProvisioningWizard/InfraProvisioningWizard'
-import { InfraProvisiongWizardStepId } from './InfraProvisioningWizard/Constants'
+import { InfraProvisiongWizardStepId, LocalRunnerOsArchTypes } from './InfraProvisioningWizard/Constants'
 import { sortConnectorsByLastConnectedAtTsDescOrder } from '../../utils/HostedBuildsUtils'
 import { CreditCardOnboarding, LocalInfraOnboarding } from './GetStartedWithCICreditCard'
 
@@ -85,6 +85,7 @@ export default function GetStartedWithCI(): React.ReactElement {
   const [showCreditCardFlow, setShowCreditCardFlow] = useState<boolean>(false)
   const [showLocalInfraSetup, setShowLocalInfraSetup] = useState<boolean>(false)
   const [useLocalRunnerInfra, setUseLocalRunnerInfra] = useState<boolean>(false)
+  const [localRunnerOsArch, setLocalRunnerOsArch] = useState<LocalRunnerOsArchTypes>()
   const [creditCardModalOpenedOnce, setCreditCardModalOpenedOnce] = useState<boolean>(false)
   const { licenseInformation } = useLicenseStore()
   const isFreeEdition = isFreePlan(licenseInformation, ModuleName.CI)
@@ -317,6 +318,7 @@ export default function GetStartedWithCI(): React.ReactElement {
           }
           dummyGitnessHarnessConnector={dummyGitnessHarnessConnector}
           useLocalRunnerInfra={useLocalRunnerInfra}
+          localRunnerOsArch={localRunnerOsArch}
         />
       ) : (
         <>
@@ -327,10 +329,11 @@ export default function GetStartedWithCI(): React.ReactElement {
             />
           ) : showLocalInfraSetup ? (
             <LocalInfraOnboarding
+              accountId={accountId}
               setShowLocalInfraSetup={setShowLocalInfraSetup}
               setShowCreditCardFlow={setShowCreditCardFlow}
-              accountId={accountId}
               setUseLocalRunnerInfra={setUseLocalRunnerInfra}
+              setLocalRunnerOsArch={setLocalRunnerOsArch}
             />
           ) : (
             <Layout.Vertical flex>

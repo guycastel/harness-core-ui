@@ -102,7 +102,7 @@ import {
   getCIStarterPipeline,
   getRemoteInputSetPayload,
   getCloudPipelinePayloadWithCodebase,
-  updateRuntimeTypeToDocker
+  updateRuntimeOsArch
 } from '../../../utils/HostedBuildsUtils'
 import css from './InfraProvisioningWizard.module.scss'
 
@@ -123,7 +123,8 @@ export const InfraProvisioningWizard: React.FC<InfraProvisioningWizardProps> = p
     precursorData,
     enableImportYAMLOption,
     dummyGitnessHarnessConnector,
-    useLocalRunnerInfra
+    useLocalRunnerInfra,
+    localRunnerOsArch
   } = props
   const { preSelectedGitConnector, connectorsEligibleForPreSelection } = precursorData || {}
   const { getString } = useStrings()
@@ -219,7 +220,7 @@ export const InfraProvisioningWizard: React.FC<InfraProvisioningWizardProps> = p
           if (status === Status.SUCCESS && generatedPipelineYAML) {
             const generatedParsedYaml = parse<PipelineConfig>(generatedPipelineYAML)
             const originalPipeline = useLocalRunnerInfra
-              ? updateRuntimeTypeToDocker(generatedParsedYaml)
+              ? updateRuntimeOsArch(generatedParsedYaml, localRunnerOsArch)
               : generatedParsedYaml
             setGeneratedYAMLAsJSON(
               addDetailsToPipeline({
@@ -230,7 +231,11 @@ export const InfraProvisioningWizard: React.FC<InfraProvisioningWizardProps> = p
           } else {
             setGeneratedYAMLAsJSON(
               addDetailsToPipeline({
-                originalPipeline: getCIStarterPipeline(yamlVersion, useLocalRunnerInfra ? 'Docker' : undefined),
+                originalPipeline: getCIStarterPipeline(
+                  yamlVersion,
+                  useLocalRunnerInfra ? 'Docker' : undefined,
+                  useLocalRunnerInfra ? localRunnerOsArch : undefined
+                ),
                 ...commonArgs
               })
             )
@@ -269,7 +274,10 @@ export const InfraProvisioningWizard: React.FC<InfraProvisioningWizardProps> = p
             pipelineYaml: yamlStringify(
               id && StarterConfigIdToOptionMap[id] === PipelineConfigurationOption.GenerateYAML
                 ? generatedYAMLAsJSON
-                : getCloudPipelinePayloadWithCodebase(useLocalRunnerInfra ? 'Docker' : undefined)
+                : getCloudPipelinePayloadWithCodebase(
+                    useLocalRunnerInfra ? 'Docker' : undefined,
+                    useLocalRunnerInfra ? localRunnerOsArch : undefined
+                  )
             ),
             configuredGitConnector,
             orgIdentifier,
@@ -292,7 +300,10 @@ export const InfraProvisioningWizard: React.FC<InfraProvisioningWizardProps> = p
   const constructPipelinePayloadWithoutCodebase = React.useCallback((): string => {
     const UNIQUE_PIPELINE_ID = new Date().getTime().toString()
     const payload = addDetailsToPipeline({
-      originalPipeline: getCloudPipelinePayloadWithoutCodebase(useLocalRunnerInfra ? 'Docker' : undefined),
+      originalPipeline: getCloudPipelinePayloadWithoutCodebase(
+        useLocalRunnerInfra ? 'Docker' : undefined,
+        useLocalRunnerInfra ? localRunnerOsArch : undefined
+      ),
       name: `${getString('buildText')} ${getString('common.pipeline').toLowerCase()}`,
       identifier: `${getString('buildText')}_${getString('common.pipeline').toLowerCase()}_${UNIQUE_PIPELINE_ID}`,
       projectIdentifier,
