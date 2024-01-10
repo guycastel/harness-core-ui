@@ -543,13 +543,14 @@ DefaultSettingsFactory.registerSettingHandler(SettingType.TRIGGER_FOR_ALL_ARTIFA
   settingCategory: 'PMS'
 })
 
+DefaultSettingsFactory.registerSettingHandler(SettingType.CONCURRENT_ACTIVE_PIPELINE_EXECUTIONS, {
+  label: 'platform.defaultSettings.concurrentActivePipelineExecutions',
+  settingRenderer: props => <DefaultSettingNumberTextbox {...props} />,
+  settingCategory: 'PMS'
+})
+
 export default function DefaultSettingsRoutes(): React.ReactElement {
-  const {
-    PIE_PIPELINE_SETTINGS_ENFORCEMENT_LIMIT,
-    PIE_GIT_BI_DIRECTIONAL_SYNC,
-    PL_EULA_ENABLED,
-    CDS_DISABLE_MAX_TIMEOUT_CONFIG
-  } = useFeatureFlags()
+  const { PIE_GIT_BI_DIRECTIONAL_SYNC, PL_EULA_ENABLED, CDS_DISABLE_MAX_TIMEOUT_CONFIG } = useFeatureFlags()
   const { getString } = useStrings()
 
   if (PL_EULA_ENABLED) {
@@ -584,6 +585,7 @@ export default function DefaultSettingsRoutes(): React.ReactElement {
       settingCategory: 'EULA'
     })
   }
+
   DefaultSettingsFactory.registerSettingHandler(SettingType.ENABLE_FORCE_DELETE, {
     label: 'platform.defaultSettings.enableForceDelete',
     settingRenderer: props => <DefaultSettingCheckBoxWithTrueAndFalse {...props} />,
@@ -603,14 +605,6 @@ export default function DefaultSettingsRoutes(): React.ReactElement {
       label: 'platform.defaultSettings.stageTimeout',
       settingRenderer: props => <DefaultSettingDurationField {...props} />,
       yupValidation: getDurationValidationSchema().required(getString('validation.timeout10SecMinimum')),
-      settingCategory: 'PMS'
-    })
-  }
-
-  if (PIE_PIPELINE_SETTINGS_ENFORCEMENT_LIMIT) {
-    DefaultSettingsFactory.registerSettingHandler(SettingType.CONCURRENT_ACTIVE_PIPELINE_EXECUTIONS, {
-      label: 'platform.defaultSettings.concurrentActivePipelineExecutions',
-      settingRenderer: props => <DefaultSettingNumberTextbox {...props} />,
       settingCategory: 'PMS'
     })
   }
