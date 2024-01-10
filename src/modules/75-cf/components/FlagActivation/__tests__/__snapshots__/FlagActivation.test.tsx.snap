@@ -66,6 +66,23 @@ exports[`FlagActivation it should render correctly 1`] = `
                   </p>
                 </div>
                 <div
+                  aria-controls="bp3-tab-panel_editFlag_flag_pipeline"
+                  aria-disabled="false"
+                  aria-expanded="false"
+                  aria-selected="false"
+                  class="bp3-tab"
+                  data-tab-id="flag_pipeline"
+                  id="bp3-tab-title_editFlag_flag_pipeline"
+                  role="tab"
+                  tabindex="0"
+                >
+                  <p
+                    class="StyledProps--font StyledProps--main tabTitle"
+                  >
+                    cf.featureFlags.flagPipeline.title
+                  </p>
+                </div>
+                <div
                   aria-controls="bp3-tab-panel_editFlag_metrics"
                   aria-disabled="false"
                   aria-expanded="false"

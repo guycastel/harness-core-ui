@@ -33,7 +33,6 @@ const renderComponent = (): RenderResult => {
     <TestWrapper
       path="/account/:accountId/cf/orgs/:orgIdentifier/projects/:projectIdentifier/feature-flags"
       pathParams={{ accountId: 'dummy', orgIdentifier: 'dummy', projectIdentifier: 'dummy' }}
-      defaultFeatureFlagValues={{ FFM_2134_FF_PIPELINES_TRIGGER: false }}
     >
       <FlagActivation
         refetchFlagLoading={false}

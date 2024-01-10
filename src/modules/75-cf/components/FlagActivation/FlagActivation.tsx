@@ -50,7 +50,6 @@ import useActiveEnvironment from '@cf/hooks/useActiveEnvironment'
 import type { FeatureFlagPathProps, ProjectPathProps } from '@common/interfaces/RouteInterfaces'
 import { GIT_COMMIT_MESSAGES } from '@cf/constants/GitSyncConstants'
 import { GIT_SYNC_ERROR_CODE, UseGitSync } from '@cf/hooks/useGitSync'
-import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
 import TargetingRulesTab from '@cf/pages/feature-flags-detail/targeting-rules-tab/TargetingRulesTab'
 import { ContainerSpinner } from '@common/components/ContainerSpinner/ContainerSpinner'
 import FlagPipelineTab from '@cf/pages/feature-flags-detail/flag-pipeline-tab/FlagPipelineTab'
@@ -124,8 +123,6 @@ const FlagActivation: React.FC<FlagActivationProps> = props => {
   })
   const { handleError: handleGovernanceError, isGovernanceError } = useGovernance()
   const { isNewNavEnabled } = useAppStore()
-
-  const { FFM_2134_FF_PIPELINES_TRIGGER } = useFeatureFlags()
 
   const { gitSyncValidationSchema, gitSyncInitialValues } =
     gitSync?.getGitSyncFormMeta(GIT_COMMIT_MESSAGES.UPDATED_FLAG_RULES) || {}
@@ -517,21 +514,14 @@ const FlagActivation: React.FC<FlagActivationProps> = props => {
                         }
                       />
 
-                      {FFM_2134_FF_PIPELINES_TRIGGER && (
-                        <Tab
-                          id={FFDetailPageTab.FLAG_PIPELINE}
-                          title={
-                            <Text className={css.tabTitle}>{getString('cf.featureFlags.flagPipeline.title')}</Text>
-                          }
-                          panel={
-                            <FlagPipelineTab
-                              flagIdentifier={flagData.identifier}
-                              flagVariations={flagData.variations}
-                            />
-                          }
-                          panelClassName={css.flagPipelinePanel}
-                        />
-                      )}
+                      <Tab
+                        id={FFDetailPageTab.FLAG_PIPELINE}
+                        title={<Text className={css.tabTitle}>{getString('cf.featureFlags.flagPipeline.title')}</Text>}
+                        panel={
+                          <FlagPipelineTab flagIdentifier={flagData.identifier} flagVariations={flagData.variations} />
+                        }
+                        panelClassName={css.flagPipelinePanel}
+                      />
 
                       <Tab
                         id={FFDetailPageTab.METRICS}
