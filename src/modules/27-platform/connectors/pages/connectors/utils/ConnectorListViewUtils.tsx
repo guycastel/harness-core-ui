@@ -32,17 +32,30 @@ const textRenderer = (value: string): JSX.Element => {
   )
 }
 
-const getAWSDisplaySummary = (connector: ConnectorInfoDTO): JSX.Element | string => {
-  if (
-    connector?.spec?.credential?.type === DelegateTypes.DELEGATE_IN_CLUSTER ||
-    connector?.spec?.credential?.type === DelegateTypes.DELEGATE_IN_CLUSTER_IRSA
-  ) {
-    return displayDelegatesTagsSummary(connector.spec.delegateSelectors)
-  }
-  return getConnectorDisplaySummaryLabel(
-    'platform.connectors.aws.accessKey',
-    textRenderer(connector?.spec?.credential?.spec?.accessKeyRef || connector?.spec?.credential?.spec?.accessKey)
+const stringRenderer = (titleStringId: StringKeys): JSX.Element | string => {
+  if (!titleStringId) return ''
+  return (
+    <div className={classNames(css.name, css.flex)}>
+      <Text inline color={Color.BLACK}>
+        <String stringID={titleStringId} />
+      </Text>
+    </div>
   )
+}
+
+const getAWSDisplaySummary = (connector: ConnectorInfoDTO): JSX.Element | string => {
+  switch (connector?.spec?.credential?.type) {
+    case DelegateTypes.DELEGATE_IN_CLUSTER:
+    case DelegateTypes.DELEGATE_IN_CLUSTER_IRSA:
+      return displayDelegatesTagsSummary(connector.spec.delegateSelectors)
+    case DelegateTypes.DELEGATE_OIDC:
+      return stringRenderer('platform.connectors.aws.OIDC')
+    default:
+      return getConnectorDisplaySummaryLabel(
+        'platform.connectors.aws.accessKey',
+        textRenderer(connector?.spec?.credential?.spec?.accessKeyRef || connector?.spec?.credential?.spec?.accessKey)
+      )
+  }
 }
 
 const linkAsTextRenderer = (value: string): JSX.Element => {

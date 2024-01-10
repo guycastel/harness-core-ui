@@ -959,7 +959,7 @@ export const setupAWSFormData = async (connectorInfo: ConnectorInfoDTO, accountI
             type: connectorInfo.spec.credential.spec.accessKeyRef ? ValueType.ENCRYPTED : ValueType.TEXT
           }
         : undefined,
-
+    iamRoleArn: defaultTo(connectorInfo.spec.credential.spec?.iamRoleArn, ''),
     secretKeyRef: await setSecretField(connectorInfo.spec.credential.spec?.secretKeyRef, scopeQueryParams),
     region: connectorInfo.spec.credential.region,
     crossAccountAccess: !!connectorInfo.spec.credential?.crossAccountAccess,
@@ -1342,6 +1342,23 @@ export const setupTerraformCloudFormData = async (
   return formData
 }
 
+const getAwsConnectorSpec = (formData: FormData) => {
+  switch (formData.delegateType) {
+    case DelegateTypes.DELEGATE_OUT_CLUSTER:
+      return {
+        accessKey: formData.accessKey.type === ValueType.TEXT ? formData.accessKey.value : undefined,
+        accessKeyRef: formData.accessKey.type === ValueType.ENCRYPTED ? formData.accessKey.value : undefined,
+        secretKeyRef: formData.secretKeyRef.referenceString
+      }
+    case DelegateTypes.DELEGATE_OIDC:
+      return {
+        iamRoleArn: formData?.iamRoleArn
+      }
+    default:
+      return null
+  }
+}
+
 export const buildAWSPayload = (formData: FormData) => {
   const savedData = {
     name: formData.name,
@@ -1357,15 +1374,7 @@ export const buildAWSPayload = (formData: FormData) => {
       credential: {
         type: formData.delegateType,
         ...(formData.region && { region: formData.region }),
-        spec:
-          formData.delegateType === DelegateTypes.DELEGATE_OUT_CLUSTER
-            ? {
-                accessKey: formData.accessKey.type === ValueType.TEXT ? formData.accessKey.value : undefined,
-                accessKeyRef: formData.accessKey.type === ValueType.ENCRYPTED ? formData.accessKey.value : undefined,
-
-                secretKeyRef: formData.secretKeyRef.referenceString
-              }
-            : null,
+        spec: getAwsConnectorSpec(formData),
         crossAccountAccess: formData.crossAccountAccess
           ? {
               crossAccountRoleArn: formData.crossAccountRoleArn,

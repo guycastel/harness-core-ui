@@ -2297,6 +2297,7 @@ export interface StringsMap {
   'platform.connectors.artifactRepository': string
   'platform.connectors.artifactory.artifactoryLabel': string
   'platform.connectors.artifactory.artifactoryServerUrl': string
+  'platform.connectors.aws.OIDC': string
   'platform.connectors.aws.accessKey': string
   'platform.connectors.aws.assumeIAMRole': string
   'platform.connectors.aws.awsAccessKey': string
@@ -2311,6 +2312,8 @@ export interface StringsMap {
   'platform.connectors.aws.fixedBackoffPlaceholder': string
   'platform.connectors.aws.fixedDelay': string
   'platform.connectors.aws.fullJitter': string
+  'platform.connectors.aws.iamRoleArn': string
+  'platform.connectors.aws.iamRoleArnPlaceholder': string
   'platform.connectors.aws.maxBackoffTime': string
   'platform.connectors.aws.maxBackoffTimePlaceholder': string
   'platform.connectors.aws.retryCount': string
@@ -2320,9 +2323,11 @@ export interface StringsMap {
   'platform.connectors.aws.strategyType': string
   'platform.connectors.aws.testRegion': string
   'platform.connectors.aws.useIRSA': string
+  'platform.connectors.aws.useOIDC': string
   'platform.connectors.aws.validation.accessKey': string
   'platform.connectors.aws.validation.crossAccountRoleArn': string
   'platform.connectors.aws.validation.delegateSelector': string
+  'platform.connectors.aws.validation.iamRoleArn': string
   'platform.connectors.aws.validation.secretKeyRef': string
   'platform.connectors.awsCodeCommit.repoUrl': string
   'platform.connectors.awsKms.accessKeyLabel': string

@@ -1242,6 +1242,10 @@ connectors:
     testRegion: Test Region
     assumeIAMRole: Assume IAM role on Delegate
     useIRSA: Use IRSA
+    useOIDC: Use OIDC
+    OIDC: OIDC
+    iamRoleArn: IAM Role
+    iamRoleArnPlaceholder: Enter AWS IAM Role
     awsBackOffStrategy: AWS Backoff Strategy
     strategyType: Strategy Type
     selectBackOffStrategyTypeLabel: Select backoff strategy type
@@ -1261,6 +1265,7 @@ connectors:
       secretKeyRef: 'Secret key is required'
       accessKey: 'Access key is required'
       crossAccountRoleArn: 'Role ARN is required'
+      iamRoleArn: IAM Role is required
   awsCodeCommit:
     repoUrl: 'AWS CodeCommit Repository URL'
   appD:

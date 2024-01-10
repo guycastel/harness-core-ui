@@ -142,3 +142,32 @@ export const mockResponse: ResponseBoolean = {
   metaData: {},
   correlationId: ''
 }
+
+export const mockOIDCConnector = {
+  status: 'SUCCESS',
+  data: {
+    connector: {
+      description: '',
+      identifier: 'OIDC_Connector',
+      name: 'OIDC Connector',
+      orgIdentifier: undefined,
+      projectIdentifier: undefined,
+      spec: {
+        awsSdkClientBackOffStrategyOverride: {
+          spec: { fixedBackoff: 0, retryCount: 0 },
+          type: 'FixedDelayBackoffStrategy'
+        },
+        credential: {
+          crossAccountAccess: null,
+          region: 'us-gov-west-1',
+          spec: { iamRoleArn: 'IAM_ROLE' },
+          type: 'OidcAuthentication'
+        },
+        executeOnDelegate: false,
+        proxy: undefined
+      },
+      tags: {},
+      type: 'Aws'
+    }
+  }
+}
