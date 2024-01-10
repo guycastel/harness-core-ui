@@ -15,6 +15,7 @@ import type {
   useGetOrganizationList,
   useGetProjectAggregateDTOList
 } from 'services/cd-ng'
+import type { useGetAllPerspectives } from 'services/ce'
 import type { useConfirmAction, useLocalStorage, useQueryParams } from '@common/hooks'
 import type { useQueryParamsState } from '@common/hooks/useQueryParamsState'
 import type { PreferenceScope, usePreferenceStore } from 'framework/PreferenceStore/PreferenceStoreContext'
@@ -45,6 +46,7 @@ export interface FFCustomMicroFrontendProps {
     useCDGetOrganizationAggregateDTOList: typeof useGetOrganizationAggregateDTOList
     useCDGetOrganizationList: typeof useGetOrganizationList
     useCDGetProjectAggregateDTOList: typeof useGetProjectAggregateDTOList
+    useCCMGetAllPerspectives: typeof useGetAllPerspectives
   }
   customHooks: {
     useActiveEnvironment: typeof useActiveEnvironment

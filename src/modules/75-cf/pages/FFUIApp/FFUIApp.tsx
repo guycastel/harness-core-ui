@@ -18,6 +18,7 @@ import {
   useGetOrganizationList as useCDGetOrganizationList,
   useGetProjectAggregateDTOList as useCDGetProjectAggregateDTOList
 } from 'services/cd-ng'
+import { useGetAllPerspectives as useCCMGetAllPerspectives } from 'services/ce'
 import { useLicenseStore } from 'framework/LicenseStore/LicenseStoreContext'
 import { useConfirmAction, useLocalStorage, useQueryParams } from '@common/hooks'
 import { useQueryParamsState } from '@common/hooks/useQueryParamsState'
@@ -53,7 +54,8 @@ const FFUIApp: FC = () => (
       useCDGetEnvironmentListForProject,
       useCDGetOrganizationAggregateDTOList,
       useCDGetOrganizationList,
-      useCDGetProjectAggregateDTOList
+      useCDGetProjectAggregateDTOList,
+      useCCMGetAllPerspectives
     }}
     customHooks={{
       useActiveEnvironment,
