@@ -513,6 +513,9 @@ export function handleUpdateLicenseStore(
     }
   } else if (module.toUpperCase() === ModuleName.CODE) {
     newLicenseInformation[ModuleName.CODE] = data
+    licenseStoreData = {
+      licenseInformation: newLicenseInformation
+    }
   } else if (module.toUpperCase() === ModuleName.IDP) {
     newLicenseInformation[ModuleName.IDP] = data
     licenseStoreData = {

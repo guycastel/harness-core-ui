@@ -60,18 +60,6 @@ const CODETrialHomePage: React.FC = () => {
 
   const handleStartFree = async (): Promise<ResponseModuleLicenseDTO> => {
     const data = await startFreePlan()
-    if (isDefaultProjectCreated) {
-      const moduleUrlWithDefaultProject = getModuleToDefaultURLMap(accountId, module as Module)[module]
-      history.push(
-        moduleUrlWithDefaultProject
-          ? (moduleUrlWithDefaultProject as string)
-          : isNewNavEnabled
-          ? routesV2.toCODEHome({ accountId, module })
-          : routes.toCODEHome({ accountId }) //CHECK AGAIN
-      )
-    } else {
-      history.push(isNewNavEnabled ? routesV2.toCODEHome({ accountId, module }) : routes.toCODEHome({ accountId }))
-    }
     return data
   }
 
@@ -89,8 +77,18 @@ const CODETrialHomePage: React.FC = () => {
         //   }
         handleUpdateLicenseStore({ ...licenseInformation }, updateLicenseStore, module as Module, licenseResponse?.data)
       }
-
-      history.push(isNewNavEnabled ? routesV2.toCODEHome({ accountId, module }) : routes.toCODEHome({ accountId }))
+      if (isDefaultProjectCreated) {
+        const moduleUrlWithDefaultProject = getModuleToDefaultURLMap(accountId, module as Module)[module]
+        history.push(
+          moduleUrlWithDefaultProject
+            ? (moduleUrlWithDefaultProject as string)
+            : isNewNavEnabled
+            ? routesV2.toCODEHome({ accountId, module })
+            : routes.toCODEHome({ accountId })
+        )
+      } else {
+        history.push(isNewNavEnabled ? routesV2.toCODEHome({ accountId, module }) : routes.toCODEHome({ accountId }))
+      }
     } catch (error) {
       showError(error.data?.message)
     }

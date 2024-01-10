@@ -84,8 +84,11 @@ export const getModuleToDefaultURLMap = (
           projectIdentifier: DEFAULT_PROJECT_ID,
           orgIdentifier: DEFAULT_ORG
         }),
-  code: routes.toCODEHome({
-    accountId
+  code: routes.toCODERepositoriesV1({
+    projectIdentifier: DEFAULT_PROJECT_ID,
+    orgIdentifier: DEFAULT_ORG,
+    accountId,
+    module: 'code'
   }),
   cf: routes.toCFOnboarding({
     accountId,

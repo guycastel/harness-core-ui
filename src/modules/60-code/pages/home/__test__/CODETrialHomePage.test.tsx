@@ -102,7 +102,7 @@ describe('CODETrialHomePage snapshot test', () => {
 
     await waitFor(() => userEvent.click(getByText('common.startFreePlan')))
 
-    expect(getByTestId('location').innerHTML).toContain('/code/home')
+    expect(getByTestId('location').innerHTML).toContain('/account/undefined/code/default/default_project')
   })
 
   test('it should redirect to CODEHome screen if mfe is enabled', async () => {

@@ -59,7 +59,7 @@ export const RedirectToMode = ({ mode }: { mode?: NAV_MODE }): React.ReactElemen
   )
 }
 
-const RedirectCodeRoutes = () => {
+const RedirectCodeRoutes = (): React.ReactElement => {
   const {
     module,
     path: _path = '',
@@ -73,7 +73,19 @@ const RedirectCodeRoutes = () => {
 
   const locationParams = useLocation()
   const path = !_path ? 'repos' : _path !== 'search' ? `repos/${_path}` : _path
-
+  if (locationParams.pathname.endsWith('/home/trial')) {
+    return (
+      <Redirect
+        to={{
+          ...locationParams,
+          pathname: `${routes.toCODEHomeTrial({
+            mode: finalMode,
+            module
+          })}`
+        }}
+      />
+    )
+  }
   return (
     <Redirect
       to={{
