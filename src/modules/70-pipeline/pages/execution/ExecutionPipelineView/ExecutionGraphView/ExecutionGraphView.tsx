@@ -23,6 +23,7 @@ import ExecutionLayoutFloatingView from '@pipeline/components/ExecutionLayout/Ex
 import { ExecutionNodeList } from '@pipeline/components/ExecutionNodeList/ExecutionNodeList'
 import { CollapsedNodeProvider } from '@pipeline/components/ExecutionNodeList/CollapsedNodeStore'
 import { NodeMetadataProvider } from '@pipeline/components/PipelineDiagram/Nodes/NodeMetadataContext'
+import { RUNTIME_NODE_SUFFIX } from '@modules/70-pipeline/utils/execUtils'
 import { ExecutionStageDetailsHeader } from './ExecutionStageDetailsHeader/ExecutionStageDetailsHeader'
 import ExecutionGraph from './ExecutionGraph/ExecutionGraph'
 import ExecutionStageDetails from './ExecutionStageDetails/ExecutionStageDetails'
@@ -72,7 +73,8 @@ export default function ExecutionGraphView(): React.ReactElement {
   } = useExecutionContext()
 
   function handleStepSelection(step?: string): void {
-    if (!step) {
+    const stepId = step?.replace(new RegExp(`${RUNTIME_NODE_SUFFIX}$`), '')
+    if (!stepId) {
       const params = {
         ...queryParams
       }
@@ -81,7 +83,7 @@ export default function ExecutionGraphView(): React.ReactElement {
 
       replaceQueryParams(params)
     } else {
-      const selectedStep = allNodeMap?.[step]
+      const selectedStep = allNodeMap?.[stepId]
       const errorMessage =
         selectedStep?.failureInfo?.message || selectedStep?.executableResponses?.[0]?.skipTask?.message
 
@@ -96,7 +98,7 @@ export default function ExecutionGraphView(): React.ReactElement {
         stage: selectedStageId,
         ...(selectedStageExecutionId && { stageExecId: selectedStageExecutionId }),
         ...(selectedChildStageId && { childStage: selectedChildStageId }),
-        step
+        step: stepId
       }
 
       delete params.retryStep

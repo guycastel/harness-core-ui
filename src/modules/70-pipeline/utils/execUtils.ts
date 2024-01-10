@@ -48,6 +48,7 @@ interface ParallelStepPipelineGraphState {
   parallel: StepPipelineGraphState
 }
 
+export const RUNTIME_NODE_SUFFIX = '__RUNTIME__'
 const addDependencyToArray = (service: ServiceDependency, arr: Array<PipelineGraphState>): void => {
   const stepItem: PipelineGraphState = {
     identifier: service.identifier as string,
@@ -782,10 +783,11 @@ export const processExecutionDataV1 = (graph?: ExecutionGraph): any => {
 
     // handling for stage level execution inputs
     if (rootNode?.executionInputConfigured && NonSelectableStepNodes.includes(rootNode.stepType as StepNodeType)) {
+      const runtimeNodeId = rootNode?.strategyMetadata ? `${rootNodeId}${RUNTIME_NODE_SUFFIX}` : rootNodeId
       items.push({
         name: 'Runtime Inputs',
-        identifier: rootNodeId,
-        id: rootNodeId,
+        identifier: runtimeNodeId,
+        id: runtimeNodeId,
         icon: StepTypeIconsMap.RUNTIME_INPUT,
         type: StepType.StageRuntimeInput,
         nodeType: StepNodeType.RUNTIME_INPUT,

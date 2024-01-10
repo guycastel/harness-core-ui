@@ -30,6 +30,7 @@ import {
   getStepsPathWithoutStagePath,
   getParentPath
 } from '@pipeline/components/PipelineStudio/ExecutionGraph/ExecutionGraphUtil'
+import { RUNTIME_NODE_SUFFIX } from '@modules/70-pipeline/utils/execUtils'
 import SVGMarker from '../../SVGMarker'
 import { BaseReactComponentProps, NodeType } from '../../../types'
 import AddLinkNode from '../AddLinkNode/AddLinkNode'
@@ -88,7 +89,8 @@ function PipelineStepNode(props: PipelineStepNodeProps): JSX.Element {
   const stepFQNPath = getStepsPathWithoutStagePath(props?.data?.nodeStateMetadata?.dotNotationPath)
   const relativeFQNPath = getBaseDotNotationWithoutEntityIdentifier(props?.data?.nodeStateMetadata?.relativeBasePath)
   const nodeSelectedId = isEmpty(stepStatus) ? stepFQNPath : props.id
-  const isSelectedNode = (): boolean => props.isSelected || nodeSelectedId === props?.selectedNodeId
+  const isSelectedNode = (): boolean =>
+    props.isSelected || nodeSelectedId.replace(new RegExp(`${RUNTIME_NODE_SUFFIX}$`), '') === props?.selectedNodeId
   const isServiceStep = stepType === 'Service'
   const setAddVisibility = (visibility: boolean): void => {
     if (!allowAdd) {
