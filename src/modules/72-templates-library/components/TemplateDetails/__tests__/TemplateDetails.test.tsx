@@ -11,7 +11,7 @@ import { useLocation } from 'react-router-dom'
 import { defaultTo, unset } from 'lodash-es'
 import produce from 'immer'
 import { TestWrapper } from '@common/utils/testUtils'
-import { mockTemplates, mockTemplatesSuccessResponse } from '@templates-library/TemplatesTestHelper'
+import { mockTemplates } from '@templates-library/TemplatesTestHelper'
 import templateFactory from '@templates-library/components/Templates/TemplatesFactory'
 import { mockTemplatesInputYaml } from '@pipeline/components/PipelineStudio/PipelineStudioTestHelper'
 import { StepTemplate } from '@templates-library/components/Templates/StepTemplate/StepTemplate'
@@ -39,7 +39,7 @@ const TEST_PATH_PARAMS = {
   templateType: 'Step'
 }
 
-const useGetTemplateMock = jest.fn()
+const useGetResolvedTemplateMock = jest.fn()
 
 jest.mock('@templates-library/components/TemplateInputs/TemplateInputs', () => ({
   ...jest.requireActual('@templates-library/components/TemplateInputs/TemplateInputs'),
@@ -49,11 +49,11 @@ jest.mock('@templates-library/components/TemplateInputs/TemplateInputs', () => (
 }))
 
 jest.mock('services/template-ng', () => ({
-  ...jest.requireActual('services/template-ng'),
-  useGetTemplate: jest.fn().mockImplementation((...args) => {
-    useGetTemplateMock(...args)
-    return {}
-  }),
+  useGetResolvedTemplate: jest.fn().mockImplementation(() => ({
+    mutate: useGetResolvedTemplateMock,
+    cancel: jest.fn(),
+    loading: false
+  })),
   useGetTemplateInputSetYaml: jest
     .fn()
     .mockImplementation(() => ({ data: mockTemplatesInputYaml, refetch: jest.fn(), error: null, loading: false })),
@@ -61,7 +61,17 @@ jest.mock('services/template-ng', () => ({
     loading: false,
     data: {},
     refetch: jest.fn()
-  })
+  }),
+  useGetTemplateMetadataList: jest.fn().mockImplementation(() => ({
+    mutate: jest.fn(() => Promise.resolve(mockTemplates)),
+    cancel: jest.fn(),
+    loading: false
+  })),
+  useGetTemplateList: jest.fn().mockImplementation(() => ({
+    mutate: jest.fn(() => Promise.resolve(mockTemplates)),
+    cancel: jest.fn(),
+    loading: false
+  }))
 }))
 
 const fetchBranches = jest.fn(() => Promise.resolve(mockBranches))
@@ -88,15 +98,10 @@ function ComponentWrapper(props: TemplateDetailsProps): React.ReactElement {
 
 describe('<TemplateDetails /> git experience', () => {
   afterEach(() => {
-    useGetTemplateMock.mockReset()
-  })
-  beforeEach(() => {
-    jest
-      .spyOn(commonHooks, 'useMutateAsGet')
-      .mockImplementation(jest.fn().mockReturnValue(mockTemplatesSuccessResponse))
+    useGetResolvedTemplateMock.mockReset()
   })
 
-  test('Template GET API sends parent entity context in query params only when default behaviour is there', () => {
+  test('Resolved Template POST API sends parent entity context in query params only when default behaviour is there', () => {
     const baseProps: TemplateDetailsProps = {
       template: defaultTo(mockTemplates?.data?.content?.[0], {}),
       storeMetadata: {
@@ -113,30 +118,30 @@ describe('<TemplateDetails /> git experience', () => {
       </TestWrapper>
     )
 
-    expect(useGetTemplateMock).toHaveBeenCalledWith({
-      lazy: true,
-      queryParams: {
-        accountIdentifier: 'kmpySmUISimoRrJL6NL73w',
-        branch: 'branchTest',
-        getDefaultFromOtherRepo: true,
-        orgIdentifier: 'default',
-        parentEntityAccountIdentifier: 'accountId',
-        parentEntityConnectorRef: 'connectorRefTest',
-        parentEntityOrgIdentifier: 'default',
-        parentEntityProjectIdentifier: 'projectId',
-        parentEntityRepoName: 'manju-test-template-qq-12344',
-        projectIdentifier: 'Templateproject',
-        versionLabel: 'v4',
-        repoIdentifier: undefined
-      },
-      requestOptions: {
-        headers: { 'Load-From-Cache': 'true' }
-      },
-      templateIdentifier: 'manjutesttemplate'
-    })
+    expect(useGetResolvedTemplateMock).toHaveBeenCalledWith(
+      { templatesResolvedYaml: true },
+      {
+        headers: { 'Load-From-Cache': 'true' },
+        pathParams: undefined,
+        queryParams: {
+          accountIdentifier: 'kmpySmUISimoRrJL6NL73w',
+          branch: 'branchTest',
+          getDefaultFromOtherRepo: true,
+          orgIdentifier: 'default',
+          parentEntityAccountIdentifier: 'accountId',
+          parentEntityConnectorRef: 'connectorRefTest',
+          parentEntityOrgIdentifier: 'default',
+          parentEntityProjectIdentifier: 'projectId',
+          parentEntityRepoName: 'manju-test-template-qq-12344',
+          projectIdentifier: 'Templateproject',
+          repoIdentifier: undefined,
+          versionLabel: 'v4'
+        }
+      }
+    )
   })
 
-  test('Template GET API doesnt send parent entity context in query params for inline templates', () => {
+  test('Resolved Template POST API does not send parent entity context in query params for inline templates', async () => {
     const baseProps: TemplateDetailsProps = {
       template: defaultTo(mockTemplates?.data?.content?.[0], {}),
       storeMetadata: undefined
@@ -148,31 +153,30 @@ describe('<TemplateDetails /> git experience', () => {
       </TestWrapper>
     )
 
-    expect(useGetTemplateMock).toHaveBeenCalledWith({
-      lazy: true,
-      queryParams: {
-        accountIdentifier: 'kmpySmUISimoRrJL6NL73w',
-        getDefaultFromOtherRepo: true,
-        orgIdentifier: 'default',
-        projectIdentifier: 'Templateproject',
-        versionLabel: 'v4'
-      },
-      requestOptions: {
-        headers: { 'Load-From-Cache': 'true' }
-      },
-      templateIdentifier: 'manjutesttemplate'
-    })
+    expect(useGetResolvedTemplateMock).toHaveBeenCalledWith(
+      { templatesResolvedYaml: true },
+      {
+        headers: { 'Load-From-Cache': 'true' },
+        pathParams: undefined,
+        queryParams: {
+          accountIdentifier: 'kmpySmUISimoRrJL6NL73w',
+          branch: undefined,
+          getDefaultFromOtherRepo: true,
+          orgIdentifier: 'default',
+          parentEntityConnectorRef: undefined,
+          parentEntityRepoName: undefined,
+          projectIdentifier: 'Templateproject',
+          repoIdentifier: undefined,
+          versionLabel: 'v4'
+        }
+      }
+    )
   })
 })
 
 describe('<TemplateDetails /> tests', () => {
   beforeAll(() => {
     templateFactory.registerTemplate(new StepTemplate())
-  })
-  beforeEach(() => {
-    jest
-      .spyOn(commonHooks, 'useMutateAsGet')
-      .mockImplementation(jest.fn().mockReturnValue(mockTemplatesSuccessResponse))
   })
 
   const baseProps = {
@@ -201,11 +205,13 @@ describe('<TemplateDetails /> tests', () => {
   })
 
   test('should render no references when reference by tab is selected', async () => {
-    const { getByText, queryByText } = render(
+    const { getByText, queryByText, findByText } = render(
       <TestWrapper>
         <ComponentWrapper {...baseProps} />
       </TestWrapper>
     )
+
+    await findByText('manju-test-template-qq-12344')
 
     await act(async () => {
       fireEvent.click(queryByText('templatesLibrary.referencedBy')!)
@@ -215,11 +221,13 @@ describe('<TemplateDetails /> tests', () => {
   })
 
   test('should show selected version label', async () => {
-    const { getByTestId } = render(
+    const { getByTestId, findByText } = render(
       <TestWrapper defaultAppStoreValues={{ isGitSyncEnabled: true }}>
         <ComponentWrapper {...baseProps} isStandAlone />
       </TestWrapper>
     )
+    await findByText('manju-test-template-qq-12344')
+
     const dropValue = getByTestId('dropdown-value')
     expect(dropValue).toHaveTextContent('v4COMMON.STABLE')
   })
@@ -228,11 +236,12 @@ describe('<TemplateDetails /> tests', () => {
     const newBaseProps = produce(baseProps, draft => {
       unset(draft, 'template.versionLabel')
     })
-    const { getByTestId } = render(
+    const { getByTestId, findByText } = render(
       <TestWrapper>
         <ComponentWrapper {...newBaseProps} isStandAlone />
       </TestWrapper>
     )
+    await findByText('manju-test-template-qq-12344')
     const dropValue = getByTestId('dropdown-value')
     expect(dropValue).toHaveTextContent('templatesLibrary.alwaysUseStableVersion')
   })

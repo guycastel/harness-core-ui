@@ -28,13 +28,17 @@ import {
 } from '@common/components/EntityReference/EntityReference'
 import type { ProjectPathProps, GitQueryParams } from '@common/interfaces/RouteInterfaces'
 import { NameId } from '@common/components/NameIdDescriptionTags/NameIdDescriptionTags'
-import { getsMergedTemplateInputYamlPromise, useGetTemplate, useGetTemplateInputSetYaml } from 'services/template-ng'
+import {
+  getsMergedTemplateInputYamlPromise,
+  useGetResolvedTemplate,
+  useGetTemplateInputSetYaml
+} from 'services/template-ng'
 import { StepViewType } from '@pipeline/components/AbstractSteps/Step'
 import { StageForm } from '@pipeline/components/PipelineInputSetForm/PipelineInputSetForm'
 import { StageErrorContext } from '@pipeline/context/StageErrorContext'
 import { TemplateTabs } from '@templates-library/components/TemplateStageSetupShell/TemplateStageSetupShellUtils'
 import { validateStage } from '@pipeline/components/PipelineStudio/StepUtil'
-import { useGlobalEventListener, useQueryParams } from '@common/hooks'
+import { useGlobalEventListener, useMutateAsGet, useQueryParams } from '@common/hooks'
 import ErrorsStripBinded from '@pipeline/components/ErrorsStrip/ErrorsStripBinded'
 import { useStageTemplateActions } from '@pipeline/utils/useStageTemplateActions'
 import { TemplateBar } from '@pipeline/components/PipelineStudio/TemplateBar/TemplateBar'
@@ -98,11 +102,12 @@ export const TemplateStageSpecifications = (): JSX.Element => {
   )
 
   const {
-    data: templateResponse,
-    error: templateError,
-    refetch: refetchTemplate,
-    loading: templateLoading
-  } = useGetTemplate({
+    data: resolvedTemplateData,
+    error: resolvedTemplateError,
+    refetch: refetchResolvedTemplate,
+    loading: loadingResolvedTemplate
+  } = useMutateAsGet(useGetResolvedTemplate, {
+    body: { templatesResolvedYaml: true },
     templateIdentifier: templateRef,
     queryParams: {
       ...getScopeBasedProjectPathParams(queryParams, templateScope),
@@ -120,11 +125,14 @@ export const TemplateStageSpecifications = (): JSX.Element => {
 
   React.useEffect(() => {
     setAllValues({
-      ...parse<{ template: { spec: StageElementConfig } }>(defaultTo(templateResponse?.data?.yaml, ''))?.template.spec,
+      ...parse<{ template: { spec: StageElementConfig } }>(
+        // Use mergedYaml if it is available in templateResponse otherwise fallback to yaml
+        defaultTo(defaultTo(resolvedTemplateData?.data?.mergedYaml, resolvedTemplateData?.data?.yaml), '')
+      )?.template.spec,
       identifier: defaultTo(stage?.stage?.identifier, '')
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [templateResponse?.data?.yaml])
+  }, [resolvedTemplateData?.data?.mergedYaml, resolvedTemplateData?.data?.yaml])
 
   const {
     data: templateInputSetYaml,
@@ -251,15 +259,15 @@ export const TemplateStageSpecifications = (): JSX.Element => {
   }
 
   const refetch = (): void => {
-    refetchTemplate()
+    refetchResolvedTemplate()
     refetchTemplateInputSet()
   }
 
   const formRefDom = React.useRef<HTMLElement | undefined>()
 
-  const isLoading = templateLoading || templateInputSetLoading || loadingMergedTemplateInputs
+  const isLoading = loadingResolvedTemplate || templateInputSetLoading || loadingMergedTemplateInputs
 
-  const error = defaultTo(templateInputSetError, templateError)
+  const error = defaultTo(templateInputSetError, resolvedTemplateError)
 
   /**
    * This effect disables/enables Save button on Pipeline and Template Studio

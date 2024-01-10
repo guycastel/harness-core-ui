@@ -3165,7 +3165,7 @@ export type GitCloneStepInfo = StepSpecType & {
   baseImageConnectorRefs?: ParameterFieldListString
   build: Build
   cloneDirectory?: string
-  connectorRef: string
+  connectorRef?: string
   depth?: number
   outputFilePathsContent?: string[]
   privileged?: boolean
@@ -3290,6 +3290,10 @@ export type GoolgeCloudStorageRegistrySpec = ArtifactTypeSpec & {
 
 export interface GovernanceMetadata {
   [key: string]: any
+}
+
+export type GovernanceMetadataErrorDTO = ErrorMetadataDTO & {
+  governanceMetadata?: GovernanceMetadata
 }
 
 export interface GraphLayoutNode {
@@ -5386,6 +5390,15 @@ export interface ResourceDTO {
     | 'CODE_REPOSITORY'
     | 'MODULE_LICENSE'
     | 'IDP_BACKSTAGE_CATALOG_ENTITY'
+    | 'IDP_APP_CONFIGS'
+    | 'IDP_CONFIG_ENV_VARIABLES'
+    | 'IDP_PROXY_HOST'
+    | 'IDP_SCORECARDS'
+    | 'IDP_CHECKS'
+    | 'IDP_ALLOW_LIST'
+    | 'IDP_OAUTH_CONFIG'
+    | 'IDP_CATALOG_CONNECTOR'
+    | 'IDP_PERMISSIONS'
   uniqueId?: string
 }
 
@@ -19874,6 +19887,7 @@ export interface GetSchemaYamlQueryParams {
     | 'DownloadHarnessStore'
     | 'CreateCatalog'
     | 'SlackNotify'
+    | 'OsvScaner'
   projectIdentifier?: string
   orgIdentifier?: string
   scope?: 'account' | 'org' | 'project' | 'unknown'

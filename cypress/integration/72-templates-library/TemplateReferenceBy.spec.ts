@@ -9,8 +9,9 @@ import {
   templatesListRoute,
   gitSyncEnabledCall,
   templateListMetaDataWithListTypeAndSize,
-  templateReferencesCall,
-  templateMetadataCall
+  getTemplateReferencesCall,
+  templateMetadataCall,
+  getResolvedTemplateCall
 } from '../../support/70-pipeline/constants'
 
 describe('Template Reference By', () => {
@@ -24,6 +25,9 @@ describe('Template Reference By', () => {
     cy.intercept('POST', templateListMetaDataWithListTypeAndSize, { fixture: 'template/api/templatesList' }).as(
       'templatesListMetadataCallForDrawer'
     )
+    cy.intercept('POST', getResolvedTemplateCall('Cypress_Template_Example_1', 'Version1'), {
+      fixture: 'template/api/getResolvedTemplate'
+    }).as('resolvedTemplateCall')
     cy.initializeRoute()
     cy.visit(templatesListRoute, {
       timeout: 30000
@@ -35,6 +39,7 @@ describe('Template Reference By', () => {
     cy.contains('p', 'Cypress Template Example 1').click()
 
     cy.wait('@templatesListMetadataCallForDrawer', { timeout: 10000 })
+    cy.wait('@resolvedTemplateCall', { timeout: 10000 })
     cy.get('div[data-tab-id="INPUTS"]').should('be.visible')
     cy.get('div[data-tab-id="YAML"]').should('be.visible')
   })
@@ -46,7 +51,9 @@ describe('Template Reference By', () => {
   })
 
   it('when pipeline and template references are present', () => {
-    cy.intercept('GET', templateReferencesCall, { fixture: 'ng/api/entitySetupUsageV2' }).as('templateReferencesCall')
+    cy.intercept('GET', getTemplateReferencesCall('Kapil'), { fixture: 'ng/api/entitySetupUsageV2' }).as(
+      'templateReferencesCall'
+    )
     cy.get('div[data-tab-id="REFERENCEDBY"]').should('be.visible').click()
     cy.wait('@templateReferencesCall', { timeout: 10000 })
     cy.get('[id=bp3-tab-panel_template-details_REFERENCEDBY]').within(() => {

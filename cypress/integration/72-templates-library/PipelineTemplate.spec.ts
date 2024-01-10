@@ -5,7 +5,12 @@
  * https://polyformproject.org/wp-content/uploads/2020/06/PolyForm-Shield-1.0.0.txt.
  */
 
-import { templatesListRoute, gitSyncEnabledCall, pipelinesRoute } from '../../support/70-pipeline/constants'
+import {
+  templatesListRoute,
+  gitSyncEnabledCall,
+  pipelinesRoute,
+  featureFlagsCall
+} from '../../support/70-pipeline/constants'
 import {
   versionLabel,
   pipelineTemplateName,
@@ -19,7 +24,8 @@ import {
   afterUseTemplatePipelineTemplateNameResponse,
   afterUseTemplateApplyTemplateResponse,
   afterUseTemplatePipelineTemplateInputsResponse,
-  applyTemplateResponseForTemplateInputs
+  getResolvedTemplateResponse,
+  templateUsedForPipeline
 } from '../../support/72-templates-library/constants'
 
 describe('Pipeline Template creation and assertion', () => {
@@ -33,8 +39,6 @@ describe('Pipeline Template creation and assertion', () => {
   const templateMetadataCallAfterSelection =
     '/template/api/templates/list-metadata?routingId=accountId&accountIdentifier=accountId&orgIdentifier=default&projectIdentifier=project1&module=cd&templateListType=All&size=100'
 
-  const applyTemplateEndpoint =
-    '/template/api/templates/applyTemplates?routingId=accountId&accountIdentifier=accountId&orgIdentifier=default&projectIdentifier=project1&getDefaultFromOtherRepo=true'
   const afterUseTemplateEndPoint =
     '/template/api/templates/list?accountIdentifier=accountId&orgIdentifier=default&projectIdentifier=project1&templateListType=Stable&getDefaultFromOtherRepo=true'
   const afterUseTemplatePipelineTemplateName =
@@ -43,8 +47,25 @@ describe('Pipeline Template creation and assertion', () => {
     '/template/api/templates/applyTemplates?routingId=accountId&accountIdentifier=accountId&projectIdentifier=project1&orgIdentifier=default&pipelineIdentifier=Pipeline_From_Template_Test&getDefaultFromOtherRepo=true'
   const afterUseTemplatePipelineTemplateInputsEndpoint =
     '/template/api/templates/templateInputs/testPipelineTemplate?routingId=accountId&accountIdentifier=accountId&projectIdentifier=project1&orgIdentifier=default&versionLabel=v1.0&getDefaultFromOtherRepo=true'
+  const getResolvedTemplate =
+    '/template/api/templates/get-resolved-template/testPipelineTemplate?routingId=accountId&accountIdentifier=accountId&orgIdentifier=default&projectIdentifier=project1&versionLabel=v1.0&getDefaultFromOtherRepo=true'
   beforeEach(() => {
     cy.intercept('GET', gitSyncEnabledCall, { connectivityMode: null, gitSyncEnabled: false })
+    cy.fixture('api/users/feature-flags/accountId').then(featureFlagsData => {
+      cy.intercept('GET', featureFlagsCall, {
+        ...featureFlagsData,
+        resource: [
+          ...featureFlagsData.resource,
+          {
+            uuid: null,
+            name: 'NG_SVC_ENV_REDESIGN',
+            enabled: true,
+            lastUpdatedAt: 0
+          }
+        ]
+      }).as('enableFeatureFlag')
+      cy.initializeRoute()
+    })
     cy.initializeRoute()
   })
 
@@ -79,12 +100,12 @@ describe('Pipeline Template creation and assertion', () => {
     cy.contains('span', 'Save').click()
     cy.get('button[type="submit"]').click()
 
-    cy.contains('span', 'yamlNode provided doesn not have root yaml field: pipeline').should('be.visible') //
+    cy.contains('span', 'yamlNode provided does not have root yaml field: pipeline').should('be.visible') //
   })
+
   it('create pipeline with pipeline template', () => {
     cy.intercept('POST', templateMetadataCall, selectedTemplateListFromPipeline).as('templateListCallPipelineTemplate')
     cy.intercept('GET', templateDetailsCall, selectedPipelineTemplateResponse).as('selectedPipelineTemplateResponse')
-    cy.intercept('POST', applyTemplateEndpoint, applyTemplateResponseForTemplateInputs).as('applyTemplateCall')
     cy.intercept('POST', templateMetadataCallAfterSelection, templateListCallAfterSelectionResponse).as(
       'templateListCallAfterSelection'
     )
@@ -96,6 +117,7 @@ describe('Pipeline Template creation and assertion', () => {
       'afterUseTemplateApplyTemplate'
     )
     cy.intercept('GET', afterUseTemplatePipelineTemplateInputsEndpoint, afterUseTemplatePipelineTemplateInputsResponse)
+    cy.intercept('POST', getResolvedTemplate, getResolvedTemplateResponse).as('getResolvedTemplate')
 
     cy.visit(pipelinesRoute, {
       timeout: 30000
@@ -112,17 +134,20 @@ describe('Pipeline Template creation and assertion', () => {
     cy.fillField('name', pipelineMadeFromTemplate)
     cy.contains('span', 'Start with Template').click()
 
-    cy.contains('p', 'PIPELINE').should('be.visible').click({ force: true })
-    cy.wait(1000)
+    // Select template
+    cy.get(`p[data-testid="${templateUsedForPipeline}"]`).click({ force: true })
 
-    cy.get('p[data-testid="testPipelineTemplate"]').should('be.visible') //
-    cy.contains('p', 'testPipelineTemplate').should('be.visible') //
-    cy.contains('p', 'testPipelineTemplate (v1.0)').should('be.visible') //
+    cy.contains('p', templateUsedForPipeline).should('be.visible')
     cy.contains('p', 'Type').should('be.visible')
     cy.contains('p', 'Tags').should('be.visible')
     cy.contains('p', 'Description').should('be.visible')
     cy.contains('p', 'Version Label').should('be.visible')
+    cy.contains('p', `${templateUsedForPipeline} (v1.0)`).should('be.visible')
     cy.contains('p', /^Stage:/).should('have.text', 'Stage: teststage')
+    cy.contains('span', 'Select Service').should('be.visible')
+    cy.get('input[name="service.serviceRef"]').should('have.value', '<+input>')
+    cy.contains('span', 'Specify Environment').should('be.visible')
+    cy.get('input[name="environment.environmentRef"]').should('have.value', '<+input>')
 
     cy.contains('span', 'Use Template').click()
 

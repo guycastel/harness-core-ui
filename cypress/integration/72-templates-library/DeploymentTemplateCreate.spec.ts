@@ -4,11 +4,20 @@
  * that can be found in the licenses directory at the root of this repository, also available at
  * https://polyformproject.org/wp-content/uploads/2020/06/PolyForm-Shield-1.0.0.txt.
  */
-import { templatesListRoute, gitSyncEnabledCall, featureFlagsCall } from '../../support/70-pipeline/constants'
+import {
+  templatesListRoute,
+  gitSyncEnabledCall,
+  featureFlagsCall,
+  getResolvedTemplateCall
+} from '../../support/70-pipeline/constants'
 import {
   incompleteTemplateCreationResponse,
   stepTemplateListCallAfterSelectionResponse,
-  deploymentTemplateInputCallAfterSelectionResponse
+  deploymentTemplateInputCallAfterSelectionResponse,
+  getResolvedTemplateResponse,
+  templateUsedForPipeline,
+  afterUseTemplatePipelineTemplateInputsResponse,
+  deploymentResolveTemplateResponse
 } from '../../support/72-templates-library/constants'
 
 describe('Deployment Template creation and assertion', () => {
@@ -20,8 +29,7 @@ describe('Deployment Template creation and assertion', () => {
   const templateMetadataCallAfterSelection =
     '/template/api/templates/list-metadata?routingId=accountId&accountIdentifier=accountId&orgIdentifier=default&projectIdentifier=project1&module=cd&templateListType=All&size=100'
 
-  const templateInputsCallAfterSelection =
-    '/template/api/templates/templateInputs/testStepTemplate_Cypress?routingId=accountId&accountIdentifier=accountId&orgIdentifier=default&projectIdentifier=project1&versionLabel=212&getDefaultFromOtherRepo=true'
+  const templateInputsCallAfterSelection = `/template/api/templates/templateInputs/${templateUsedForPipeline}?routingId=accountId&accountIdentifier=accountId&orgIdentifier=default&projectIdentifier=project1&versionLabel=v1.0*`
   const connectorsListCall =
     '/ng/api/connectors/listV2?accountIdentifier=accountId&searchTerm=&projectIdentifier=project1&orgIdentifier=default&pageIndex=0&pageSize=10'
   const accountLicense = 'ng/api/licenses/account?routingId=accountId&accountIdentifier=accountId'
@@ -62,9 +70,14 @@ describe('Deployment Template creation and assertion', () => {
     cy.intercept('POST', templateMetadataCallAfterSelection, stepTemplateListCallAfterSelectionResponse).as(
       'stepListCall'
     )
-    cy.intercept('GET', templateInputsCallAfterSelection, deploymentTemplateInputCallAfterSelectionResponse).as(
+    cy.intercept(templateInputsCallAfterSelection, deploymentTemplateInputCallAfterSelectionResponse).as(
       'stepTemplateInput'
     )
+    cy.intercept(
+      'POST',
+      getResolvedTemplateCall(templateUsedForPipeline, 'v1.0'),
+      deploymentResolveTemplateResponse
+    ).as('getResolvedTemplate')
     cy.intercept('POST', connectorsListCall, { fixture: 'ng/api/connectors' })
     cy.visitPageAssertion('[class*=TemplatesPage-module_templatesPageBody]')
     cy.contains('span', 'New Template').click()
@@ -79,7 +92,7 @@ describe('Deployment Template creation and assertion', () => {
     cy.contains('span', 'Version Label is required').should('be.visible') //
 
     cy.get('input[name="name"]').clear().type('deploymentTemplate_cypress')
-    cy.get('input[name="versionLabel"]').clear().type('1122')
+    cy.get('input[name="versionLabel"]').clear().type('v1.0')
     cy.get('button[type="submit"]').click()
 
     //Infrastructure Tab View
@@ -155,13 +168,15 @@ describe('Deployment Template creation and assertion', () => {
     cy.get('span[icon="plus"]').click()
     cy.get('span[data-icon="template-library"]').eq(1).click()
     cy.wait('@stepTemplateListCallDeploymentTemplates')
-    cy.get('p[data-testid="testStepTemplate_Cypress"]').click()
+    cy.get(`p[data-testid="${templateUsedForPipeline}"]`).click()
+
     cy.wait('@stepTemplateInput')
-    cy.contains('p', 'testStepTemplate_Cypress (212)').should('be.visible')
-    cy.contains('p', 'HTTP Step').should('be.visible')
+    cy.wait('@getResolvedTemplate')
+    cy.contains('p', `${templateUsedForPipeline} (v1.0)`).should('be.visible')
+    cy.get('input[name="data.spec.url"]').should('have.value', '<+input>')
     cy.contains('span', 'Use Template').click()
 
-    cy.contains('p', 'testStepTemplate_Cypress').should('be.visible')
+    cy.contains('p', templateUsedForPipeline).should('be.visible')
 
     cy.get('[data-name="toggle-option-two"]').click({ force: true })
     //YAML view
@@ -188,6 +203,6 @@ describe('Deployment Template creation and assertion', () => {
 
     cy.get('span[data-icon="send-data"]').click()
     cy.clickSubmit()
-    cy.contains('span', 'yamlNode provided doesn not have root yaml field: pipeline').should('be.visible') //
+    cy.contains('span', 'yamlNode provided does not have root yaml field: pipeline').should('be.visible') //
   })
 })

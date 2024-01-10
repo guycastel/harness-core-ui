@@ -16,12 +16,18 @@ import type { JsonNode } from 'services/template-ng'
 import { stepMockTemplatesInputYaml, stepTemplate } from '@templates-library/TemplatesTestHelper'
 import { TemplateStepWidgetWithRef } from '../TemplateStepWidget'
 
+jest.mock('@common/hooks/useMutateAsGet', () => ({
+  useMutateAsGet: jest.fn().mockImplementation(() => {
+    return { data: stepTemplate, refetch: jest.fn(), error: null }
+  })
+}))
+
 jest.mock('services/template-ng', () => ({
   ...(jest.requireActual('services/template-ng') as any),
   useGetTemplateInputSetYaml: jest
     .fn()
     .mockImplementation(() => ({ data: stepMockTemplatesInputYaml, refetch: jest.fn(), error: null, loading: false })),
-  useGetTemplate: jest
+  useGetResolvedTemplate: jest
     .fn()
     .mockImplementation(() => ({ data: stepTemplate, refetch: jest.fn(), error: null, loading: false })),
   getsMergedTemplateInputYamlPromise: jest.fn().mockImplementation(() => ({

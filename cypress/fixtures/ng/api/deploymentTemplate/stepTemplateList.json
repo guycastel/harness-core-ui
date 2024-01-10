@@ -6,12 +6,12 @@
         "accountId": "accountId",
         "orgIdentifier": "default",
         "projectIdentifier": "project1",
-        "identifier": "testStepTemplate_Cypress",
-        "name": "testStepTemplate_Cypress",
+        "identifier": "testPipelineTemplate",
+        "name": "testPipelineTemplate",
         "description": "",
         "tags": {},
-        "yaml": "template:\n  name: testStepTemplate_Cypress\n  type: Step\n  projectIdentifier: samarthproject\n  orgIdentifier: samarth_org\n  spec:\n    type: Http\n    timeout: 10s\n    spec:\n      url: <+input>\n      method: GET\n      headers: []\n      outputVariables: []\n  identifier: testStepTemplate_Cypress\n  versionLabel: \"212\"\n",
-        "versionLabel": "212",
+        "yaml": "template:\n  name: testPipelineTemplate\n  type: Step\n  projectIdentifier: project1\n  orgIdentifier: default\n  spec:\n    type: Http\n    timeout: 10s\n    spec:\n      url: <+input>\n      method: GET\n      headers: []\n      outputVariables: []\n  identifier: testPipelineTemplate\n  versionLabel: \"v1.0\"\n",
+        "versionLabel": "v1.0",
         "templateEntityType": "Step",
         "childType": "Http",
         "templateScope": "project",
@@ -61,7 +61,5 @@
     "numberOfElements": 2,
     "size": 20,
     "empty": false
-  },
-  "metaData": null,
-  "correlationId": "318951ef-13f4-4ff8-9881-69806293a957"
+  }
 }

@@ -80,11 +80,15 @@ const ItemUI = ({ label, icon, value }: ItemUIProps): JSX.Element => {
  * This can happen when parentEntity is in different repo (Repo A)
  * and trying to use a template in different repo (Repo B).
  */
+
+type StoreMetadataKeys = keyof StoreMetadata
+type EntityGitDetailsKeys = keyof EntityGitDetails
+
 const getActualTemplateValue = (
   storeMetadata: StoreMetadata,
   gitDetails: EntityGitDetails,
-  key: keyof StoreMetadata | EntityGitDetails
-): string | undefined => {
+  key: StoreMetadataKeys | EntityGitDetailsKeys
+): StoreMetadata[StoreMetadataKeys] | EntityGitDetails[EntityGitDetailsKeys] => {
   const check =
     gitDetails.repoName !== undefined &&
     storeMetadata.repoName !== undefined &&
@@ -109,8 +113,8 @@ export const GitPopoverV2 = ({
   const { getString } = useStrings()
 
   const filePath = getActualTemplateValue(storeMetadata, gitDetails, 'filePath')
-  const repoName = getActualTemplateValue(storeMetadata, gitDetails, 'repoName')
-  const branch = getActualTemplateValue(storeMetadata, gitDetails, 'branch')
+  const repoName = getActualTemplateValue(storeMetadata, gitDetails, 'repoName') as string
+  const branch = getActualTemplateValue(storeMetadata, gitDetails, 'branch') as string
   const fileUrl = defaultTo(gitDetails.fileUrl, filePath)
 
   const {

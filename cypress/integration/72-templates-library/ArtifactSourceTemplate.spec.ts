@@ -111,6 +111,6 @@ describe('Artifact Source Template creation and assertion', () => {
 
     cy.get('span[data-icon="send-data"]').click()
     cy.clickSubmit()
-    cy.contains('span', 'yamlNode provided doesn not have root yaml field: pipeline').should('be.visible') //
+    cy.contains('span', 'yamlNode provided does not have root yaml field: pipeline').should('be.visible') //
   })
 })

@@ -24,7 +24,7 @@ import type {
   GetTemplateInputSetYamlQueryParams,
   ResponseString,
   TemplateSummaryResponse,
-  ResponseTemplateMergeResponse
+  TemplateResponse
 } from 'services/template-ng'
 import useRBACError, { RBACError } from '@rbac/utils/useRBACError/useRBACError'
 import { StepViewType } from '@pipeline/components/AbstractSteps/Step'
@@ -55,11 +55,6 @@ import { StepForm } from '@pipeline/components/PipelineInputSetForm/StepInputSet
 import { StepGroupForm } from '@pipeline/components/PipelineInputSetForm/StepGroupInputSetForm'
 import css from './TemplateInputs.module.scss'
 
-interface ResolvedPipelineFetchParams {
-  resolvedPipelineResponse: ResponseTemplateMergeResponse | null
-  loadingResolvedPipeline: boolean
-}
-
 export interface TemplateInputsProps {
   template: TemplateSummaryResponse | NGTemplateInfoConfigWithGitDetails
   templateInputSetFetchParams: UseGetReturn<
@@ -68,7 +63,6 @@ export interface TemplateInputsProps {
     GetTemplateInputSetYamlQueryParams,
     unknown
   >
-  resolvedPipelineFetchParams?: ResolvedPipelineFetchParams
   shouldUtilizeFullWidth?: boolean
 }
 
@@ -84,11 +78,13 @@ type TemplateInputsFormData =
 export const TemplateInputs: React.FC<TemplateInputsProps> = ({
   template,
   templateInputSetFetchParams,
-  resolvedPipelineFetchParams,
   shouldUtilizeFullWidth
 }) => {
   const templateSpec =
     parse((template as TemplateSummaryResponse).yaml || '')?.template?.spec ||
+    (template as NGTemplateInfoConfigWithGitDetails).spec
+  const resolvedTemplateSpec =
+    parse((template as TemplateResponse).mergedYaml || '')?.template?.spec ||
     (template as NGTemplateInfoConfigWithGitDetails).spec
   const [inputSetTemplate, setInputSetTemplate] = React.useState<
     StepElementConfig | StageElementConfig | PipelineInfoConfig | DeploymentConfig | StepGroupElementConfig
@@ -104,17 +100,7 @@ export const TemplateInputs: React.FC<TemplateInputsProps> = ({
   const templateEntityType =
     (template as TemplateSummaryResponse).templateEntityType || (template as NGTemplateInfoConfigWithGitDetails).type
 
-  const { resolvedPipelineResponse, loadingResolvedPipeline } =
-    (resolvedPipelineFetchParams as ResolvedPipelineFetchParams) || {}
-  const [resolvedPipelineValues, setResolvedPipelineValues] = React.useState<PipelineInfoConfig>(templateSpec)
-
   const { data: templateInputYaml, error: inputSetError, refetch, loading } = templateInputSetFetchParams
-
-  React.useEffect(() => {
-    if (!loadingResolvedPipeline) {
-      setResolvedPipelineValues(parse(defaultTo(resolvedPipelineResponse?.data?.mergedPipelineYaml, ''))?.pipeline)
-    }
-  }, [resolvedPipelineResponse?.data?.mergedPipelineYaml, loadingResolvedPipeline])
 
   React.useEffect(() => {
     try {
@@ -138,7 +124,7 @@ export const TemplateInputs: React.FC<TemplateInputsProps> = ({
       className={css.container}
     >
       <Layout.Vertical>
-        {(loading || loadingResolvedPipeline) && <PageSpinner />}
+        {loading && <PageSpinner />}
         {!loading && inputSetError && (
           <Container height={300}>
             <PageError
@@ -172,7 +158,7 @@ export const TemplateInputs: React.FC<TemplateInputsProps> = ({
                       {templateEntityType === TemplateType.Pipeline && (
                         <PipelineInputSetFormInternal
                           template={inputSetTemplate as PipelineInfoConfig}
-                          originalPipeline={resolvedPipelineValues as PipelineInfoConfig}
+                          originalPipeline={resolvedTemplateSpec as PipelineInfoConfig}
                           path={'data'}
                           viewType={StepViewType.TemplateUsage}
                           readonly={true}
@@ -183,7 +169,7 @@ export const TemplateInputs: React.FC<TemplateInputsProps> = ({
                       {templateEntityType === TemplateType.Stage && (
                         <StageForm
                           template={{ stage: inputSetTemplate as StageElementConfig }}
-                          allValues={{ stage: formikProps.values.data as StageElementConfig }}
+                          allValues={{ stage: resolvedTemplateSpec as StageElementConfig }}
                           path={'data'}
                           viewType={StepViewType.TemplateUsage}
                           readonly={true}

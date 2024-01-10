@@ -5,7 +5,6 @@ import {
   selectInfraCall,
   validateInfraDtYamlCall,
   getUpdatedYamlCall,
-  useTemplateCall,
   useTemplateResponse,
   afterUseTemplateListCall,
   afterUseTemplateListResponse,
@@ -14,7 +13,9 @@ import {
   selectInfraResponse,
   infraResponse,
   depTempTestVariables,
-  recentDeploymentTemplatesUrl
+  recentDeploymentTemplatesUrl,
+  useResolvedTemplateCall,
+  useTemplateCall
 } from '../../support/72-templates-library/constants'
 
 describe('Deployment Template - Infrastructures Page', () => {
@@ -53,6 +54,7 @@ describe('Deployment Template - Infrastructures Page', () => {
       fixture: '/ng/api/deploymentTemplate/recentDeploymentTemplates'
     })
     cy.intercept('GET', useTemplateCall, useTemplateResponse).as('useTemplate')
+    cy.intercept('POST', useResolvedTemplateCall, useTemplateResponse).as('useResolvedTemplate')
     cy.intercept('POST', afterUseTemplateListCall, afterUseTemplateListResponse).as('afterUseTemplateList')
 
     cy.visitPageAssertion('[id*="bp3-tab-title_environmentDetails_CONFIGURATION"]')

@@ -20,7 +20,11 @@ import { useStrings } from 'framework/strings'
 import type { AbstractStepFactory } from '@pipeline/components/AbstractSteps/AbstractStepFactory'
 import type { Error, ExecutionWrapperConfig, StepElementConfig, StepGroupElementConfig } from 'services/cd-ng'
 import type { ProjectPathProps, GitQueryParams } from '@common/interfaces/RouteInterfaces'
-import { getsMergedTemplateInputYamlPromise, useGetTemplate, useGetTemplateInputSetYaml } from 'services/template-ng'
+import {
+  getsMergedTemplateInputYamlPromise,
+  useGetResolvedTemplate,
+  useGetTemplateInputSetYaml
+} from 'services/template-ng'
 import { PageSpinner } from '@common/components'
 import {
   getIdentifierFromValue,
@@ -31,7 +35,7 @@ import MultiTypeDelegateSelector from '@common/components/MultiTypeDelegateSelec
 import type { StageElementConfig, TemplateStepNode } from 'services/pipeline-ng'
 import { validateStep, validateSteps } from '@pipeline/components/PipelineStudio/StepUtil'
 import { getTemplateErrorMessage, TEMPLATE_INPUT_PATH } from '@pipeline/utils/templateUtils'
-import { useQueryParams } from '@common/hooks'
+import { useQueryParams, useMutateAsGet } from '@common/hooks'
 import { parse, stringify } from '@common/utils/YamlHelperMethods'
 import { usePipelineContext } from '@pipeline/components/PipelineStudio/PipelineContext/PipelineContext'
 import { getGitQueryParamsWithParentScope } from '@common/utils/gitSyncUtils'
@@ -90,11 +94,12 @@ function TemplateStepWidget(
   const { orgIdentifier, projectIdentifier } = queryParams
 
   const {
-    data: stepTemplateResponse,
-    error: stepTemplateError,
-    refetch: refetchStepTemplate,
-    loading: stepTemplateLoading
-  } = useGetTemplate({
+    data: resolvedTemplateData,
+    error: resolvedTemplateError,
+    refetch: refetchResolvedTemplate,
+    loading: loadingResolvedTemplate
+  } = useMutateAsGet(useGetResolvedTemplate, {
+    body: { templatesResolvedYaml: true },
     templateIdentifier: stepTemplateRef,
     queryParams: {
       ...getScopeBasedProjectPathParams(queryParams, scope),
@@ -112,15 +117,18 @@ function TemplateStepWidget(
 
   React.useEffect(() => {
     setAllValues(
-      parse<{ template: { spec: StepElementConfig } }>(defaultTo(stepTemplateResponse?.data?.yaml, ''))?.template.spec
+      // Use mergedYaml if it is available in templateResponse otherwise fallback to yaml
+      parse<{ template: { spec: StepElementConfig } }>(
+        defaultTo(defaultTo(resolvedTemplateData?.data?.mergedYaml, resolvedTemplateData?.data?.yaml), '')
+      )?.template.spec
     )
-  }, [stepTemplateResponse?.data?.yaml])
+  }, [resolvedTemplateData?.data?.mergedYaml, resolvedTemplateData?.data?.yaml])
 
   const {
-    data: stepTemplateInputSetYaml,
-    error: stepTemplateInputSetError,
-    refetch: refetchStepTemplateInputSet,
-    loading: stepTemplateInputSetLoading
+    data: templateInputSetYamlData,
+    error: templateInputSetError,
+    refetch: refetchTemplateInputSet,
+    loading: templateInputSetLoading
   } = useGetTemplateInputSetYaml({
     templateIdentifier: stepTemplateRef,
     queryParams: {
@@ -188,15 +196,15 @@ function TemplateStepWidget(
   )
 
   React.useEffect(() => {
-    if (stepTemplateInputSetLoading) {
+    if (templateInputSetLoading) {
       setTemplateInputs(undefined)
       setAllValues(undefined)
     } else {
-      const newTemplateInputs = parse<StepElementConfig>(defaultTo(stepTemplateInputSetYaml?.data, ''))
+      const newTemplateInputs = parse<StepElementConfig>(defaultTo(templateInputSetYamlData?.data, ''))
       setTemplateInputs(newTemplateInputs)
       retainInputsAndUpdateFormValues(newTemplateInputs)
     }
-  }, [retainInputsAndUpdateFormValues, stepTemplateInputSetLoading, stepTemplateInputSetYaml?.data])
+  }, [retainInputsAndUpdateFormValues, templateInputSetLoading, templateInputSetYamlData?.data])
 
   const validateForm = (values: TemplateStepNode) => {
     if (!isEmpty((templateInputs as StepGroupElementConfig)?.steps)) {
@@ -229,14 +237,14 @@ function TemplateStepWidget(
   }
 
   const refetch = (): void => {
-    refetchStepTemplate()
-    refetchStepTemplateInputSet()
+    refetchResolvedTemplate()
+    refetchTemplateInputSet()
   }
 
-  const isLoading = stepTemplateLoading || stepTemplateInputSetLoading || loadingMergedTemplateInputs
+  const isLoading = loadingResolvedTemplate || templateInputSetLoading || loadingMergedTemplateInputs
 
   // When both errors are present, error occurred during template fetch should be given higher priority.
-  const error = defaultTo(stepTemplateError, stepTemplateInputSetError)
+  const error = defaultTo(resolvedTemplateError, templateInputSetError)
 
   /**
    * This effect disables/enables "Apply Changes" button on Pipeline and Template Studio

@@ -31,8 +31,9 @@ import {
   yamlTemplate,
   saveTemplateCall,
   templateListCall,
-  templateDataCall,
-  templateInputSetCall
+  templateInputSetCall,
+  resolvedTemplateDataCall,
+  templateDataCall
 } from '../../../support/85-cv/Templates/constants'
 
 describe('Create empty monitored service', () => {
@@ -146,6 +147,7 @@ describe('Create empty monitored service', () => {
     cy.wait('@listIndv')
     cy.wait(1000)
     cy.intercept('GET', templateDataCall, { fixture: 'cv/templates/templateData' }).as('templateData')
+    cy.intercept('POST', resolvedTemplateDataCall, { fixture: 'cv/templates/templateData' }).as('resolvedTemplateData')
     cy.intercept('GET', templateInputSetCall, { fixture: 'cv/templates/templateInputs' }).as('templateInputs')
     cy.contains('[data-testid="AppD_Template"]', 'AppD Template').click()
     cy.get('div[class*="FormMultiTypeServiceField"]').should('be.visible')

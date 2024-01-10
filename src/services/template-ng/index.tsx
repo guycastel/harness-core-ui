@@ -45,6 +45,7 @@ export type AuditFilterProperties = FilterProperties & {
     | 'ROLE_ASSIGNMENT_CREATED'
     | 'ROLE_ASSIGNMENT_UPDATED'
     | 'ROLE_ASSIGNMENT_DELETED'
+    | 'MOVE'
   )[]
   endTime?: number
   environments?: Environment[]
@@ -118,7 +119,7 @@ export type ConnectorFilterProperties = FilterProperties & {
     | 'TICKETING'
   )[]
   ccmConnectorFilter?: CcmConnectorFilter
-  connectivityStatuses?: ('SUCCESS' | 'FAILURE' | 'PARTIAL' | 'UNKNOWN')[]
+  connectivityStatuses?: ('SUCCESS' | 'FAILURE' | 'PARTIAL' | 'UNKNOWN' | 'PENDING')[]
   connectorConnectivityModes?: ('DELEGATE' | 'MANAGER')[]
   connectorIdentifiers?: string[]
   connectorIds?: string[]
@@ -182,7 +183,7 @@ export type ConnectorFilterProperties = FilterProperties & {
 export type ConnectorInternalFilterProperties = FilterProperties & {
   accountIdentifiers?: string[]
   ccmConnectorFilter?: CcmConnectorFilter
-  connectivityStatuses?: ('SUCCESS' | 'FAILURE' | 'PARTIAL' | 'UNKNOWN')[]
+  connectivityStatuses?: ('SUCCESS' | 'FAILURE' | 'PARTIAL' | 'UNKNOWN' | 'PENDING')[]
   types?: (
     | 'K8sCluster'
     | 'Git'
@@ -490,6 +491,16 @@ export interface EntityDetail {
     | 'AquaSecurity'
     | 'IDPStage'
     | 'ChaosHub'
+    | 'CookieCutter'
+    | 'CreateRepo'
+    | 'DownloadAwsS3'
+    | 'DirectPush'
+    | 'RegisterCatalog'
+    | 'K8sTrafficRouting'
+    | 'DownloadHarnessStore'
+    | 'CreateCatalog'
+    | 'SlackNotify'
+    | 'OsvScaner'
 }
 
 export interface EntityDetailProtoDTO {
@@ -501,6 +512,7 @@ export interface EntityGitDetails {
   commitId?: string
   filePath?: string
   fileUrl?: string
+  isHarnessCodeRepo?: boolean
   objectId?: string
   parentEntityConnectorRef?: string
   parentEntityRepoName?: string
@@ -715,6 +727,7 @@ export interface Error {
     | 'VAULT_OPERATION_ERROR'
     | 'AWS_SECRETS_MANAGER_OPERATION_ERROR'
     | 'AZURE_KEY_VAULT_OPERATION_ERROR'
+    | 'AZURE_KEY_VAULT_INTERRUPT_ERROR'
     | 'UNSUPPORTED_OPERATION_EXCEPTION'
     | 'FEATURE_UNAVAILABLE'
     | 'GENERAL_ERROR'
@@ -936,6 +949,9 @@ export interface Error {
     | 'SERVICENOW_REFRESH_TOKEN_ERROR'
     | 'PARAMETER_FIELD_CAST_ERROR'
     | 'ABORT_ALL_ALREADY_NG'
+    | 'WEBHOOK_EXCEPTION'
+    | 'INVALID_OIDC_CONFIGURATION'
+    | 'INVALID_CREDENTIALS'
   correlationId?: string
   detailedMessage?: string
   message?: string
@@ -1102,6 +1118,7 @@ export interface ErrorMetadata {
     | 'VAULT_OPERATION_ERROR'
     | 'AWS_SECRETS_MANAGER_OPERATION_ERROR'
     | 'AZURE_KEY_VAULT_OPERATION_ERROR'
+    | 'AZURE_KEY_VAULT_INTERRUPT_ERROR'
     | 'UNSUPPORTED_OPERATION_EXCEPTION'
     | 'FEATURE_UNAVAILABLE'
     | 'GENERAL_ERROR'
@@ -1323,6 +1340,9 @@ export interface ErrorMetadata {
     | 'SERVICENOW_REFRESH_TOKEN_ERROR'
     | 'PARAMETER_FIELD_CAST_ERROR'
     | 'ABORT_ALL_ALREADY_NG'
+    | 'WEBHOOK_EXCEPTION'
+    | 'INVALID_OIDC_CONFIGURATION'
+    | 'INVALID_CREDENTIALS'
   errorMessage?: string
 }
 
@@ -1495,6 +1515,7 @@ export interface Failure {
     | 'VAULT_OPERATION_ERROR'
     | 'AWS_SECRETS_MANAGER_OPERATION_ERROR'
     | 'AZURE_KEY_VAULT_OPERATION_ERROR'
+    | 'AZURE_KEY_VAULT_INTERRUPT_ERROR'
     | 'UNSUPPORTED_OPERATION_EXCEPTION'
     | 'FEATURE_UNAVAILABLE'
     | 'GENERAL_ERROR'
@@ -1716,6 +1737,9 @@ export interface Failure {
     | 'SERVICENOW_REFRESH_TOKEN_ERROR'
     | 'PARAMETER_FIELD_CAST_ERROR'
     | 'ABORT_ALL_ALREADY_NG'
+    | 'WEBHOOK_EXCEPTION'
+    | 'INVALID_OIDC_CONFIGURATION'
+    | 'INVALID_CREDENTIALS'
   correlationId?: string
   errors?: ValidationError[]
   message?: string
@@ -1771,6 +1795,10 @@ export interface GovernanceMetadata {
   [key: string]: any
 }
 
+export type GovernanceMetadataErrorDTO = ErrorMetadataDTO & {
+  governanceMetadata?: GovernanceMetadata
+}
+
 export type IdentifierRef = EntityReference & {
   fullyQualifiedScopeIdentifier?: string
   isDefault?: boolean
@@ -1807,6 +1835,14 @@ export type InvalidFieldsDTO = ErrorMetadataDTO & {}
 
 export interface JsonNode {
   [key: string]: any
+}
+
+export interface MergeTemplateRequest {
+  checkForAccess?: boolean
+  getMergedYamlWithTemplateField?: boolean
+  getOnlyFileContent?: boolean
+  templatesResolvedYaml?: boolean
+  yamlVersion?: string
 }
 
 export interface NGTag {
@@ -2003,6 +2039,8 @@ export interface ResourceDTO {
     | 'API_KEY'
     | 'TOKEN'
     | 'DELEGATE_TOKEN'
+    | 'DASHBOARD'
+    | 'DASHBOARD_FOLDER'
     | 'GOVERNANCE_POLICY'
     | 'GOVERNANCE_POLICY_SET'
     | 'VARIABLE'
@@ -2053,6 +2091,17 @@ export interface ResourceDTO {
     | 'GITOPS_PROJECT_MAPPING'
     | 'GITOPS_APPLICATION'
     | 'CODE_REPOSITORY'
+    | 'MODULE_LICENSE'
+    | 'IDP_BACKSTAGE_CATALOG_ENTITY'
+    | 'IDP_APP_CONFIGS'
+    | 'IDP_CONFIG_ENV_VARIABLES'
+    | 'IDP_PROXY_HOST'
+    | 'IDP_SCORECARDS'
+    | 'IDP_CHECKS'
+    | 'IDP_ALLOW_LIST'
+    | 'IDP_OAUTH_CONFIG'
+    | 'IDP_CATALOG_CONNECTOR'
+    | 'IDP_PERMISSIONS'
   uniqueId?: string
 }
 
@@ -2265,6 +2314,7 @@ export interface ResponseMessage {
     | 'VAULT_OPERATION_ERROR'
     | 'AWS_SECRETS_MANAGER_OPERATION_ERROR'
     | 'AZURE_KEY_VAULT_OPERATION_ERROR'
+    | 'AZURE_KEY_VAULT_INTERRUPT_ERROR'
     | 'UNSUPPORTED_OPERATION_EXCEPTION'
     | 'FEATURE_UNAVAILABLE'
     | 'GENERAL_ERROR'
@@ -2486,6 +2536,9 @@ export interface ResponseMessage {
     | 'SERVICENOW_REFRESH_TOKEN_ERROR'
     | 'PARAMETER_FIELD_CAST_ERROR'
     | 'ABORT_ALL_ALREADY_NG'
+    | 'WEBHOOK_EXCEPTION'
+    | 'INVALID_OIDC_CONFIGURATION'
+    | 'INVALID_CREDENTIALS'
   exception?: Throwable
   failureTypes?: (
     | 'EXPIRED'
@@ -2860,6 +2913,7 @@ export interface TemplateResponse {
   icon?: string
   identifier: string
   lastUpdatedAt?: number
+  mergedYaml?: string
   name: string
   orgIdentifier?: string
   projectIdentifier?: string
@@ -3053,6 +3107,7 @@ export interface GetFilterListQueryParams {
     | 'RuleExecution'
     | 'Override'
     | 'InputSet'
+  searchTerm?: string
 }
 
 export type GetFilterListProps = Omit<
@@ -3649,6 +3704,7 @@ export interface RefreshAndUpdateTemplateInputsQueryParams {
   storeType?: 'INLINE' | 'REMOTE'
   lastCommitId?: string
   isNewBranch?: boolean
+  isHarnessCodeRepo?: boolean
 }
 
 export type RefreshAndUpdateTemplateInputsProps = Omit<
@@ -3742,6 +3798,7 @@ export interface RefreshAllQueryParams {
   storeType?: 'INLINE' | 'REMOTE'
   lastCommitId?: string
   isNewBranch?: boolean
+  isHarnessCodeRepo?: boolean
 }
 
 export type RefreshAllProps = Omit<
@@ -4000,6 +4057,7 @@ export interface CreateTemplateQueryParams {
   connectorRef?: string
   storeType?: 'INLINE' | 'REMOTE'
   repoName?: string
+  isHarnessCodeRepo?: boolean
   setDefaultTemplate?: boolean
   comments?: string
 }
@@ -4283,6 +4341,111 @@ export const listTemplateUsagePromise = (
     ListTemplateUsageQueryParams,
     ListTemplateUsagePathParams
   >(getConfig('template/api'), `/templates/entitySetupUsage/${templateIdentifier}`, props, signal)
+
+export interface GetResolvedTemplateQueryParams {
+  accountIdentifier: string
+  orgIdentifier?: string
+  projectIdentifier?: string
+  versionLabel?: string
+  deleted?: boolean
+  branch?: string
+  repoIdentifier?: string
+  getDefaultFromOtherRepo?: boolean
+  parentEntityConnectorRef?: string
+  parentEntityRepoName?: string
+  parentEntityAccountIdentifier?: string
+  parentEntityOrgIdentifier?: string
+  parentEntityProjectIdentifier?: string
+  repoName?: string
+  loadFromFallbackBranch?: boolean
+}
+
+export interface GetResolvedTemplatePathParams {
+  templateIdentifier: string
+}
+
+export type GetResolvedTemplateProps = Omit<
+  MutateProps<
+    ResponseTemplateResponse,
+    Failure | Error,
+    GetResolvedTemplateQueryParams,
+    MergeTemplateRequest,
+    GetResolvedTemplatePathParams
+  >,
+  'path' | 'verb'
+> &
+  GetResolvedTemplatePathParams
+
+/**
+ * Fetch resolved template by identifier
+ */
+export const GetResolvedTemplate = ({ templateIdentifier, ...props }: GetResolvedTemplateProps) => (
+  <Mutate<
+    ResponseTemplateResponse,
+    Failure | Error,
+    GetResolvedTemplateQueryParams,
+    MergeTemplateRequest,
+    GetResolvedTemplatePathParams
+  >
+    verb="POST"
+    path={`/templates/get-resolved-template/${templateIdentifier}`}
+    base={getConfig('template/api')}
+    {...props}
+  />
+)
+
+export type UseGetResolvedTemplateProps = Omit<
+  UseMutateProps<
+    ResponseTemplateResponse,
+    Failure | Error,
+    GetResolvedTemplateQueryParams,
+    MergeTemplateRequest,
+    GetResolvedTemplatePathParams
+  >,
+  'path' | 'verb'
+> &
+  GetResolvedTemplatePathParams
+
+/**
+ * Fetch resolved template by identifier
+ */
+export const useGetResolvedTemplate = ({ templateIdentifier, ...props }: UseGetResolvedTemplateProps) =>
+  useMutate<
+    ResponseTemplateResponse,
+    Failure | Error,
+    GetResolvedTemplateQueryParams,
+    MergeTemplateRequest,
+    GetResolvedTemplatePathParams
+  >(
+    'POST',
+    (paramsInPath: GetResolvedTemplatePathParams) =>
+      `/templates/get-resolved-template/${paramsInPath.templateIdentifier}`,
+    { base: getConfig('template/api'), pathParams: { templateIdentifier }, ...props }
+  )
+
+/**
+ * Fetch resolved template by identifier
+ */
+export const getResolvedTemplatePromise = (
+  {
+    templateIdentifier,
+    ...props
+  }: MutateUsingFetchProps<
+    ResponseTemplateResponse,
+    Failure | Error,
+    GetResolvedTemplateQueryParams,
+    MergeTemplateRequest,
+    GetResolvedTemplatePathParams
+  > & { templateIdentifier: string },
+  signal?: RequestInit['signal']
+) =>
+  mutateUsingFetch<
+    ResponseTemplateResponse,
+    Failure | Error,
+    GetResolvedTemplateQueryParams,
+    MergeTemplateRequest,
+    GetResolvedTemplatePathParams
+  >('POST', getConfig('template/api'), `/templates/get-resolved-template/${templateIdentifier}`, props, signal)
 
 export interface ImportTemplateQueryParams {
   accountIdentifier: string
@@ -5234,6 +5397,7 @@ export interface UpdateExistingTemplateVersionQueryParams {
   storeType?: 'INLINE' | 'REMOTE'
   lastCommitId?: string
   isNewBranch?: boolean
+  isHarnessCodeRepo?: boolean
   setDefaultTemplate?: boolean
   comments?: string
 }

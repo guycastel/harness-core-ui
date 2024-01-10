@@ -20,13 +20,21 @@ import {
   stageTemplateVersion1,
   stageTemplateVersion2
 } from '@templates-library/TemplatesTestHelper'
-import { useGetTemplate, useGetTemplateInputSetYaml } from 'services/template-ng'
+import { useGetResolvedTemplate, useGetTemplateInputSetYaml } from 'services/template-ng'
 
 jest.mock('@pipeline/components/PipelineStudio/TemplateBar/TemplateBar', () => ({
   ...jest.requireActual('@pipeline/components/PipelineStudio/TemplateBar/TemplateBar'),
   TemplateBar: (_props: TemplateBarProps) => {
     return <div className="template-bar-mock" />
   }
+}))
+
+const refetchResolvedTemplate = jest.fn()
+
+jest.mock('@common/hooks/useMutateAsGet', () => ({
+  useMutateAsGet: jest.fn().mockImplementation(() => {
+    return { data: stageTemplateVersion1, refetch: refetchResolvedTemplate, error: null }
+  })
 }))
 
 jest.mock('services/template-ng', () => ({
@@ -37,7 +45,7 @@ jest.mock('services/template-ng', () => ({
     error: null,
     loading: false
   })),
-  useGetTemplate: jest
+  useGetResolvedTemplate: jest
     .fn()
     .mockImplementation(() => ({ data: stageTemplateVersion1, refetch: jest.fn(), error: null, loading: false })),
   getsMergedTemplateInputYamlPromise: jest.fn().mockImplementation(() => ({
@@ -191,9 +199,9 @@ describe('<TemplateStageSpecifications /> tests', () => {
   })
 
   test('should call refetch on retrying in case of error', async () => {
-    const refetch1 = jest.fn()
+    const refetchTemplateInputSetYaml = jest.fn()
     ;(useGetTemplateInputSetYaml as jest.Mock).mockImplementation(() => ({
-      refetch: refetch1,
+      refetch: refetchTemplateInputSetYaml,
       error: {
         message: 'Failed to fetch: 400 Bad Request',
         data: {
@@ -217,10 +225,9 @@ describe('<TemplateStageSpecifications /> tests', () => {
       },
       loading: false
     }))
-    const refetch2 = jest.fn()
-    ;(useGetTemplate as jest.Mock).mockImplementation(() => ({
+    ;(useGetResolvedTemplate as jest.Mock).mockImplementation(() => ({
       data: stageTemplateVersion2,
-      refetch: refetch2,
+      refetch: refetchResolvedTemplate,
       error: null,
       loading: false
     }))
@@ -237,7 +244,7 @@ describe('<TemplateStageSpecifications /> tests', () => {
     await act(async () => {
       fireEvent.click(retryBtn)
     })
-    expect(refetch1).toBeCalled()
-    expect(refetch2).toBeCalled()
+    expect(refetchTemplateInputSetYaml).toBeCalled()
+    expect(refetchResolvedTemplate).toBeCalled()
   })
 })

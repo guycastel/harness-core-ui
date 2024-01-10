@@ -5,6 +5,8 @@
  * https://polyformproject.org/wp-content/uploads/2020/06/PolyForm-Shield-1.0.0.txt.
  */
 
+import { getResolvedTemplateCall } from '../../support/70-pipeline/constants'
+
 describe('Template Stage Selection', () => {
   const gitSyncEnabledCall =
     '/ng/api/git-sync/git-sync-enabled?accountIdentifier=accountId&orgIdentifier=default&projectIdentifier=project1'
@@ -35,6 +37,9 @@ describe('Template Stage Selection', () => {
 
     it('test template stage selection and configuration', () => {
       cy.intercept('POST', pipelineVariablesCall, { fixture: 'template/api/pipelines.variables' })
+      cy.intercept('POST', getResolvedTemplateCall('Cypress_Template_Example_1', 'Version1'), {
+        fixture: 'template/api/getResolvedTemplate'
+      })
       cy.intercept('GET', templateDetailsCall, { fixture: 'template/api/templateDetails' })
       cy.intercept('GET', templateInputsCall, { fixture: 'template/api/templateInputs' })
       cy.wait(1000)

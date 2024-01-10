@@ -31,12 +31,6 @@ export class PipelineTemplate extends Template {
   }
 
   renderTemplateInputsForm(props: TemplateInputsProps & { accountId: string }): JSX.Element {
-    return (
-      <TemplateInputs
-        template={props.template}
-        templateInputSetFetchParams={props.templateInputSetFetchParams}
-        resolvedPipelineFetchParams={props.resolvedPipelineFetchParams}
-      />
-    )
+    return <TemplateInputs template={props.template} templateInputSetFetchParams={props.templateInputSetFetchParams} />
   }
 }

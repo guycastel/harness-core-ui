@@ -95,7 +95,8 @@ export const jobParametersList = `/ng/api/artifacts/jenkins/job/alex-pipeline-te
 export const pipelineDetailsAPIRoute = `/pipeline/api/pipelines/PipelineTest?accountIdentifier=${accountId}&orgIdentifier=${orgIdentifier}&projectIdentifier=${projectId}`
 export const templatesListCall = `/template/api/templates/list?routingId=${accountId}&accountIdentifier=${accountId}&projectIdentifier=${projectId}&orgIdentifier=${orgIdentifier}&templateListType=LastUpdated&page=0&sort=lastUpdatedAt%2CDESC&size=20`
 export const templateMetadataCall = `/template/api/templates/list-metadata?routingId=${accountId}&accountIdentifier=${accountId}&projectIdentifier=${projectId}&orgIdentifier=${orgIdentifier}&templateListType=LastUpdated&page=0&sort=lastUpdatedAt%2CDESC&size=20`
-export const templateReferencesCall = `/template/api/templates/entitySetupUsage/Cypress_Template_Example_1?routingId=${accountId}&accountIdentifier=${accountId}&projectIdentifier=${projectId}&orgIdentifier=${orgIdentifier}&isStableTemplate=true&versionLabel=Version1&searchTerm=&pageSize=4&pageIndex=0`
+export const getTemplateReferencesCall = (project = projectId): string =>
+  `/template/api/templates/entitySetupUsage/Cypress_Template_Example_1?routingId=${accountId}&accountIdentifier=${accountId}&projectIdentifier=${project}&orgIdentifier=${orgIdentifier}&isStableTemplate=true&versionLabel=Version1&searchTerm=&pageSize=4&pageIndex=0`
 export const templatesListCallWithListType = `/template/api/templates/list?routingId=${accountId}&accountIdentifier=${accountId}&orgIdentifier=${orgIdentifier}&projectIdentifier=${projectId}&module=cd&templateListType=All`
 export const templateListMetaDataWithListType = `/template/api/templates/list-metadata?routingId=${accountId}&accountIdentifier=${accountId}&orgIdentifier=${orgIdentifier}&projectIdentifier=${projectId}&module=cd&templateListType=All`
 export const templateListMetaDataWithListTypeAndSize = `/template/api/templates/list-metadata?routingId=${accountId}&accountIdentifier=${accountId}&orgIdentifier=${orgIdentifier}&projectIdentifier=${projectId}&module=cd&templateListType=All&size=100`
@@ -159,6 +160,9 @@ export const templateValueCall = `/template/api/templates/Cypress_Step_Template?
 
 export const templateInputsCall =
   '/template/api/templates/templateInputs/Cypress_Step_Template?routingId=accountId&accountIdentifier=accountId&orgIdentifier=default&projectIdentifier=project1&versionLabel=1&getDefaultFromOtherRepo=true'
+
+export const getResolvedTemplateCall = (identifier: string, version: string): string =>
+  `/template/api/templates/get-resolved-template/${identifier}?routingId=${accountId}&accountIdentifier=${accountId}&orgIdentifier=${orgIdentifier}&projectIdentifier=${projectId}&versionLabel=${version}&getDefaultFromOtherRepo=true*`
 
 export const templateMetadataCallAfterSelection =
   '/template/api/templates/list-metadata?routingId=accountId&accountIdentifier=accountId&orgIdentifier=default&projectIdentifier=project1&module=cd&templateListType=All&size=100'

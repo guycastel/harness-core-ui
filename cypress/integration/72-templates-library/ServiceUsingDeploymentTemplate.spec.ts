@@ -25,7 +25,8 @@ import {
   afterSaveServiceEndpointPOST,
   afterSaveServiceNameEndpoint,
   afterSaveServiceHeaderEndpoint,
-  recentDeploymentTemplatesUrl
+  recentDeploymentTemplatesUrl,
+  useResolvedTemplateCall
 } from '../../support/72-templates-library/constants'
 
 describe('ServiceV2 - Deployment Template', () => {
@@ -74,14 +75,14 @@ describe('ServiceV2 - Deployment Template', () => {
     cy.intercept('POST', recentDeploymentTemplatesUrl, {
       fixture: '/ng/api/deploymentTemplate/recentDeploymentTemplates'
     }).as('recentDeploymentTemplates')
-    cy.intercept('GET', useTemplateCall, useTemplateResponse).as('useTemplate')
+    cy.intercept('POST', useResolvedTemplateCall, useTemplateResponse).as('useResolvedTemplate')
     cy.intercept('POST', afterUseTemplateListCall, afterUseTemplateListResponse).as('afterUseTemplateList')
 
     cy.contains('span', 'New Service').should('be.visible').click()
     cy.fillField('name', serviceName)
     cy.contains('span', 'Save').click()
     cy.contains('span', 'Service created successfully').should('be.visible')
-
+    cy.wait('@recentDeploymentTemplates')
     cy.get('input[value="dep_temp_test"]').click({ force: true })
     cy.get('[data-template-id="dep_temp_test"]').should('be.visible')
     cy.contains('span', 'Use Template').should('be.visible').click()

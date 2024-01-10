@@ -5,6 +5,7 @@ export const environmentsV1 = '/ng/api/environments?*'
 export const saveTemplateCall = '/template/api/templates?*'
 export const templateListCall = '/template/api/templates/list?*'
 export const templateDataCall = '/template/api/templates/AppD_Template?*'
+export const resolvedTemplateDataCall = '/template/api/templates/get-resolved-template/AppD_Template?*'
 export const templateInputSetCall = '/template/api/templates/templateInputs/AppD_Template?*'
 export const RuntimeValue = '<+input>'
 export const variablesResponse = {

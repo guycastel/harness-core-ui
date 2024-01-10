@@ -5056,6 +5056,7 @@ export interface EntityDetail {
     | 'DownloadHarnessStore'
     | 'CreateCatalog'
     | 'SlackNotify'
+    | 'OsvScaner'
 }
 
 export interface EntityDetailProtoDTO {
@@ -44393,6 +44394,7 @@ export interface ListReferredByEntitiesQueryParams {
     | 'DownloadHarnessStore'
     | 'CreateCatalog'
     | 'SlackNotify'
+    | 'OsvScaner'
   searchTerm?: string
   branch?: string
   repoIdentifier?: string
@@ -44708,6 +44710,7 @@ export interface ListAllEntityUsageByFqnQueryParams {
     | 'DownloadHarnessStore'
     | 'CreateCatalog'
     | 'SlackNotify'
+    | 'OsvScaner'
   searchTerm?: string
 }
 

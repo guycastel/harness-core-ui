@@ -5,7 +5,7 @@
  * https://polyformproject.org/wp-content/uploads/2020/06/PolyForm-Shield-1.0.0.txt.
  */
 
-import React from 'react'
+import React, { useEffect, useMemo } from 'react'
 import {
   ButtonSize,
   ButtonVariation,
@@ -23,7 +23,6 @@ import { Color } from '@harness/design-system'
 import { useHistory, useParams } from 'react-router-dom'
 import { defaultTo, isEmpty, noop, set, unset } from 'lodash-es'
 import produce from 'immer'
-import { parse } from 'yaml'
 import { useStrings } from 'framework/strings'
 import routes from '@common/RouteDefinitions'
 import { TemplateTags } from '@templates-library/components/TemplateTags/TemplateTags'
@@ -42,14 +41,12 @@ import {
   TemplateMetadataSummaryResponse,
   TemplateResponse,
   TemplateSummaryResponse,
-  useGetTemplate,
+  useGetResolvedTemplate,
   useGetTemplateInputSetYaml,
   useGetTemplateList,
-  useGetTemplateMetadataList,
-  useGetYamlWithTemplateRefsResolved
+  useGetTemplateMetadataList
 } from 'services/template-ng'
 import RbacButton from '@rbac/components/Button/Button'
-import { yamlStringify } from '@common/utils/YamlHelperMethods'
 import { ResourceType } from '@rbac/interfaces/ResourceType'
 import { PermissionIdentifier } from '@rbac/interfaces/PermissionIdentifier'
 import { useAppStore } from 'framework/AppStore/AppStoreContext'
@@ -57,7 +54,6 @@ import GitPopover from '@pipeline/components/GitPopover/GitPopover'
 import { TemplateYaml } from '@pipeline/components/PipelineStudio/TemplateYaml/TemplateYaml'
 import type { ModulePathParams, ProjectPathProps } from '@common/interfaces/RouteInterfaces'
 import { getVersionLabelText } from '@pipeline/components/PipelineStudio/TemplateBar/TemplateBar'
-import { TemplateType } from '@templates-library/utils/templatesUtils'
 import { TemplateReferenceByTabPanel } from '@templates-library/components/TemplateDetails/TemplateReferenceByTabPanel'
 import NoEntityFound, { ErrorPlacement } from '@pipeline/pages/utils/NoEntityFound/NoEntityFound'
 import type { StoreMetadata } from '@common/constants/GitSyncTypes'
@@ -141,27 +137,36 @@ export const TemplateDetails: React.FC<TemplateDetailsProps> = props => {
     !selectedBranch ||
     (selectedTemplate?.gitDetails?.repoName !== storeMetadata?.repoName &&
       selectedTemplate?.gitDetails?.defaultBranch === selectedBranch)
+
+  const useGetResolvedTemplateParams = useMemo(() => {
+    return {
+      body: { templatesResolvedYaml: true },
+      templateIdentifier: selectedTemplate?.identifier,
+      queryParams: {
+        accountIdentifier: defaultTo(selectedTemplate?.accountId, accountId),
+        orgIdentifier: selectedTemplate?.orgIdentifier,
+        projectIdentifier: selectedTemplate?.projectIdentifier,
+        versionLabel: selectedTemplate?.versionLabel,
+        ...getGitQueryParamsWithParentScope({
+          storeMetadata,
+          params,
+          branch: selectedBranch,
+          loadFromFallbackBranch,
+          sendParentEntityDetails: isStandAlone && !parentEntityDetails ? false : true
+        })
+      },
+      requestOptions: { headers: { 'Load-From-Cache': 'true' } }
+    }
+  }, [selectedTemplate?.identifier, selectedTemplate?.versionLabel, selectedBranch])
+
+  // Call useGetResolvedTemplate for every template as /template/api/templates/list-metadata API does not have resolved template YAML
   const {
-    data: templateYamlData,
-    refetch: refetchTemplateYaml,
-    loading: loadingTemplateYaml,
-    error: templateYamlError
-  } = useGetTemplate({
-    templateIdentifier: defaultTo(selectedTemplate?.identifier, ''),
-    queryParams: {
-      accountIdentifier: defaultTo(selectedTemplate?.accountId, accountId),
-      orgIdentifier: selectedTemplate?.orgIdentifier,
-      projectIdentifier: selectedTemplate?.projectIdentifier,
-      versionLabel: selectedTemplate?.versionLabel,
-      ...getGitQueryParamsWithParentScope({
-        storeMetadata,
-        params,
-        branch: selectedBranch,
-        loadFromFallbackBranch,
-        sendParentEntityDetails: isStandAlone && !parentEntityDetails ? false : true
-      })
-    },
-    requestOptions: { headers: { 'Load-From-Cache': 'true' } },
+    data: resolvedTemplateData,
+    refetch: refetchResolvedTemplate,
+    loading: loadingResolvedTemplate,
+    error: resolvedTemplateError
+  } = useMutateAsGet(useGetResolvedTemplate, {
+    ...useGetResolvedTemplateParams,
     lazy: true
   })
 
@@ -189,63 +194,40 @@ export const TemplateDetails: React.FC<TemplateDetailsProps> = props => {
     queryParamStringifyOptions: { arrayFormat: 'comma' }
   })
 
-  const templateInputSetFetchParams = useGetTemplateInputSetYaml({
-    templateIdentifier: defaultTo(selectedTemplate?.identifier, ''),
-    queryParams: {
-      accountIdentifier: defaultTo(selectedTemplate?.accountId, accountId),
-      orgIdentifier: selectedTemplate?.orgIdentifier,
-      projectIdentifier: selectedTemplate?.projectIdentifier,
-      versionLabel: defaultTo(selectedTemplate?.versionLabel, ''),
-      ...getGitQueryParamsWithParentScope({
-        storeMetadata,
-        params,
-        repoIdentifier: repo,
-        /* When isStandalone is true then, if selected branch is undefined, it will pick from storemetadata.
+  const useGetTemplateInputSetYamlParams = useMemo(() => {
+    return {
+      templateIdentifier: defaultTo(selectedTemplate?.identifier, ''),
+      queryParams: {
+        accountIdentifier: defaultTo(selectedTemplate?.accountId, accountId),
+        orgIdentifier: selectedTemplate?.orgIdentifier,
+        projectIdentifier: selectedTemplate?.projectIdentifier,
+        versionLabel: defaultTo(selectedTemplate?.versionLabel, ''),
+        ...getGitQueryParamsWithParentScope({
+          storeMetadata,
+          params,
+          repoIdentifier: repo,
+          /* When isStandalone is true then, if selected branch is undefined, it will pick from storemetadata.
          For diff repo we want storeMetadata bra nch to initially go as in BE we have
         logic to pick default branch of that specfic repo and template*/
-        branch: isStandAlone ? selectedBranch : selectedTemplateBranch,
-        sendParentEntityDetails: isStandAlone && !parentEntityDetails ? false : true
-      })
-    },
-    lazy: true,
-    requestOptions: { headers: { 'Load-From-Cache': 'true' } }
-  })
-  const { refetch: refetchTemplateInputSetYaml } = templateInputSetFetchParams
+          branch: isStandAlone ? selectedBranch : selectedTemplateBranch,
+          sendParentEntityDetails: isStandAlone && !parentEntityDetails ? false : true
+        })
+      },
+      requestOptions: { headers: { 'Load-From-Cache': 'true' } }
+    }
+  }, [selectedTemplate?.identifier, selectedTemplate?.versionLabel, selectedBranch, selectedTemplateBranch])
 
-  const selectedTemplateSpec = React.useMemo(
-    () => parse((selectedTemplate as TemplateSummaryResponse)?.yaml || '')?.template?.spec,
-    [selectedTemplate]
-  )
-
-  const {
-    data: resolvedPipelineResponse,
-    loading: loadingResolvedPipeline,
-    refetch: refetchResolvedPipeline
-  } = useMutateAsGet(useGetYamlWithTemplateRefsResolved, {
-    queryParams: {
-      accountIdentifier: defaultTo(selectedTemplate?.accountId, accountId),
-      orgIdentifier: selectedTemplate?.orgIdentifier,
-      pipelineIdentifier: selectedTemplateSpec?.identifier,
-      projectIdentifier: selectedTemplate?.projectIdentifier,
-      ...getGitQueryParamsWithParentScope({
-        storeMetadata,
-        params,
-        repoIdentifier: repo,
-        branch: isStandAlone ? selectedBranch : selectedTemplateBranch
-      })
-    },
-    requestOptions: { headers: { 'Load-From-Cache': 'true' } },
-    body: {
-      originalEntityYaml: yamlStringify({ pipeline: selectedTemplateSpec })
-    },
+  const templateInputSetFetchParams = useGetTemplateInputSetYaml({
+    ...useGetTemplateInputSetYamlParams,
     lazy: true
   })
+  const { refetch: refetchTemplateInputSetYaml } = templateInputSetFetchParams
 
   const templateIconName = React.useMemo(() => getIconForTemplate(getString, selectedTemplate), [selectedTemplate])
   const templateIconUrl = React.useMemo(() => selectedTemplate?.icon, [selectedTemplate?.icon])
   const templateType = React.useMemo(() => getTypeForTemplate(getString, selectedTemplate), [selectedTemplate])
 
-  const templateYamlErrorResponseMessages = (templateYamlError?.data as Error)?.responseMessages ?? []
+  const resolvedTemplateErrorResponseMessages = (resolvedTemplateError?.data as Error)?.responseMessages ?? []
 
   React.useEffect(() => {
     if (templateData?.data?.content) {
@@ -276,9 +258,9 @@ export const TemplateDetails: React.FC<TemplateDetailsProps> = props => {
   }, [templates])
 
   React.useEffect(() => {
-    if (templateYamlError && selectedTemplate) {
+    if (resolvedTemplateError && selectedTemplate) {
       const updatedSelectedTemplate = produce(selectedTemplate, draft => {
-        //This make sures yaml is set to empty on branch change which is responsible for rendering of useTemplate button in Template selector component
+        //This make sure yaml is set to empty on branch change which is responsible for rendering of useTemplate button in Template selector component
         if (!isEmpty(draft?.yaml)) {
           set(draft, 'yaml', '')
         }
@@ -293,49 +275,47 @@ export const TemplateDetails: React.FC<TemplateDetailsProps> = props => {
       })
       setSelectedTemplate(updatedSelectedTemplate)
     }
-  }, [templateYamlError])
-
-  React.useEffect(() => {
-    // This check ensures template inputs are fetched once complete template details are available - this is required especially for remote templates
-    if (selectedTemplate?.yaml) {
-      refetchTemplateInputSetYaml()
-    }
-  }, [selectedTemplate?.yaml])
+  }, [resolvedTemplateError])
 
   useDeepCompareEffect(() => {
-    if (selectedTemplateSpec && selectedTemplate?.templateEntityType === TemplateType.Pipeline) {
-      refetchResolvedPipeline()
-    }
-  }, [selectedTemplateSpec, selectedTemplate?.templateEntityType])
-
-  React.useEffect(() => {
     if (selectedTemplate) {
-      const data = produce(selectedTemplate, draft => {
+      const selectedTemplateWithDefaultBranch = produce(selectedTemplate, draft => {
         if (defaultBranch) {
           set(draft, 'gitDetails.defaultBranch', defaultBranch)
         }
       })
-      setTemplate?.(data)
-      setSelectedTemplate?.(data)
-      if (isEmpty(selectedTemplate?.yaml)) {
-        refetchTemplateYaml()
-      }
+      setTemplate?.(selectedTemplateWithDefaultBranch)
+      setSelectedTemplate?.(selectedTemplateWithDefaultBranch)
     }
   }, [selectedTemplate])
 
-  React.useEffect(() => {
-    if (templateYamlData?.data) {
-      const templateWithYaml = produce(templateYamlData.data, draft => {
+  useDeepCompareEffect(() => {
+    if (useGetResolvedTemplateParams?.templateIdentifier) {
+      refetchResolvedTemplate(useGetResolvedTemplateParams)
+    }
+  }, [useGetResolvedTemplateParams])
+
+  useEffect(() => {
+    if (useGetTemplateInputSetYamlParams?.templateIdentifier) {
+      refetchTemplateInputSetYaml(useGetTemplateInputSetYamlParams)
+    }
+  }, [useGetTemplateInputSetYamlParams])
+
+  useEffect(() => {
+    if (resolvedTemplateData?.data) {
+      const resolvedTemplate = produce(resolvedTemplateData.data, draft => {
         if (isEmpty(selectedTemplate?.versionLabel)) {
           unset(draft, 'versionLabel')
         }
       })
-      setSelectedTemplate(templateWithYaml)
+      setSelectedTemplate(resolvedTemplate)
     }
-  }, [templateYamlData?.data])
+  }, [resolvedTemplateData?.data])
 
-  React.useEffect(() => {
-    if (selectedTemplate?.identifier) setSelectedBranch(selectedTemplate?.gitDetails?.branch)
+  useEffect(() => {
+    if (selectedTemplate?.identifier) {
+      setSelectedBranch(selectedTemplate?.gitDetails?.branch)
+    }
   }, [selectedTemplate?.identifier])
 
   const onChange = React.useCallback(
@@ -362,55 +342,16 @@ export const TemplateDetails: React.FC<TemplateDetailsProps> = props => {
     [setSelectedParentTab]
   )
 
-  const onGitBranchChange = ({ branch }: GitFilterScope, defaultSelected?: boolean): void => {
+  const onGitBranchChange = ({ branch }: GitFilterScope): void => {
     setSelectedBranch(branch)
-    const newGitDetails = {
-      ...selectedTemplate?.gitDetails,
-      branch
-    }
-    setSelectedTemplate({ ...selectedTemplate, gitDetails: newGitDetails })
-    if (!defaultSelected) {
-      refetchTemplateYaml({
-        queryParams: {
-          accountIdentifier: defaultTo(selectedTemplate?.accountId, accountId),
-          orgIdentifier: selectedTemplate?.orgIdentifier,
-          projectIdentifier: selectedTemplate?.projectIdentifier,
-          versionLabel: selectedTemplate?.versionLabel,
-          branch
-        }
-      })
-      refetchTemplateInputSetYaml({
-        queryParams: {
-          accountIdentifier: defaultTo(selectedTemplate?.accountId, accountId),
-          orgIdentifier: selectedTemplate?.orgIdentifier,
-          projectIdentifier: selectedTemplate?.projectIdentifier,
-          versionLabel: defaultTo(selectedTemplate?.versionLabel, ''),
-          ...getGitQueryParamsWithParentScope({
-            storeMetadata,
-            params,
-            repoIdentifier: repo,
-            branch,
-            sendParentEntityDetails: isStandAlone && !defaultSelected ? false : true
-          })
-        }
-      })
-      if (selectedTemplate?.templateEntityType === TemplateType.Pipeline) {
-        refetchResolvedPipeline({
-          queryParams: {
-            accountIdentifier: defaultTo(selectedTemplate?.accountId, accountId),
-            orgIdentifier: selectedTemplate?.orgIdentifier,
-            pipelineIdentifier: selectedTemplateSpec?.identifier,
-            projectIdentifier: selectedTemplate?.projectIdentifier,
-            ...getGitQueryParamsWithParentScope({
-              storeMetadata,
-              params,
-              repoIdentifier: repo,
-              branch
-            })
-          }
-        })
+
+    const updatedSelectedTemplateWithNewGitBranch = produce(selectedTemplate, draft => {
+      if (draft) {
+        set(draft, 'gitDetails.branch', branch)
       }
-    }
+    })
+
+    setSelectedTemplate(updatedSelectedTemplateWithNewGitBranch)
   }
 
   const goToTemplateStudio = (): void => {
@@ -441,7 +382,7 @@ export const TemplateDetails: React.FC<TemplateDetailsProps> = props => {
           errorPlacement={ErrorPlacement.BOTTOM}
           identifier={selectedTemplate?.identifier as string}
           entityType={'template'}
-          errorObj={templateYamlError?.data as Error}
+          errorObj={resolvedTemplateError?.data as Error}
           gitDetails={{
             connectorRef: (selectedTemplate as TemplateResponse)?.connectorRef,
             repoName: (selectedTemplate as TemplateResponse)?.gitDetails?.repoName,
@@ -451,33 +392,29 @@ export const TemplateDetails: React.FC<TemplateDetailsProps> = props => {
         />
       ) : (
         <ErrorHandler
-          responseMessages={(templateYamlError?.data as Error)?.responseMessages as ResponseMessage[]}
+          responseMessages={(resolvedTemplateError?.data as Error)?.responseMessages as ResponseMessage[]}
           className={css.errorHandler}
         />
       )}
     </Container>
   )
 
-  const TemplateInputsTabPanel = !isEmpty(templateYamlErrorResponseMessages) ? (
+  const TemplateInputsTabPanel = !isEmpty(resolvedTemplateErrorResponseMessages) ? (
     ErrorPanel
   ) : !isEmpty(selectedTemplate?.yaml) && selectedTemplate ? (
     templateFactory.getTemplate(selectedTemplate.templateEntityType || '')?.renderTemplateInputsForm({
       template: selectedTemplate,
       accountId: defaultTo(template.accountId, ''),
       templateInputSetFetchParams,
-      resolvedPipelineFetchParams: {
-        resolvedPipelineResponse,
-        loadingResolvedPipeline
-      },
       shouldUtilizeFullWidth: true
     })
   ) : (
     <PageBody className={css.yamlLoader} loading />
   )
 
-  const TemplateYamlTabPanel = loadingTemplateYaml ? (
+  const TemplateYamlTabPanel = loadingResolvedTemplate ? (
     <PageBody className={css.yamlLoader} loading />
-  ) : !isEmpty(templateYamlErrorResponseMessages) ? (
+  ) : !isEmpty(resolvedTemplateErrorResponseMessages) ? (
     ErrorPanel
   ) : (
     <TemplateYaml
@@ -541,7 +478,7 @@ export const TemplateDetails: React.FC<TemplateDetailsProps> = props => {
                                 (selectedTemplate as TemplateResponse)?.cacheResponseMetadata as CacheResponseMetadata
                               }
                               reloadFromCache={noop}
-                              fetchError={templateYamlError as any}
+                              fetchError={resolvedTemplateError as any}
                               readonly={true}
                               className={css.cacheIcon}
                               repo={templateData?.data?.content?.[0]?.gitDetails?.repoName}
