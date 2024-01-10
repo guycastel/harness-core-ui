@@ -6,7 +6,7 @@
  */
 
 import React from 'react'
-import { act, fireEvent, render, waitFor } from '@testing-library/react'
+import { act, fireEvent, screen, render, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import * as servicediscovery from 'services/servicediscovery'
 import { TestWrapper } from '@common/utils/testUtils'
@@ -63,6 +63,7 @@ describe('DiscoveredResources', () => {
     act(() => {
       fireEvent.click(listItem)
     })
+    expect(listItem.textContent).toBe('All')
 
     const query = 'test abc'
     const searchInput = getByPlaceholderText('discovery.searchService') as HTMLInputElement
@@ -72,24 +73,24 @@ describe('DiscoveredResources', () => {
     }
     await userEvent.type(searchInput, query)
     await waitFor(() => expect(searchInput?.value).toBe(query))
-
-    expect(container).toMatchSnapshot()
   })
 
   test('Toggle between grid and list view', async () => {
-    const { container } = render(
+    const { getByText } = render(
       <TestWrapper>
         <DiscoveredResources />
       </TestWrapper>
     )
-    const list = container.querySelectorAll("[icon='list']")[0]
-    const grid = container.querySelectorAll("[icon='grid-view']")[0]
-    await act(async () => {
-      fireEvent.click(list!)
-      expect(container).toMatchSnapshot()
-      fireEvent.click(grid!)
-      expect(container).toMatchSnapshot()
-    })
+
+    const gridToggle = screen.getByTestId('grid-view')
+    await waitFor(() => expect(gridToggle).toBeInTheDocument())
+    const listToggle = screen.getByTestId('list-view')
+    await waitFor(() => expect(listToggle).toBeInTheDocument())
+
+    fireEvent.click(listToggle!)
+    expect(getByText('Discovered Services')).toBeInTheDocument()
+    fireEvent.click(gridToggle!)
+    expect(getByText('Discovered Resources Graph')).toBeInTheDocument()
   })
 
   test('when namespace data is undefined', async () => {
