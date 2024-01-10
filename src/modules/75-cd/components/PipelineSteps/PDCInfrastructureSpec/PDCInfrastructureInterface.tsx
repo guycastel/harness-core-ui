@@ -65,15 +65,17 @@ export const HostScope = {
   HOST_ATTRIBUTES: 'HostAttributes'
 }
 
-export const parseByComma = (data: string) =>
-  defaultTo(
-    data
-      ?.replace(/,/g, '\n')
-      .split('\n')
-      .filter(part => part.length)
-      .map(part => part.trim()),
-    []
-  )
+export const parseByComma = (data: string): Array<string> =>
+  typeof data === 'string'
+    ? defaultTo(
+        data
+          ?.replace(/,/g, '\n')
+          .split('\n')
+          .filter(part => part.length)
+          .map(part => part.trim()),
+        []
+      )
+    : []
 
 export const parseHosts = (hosts: string) => parseByComma(hosts)
 
