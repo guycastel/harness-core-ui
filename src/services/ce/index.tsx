@@ -12,6 +12,14 @@ import { Get, GetProps, useGet, UseGetProps, Mutate, MutateProps, useMutate, Use
 
 import { getConfig } from '../config'
 export const SPEC_VERSION = '1.0'
+export interface AWSViewPreferences {
+  awsCost?: 'AMORTISED' | 'NET_AMORTISED' | 'BLENDED' | 'UNBLENDED' | 'EFFECTIVE'
+  includeCredits?: boolean
+  includeDiscounts?: boolean
+  includeRefunds?: boolean
+  includeTaxes?: boolean
+}
+
 export interface ActiveServiceDTO {
   accountIdentifier?: string
   identifier: string
@@ -41,6 +49,19 @@ export interface AlertThreshold {
   percentage?: number
   slackWebhooks?: string[]
   userGroupIds?: string[]
+}
+
+export interface AmountDetails {
+  currentMonth?: number
+  currentQuarter?: number
+  lastMonth?: number
+  lastQuarter?: number
+}
+
+export interface AmountTrendStats {
+  currentPeriod?: number
+  previousPeriod?: number
+  trend?: number
 }
 
 export interface AnomalyData {
@@ -86,19 +107,26 @@ export interface AnomalyFilterProperties {
     | 'Deployment'
     | 'Audit'
     | 'Template'
+    | 'Trigger'
     | 'EnvironmentGroup'
     | 'FileStore'
     | 'CCMRecommendation'
     | 'Anomaly'
     | 'Environment'
     | 'RuleExecution'
+    | 'Override'
+    | 'InputSet'
   gcpProducts?: string[]
   gcpProjects?: string[]
   gcpSKUDescriptions?: string[]
   groupBy?: CCMGroupBy[]
   k8sClusterNames?: string[]
   k8sNamespaces?: string[]
+  k8sServiceNames?: string[]
   k8sWorkloadNames?: string[]
+  labels?: {
+    [key: string]: string
+  }
   limit?: number
   minActualAmount?: number
   minAnomalousSpend?: number
@@ -207,13 +235,14 @@ export type AwsConnector = ConnectorConfigDTO & {
   credential: AwsCredential
   delegateSelectors?: string[]
   executeOnDelegate?: boolean
+  proxy?: boolean
 }
 
 export interface AwsCredential {
   crossAccountAccess?: CrossAccountAccess
   region?: string
   spec?: AwsCredentialSpec
-  type: 'InheritFromDelegate' | 'ManualConfig' | 'Irsa'
+  type: 'InheritFromDelegate' | 'ManualConfig' | 'Irsa' | 'OidcAuthentication'
 }
 
 export interface AwsCredentialSpec {
@@ -281,6 +310,16 @@ export type AwsManualConfigSpec = AwsCredentialSpec & {
   accessKey?: string
   accessKeyRef?: string
   secretKeyRef: string
+}
+
+export type AwsOidcSpec = AwsCredentialSpec & {
+  iamRoleArn?: string
+}
+
+export type AwsRecommendationAdhocDTO = RecommendationAdhocDTO & {
+  externalId?: string
+  roleArn?: string
+  targetAccountId?: string
 }
 
 export type AwsSMCredentialSpecAssumeIAM = AwsSecretManagerCredentialSpec & { [key: string]: any }
@@ -385,11 +424,13 @@ export type AzureKeyVaultConnectorDTO = ConnectorConfigDTO & {
   clientId?: string
   default?: boolean
   delegateSelectors?: string[]
+  enablePurge?: boolean
   managedClientId?: string
   secretKey?: string
   subscription: string
   tenantId?: string
   useManagedIdentity?: boolean
+  vaultConfiguredManually?: boolean
   vaultName: string
 }
 
@@ -401,6 +442,12 @@ export type AzureManualDetails = AzureCredentialSpec & {
   applicationId: string
   auth: AzureAuthDTO
   tenantId: string
+}
+
+export type AzureRecommendationAdhocDTO = RecommendationAdhocDTO & {
+  clientId?: string
+  subscriptionId?: string
+  tenantId?: string
 }
 
 export interface AzureRepoApiAccess {
@@ -460,6 +507,35 @@ export type AzureUserAssignedMSIAuth = AzureAuthCredentialDTO & {
   clientId: string
 }
 
+export interface AzureVmDTO {
+  avgCpuUtilization?: number
+  avgMemoryUtilization?: number
+  cores?: number
+  maxCpuUtilization?: number
+  maxMemoryUtilization?: number
+  memory?: number
+  monthlyCost?: number
+  region?: string
+  vmSize?: string
+}
+
+export interface AzureVmRecommendationDTO {
+  connectorId?: string
+  connectorName?: string
+  current?: AzureVmDTO
+  duration?: number
+  id?: string
+  jiraDetails?: CCMJiraDetails
+  resourceGroupId?: string
+  serviceNowDetails?: CCMServiceNowDetails
+  showTerminated?: boolean
+  subscriptionId?: string
+  target?: AzureVmDTO
+  tenantId?: string
+  vmId?: string
+  vmName?: string
+}
+
 export interface BIDashboardSummary {
   cloudProvider?: string
   dashboardId?: string
@@ -500,7 +576,7 @@ export interface BillingExportSpec {
 
 export interface BitbucketApiAccess {
   spec: BitbucketApiAccessSpecDTO
-  type: 'UsernameToken'
+  type: 'UsernameToken' | 'OAuth'
 }
 
 export interface BitbucketApiAccessSpecDTO {
@@ -517,6 +593,7 @@ export type BitbucketConnector = ConnectorConfigDTO & {
   authentication: BitbucketAuthentication
   delegateSelectors?: string[]
   executeOnDelegate?: boolean
+  proxy?: boolean
   type: 'Account' | 'Repo' | 'Project'
   url: string
   validationRepo?: string
@@ -533,6 +610,11 @@ export type BitbucketHttpCredentials = BitbucketCredentialsDTO & {
 
 export interface BitbucketHttpCredentialsSpecDTO {
   [key: string]: any
+}
+
+export type BitbucketOauth = BitbucketApiAccessSpecDTO & {
+  refreshTokenRef: string
+  tokenRef: string
 }
 
 export type BitbucketSshCredentials = BitbucketCredentialsDTO & {
@@ -688,6 +770,7 @@ export interface BusinessMappingListDTO {
 export interface CCMAggregation {
   field?:
     | 'PERSPECTIVE_ID'
+    | 'ANOMALY_ID'
     | 'WORKLOAD'
     | 'WORKLOAD_TYPE'
     | 'CLUSTER_ID'
@@ -711,6 +794,8 @@ export interface CCMAggregation {
     | 'CLUSTER_ECS_LAUNCH_TYPE'
     | 'CLUSTER_ECS_LAUNCH_TYPE_ID'
     | 'NAMESPACE'
+    | 'SERVICE'
+    | 'SERVICE_NAME'
     | 'GCP_PRODUCT'
     | 'GCP_PROJECT'
     | 'GCP_SKU_ID'
@@ -719,6 +804,8 @@ export interface CCMAggregation {
     | 'AWS_SERVICE'
     | 'AWS_INSTANCE_TYPE'
     | 'AWS_USAGE_TYPE'
+    | 'AWS_BILLING_ENTITY'
+    | 'AWS_LINE_ITEM_TYPE'
     | 'AZURE_SUBSCRIPTION_GUID'
     | 'AZURE_METER_NAME'
     | 'AZURE_METER_CATEGORY'
@@ -771,6 +858,7 @@ export interface CCMEcsEntity {
 export interface CCMGroupBy {
   groupByField?:
     | 'PERSPECTIVE_ID'
+    | 'ANOMALY_ID'
     | 'WORKLOAD'
     | 'WORKLOAD_TYPE'
     | 'CLUSTER_ID'
@@ -794,6 +882,8 @@ export interface CCMGroupBy {
     | 'CLUSTER_ECS_LAUNCH_TYPE'
     | 'CLUSTER_ECS_LAUNCH_TYPE_ID'
     | 'NAMESPACE'
+    | 'SERVICE'
+    | 'SERVICE_NAME'
     | 'GCP_PRODUCT'
     | 'GCP_PROJECT'
     | 'GCP_SKU_ID'
@@ -802,6 +892,8 @@ export interface CCMGroupBy {
     | 'AWS_SERVICE'
     | 'AWS_INSTANCE_TYPE'
     | 'AWS_USAGE_TYPE'
+    | 'AWS_BILLING_ENTITY'
+    | 'AWS_LINE_ITEM_TYPE'
     | 'AZURE_SUBSCRIPTION_GUID'
     | 'AZURE_METER_NAME'
     | 'AZURE_METER_CATEGORY'
@@ -846,7 +938,7 @@ export interface CCMJiraCreateDTO {
   issueType?: string
   projectKey?: string
   recommendationId?: string
-  resourceType?: 'WORKLOAD' | 'NODE_POOL' | 'ECS_SERVICE' | 'EC2_INSTANCE'
+  resourceType?: 'WORKLOAD' | 'NODE_POOL' | 'ECS_SERVICE' | 'EC2_INSTANCE' | 'GOVERNANCE' | 'AZURE_INSTANCE'
 }
 
 export interface CCMJiraDetails {
@@ -862,7 +954,7 @@ export interface CCMK8sEntity {
 
 export interface CCMNotificationChannel {
   channelUrls?: string[]
-  notificationChannelType?: 'EMAIL' | 'SLACK' | 'PAGERDUTY' | 'MSTEAMS'
+  notificationChannelType?: 'EMAIL' | 'SLACK' | 'PAGERDUTY' | 'MSTEAMS' | 'WEBHOOK'
 }
 
 export interface CCMNotificationSetting {
@@ -883,6 +975,7 @@ export interface CCMPerspectiveNotificationChannelsDTO {
 }
 
 export interface CCMRecommendationFilterProperties {
+  daysBack?: number
   filterType?:
     | 'Connector'
     | 'DelegateProfile'
@@ -892,13 +985,19 @@ export interface CCMRecommendationFilterProperties {
     | 'Deployment'
     | 'Audit'
     | 'Template'
+    | 'Trigger'
     | 'EnvironmentGroup'
     | 'FileStore'
     | 'CCMRecommendation'
     | 'Anomaly'
     | 'Environment'
     | 'RuleExecution'
+    | 'Override'
+    | 'InputSet'
   k8sRecommendationFilterPropertiesDTO?: K8sRecommendationFilterPropertiesDTO
+  labels?: {
+    [key: string]: string
+  }
   limit?: number
   minCost?: number
   minSaving?: number
@@ -909,9 +1008,25 @@ export interface CCMRecommendationFilterProperties {
   }
 }
 
+export interface CCMServiceNowCreateDTO {
+  connectorRef?: string
+  fields?: {
+    [key: string]: string
+  }
+  recommendationId?: string
+  resourceType?: 'WORKLOAD' | 'NODE_POOL' | 'ECS_SERVICE' | 'EC2_INSTANCE' | 'GOVERNANCE' | 'AZURE_INSTANCE'
+  ticketType?: string
+}
+
+export interface CCMServiceNowDetails {
+  connectorRef?: string
+  serviceNowTicket?: ServiceNowTicketNG
+}
+
 export interface CCMSort {
   field?:
     | 'PERSPECTIVE_ID'
+    | 'ANOMALY_ID'
     | 'WORKLOAD'
     | 'WORKLOAD_TYPE'
     | 'CLUSTER_ID'
@@ -935,6 +1050,8 @@ export interface CCMSort {
     | 'CLUSTER_ECS_LAUNCH_TYPE'
     | 'CLUSTER_ECS_LAUNCH_TYPE_ID'
     | 'NAMESPACE'
+    | 'SERVICE'
+    | 'SERVICE_NAME'
     | 'GCP_PRODUCT'
     | 'GCP_PROJECT'
     | 'GCP_SKU_ID'
@@ -943,6 +1060,8 @@ export interface CCMSort {
     | 'AWS_SERVICE'
     | 'AWS_INSTANCE_TYPE'
     | 'AWS_USAGE_TYPE'
+    | 'AWS_BILLING_ENTITY'
+    | 'AWS_LINE_ITEM_TYPE'
     | 'AZURE_SUBSCRIPTION_GUID'
     | 'AZURE_METER_NAME'
     | 'AZURE_METER_CATEGORY'
@@ -983,6 +1102,7 @@ export interface CCMSort {
 export interface CCMStringFilter {
   field?:
     | 'PERSPECTIVE_ID'
+    | 'ANOMALY_ID'
     | 'WORKLOAD'
     | 'WORKLOAD_TYPE'
     | 'CLUSTER_ID'
@@ -1006,6 +1126,8 @@ export interface CCMStringFilter {
     | 'CLUSTER_ECS_LAUNCH_TYPE'
     | 'CLUSTER_ECS_LAUNCH_TYPE_ID'
     | 'NAMESPACE'
+    | 'SERVICE'
+    | 'SERVICE_NAME'
     | 'GCP_PRODUCT'
     | 'GCP_PROJECT'
     | 'GCP_SKU_ID'
@@ -1014,6 +1136,8 @@ export interface CCMStringFilter {
     | 'AWS_SERVICE'
     | 'AWS_INSTANCE_TYPE'
     | 'AWS_USAGE_TYPE'
+    | 'AWS_BILLING_ENTITY'
+    | 'AWS_LINE_ITEM_TYPE'
     | 'AZURE_SUBSCRIPTION_GUID'
     | 'AZURE_METER_NAME'
     | 'AZURE_METER_CATEGORY'
@@ -1227,6 +1351,7 @@ export interface ClusterCostDetailsQueryParamsDTO {
   filters?: CCMStringFilter[]
   groupBy?: (
     | 'PERSPECTIVE_ID'
+    | 'ANOMALY_ID'
     | 'WORKLOAD'
     | 'WORKLOAD_TYPE'
     | 'CLUSTER_ID'
@@ -1250,6 +1375,8 @@ export interface ClusterCostDetailsQueryParamsDTO {
     | 'CLUSTER_ECS_LAUNCH_TYPE'
     | 'CLUSTER_ECS_LAUNCH_TYPE_ID'
     | 'NAMESPACE'
+    | 'SERVICE'
+    | 'SERVICE_NAME'
     | 'GCP_PRODUCT'
     | 'GCP_PROJECT'
     | 'GCP_SKU_ID'
@@ -1258,6 +1385,8 @@ export interface ClusterCostDetailsQueryParamsDTO {
     | 'AWS_SERVICE'
     | 'AWS_INSTANCE_TYPE'
     | 'AWS_USAGE_TYPE'
+    | 'AWS_BILLING_ENTITY'
+    | 'AWS_LINE_ITEM_TYPE'
     | 'AZURE_SUBSCRIPTION_GUID'
     | 'AZURE_METER_NAME'
     | 'AZURE_METER_CATEGORY'
@@ -1381,13 +1510,15 @@ export interface ConnectorConfigDTO {
 export interface ConnectorConnectivityDetails {
   errorSummary?: string
   errors?: ErrorDetail[]
+  lastAlertSent?: number
   lastConnectedAt?: number
   lastTestedAt?: number
-  status?: 'SUCCESS' | 'FAILURE' | 'PARTIAL' | 'UNKNOWN'
+  status?: 'SUCCESS' | 'FAILURE' | 'PARTIAL' | 'UNKNOWN' | 'PENDING'
   testedAt?: number
 }
 
 export interface ConnectorInfoDTO {
+  accountIdentifier?: string
   description?: string
   identifier: string
   name: string
@@ -1445,6 +1576,9 @@ export interface ConnectorInfoDTO {
     | 'Spot'
     | 'Bamboo'
     | 'TerraformCloud'
+    | 'SignalFX'
+    | 'Harness'
+    | 'Rancher'
 }
 
 export interface ConnectorResponse {
@@ -1455,6 +1589,7 @@ export interface ConnectorResponse {
   gitDetails?: EntityGitDetails
   governanceMetadata?: GovernanceMetadata
   harnessManaged?: boolean
+  isFavorite?: boolean
   lastModifiedAt?: number
   status?: ConnectorConnectivityDetails
 }
@@ -1463,7 +1598,8 @@ export interface ConnectorValidationResult {
   delegateId?: string
   errorSummary?: string
   errors?: ErrorDetail[]
-  status?: 'SUCCESS' | 'FAILURE' | 'PARTIAL' | 'UNKNOWN'
+  status?: 'SUCCESS' | 'FAILURE' | 'PARTIAL' | 'UNKNOWN' | 'PENDING'
+  taskId?: string
   testedAt?: number
 }
 
@@ -1504,6 +1640,7 @@ export interface CostDetailsQueryParamsDTO {
   filters?: CCMStringFilter[]
   groupBy?: (
     | 'PERSPECTIVE_ID'
+    | 'ANOMALY_ID'
     | 'WORKLOAD'
     | 'WORKLOAD_TYPE'
     | 'CLUSTER_ID'
@@ -1527,6 +1664,8 @@ export interface CostDetailsQueryParamsDTO {
     | 'CLUSTER_ECS_LAUNCH_TYPE'
     | 'CLUSTER_ECS_LAUNCH_TYPE_ID'
     | 'NAMESPACE'
+    | 'SERVICE'
+    | 'SERVICE_NAME'
     | 'GCP_PRODUCT'
     | 'GCP_PROJECT'
     | 'GCP_SKU_ID'
@@ -1535,6 +1674,8 @@ export interface CostDetailsQueryParamsDTO {
     | 'AWS_SERVICE'
     | 'AWS_INSTANCE_TYPE'
     | 'AWS_USAGE_TYPE'
+    | 'AWS_BILLING_ENTITY'
+    | 'AWS_LINE_ITEM_TYPE'
     | 'AZURE_SUBSCRIPTION_GUID'
     | 'AZURE_METER_NAME'
     | 'AZURE_METER_CATEGORY'
@@ -1585,6 +1726,7 @@ export interface CostOverviewDTO {
 }
 
 export interface CostTarget {
+  marginPercentage?: number
   name?: string
   rules?: ViewRule[]
 }
@@ -1732,6 +1874,7 @@ export type DockerConnectorDTO = ConnectorConfigDTO & {
   dockerRegistryUrl: string
   executeOnDelegate?: boolean
   providerType: 'DockerHub' | 'Harbor' | 'Quay' | 'Other'
+  proxy?: boolean
 }
 
 export type DockerUserNamePasswordDTO = DockerAuthCredentialsDTO & {
@@ -1752,6 +1895,7 @@ export interface EC2InstanceDTO {
   memory?: string
   memoryUtilisation?: string
   monthlyCost?: string
+  monthlySavings?: string
   region?: string
   vcpu?: string
 }
@@ -1763,6 +1907,7 @@ export interface EC2RecommendationDTO {
   id?: string
   jiraDetails?: CCMJiraDetails
   sameFamilyRecommendation?: EC2InstanceDTO
+  serviceNowDetails?: CCMServiceNowDetails
   showTerminated?: boolean
 }
 
@@ -1784,12 +1929,13 @@ export interface ECSRecommendationDTO {
   }
   serviceArn?: string
   serviceName?: string
+  serviceNowDetails?: CCMServiceNowDetails
 }
 
 export type ELKConnectorDTO = ConnectorConfigDTO & {
   apiKeyId?: string
   apiKeyRef?: string
-  authType?: 'UsernamePassword' | 'ApiClientToken' | 'None'
+  authType?: 'UsernamePassword' | 'ApiClientToken' | 'None' | 'Bearer Token(HTTP Header)'
   delegateSelectors?: string[]
   passwordRef?: string
   url: string
@@ -1810,10 +1956,10 @@ export interface EmbeddedUser {
 export interface EnforcementCount {
   accountId?: string
   ruleIds?: {
-    [key: string]: string[]
+    [key: string]: LinkedEnforcements[]
   }
   ruleSetIds?: {
-    [key: string]: string[]
+    [key: string]: LinkedEnforcements[]
   }
 }
 
@@ -1832,6 +1978,7 @@ export interface EntityGitDetails {
   commitId?: string
   filePath?: string
   fileUrl?: string
+  isHarnessCodeRepo?: boolean
   objectId?: string
   parentEntityConnectorRef?: string
   parentEntityRepoName?: string
@@ -1851,6 +1998,7 @@ export interface EntityInfo {
   azureResourceGroup?: string
   azureServiceName?: string
   azureSubscriptionGuid?: string
+  cloudProvider?: string
   clusterId?: string
   clusterName?: string
   field?: string
@@ -1859,6 +2007,8 @@ export interface EntityInfo {
   gcpSKUDescription?: string
   gcpSKUId?: string
   namespace?: string
+  service?: string
+  serviceName?: string
   workloadName?: string
   workloadType?: string
 }
@@ -1884,6 +2034,7 @@ export interface Error {
     | 'ACCOUNT_DOES_NOT_EXIST'
     | 'INACTIVE_ACCOUNT'
     | 'ACCOUNT_MIGRATED'
+    | 'ACCOUNT_MIGRATED_TO_NEXT_GEN'
     | 'USER_DOMAIN_NOT_ALLOWED'
     | 'MAX_FAILED_ATTEMPT_COUNT_EXCEEDED'
     | 'RESOURCE_NOT_FOUND'
@@ -1965,6 +2116,7 @@ export interface Error {
     | 'LICENSE_EXPIRED'
     | 'NOT_LICENSED'
     | 'REQUEST_TIMEOUT'
+    | 'SCM_REQUEST_TIMEOUT'
     | 'WORKFLOW_ALREADY_TRIGGERED'
     | 'JENKINS_ERROR'
     | 'INVALID_ARTIFACT_SOURCE'
@@ -2024,6 +2176,7 @@ export interface Error {
     | 'VAULT_OPERATION_ERROR'
     | 'AWS_SECRETS_MANAGER_OPERATION_ERROR'
     | 'AZURE_KEY_VAULT_OPERATION_ERROR'
+    | 'AZURE_KEY_VAULT_INTERRUPT_ERROR'
     | 'UNSUPPORTED_OPERATION_EXCEPTION'
     | 'FEATURE_UNAVAILABLE'
     | 'GENERAL_ERROR'
@@ -2147,6 +2300,7 @@ export interface Error {
     | 'UNRESOLVED_EXPRESSIONS_ERROR'
     | 'KRYO_HANDLER_NOT_FOUND_ERROR'
     | 'DELEGATE_ERROR_HANDLER_EXCEPTION'
+    | 'DELEGATE_SERVICE_DRIVER_EXCEPTION'
     | 'DELEGATE_INSTALLATION_COMMAND_NOT_SUPPORTED_EXCEPTION'
     | 'UNEXPECTED_TYPE_ERROR'
     | 'EXCEPTION_HANDLER_NOT_FOUND'
@@ -2203,6 +2357,7 @@ export interface Error {
     | 'TOO_MANY_REQUESTS'
     | 'INVALID_IDENTIFIER_REF'
     | 'SPOTINST_NULL_ERROR'
+    | 'SPOTNIST_REST_EXCEPTION'
     | 'SCM_UNEXPECTED_ERROR'
     | 'DUPLICATE_FILE_IMPORT'
     | 'AZURE_APP_SERVICES_TASK_EXCEPTION'
@@ -2215,6 +2370,7 @@ export interface Error {
     | 'AWS_ECS_CLIENT_ERROR'
     | 'AWS_STS_ERROR'
     | 'FREEZE_EXCEPTION'
+    | 'MISSING_EXCEPTION'
     | 'DELEGATE_TASK_EXPIRED'
     | 'DELEGATE_TASK_VALIDATION_FAILED'
     | 'MONGO_EXECUTION_TIMEOUT_EXCEPTION'
@@ -2232,6 +2388,19 @@ export interface Error {
     | 'OPA_POLICY_EVALUATION_ERROR'
     | 'USER_MARKED_FAILURE'
     | 'SSH_RETRY'
+    | 'HTTP_CLIENT_ERROR_RESPONSE'
+    | 'HTTP_INTERNAL_SERVER_ERROR'
+    | 'HTTP_BAD_GATEWAY'
+    | 'HTTP_SERVICE_UNAVAILABLE'
+    | 'HTTP_GATEWAY_TIMEOUT'
+    | 'HTTP_SERVER_ERROR_RESPONSE'
+    | 'PIPELINE_UPDATE_EXCEPTION'
+    | 'SERVICENOW_REFRESH_TOKEN_ERROR'
+    | 'PARAMETER_FIELD_CAST_ERROR'
+    | 'ABORT_ALL_ALREADY_NG'
+    | 'WEBHOOK_EXCEPTION'
+    | 'INVALID_OIDC_CONFIGURATION'
+    | 'INVALID_CREDENTIALS'
   correlationId?: string
   detailedMessage?: string
   message?: string
@@ -2272,8 +2441,16 @@ export interface ExecutionDetails {
 
 export interface ExecutionEnforcementDetails {
   accounts?: string[]
+  cloudProvider?: 'AWS' | 'AZURE' | 'GCP'
+  createdAt?: number
+  createdBy?: EmbeddedUser
   description?: string
   enforcementName?: string
+  executionTimezone?: string
+  isDryRun?: boolean
+  isEnabled?: boolean
+  lastUpdatedAt?: number
+  lastUpdatedBy?: EmbeddedUser
   regions?: string[]
   ruleIds?: {
     [key: string]: string
@@ -2300,6 +2477,7 @@ export interface Failure {
     | 'ACCOUNT_DOES_NOT_EXIST'
     | 'INACTIVE_ACCOUNT'
     | 'ACCOUNT_MIGRATED'
+    | 'ACCOUNT_MIGRATED_TO_NEXT_GEN'
     | 'USER_DOMAIN_NOT_ALLOWED'
     | 'MAX_FAILED_ATTEMPT_COUNT_EXCEEDED'
     | 'RESOURCE_NOT_FOUND'
@@ -2381,6 +2559,7 @@ export interface Failure {
     | 'LICENSE_EXPIRED'
     | 'NOT_LICENSED'
     | 'REQUEST_TIMEOUT'
+    | 'SCM_REQUEST_TIMEOUT'
     | 'WORKFLOW_ALREADY_TRIGGERED'
     | 'JENKINS_ERROR'
     | 'INVALID_ARTIFACT_SOURCE'
@@ -2440,6 +2619,7 @@ export interface Failure {
     | 'VAULT_OPERATION_ERROR'
     | 'AWS_SECRETS_MANAGER_OPERATION_ERROR'
     | 'AZURE_KEY_VAULT_OPERATION_ERROR'
+    | 'AZURE_KEY_VAULT_INTERRUPT_ERROR'
     | 'UNSUPPORTED_OPERATION_EXCEPTION'
     | 'FEATURE_UNAVAILABLE'
     | 'GENERAL_ERROR'
@@ -2563,6 +2743,7 @@ export interface Failure {
     | 'UNRESOLVED_EXPRESSIONS_ERROR'
     | 'KRYO_HANDLER_NOT_FOUND_ERROR'
     | 'DELEGATE_ERROR_HANDLER_EXCEPTION'
+    | 'DELEGATE_SERVICE_DRIVER_EXCEPTION'
     | 'DELEGATE_INSTALLATION_COMMAND_NOT_SUPPORTED_EXCEPTION'
     | 'UNEXPECTED_TYPE_ERROR'
     | 'EXCEPTION_HANDLER_NOT_FOUND'
@@ -2619,6 +2800,7 @@ export interface Failure {
     | 'TOO_MANY_REQUESTS'
     | 'INVALID_IDENTIFIER_REF'
     | 'SPOTINST_NULL_ERROR'
+    | 'SPOTNIST_REST_EXCEPTION'
     | 'SCM_UNEXPECTED_ERROR'
     | 'DUPLICATE_FILE_IMPORT'
     | 'AZURE_APP_SERVICES_TASK_EXCEPTION'
@@ -2631,6 +2813,7 @@ export interface Failure {
     | 'AWS_ECS_CLIENT_ERROR'
     | 'AWS_STS_ERROR'
     | 'FREEZE_EXCEPTION'
+    | 'MISSING_EXCEPTION'
     | 'DELEGATE_TASK_EXPIRED'
     | 'DELEGATE_TASK_VALIDATION_FAILED'
     | 'MONGO_EXECUTION_TIMEOUT_EXCEPTION'
@@ -2648,6 +2831,19 @@ export interface Failure {
     | 'OPA_POLICY_EVALUATION_ERROR'
     | 'USER_MARKED_FAILURE'
     | 'SSH_RETRY'
+    | 'HTTP_CLIENT_ERROR_RESPONSE'
+    | 'HTTP_INTERNAL_SERVER_ERROR'
+    | 'HTTP_BAD_GATEWAY'
+    | 'HTTP_SERVICE_UNAVAILABLE'
+    | 'HTTP_GATEWAY_TIMEOUT'
+    | 'HTTP_SERVER_ERROR_RESPONSE'
+    | 'PIPELINE_UPDATE_EXCEPTION'
+    | 'SERVICENOW_REFRESH_TOKEN_ERROR'
+    | 'PARAMETER_FIELD_CAST_ERROR'
+    | 'ABORT_ALL_ALREADY_NG'
+    | 'WEBHOOK_EXCEPTION'
+    | 'INVALID_OIDC_CONFIGURATION'
+    | 'INVALID_CREDENTIALS'
   correlationId?: string
   errors?: ValidationError[]
   message?: string
@@ -2673,12 +2869,18 @@ export interface FilterProperties {
     | 'Deployment'
     | 'Audit'
     | 'Template'
+    | 'Trigger'
     | 'EnvironmentGroup'
     | 'FileStore'
     | 'CCMRecommendation'
     | 'Anomaly'
     | 'Environment'
     | 'RuleExecution'
+    | 'Override'
+    | 'InputSet'
+  labels?: {
+    [key: string]: string
+  }
   tags?: {
     [key: string]: string
   }
@@ -2701,6 +2903,11 @@ export interface FilterValues {
 export interface FilterValuesDTO {
   columns?: string[]
   filter?: CCMRecommendationFilterProperties
+}
+
+export interface GCPViewPreferences {
+  includeDiscounts?: boolean
+  includeTaxes?: boolean
 }
 
 export interface GcpBillingExportSpec {
@@ -2726,11 +2933,12 @@ export type GcpConnector = ConnectorConfigDTO & {
   credential: GcpConnectorCredential
   delegateSelectors?: string[]
   executeOnDelegate?: boolean
+  proxy?: boolean
 }
 
 export interface GcpConnectorCredential {
   spec?: GcpCredentialSpec
-  type: 'InheritFromDelegate' | 'ManualConfig'
+  type: 'InheritFromDelegate' | 'ManualConfig' | 'OidcAuthentication'
 }
 
 export interface GcpCredentialSpec {
@@ -2751,8 +2959,14 @@ export type GcpManualDetails = GcpCredentialSpec & {
   secretKeyRef: string
 }
 
+export type GcpRecommendationAdhocDTO = RecommendationAdhocDTO & {
+  projectId?: string
+  serviceAccountEmail?: string
+}
+
 export type GcpSecretManager = ConnectorConfigDTO & {
-  credentialsRef: string
+  assumeCredentialsOnDelegate?: boolean
+  credentialsRef?: string
   default?: boolean
   delegateSelectors?: string[]
 }
@@ -2766,6 +2980,7 @@ export type GitConfigDTO = ConnectorConfigDTO & {
   connectionType: 'Account' | 'Repo' | 'Project'
   delegateSelectors?: string[]
   executeOnDelegate?: boolean
+  proxy?: boolean
   spec: GitAuthenticationDTO
   type: 'Http' | 'Ssh'
   url: string
@@ -2778,6 +2993,8 @@ export type GitHTTPAuthenticationDTO = GitAuthenticationDTO & {
   usernameRef?: string
 }
 
+export type GitHubAnonymous = GithubHttpCredentialsSpecDTO & { [key: string]: any }
+
 export type GitSSHAuthenticationDTO = GitAuthenticationDTO & {
   sshKeyRef: string
 }
@@ -2789,6 +3006,14 @@ export interface GithubApiAccess {
 
 export interface GithubApiAccessSpecDTO {
   [key: string]: any
+}
+
+export type GithubApp = GithubHttpCredentialsSpecDTO & {
+  applicationId?: string
+  applicationIdRef?: string
+  installationId?: string
+  installationIdRef?: string
+  privateKeyRef: string
 }
 
 export type GithubAppSpec = GithubApiAccessSpecDTO & {
@@ -2809,6 +3034,7 @@ export type GithubConnector = ConnectorConfigDTO & {
   authentication: GithubAuthentication
   delegateSelectors?: string[]
   executeOnDelegate?: boolean
+  proxy?: boolean
   type: 'Account' | 'Repo' | 'Project'
   url: string
   validationRepo?: string
@@ -2820,7 +3046,7 @@ export interface GithubCredentialsDTO {
 
 export type GithubHttpCredentials = GithubCredentialsDTO & {
   spec: GithubHttpCredentialsSpecDTO
-  type: 'UsernamePassword' | 'UsernameToken' | 'OAuth'
+  type: 'UsernamePassword' | 'UsernameToken' | 'OAuth' | 'GithubApp' | 'Anonymous'
 }
 
 export interface GithubHttpCredentialsSpecDTO {
@@ -2870,6 +3096,7 @@ export type GitlabConnector = ConnectorConfigDTO & {
   authentication: GitlabAuthentication
   delegateSelectors?: string[]
   executeOnDelegate?: boolean
+  proxy?: boolean
   type: 'Account' | 'Repo' | 'Project'
   url: string
   validationRepo?: string
@@ -2902,6 +3129,7 @@ export type GitlabSshCredentials = GitlabCredentialsDTO & {
 }
 
 export type GitlabTokenSpec = GitlabApiAccessSpecDTO & {
+  apiUrl?: string
   tokenRef: string
 }
 
@@ -2917,25 +3145,43 @@ export type GitlabUsernameToken = GitlabHttpCredentialsSpecDTO & {
   usernameRef?: string
 }
 
+export interface GovernanceAdhocEnqueueDTO {
+  isDryRun?: boolean
+  isOOTB?: boolean
+  policy?: string
+  ruleCloudProviderType?: 'AWS' | 'AZURE' | 'GCP'
+  ruleId?: string
+  targetAccountDetails?: {
+    [key: string]: RecommendationAdhocDTO
+  }
+  targetAccounts?: string[]
+  targetRegions?: string[]
+}
+
+export interface GovernanceAiEngineRequestDTO {
+  isExplain?: boolean
+  prompt?: string
+  resourceType?: string
+  ruleCloudProviderType?: 'AWS' | 'AZURE' | 'GCP'
+}
+
+export interface GovernanceAiEngineResponseDTO {
+  error?: string
+  isValid?: boolean
+  text?: string
+}
+
 export interface GovernanceEnqueueResponseDTO {
   ruleExecutionId?: string[]
 }
 
-export interface GovernanceJobEnqueueDTO {
-  externalId?: string
-  isDryRun?: boolean
-  isOOTB?: boolean
-  policy?: string
-  roleArn?: string
-  ruleCloudProviderType?: 'AWS'
-  ruleEnforcementId?: string
-  ruleId?: string
-  targetAccountId?: string
-  targetRegion?: string
-}
-
 export interface GovernanceMetadata {
   [key: string]: any
+}
+
+export interface GovernancePromptRule {
+  description?: string
+  ruleYaml?: string
 }
 
 export interface GovernanceRuleFilter {
@@ -2949,6 +3195,7 @@ export interface GovernanceRuleFilter {
   orgIdentifier?: string
   policyIds?: string[]
   projectIdentifier?: string
+  resourceType?: string
   search?: string
   tags?: string
 }
@@ -2959,6 +3206,56 @@ export interface GraphQLQuery {
   variables?: {
     [key: string]: { [key: string]: any }
   }
+}
+
+export interface HarnessApiAccess {
+  spec?: HarnessApiAccessSpecDTO
+  type: 'Token' | 'Jwt_Token'
+}
+
+export interface HarnessApiAccessSpecDTO {
+  [key: string]: any
+}
+
+export interface HarnessAuthentication {
+  spec: HarnessHttpCredentials
+  type: 'Http' | 'Ssh'
+}
+
+export type HarnessConnector = ConnectorConfigDTO & {
+  accountId?: string
+  apiAccess?: HarnessApiAccess
+  apiUrl?: string
+  authentication: HarnessAuthentication
+  executeOnDelegate?: boolean
+  orgId?: string
+  projectId?: string
+  slug?: string
+  type: 'Account' | 'Repo' | 'Project'
+  url: string
+  validationRepo?: string
+}
+
+export interface HarnessHttpCredentials {
+  spec: HarnessHttpCredentialsSpecDTO
+  type: 'UsernameToken'
+}
+
+export interface HarnessHttpCredentialsSpecDTO {
+  [key: string]: any
+}
+
+export type HarnessJWTTokenSpec = HarnessApiAccessSpecDTO & {
+  tokenRef: string
+}
+
+export type HarnessTokenSpec = HarnessApiAccessSpecDTO & {
+  tokenRef: string
+}
+
+export type HarnessUsernameToken = HarnessHttpCredentialsSpecDTO & {
+  tokenRef: string
+  username?: string
 }
 
 export interface HistogramExp {
@@ -3085,6 +3382,9 @@ export type JiraConnector = ConnectorConfigDTO & {
 }
 
 export interface JiraIssueNG {
+  fieldNameToKeys?: {
+    [key: string]: string
+  }
   fields: {
     [key: string]: { [key: string]: any }
   }
@@ -3102,10 +3402,6 @@ export type JiraUserNamePasswordDTO = JiraAuthCredentialsDTO & {
   passwordRef: string
   username?: string
   usernameRef?: string
-}
-
-export interface JsonNode {
-  [key: string]: any
 }
 
 export interface K8sClusterSetupRequest {
@@ -3127,7 +3423,7 @@ export interface K8sRecommendationFilterPropertiesDTO {
   names?: string[]
   namespaces?: string[]
   recommendationStates?: ('OPEN' | 'APPLIED' | 'IGNORED')[]
-  resourceTypes?: ('WORKLOAD' | 'NODE_POOL' | 'ECS_SERVICE' | 'EC2_INSTANCE')[]
+  resourceTypes?: ('WORKLOAD' | 'NODE_POOL' | 'ECS_SERVICE' | 'EC2_INSTANCE' | 'GOVERNANCE' | 'AZURE_INSTANCE')[]
 }
 
 export interface KubernetesAuthCredentialDTO {
@@ -3193,6 +3489,11 @@ export interface LicenseUsageDTO {
   timestamp?: number
 }
 
+export interface LinkedEnforcements {
+  name?: string
+  uuid?: string
+}
+
 export interface LinkedPerspectives {
   costCategoryId?: string
   perspectiveIdAndName?: {
@@ -3206,6 +3507,41 @@ export interface ListDTO {
 
 export type LocalConnectorDTO = ConnectorConfigDTO & {
   default?: boolean
+}
+
+export interface ManagedAccount {
+  accountId?: string
+  accountName?: string
+  createdAt?: number
+  createdBy?: EmbeddedUser
+  lastUpdatedAt?: number
+  lastUpdatedBy?: EmbeddedUser
+  mspAccountId?: string
+  uuid?: string
+}
+
+export interface ManagedAccountStats {
+  totalMarkupStats?: AmountTrendStats
+  totalSpendStats?: AmountTrendStats
+}
+
+export interface ManagedAccountTimeSeriesData {
+  totalMarkupStats?: TimeSeriesDataPoints[]
+  totalSpendStats?: TimeSeriesDataPoints[]
+}
+
+export interface MarginDetails {
+  accountId?: string
+  accountName?: string
+  createdAt?: number
+  createdBy?: EmbeddedUser
+  lastUpdatedAt?: number
+  lastUpdatedBy?: EmbeddedUser
+  marginRules?: CostTarget[]
+  markupAmountDetails?: AmountDetails
+  mspAccountId?: string
+  totalSpendDetails?: AmountDetails
+  uuid?: string
 }
 
 export type MicrosoftTeamsNotificationChannel = CCMNotificationChannel & {
@@ -3272,13 +3608,14 @@ export interface NodeRecommendationDTO {
   nodePoolId?: NodePoolId
   recommended?: RecommendationResponse
   resourceRequirement?: RecommendClusterRequest
+  serviceNowDetails?: CCMServiceNowDetails
   totalResourceUsage?: TotalResourceUsage
 }
 
 export interface NotificationChannelDTO {
   accountId?: string
   emailRecipients?: string[]
-  team?: 'OTHER' | 'CD' | 'CV' | 'CI' | 'FFM' | 'PIPELINE' | 'PL' | 'GTM' | 'UNRECOGNIZED'
+  team?: 'OTHER' | 'CD' | 'CV' | 'CI' | 'FFM' | 'PIPELINE' | 'PL' | 'GTM' | 'IDP' | 'UNRECOGNIZED'
   templateData?: {
     [key: string]: string
   }
@@ -3314,6 +3651,29 @@ export type OciHelmUsernamePasswordDTO = OciHelmAuthCredentialsDTO & {
   passwordRef: string
   username?: string
   usernameRef?: string
+}
+
+export interface OverviewExecutionCostDetails {
+  awsExecutionCostDetails?: {
+    [key: string]: number
+  }
+  azureExecutionCostDetails?: {
+    [key: string]: number
+  }
+  gcpExecutionCostDetails?: {
+    [key: string]: number
+  }
+}
+
+export interface OverviewExecutionDetails {
+  monthlyRealizedSavings?: {
+    [key: string]: number
+  }
+  topResourceTypeExecution?: {
+    [key: string]: number
+  }
+  totalRuleEnforcements?: number
+  totalRules?: number
 }
 
 export interface Page {
@@ -3381,6 +3741,11 @@ export interface PerspectiveAnomalyData {
 export type PerspectiveBudgetScope = BudgetScope & {
   viewId?: string
   viewName?: string
+}
+
+export interface PerspectiveData {
+  totalCount?: number
+  views?: QLCEView[]
 }
 
 export interface PerspectiveEntityStatsData {
@@ -3505,6 +3870,34 @@ export interface QueryStat {
   secondMaxExecutionTime?: number
 }
 
+export type RancherConnectorBearerTokenAuthenticationDTO = RancherConnectorConfigAuthenticationSpecDTO & {
+  passwordRef: string
+}
+
+export interface RancherConnectorConfigAuthCredentialsDTO {
+  spec?: RancherConnectorConfigAuthenticationSpecDTO
+  type: 'BearerToken'
+}
+
+export interface RancherConnectorConfigAuthDTO {
+  auth: RancherConnectorConfigAuthCredentialsDTO
+  rancherUrl: string
+}
+
+export interface RancherConnectorConfigAuthenticationSpecDTO {
+  [key: string]: any
+}
+
+export interface RancherConnectorConfigDTO {
+  spec?: RancherConnectorConfigAuthDTO
+  type: 'ManualConfig'
+}
+
+export type RancherConnectorDTO = ConnectorConfigDTO & {
+  credential?: RancherConnectorConfigDTO
+  delegateSelectors?: string[]
+}
+
 export interface RecommendClusterRequest {
   allowBurst?: boolean
   allowOlderGen?: boolean
@@ -3524,6 +3917,20 @@ export interface RecommendClusterRequest {
   zone?: string
 }
 
+export interface RecommendationAdhocDTO {
+  cloudConnectorId?: string
+  roleId?: string
+  roleInfo?: string
+  targetInfo?: string
+  tenantInfo?: string
+}
+
+export interface RecommendationAzureVmId {
+  resourceGroupId?: string
+  subscriptionId?: string
+  vmName?: string
+}
+
 export interface RecommendationDetailsDTO {
   [key: string]: any
 }
@@ -3538,12 +3945,20 @@ export interface RecommendationECSServiceId {
   ecsServiceName?: string
 }
 
+export interface RecommendationGovernanceRuleId {
+  ruleId?: string
+}
+
 export interface RecommendationItemDTO {
+  cloudProvider?: string
   clusterName?: string
+  governanceRuleId?: string
   id: string
+  isValid?: boolean
   jiraConnectorRef?: string
   jiraIssueKey?: string
   jiraStatus?: string
+  lastProcessedAt?: string
   monthlyCost?: number
   monthlySaving?: number
   namespace?: string
@@ -3552,7 +3967,10 @@ export interface RecommendationItemDTO {
   recommendationDetails?: RecommendationDetailsDTO
   recommendationState?: 'OPEN' | 'APPLIED' | 'IGNORED'
   resourceName?: string
-  resourceType: 'WORKLOAD' | 'NODE_POOL' | 'ECS_SERVICE' | 'EC2_INSTANCE'
+  resourceType: 'WORKLOAD' | 'NODE_POOL' | 'ECS_SERVICE' | 'EC2_INSTANCE' | 'GOVERNANCE' | 'AZURE_INSTANCE'
+  servicenowConnectorRef?: string
+  servicenowIssueKey?: string
+  servicenowIssueStatus?: string
 }
 
 export interface RecommendationNodepoolId {
@@ -3561,6 +3979,13 @@ export interface RecommendationNodepoolId {
 }
 
 export interface RecommendationOverviewStats {
+  totalMonthlyCost?: number
+  totalMonthlySaving?: number
+}
+
+export interface RecommendationResourceTypeStats {
+  count?: number
+  resourceType?: string
   totalMonthlyCost?: number
   totalMonthlySaving?: number
 }
@@ -3589,15 +4014,19 @@ export interface RecommendationsDTO {
 
 export interface RecommendationsIgnoreList {
   accountId?: string
+  azureVmIgnoreList?: RecommendationAzureVmId[]
   ec2InstanceIgnoreList?: RecommendationEC2InstanceId[]
   ecsServiceIgnoreList?: RecommendationECSServiceId[]
+  governanceRuleIgnoreList?: RecommendationGovernanceRuleId[]
   nodepoolIgnoreList?: RecommendationNodepoolId[]
   workloadIgnoreList?: RecommendationWorkloadId[]
 }
 
 export interface RecommendationsIgnoreResourcesDTO {
+  azureVmIds?: RecommendationAzureVmId[]
   ec2Instances?: RecommendationEC2InstanceId[]
   ecsServices?: RecommendationECSServiceId[]
+  governanceRuleIds?: RecommendationGovernanceRuleId[]
   nodepools?: RecommendationNodepoolId[]
   workloads?: RecommendationWorkloadId[]
 }
@@ -3637,6 +4066,13 @@ export interface Response {
 export interface ResponseAwsAccountConnectionDetail {
   correlationId?: string
   data?: AwsAccountConnectionDetail
+  metaData?: { [key: string]: any }
+  status?: 'SUCCESS' | 'FAILURE' | 'ERROR'
+}
+
+export interface ResponseAzureVmRecommendationDTO {
+  correlationId?: string
+  data?: AzureVmRecommendationDTO
   metaData?: { [key: string]: any }
   status?: 'SUCCESS' | 'FAILURE' | 'ERROR'
 }
@@ -3686,6 +4122,13 @@ export interface ResponseCCMJiraDetails {
 export interface ResponseCCMNotificationSetting {
   correlationId?: string
   data?: CCMNotificationSetting
+  metaData?: { [key: string]: any }
+  status?: 'SUCCESS' | 'FAILURE' | 'ERROR'
+}
+
+export interface ResponseCCMServiceNowDetails {
+  correlationId?: string
+  data?: CCMServiceNowDetails
   metaData?: { [key: string]: any }
   status?: 'SUCCESS' | 'FAILURE' | 'ERROR'
 }
@@ -3802,6 +4245,13 @@ export interface ResponseFilterValues {
   status?: 'SUCCESS' | 'FAILURE' | 'ERROR'
 }
 
+export interface ResponseGovernanceAiEngineResponseDTO {
+  correlationId?: string
+  data?: GovernanceAiEngineResponseDTO
+  metaData?: { [key: string]: any }
+  status?: 'SUCCESS' | 'FAILURE' | 'ERROR'
+}
+
 export interface ResponseGovernanceEnqueueResponseDTO {
   correlationId?: string
   data?: GovernanceEnqueueResponseDTO
@@ -3812,13 +4262,6 @@ export interface ResponseGovernanceEnqueueResponseDTO {
 export interface ResponseInteger {
   correlationId?: string
   data?: number
-  metaData?: { [key: string]: any }
-  status?: 'SUCCESS' | 'FAILURE' | 'ERROR'
-}
-
-export interface ResponseJsonNode {
-  correlationId?: string
-  data?: JsonNode
   metaData?: { [key: string]: any }
   status?: 'SUCCESS' | 'FAILURE' | 'ERROR'
 }
@@ -3921,6 +4364,27 @@ export interface ResponseListFilterStatsDTO {
   status?: 'SUCCESS' | 'FAILURE' | 'ERROR'
 }
 
+export interface ResponseListGovernancePromptRule {
+  correlationId?: string
+  data?: GovernancePromptRule[]
+  metaData?: { [key: string]: any }
+  status?: 'SUCCESS' | 'FAILURE' | 'ERROR'
+}
+
+export interface ResponseListManagedAccount {
+  correlationId?: string
+  data?: ManagedAccount[]
+  metaData?: { [key: string]: any }
+  status?: 'SUCCESS' | 'FAILURE' | 'ERROR'
+}
+
+export interface ResponseListMarginDetails {
+  correlationId?: string
+  data?: MarginDetails[]
+  metaData?: { [key: string]: any }
+  status?: 'SUCCESS' | 'FAILURE' | 'ERROR'
+}
+
 export interface ResponseListPerspectiveAnomalyData {
   correlationId?: string
   data?: PerspectiveAnomalyData[]
@@ -3931,6 +4395,13 @@ export interface ResponseListPerspectiveAnomalyData {
 export interface ResponseListQLCEView {
   correlationId?: string
   data?: QLCEView[]
+  metaData?: { [key: string]: any }
+  status?: 'SUCCESS' | 'FAILURE' | 'ERROR'
+}
+
+export interface ResponseListRecommendationResourceTypeStats {
+  correlationId?: string
+  data?: RecommendationResourceTypeStats[]
   metaData?: { [key: string]: any }
   status?: 'SUCCESS' | 'FAILURE' | 'ERROR'
 }
@@ -3949,9 +4420,44 @@ export interface ResponseListRuleEnforcement {
   status?: 'SUCCESS' | 'FAILURE' | 'ERROR'
 }
 
+export interface ResponseListRuleExecution {
+  correlationId?: string
+  data?: RuleExecution[]
+  metaData?: { [key: string]: any }
+  status?: 'SUCCESS' | 'FAILURE' | 'ERROR'
+}
+
+export interface ResponseListString {
+  correlationId?: string
+  data?: string[]
+  metaData?: { [key: string]: any }
+  status?: 'SUCCESS' | 'FAILURE' | 'ERROR'
+}
+
 export interface ResponseListValueDataPoint {
   correlationId?: string
   data?: ValueDataPoint[]
+  metaData?: { [key: string]: any }
+  status?: 'SUCCESS' | 'FAILURE' | 'ERROR'
+}
+
+export interface ResponseManagedAccount {
+  correlationId?: string
+  data?: ManagedAccount
+  metaData?: { [key: string]: any }
+  status?: 'SUCCESS' | 'FAILURE' | 'ERROR'
+}
+
+export interface ResponseManagedAccountStats {
+  correlationId?: string
+  data?: ManagedAccountStats
+  metaData?: { [key: string]: any }
+  status?: 'SUCCESS' | 'FAILURE' | 'ERROR'
+}
+
+export interface ResponseManagedAccountTimeSeriesData {
+  correlationId?: string
+  data?: ManagedAccountTimeSeriesData
   metaData?: { [key: string]: any }
   status?: 'SUCCESS' | 'FAILURE' | 'ERROR'
 }
@@ -3961,6 +4467,13 @@ export interface ResponseMapStringQueryStat {
   data?: {
     [key: string]: QueryStat
   }
+  metaData?: { [key: string]: any }
+  status?: 'SUCCESS' | 'FAILURE' | 'ERROR'
+}
+
+export interface ResponseMarginDetails {
+  correlationId?: string
+  data?: MarginDetails
   metaData?: { [key: string]: any }
   status?: 'SUCCESS' | 'FAILURE' | 'ERROR'
 }
@@ -3981,6 +4494,7 @@ export interface ResponseMessage {
     | 'ACCOUNT_DOES_NOT_EXIST'
     | 'INACTIVE_ACCOUNT'
     | 'ACCOUNT_MIGRATED'
+    | 'ACCOUNT_MIGRATED_TO_NEXT_GEN'
     | 'USER_DOMAIN_NOT_ALLOWED'
     | 'MAX_FAILED_ATTEMPT_COUNT_EXCEEDED'
     | 'RESOURCE_NOT_FOUND'
@@ -4062,6 +4576,7 @@ export interface ResponseMessage {
     | 'LICENSE_EXPIRED'
     | 'NOT_LICENSED'
     | 'REQUEST_TIMEOUT'
+    | 'SCM_REQUEST_TIMEOUT'
     | 'WORKFLOW_ALREADY_TRIGGERED'
     | 'JENKINS_ERROR'
     | 'INVALID_ARTIFACT_SOURCE'
@@ -4121,6 +4636,7 @@ export interface ResponseMessage {
     | 'VAULT_OPERATION_ERROR'
     | 'AWS_SECRETS_MANAGER_OPERATION_ERROR'
     | 'AZURE_KEY_VAULT_OPERATION_ERROR'
+    | 'AZURE_KEY_VAULT_INTERRUPT_ERROR'
     | 'UNSUPPORTED_OPERATION_EXCEPTION'
     | 'FEATURE_UNAVAILABLE'
     | 'GENERAL_ERROR'
@@ -4244,6 +4760,7 @@ export interface ResponseMessage {
     | 'UNRESOLVED_EXPRESSIONS_ERROR'
     | 'KRYO_HANDLER_NOT_FOUND_ERROR'
     | 'DELEGATE_ERROR_HANDLER_EXCEPTION'
+    | 'DELEGATE_SERVICE_DRIVER_EXCEPTION'
     | 'DELEGATE_INSTALLATION_COMMAND_NOT_SUPPORTED_EXCEPTION'
     | 'UNEXPECTED_TYPE_ERROR'
     | 'EXCEPTION_HANDLER_NOT_FOUND'
@@ -4300,6 +4817,7 @@ export interface ResponseMessage {
     | 'TOO_MANY_REQUESTS'
     | 'INVALID_IDENTIFIER_REF'
     | 'SPOTINST_NULL_ERROR'
+    | 'SPOTNIST_REST_EXCEPTION'
     | 'SCM_UNEXPECTED_ERROR'
     | 'DUPLICATE_FILE_IMPORT'
     | 'AZURE_APP_SERVICES_TASK_EXCEPTION'
@@ -4312,6 +4830,7 @@ export interface ResponseMessage {
     | 'AWS_ECS_CLIENT_ERROR'
     | 'AWS_STS_ERROR'
     | 'FREEZE_EXCEPTION'
+    | 'MISSING_EXCEPTION'
     | 'DELEGATE_TASK_EXPIRED'
     | 'DELEGATE_TASK_VALIDATION_FAILED'
     | 'MONGO_EXECUTION_TIMEOUT_EXCEPTION'
@@ -4329,6 +4848,19 @@ export interface ResponseMessage {
     | 'OPA_POLICY_EVALUATION_ERROR'
     | 'USER_MARKED_FAILURE'
     | 'SSH_RETRY'
+    | 'HTTP_CLIENT_ERROR_RESPONSE'
+    | 'HTTP_INTERNAL_SERVER_ERROR'
+    | 'HTTP_BAD_GATEWAY'
+    | 'HTTP_SERVICE_UNAVAILABLE'
+    | 'HTTP_GATEWAY_TIMEOUT'
+    | 'HTTP_SERVER_ERROR_RESPONSE'
+    | 'PIPELINE_UPDATE_EXCEPTION'
+    | 'SERVICENOW_REFRESH_TOKEN_ERROR'
+    | 'PARAMETER_FIELD_CAST_ERROR'
+    | 'ABORT_ALL_ALREADY_NG'
+    | 'WEBHOOK_EXCEPTION'
+    | 'INVALID_OIDC_CONFIGURATION'
+    | 'INVALID_CREDENTIALS'
   exception?: Throwable
   failureTypes?: (
     | 'EXPIRED'
@@ -4363,6 +4895,20 @@ export interface ResponseNotificationResult {
   status?: 'SUCCESS' | 'FAILURE' | 'ERROR'
 }
 
+export interface ResponseOverviewExecutionCostDetails {
+  correlationId?: string
+  data?: OverviewExecutionCostDetails
+  metaData?: { [key: string]: any }
+  status?: 'SUCCESS' | 'FAILURE' | 'ERROR'
+}
+
+export interface ResponseOverviewExecutionDetails {
+  correlationId?: string
+  data?: OverviewExecutionDetails
+  metaData?: { [key: string]: any }
+  status?: 'SUCCESS' | 'FAILURE' | 'ERROR'
+}
+
 export interface ResponsePageActiveServiceDTO {
   correlationId?: string
   data?: PageActiveServiceDTO
@@ -4373,6 +4919,13 @@ export interface ResponsePageActiveServiceDTO {
 export interface ResponsePageFilterDTO {
   correlationId?: string
   data?: PageFilterDTO
+  metaData?: { [key: string]: any }
+  status?: 'SUCCESS' | 'FAILURE' | 'ERROR'
+}
+
+export interface ResponsePerspectiveData {
+  correlationId?: string
+  data?: PerspectiveData
   metaData?: { [key: string]: any }
   status?: 'SUCCESS' | 'FAILURE' | 'ERROR'
 }
@@ -4475,6 +5028,13 @@ export interface ResponseServiceUsageDTO {
   status?: 'SUCCESS' | 'FAILURE' | 'ERROR'
 }
 
+export interface ResponseSetString {
+  correlationId?: string
+  data?: string[]
+  metaData?: { [key: string]: any }
+  status?: 'SUCCESS' | 'FAILURE' | 'ERROR'
+}
+
 export interface ResponseStatsInfo {
   correlationId?: string
   data?: StatsInfo
@@ -4561,11 +5121,12 @@ export interface RestResponseViewCustomField {
 
 export interface Rule {
   accountId?: string
-  cloudProvider?: 'AWS'
+  cloudProvider?: 'AWS' | 'AZURE' | 'GCP'
   createdAt?: number
   createdBy?: EmbeddedUser
   deleted?: boolean
   description?: string
+  forRecommendation?: boolean
   isOOTB?: boolean
   isStablePolicy?: boolean
   lastUpdatedAt?: number
@@ -4573,6 +5134,7 @@ export interface Rule {
   name?: string
   orgIdentifier?: string
   projectIdentifier?: string
+  resourceType?: string
   rulesYaml?: string
   storeType?: 'INLINE' | 'REMOTE'
   tags?: string[]
@@ -4586,7 +5148,7 @@ export interface RuleClone {
 
 export interface RuleEnforcement {
   accountId?: string
-  cloudProvider?: 'AWS'
+  cloudProvider?: 'AWS' | 'AZURE' | 'GCP'
   createdAt?: number
   createdBy?: EmbeddedUser
   deleted?: boolean
@@ -4611,13 +5173,18 @@ export interface RuleEnforcement {
 
 export interface RuleExecution {
   accountId?: string
-  cloudProvider?: 'AWS'
+  actionType?: string
+  cloudProvider?: 'AWS' | 'AZURE' | 'GCP'
+  cost?: number
+  costComputed?: boolean
+  costType?: 'POTENTIAL' | 'REALIZED'
   createdAt?: number
   errorMessage?: string
   executionCompletedAt?: number
   executionLogBucketType?: string
   executionLogPath?: string
   executionStatus?: 'FAILED' | 'ENQUEUED' | 'SUCCESS'
+  executionType?: 'INTERNAL' | 'EXTERNAL'
   isDryRun?: boolean
   jobId?: string
   lastUpdatedAt?: number
@@ -4625,6 +5192,7 @@ export interface RuleExecution {
   orgIdentifier?: string
   projectIdentifier?: string
   resourceCount?: number
+  resourceType?: string
   ruleEnforcementIdentifier?: string
   ruleEnforcementName?: string
   ruleIdentifier?: string
@@ -4638,14 +5206,18 @@ export interface RuleExecution {
 
 export interface RuleExecutionFilter {
   accountId?: string
-  cloudProvider?: 'AWS'
+  cloudProvider?: 'AWS' | 'AZURE' | 'GCP'
+  executionIds?: string[]
   executionStatus?: 'SUCCESS' | 'FAILED'
   limit?: number
   offset?: number
   region?: string[]
   ruleEnforcementId?: string[]
+  ruleExecutionSortType?: 'COST' | 'LAST_UPDATED_AT'
   ruleIds?: string[]
   ruleSetIds?: string[]
+  savings?: number
+  sortOrder?: 'ASCENDING' | 'DESCENDING'
   targetAccount?: string[]
   time?: CCMTimeFilter[]
 }
@@ -4662,7 +5234,7 @@ export interface RuleList {
 
 export interface RuleSet {
   accountId?: string
-  cloudProvider?: 'AWS'
+  cloudProvider?: 'AWS' | 'AZURE' | 'GCP'
   createdAt?: number
   createdBy?: EmbeddedUser
   description?: string
@@ -4719,7 +5291,7 @@ export interface ServiceNowAuthCredentialsDTO {
 
 export interface ServiceNowAuthenticationDTO {
   spec: ServiceNowAuthCredentialsDTO
-  type: 'UsernamePassword' | 'AdfsClientCredentialsWithCertificate'
+  type: 'UsernamePassword' | 'AdfsClientCredentialsWithCertificate' | 'RefreshTokenGrantType'
 }
 
 export type ServiceNowConnector = ConnectorConfigDTO & {
@@ -4729,6 +5301,27 @@ export type ServiceNowConnector = ConnectorConfigDTO & {
   serviceNowUrl: string
   username?: string
   usernameRef?: string
+}
+
+export interface ServiceNowFieldValueNG {
+  displayValue?: string
+  value?: string
+}
+
+export type ServiceNowRefreshTokenDTO = ServiceNowAuthCredentialsDTO & {
+  clientIdRef: string
+  clientSecretRef?: string
+  refreshTokenRef: string
+  scope?: string
+  tokenUrl: string
+}
+
+export interface ServiceNowTicketNG {
+  fields: {
+    [key: string]: ServiceNowFieldValueNG
+  }
+  number: string
+  url: string
 }
 
 export type ServiceNowUserNamePasswordDTO = ServiceNowAuthCredentialsDTO & {
@@ -4759,6 +5352,12 @@ export interface SharedCostSplit {
   percentageContribution?: number
 }
 
+export type SignalFXConnectorDTO = ConnectorConfigDTO & {
+  apiTokenRef: string
+  delegateSelectors?: string[]
+  url: string
+}
+
 export type SlackNotificationChannel = CCMNotificationChannel & {
   slackWebHookUrl?: string
 }
@@ -4772,8 +5371,10 @@ export interface Sort {
 export type SplunkConnectorDTO = ConnectorConfigDTO & {
   accountId: string
   delegateSelectors?: string[]
-  passwordRef: string
+  passwordRef?: string
   splunkUrl: string
+  tokenRef?: string
+  type?: 'UsernamePassword' | 'Anonymous' | 'Bearer Token(HTTP Header)'
   username?: string
 }
 
@@ -4864,6 +5465,7 @@ export interface TasCredentialSpec {
 export type TasManualDetails = TasCredentialSpec & {
   endpointUrl: string
   passwordRef: string
+  refreshTokenRef?: string
   username?: string
   usernameRef?: string
 }
@@ -4951,6 +5553,7 @@ export type VaultConnectorDTO = ConnectorConfigDTO & {
   basePath?: string
   default?: boolean
   delegateSelectors?: string[]
+  enableCache?: boolean
   k8sAuthEndpoint?: string
   namespace?: string
   readOnly?: boolean
@@ -5003,8 +5606,11 @@ export type ViewIdCondition = ViewCondition & {
 }
 
 export interface ViewPreferences {
+  awsPreferences?: AWSViewPreferences
+  gcpPreferences?: GCPViewPreferences
   includeOthers?: boolean
   includeUnallocatedCost?: boolean
+  showAnomalies?: boolean
 }
 
 export interface ViewRule {
@@ -5052,6 +5658,7 @@ export interface WorkloadRecommendationDTO {
   items?: ContainerHistogramDTO[]
   jiraDetails?: CCMJiraDetails
   lastDayCost?: Cost
+  serviceNowDetails?: CCMServiceNowDetails
 }
 
 export type AnomalyFilterPropertiesRequestBody = AnomalyFilterProperties
@@ -5076,11 +5683,15 @@ export type CreateRuleDTORequestBody = CreateRuleDTO
 
 export type CreateRuleEnforcementDTORequestBody = CreateRuleEnforcementDTO
 
+export type CreateRuleExecutionFilterDTORequestBody = CreateRuleExecutionFilterDTO
+
 export type CreateRuleSetDTORequestBody = CreateRuleSetDTO
 
 export type FilterDTORequestBody = FilterDTO
 
 export type K8sClusterSetupRequestRequestBody = K8sClusterSetupRequest
+
+export type MarginDetailsRequestBody = MarginDetails
 
 export type RecommendationsIgnoreResourcesDTORequestBody = RecommendationsIgnoreResourcesDTO
 
@@ -5491,6 +6102,12 @@ export const useListBIDashboards = (props: UseListBIDashboardsProps) =>
 
 export interface ListBudgetGroupsQueryParams {
   accountIdentifier: string
+  budgetGroupSortType?:
+    | 'BUDGET_GROUP_AMOUNT'
+    | 'BUDGET_GROUP_NAME'
+    | 'BUDGET_GROUP_ACTUAL_COST'
+    | 'BUDGET_GROUP_FORECASTED_COST'
+  sortOrder?: 'ASCENDING' | 'DESCENDING'
 }
 
 export type ListBudgetGroupsProps = Omit<
@@ -5612,6 +6229,12 @@ export interface BudgetAndBudgetGroupsListQueryParams {
   accountIdentifier: string
   budgetGroupId?: string
   showAllEntities: boolean
+  budgetGroupSortType?:
+    | 'BUDGET_GROUP_AMOUNT'
+    | 'BUDGET_GROUP_NAME'
+    | 'BUDGET_GROUP_ACTUAL_COST'
+    | 'BUDGET_GROUP_FORECASTED_COST'
+  sortOrder?: 'ASCENDING' | 'DESCENDING'
 }
 
 export type BudgetAndBudgetGroupsListProps = Omit<
@@ -5775,6 +6398,8 @@ export const useUpdateBudgetGroup = ({ id, ...props }: UseUpdateBudgetGroupProps
 
 export interface ListBudgetsForAccountQueryParams {
   accountIdentifier: string
+  budgetSortType?: 'BUDGET_AMOUNT' | 'NAME' | 'ACTUAL_COST' | 'FORECASTED_COST'
+  sortOrder?: 'ASCENDING' | 'DESCENDING'
 }
 
 export type ListBudgetsForAccountProps = Omit<
@@ -6275,7 +6900,7 @@ export type GetPerspectivesGivenBusinessMappingIdsProps = Omit<
 >
 
 /**
- * Get related Perspectives given Business Mapping Ids
+ * Get related Perspectives given Cost Category Ids
  */
 export const GetPerspectivesGivenBusinessMappingIds = (props: GetPerspectivesGivenBusinessMappingIdsProps) => (
   <Mutate<
@@ -6304,7 +6929,7 @@ export type UseGetPerspectivesGivenBusinessMappingIdsProps = Omit<
 >
 
 /**
- * Get related Perspectives given Business Mapping Ids
+ * Get related Perspectives given Cost Category Ids
  */
 export const useGetPerspectivesGivenBusinessMappingIds = (props: UseGetPerspectivesGivenBusinessMappingIdsProps) =>
   useMutate<
@@ -6936,12 +7561,15 @@ export interface GetFilterListQueryParams {
     | 'Deployment'
     | 'Audit'
     | 'Template'
+    | 'Trigger'
     | 'EnvironmentGroup'
     | 'FileStore'
     | 'CCMRecommendation'
     | 'Anomaly'
     | 'Environment'
     | 'RuleExecution'
+    | 'Override'
+    | 'InputSet'
 }
 
 export type GetFilterListProps = Omit<
@@ -7058,12 +7686,15 @@ export interface DeleteFilterQueryParams {
     | 'Deployment'
     | 'Audit'
     | 'Template'
+    | 'Trigger'
     | 'EnvironmentGroup'
     | 'FileStore'
     | 'CCMRecommendation'
     | 'Anomaly'
     | 'Environment'
     | 'RuleExecution'
+    | 'Override'
+    | 'InputSet'
 }
 
 export type DeleteFilterProps = Omit<
@@ -7110,12 +7741,15 @@ export interface GetFilterQueryParams {
     | 'Deployment'
     | 'Audit'
     | 'Template'
+    | 'Trigger'
     | 'EnvironmentGroup'
     | 'FileStore'
     | 'CCMRecommendation'
     | 'Anomaly'
     | 'Environment'
     | 'RuleExecution'
+    | 'Override'
+    | 'InputSet'
 }
 
 export interface GetFilterPathParams {
@@ -7153,6 +7787,148 @@ export const useGetFilter = ({ identifier, ...props }: UseGetFilterProps) =>
     (paramsInPath: GetFilterPathParams) => `/filters/${paramsInPath.identifier}`,
     { base: getConfig('ccm/api'), pathParams: { identifier }, ...props }
   )
+
+export interface AiengineQueryParams {
+  accountIdentifier?: string
+}
+
+export type AiengineProps = Omit<
+  MutateProps<
+    ResponseGovernanceAiEngineResponseDTO,
+    Failure | Error,
+    AiengineQueryParams,
+    GovernanceAiEngineRequestDTO,
+    void
+  >,
+  'path' | 'verb'
+>
+
+/**
+ * Get generative ai generated yaml for governance
+ */
+export const Aiengine = (props: AiengineProps) => (
+  <Mutate<
+    ResponseGovernanceAiEngineResponseDTO,
+    Failure | Error,
+    AiengineQueryParams,
+    GovernanceAiEngineRequestDTO,
+    void
+  >
+    verb="POST"
+    path={`/governance/aiengine`}
+    base={getConfig('ccm/api')}
+    {...props}
+  />
+)
+
+export type UseAiengineProps = Omit<
+  UseMutateProps<
+    ResponseGovernanceAiEngineResponseDTO,
+    Failure | Error,
+    AiengineQueryParams,
+    GovernanceAiEngineRequestDTO,
+    void
+  >,
+  'path' | 'verb'
+>
+
+/**
+ * Get generative ai generated yaml for governance
+ */
+export const useAiengine = (props: UseAiengineProps) =>
+  useMutate<
+    ResponseGovernanceAiEngineResponseDTO,
+    Failure | Error,
+    AiengineQueryParams,
+    GovernanceAiEngineRequestDTO,
+    void
+  >('POST', `/governance/aiengine`, { base: getConfig('ccm/api'), ...props })
+
+export interface GovernanceConnectorListQueryParams {
+  accountIdentifier: string
+  view?: boolean
+  connectorType?:
+    | 'K8sCluster'
+    | 'Git'
+    | 'Splunk'
+    | 'AppDynamics'
+    | 'Prometheus'
+    | 'Dynatrace'
+    | 'Vault'
+    | 'AzureKeyVault'
+    | 'DockerRegistry'
+    | 'Local'
+    | 'AwsKms'
+    | 'GcpKms'
+    | 'AwsSecretManager'
+    | 'Gcp'
+    | 'Aws'
+    | 'Azure'
+    | 'Artifactory'
+    | 'Jira'
+    | 'Nexus'
+    | 'Github'
+    | 'Gitlab'
+    | 'Bitbucket'
+    | 'Codecommit'
+    | 'CEAws'
+    | 'CEAzure'
+    | 'GcpCloudCost'
+    | 'CEK8sCluster'
+    | 'HttpHelmRepo'
+    | 'NewRelic'
+    | 'Datadog'
+    | 'SumoLogic'
+    | 'PagerDuty'
+    | 'CustomHealth'
+    | 'ServiceNow'
+    | 'ErrorTracking'
+    | 'Pdc'
+    | 'AzureRepo'
+    | 'Jenkins'
+    | 'OciHelmRepo'
+    | 'CustomSecretManager'
+    | 'ElasticSearch'
+    | 'GcpSecretManager'
+    | 'AzureArtifacts'
+    | 'Tas'
+    | 'Spot'
+    | 'Bamboo'
+    | 'TerraformCloud'
+    | 'SignalFX'
+    | 'Harness'
+    | 'Rancher'
+}
+
+export type GovernanceConnectorListProps = Omit<
+  GetProps<ConnectorResponse[], Failure | Error, GovernanceConnectorListQueryParams, void>,
+  'path'
+>
+
+/**
+ * governanceConnectorList
+ */
+export const GovernanceConnectorList = (props: GovernanceConnectorListProps) => (
+  <Get<ConnectorResponse[], Failure | Error, GovernanceConnectorListQueryParams, void>
+    path={`/governance/connectorList`}
+    base={getConfig('ccm/api')}
+    {...props}
+  />
+)
+
+export type UseGovernanceConnectorListProps = Omit<
+  UseGetProps<ConnectorResponse[], Failure | Error, GovernanceConnectorListQueryParams, void>,
+  'path'
+>
+
+/**
+ * governanceConnectorList
+ */
+export const useGovernanceConnectorList = (props: UseGovernanceConnectorListProps) =>
+  useGet<ConnectorResponse[], Failure | Error, GovernanceConnectorListQueryParams, void>(`/governance/connectorList`, {
+    base: getConfig('ccm/api'),
+    ...props
+  })
 
 export interface AddRuleEnforcementQueryParams {
   accountIdentifier: string
@@ -7409,7 +8185,7 @@ export type EnqueueAdhocGovernanceJobProps = Omit<
     ResponseGovernanceEnqueueResponseDTO,
     Failure | Error,
     EnqueueAdhocGovernanceJobQueryParams,
-    GovernanceJobEnqueueDTO,
+    GovernanceAdhocEnqueueDTO,
     void
   >,
   'path' | 'verb'
@@ -7423,7 +8199,7 @@ export const EnqueueAdhocGovernanceJob = (props: EnqueueAdhocGovernanceJobProps)
     ResponseGovernanceEnqueueResponseDTO,
     Failure | Error,
     EnqueueAdhocGovernanceJobQueryParams,
-    GovernanceJobEnqueueDTO,
+    GovernanceAdhocEnqueueDTO,
     void
   >
     verb="POST"
@@ -7438,7 +8214,7 @@ export type UseEnqueueAdhocGovernanceJobProps = Omit<
     ResponseGovernanceEnqueueResponseDTO,
     Failure | Error,
     EnqueueAdhocGovernanceJobQueryParams,
-    GovernanceJobEnqueueDTO,
+    GovernanceAdhocEnqueueDTO,
     void
   >,
   'path' | 'verb'
@@ -7452,255 +8228,9 @@ export const useEnqueueAdhocGovernanceJob = (props: UseEnqueueAdhocGovernanceJob
     ResponseGovernanceEnqueueResponseDTO,
     Failure | Error,
     EnqueueAdhocGovernanceJobQueryParams,
-    GovernanceJobEnqueueDTO,
+    GovernanceAdhocEnqueueDTO,
     void
   >('POST', `/governance/enqueueAdhoc`, { base: getConfig('ccm/api'), ...props })
-
-export interface GetSchemaForEntityQueryParams {
-  accountIdentifier: string
-  projectIdentifier?: string
-  orgIdentifier?: string
-  entityType?:
-    | 'CreatePR'
-    | 'GITOPS_MERGE_PR'
-    | 'Projects'
-    | 'Pipelines'
-    | 'PipelineSteps'
-    | 'Http'
-    | 'Email'
-    | 'JiraCreate'
-    | 'JiraUpdate'
-    | 'JiraApproval'
-    | 'HarnessApproval'
-    | 'CustomApproval'
-    | 'Barrier'
-    | 'Queue'
-    | 'FlagConfiguration'
-    | 'ShellScript'
-    | 'K8sCanaryDeploy'
-    | 'K8sApply'
-    | 'K8sBlueGreenDeploy'
-    | 'K8sRollingDeploy'
-    | 'K8sRollingRollback'
-    | 'K8sScale'
-    | 'K8sDelete'
-    | 'K8sBGSwapServices'
-    | 'K8sCanaryDelete'
-    | 'TerraformApply'
-    | 'TerraformPlan'
-    | 'TerraformDestroy'
-    | 'TerraformRollback'
-    | 'HelmDeploy'
-    | 'HelmRollback'
-    | 'Connectors'
-    | 'Secrets'
-    | 'Files'
-    | 'Service'
-    | 'Environment'
-    | 'EnvironmentGroup'
-    | 'InputSets'
-    | 'CvConfig'
-    | 'Verify'
-    | 'Delegates'
-    | 'DelegateConfigurations'
-    | 'CvVerificationJob'
-    | 'IntegrationStage'
-    | 'IntegrationSteps'
-    | 'SecurityStage'
-    | 'SecuritySteps'
-    | 'CvKubernetesActivitySource'
-    | 'DeploymentSteps'
-    | 'DeploymentStage'
-    | 'ApprovalStage'
-    | 'PipelineStage'
-    | 'FeatureFlagStage'
-    | 'Template'
-    | 'TemplateStage'
-    | 'CustomDeployment'
-    | 'Triggers'
-    | 'MonitoredService'
-    | 'GitRepositories'
-    | 'FeatureFlags'
-    | 'ServiceNowApproval'
-    | 'ServiceNowCreate'
-    | 'ServiceNowUpdate'
-    | 'ServiceNowImportSet'
-    | 'GovernancePolicies'
-    | 'POLICY_STEP'
-    | 'Run'
-    | 'RunTests'
-    | 'Plugin'
-    | 'RestoreCacheGCS'
-    | 'RestoreCacheS3'
-    | 'SaveCacheGCS'
-    | 'SaveCacheS3'
-    | 'Security'
-    | 'AquaTrivy'
-    | 'AWSECR'
-    | 'Bandit'
-    | 'BlackDuck'
-    | 'Brakeman'
-    | 'Burp'
-    | 'Checkmarx'
-    | 'Clair'
-    | 'DataTheorem'
-    | 'DockerContentTrust'
-    | 'External'
-    | 'FortifyOnDemand'
-    | 'Grype'
-    | 'JfrogXray'
-    | 'Mend'
-    | 'Metasploit'
-    | 'Nessus'
-    | 'NexusIQ'
-    | 'Nikto'
-    | 'Nmap'
-    | 'Openvas'
-    | 'Owasp'
-    | 'PrismaCloud'
-    | 'Prowler'
-    | 'Qualys'
-    | 'Reapsaw'
-    | 'ShiftLeft'
-    | 'Sniper'
-    | 'Snyk'
-    | 'Sonarqube'
-    | 'Sysdig'
-    | 'Tenable'
-    | 'Veracode'
-    | 'Zap'
-    | 'GitClone'
-    | 'ArtifactoryUpload'
-    | 'GCSUpload'
-    | 'S3Upload'
-    | 'BuildAndPushGCR'
-    | 'BuildAndPushECR'
-    | 'BuildAndPushDockerRegistry'
-    | 'CreateStack'
-    | 'DeleteStack'
-    | 'ServerlessAwsLambdaDeploy'
-    | 'ServerlessAwsLambdaRollback'
-    | 'CustomStage'
-    | 'RollbackStack'
-    | 'Infrastructure'
-    | 'Command'
-    | 'StrategyNode'
-    | 'AZURE_SLOT_DEPLOYMENT_STEP'
-    | 'AzureTrafficShift'
-    | 'FetchInstanceScript'
-    | 'AzureSwapSlot'
-    | 'AzureWebAppRollback'
-    | 'JenkinsBuild'
-    | 'EcsRollingDeploy'
-    | 'EcsRollingRollback'
-    | 'EcsCanaryDeploy'
-    | 'EcsCanaryDelete'
-    | 'AzureCreateARMResource'
-    | 'BuildAndPushACR'
-    | 'AzureCreateBPResource'
-    | 'AzureARMRollback'
-    | 'Background'
-    | 'Wait'
-    | 'ArtifactSource'
-    | 'EcsBlueGreenCreateService'
-    | 'EcsBlueGreenSwapTargetGroups'
-    | 'EcsBlueGreenRollback'
-    | 'ShellScriptProvision'
-    | 'Freeze'
-    | 'GitOpsUpdateReleaseRepo'
-    | 'GitOpsFetchLinkedApps'
-    | 'EcsRunTask'
-    | 'Chaos'
-    | 'ElastigroupDeploy'
-    | 'ElastigroupRollback'
-    | 'Action'
-    | 'ElastigroupSetup'
-    | 'Bitrise'
-    | 'TerraformPlan'
-    | 'TerraformApply'
-    | 'TerraformDestroy'
-    | 'TerraformRollback'
-    | 'IACMStage'
-    | 'IACMStep'
-    | 'IACM'
-    | 'Container'
-    | 'IACM'
-    | 'IACM'
-    | 'ElastigroupBGStageSetup'
-    | 'ElastigroupSwapRoute'
-    | 'AsgCanaryDeploy'
-    | 'AsgCanaryDelete'
-    | 'SwapRoutes'
-    | 'SwapRollback'
-    | 'AppResize'
-    | 'AppRollback'
-    | 'CanaryAppSetup'
-    | 'BGAppSetup'
-    | 'BasicAppSetup'
-    | 'TanzuCommand'
-    | 'AsgRollingDeploy'
-    | 'AsgRollingRollback'
-    | 'GovernanceRuleAWS'
-    | 'TasRollingDeploy'
-    | 'TasRollingRollback'
-    | 'K8sDryRun'
-    | 'AsgBlueGreenSwapService'
-    | 'AsgBlueGreenDeploy'
-    | 'AsgBlueGreenRollback'
-    | 'TerraformCloudRun'
-    | 'TerraformCloudRollback'
-    | 'DeployCloudFunction'
-    | 'DeployCloudFunctionWithNoTraffic'
-    | 'CloudFunctionTrafficShift'
-    | 'CloudFunctionRollback'
-    | 'AwsLambdaDeploy'
-    | 'AwsSamDeploy'
-    | 'AwsSamRollback'
-    | 'SscaOrchestration'
-    | 'AwsLambdaRollback'
-    | 'GITOPS_SYNC'
-    | 'BambooBuild'
-    | 'CdSscaOrchestration'
-    | 'TasRouteMapping'
-    | 'AWSSecurityHub'
-    | 'CustomIngest'
-    | 'BackstageEnvironmentVariable'
-    | 'Fossa'
-    | 'CodeQL'
-    | 'Gitleaks'
-    | 'DeployCloudFunctionGenOne'
-    | 'RollbackCloudFunctionGenOne'
-}
-
-export type GetSchemaForEntityProps = Omit<
-  GetProps<ResponseJsonNode, Failure | Error, GetSchemaForEntityQueryParams, void>,
-  'path'
->
-
-/**
- * Get Schema for entity
- */
-export const GetSchemaForEntity = (props: GetSchemaForEntityProps) => (
-  <Get<ResponseJsonNode, Failure | Error, GetSchemaForEntityQueryParams, void>
-    path={`/governance/entitySchema`}
-    base={getConfig('ccm/api')}
-    {...props}
-  />
-)
-
-export type UseGetSchemaForEntityProps = Omit<
-  UseGetProps<ResponseJsonNode, Failure | Error, GetSchemaForEntityQueryParams, void>,
-  'path'
->
-
-/**
- * Get Schema for entity
- */
-export const useGetSchemaForEntity = (props: UseGetSchemaForEntityProps) =>
-  useGet<ResponseJsonNode, Failure | Error, GetSchemaForEntityQueryParams, void>(`/governance/entitySchema`, {
-    base: getConfig('ccm/api'),
-    ...props
-  })
 
 export interface AddRuleExecutionQueryParams {
   accountIdentifier: string
@@ -7817,7 +8347,7 @@ export type GetRuleExecutionsProps = Omit<
     ResponseRuleExecutionList,
     Failure | Error,
     GetRuleExecutionsQueryParams,
-    CreateRuleExecutionFilterDTO,
+    CreateRuleExecutionFilterDTORequestBody,
     void
   >,
   'path' | 'verb'
@@ -7827,7 +8357,13 @@ export type GetRuleExecutionsProps = Omit<
  * Get execution for account
  */
 export const GetRuleExecutions = (props: GetRuleExecutionsProps) => (
-  <Mutate<ResponseRuleExecutionList, Failure | Error, GetRuleExecutionsQueryParams, CreateRuleExecutionFilterDTO, void>
+  <Mutate<
+    ResponseRuleExecutionList,
+    Failure | Error,
+    GetRuleExecutionsQueryParams,
+    CreateRuleExecutionFilterDTORequestBody,
+    void
+  >
     verb="POST"
     path={`/governance/execution/list`}
     base={getConfig('ccm/api')}
@@ -7840,7 +8376,7 @@ export type UseGetRuleExecutionsProps = Omit<
     ResponseRuleExecutionList,
     Failure | Error,
     GetRuleExecutionsQueryParams,
-    CreateRuleExecutionFilterDTO,
+    CreateRuleExecutionFilterDTORequestBody,
     void
   >,
   'path' | 'verb'
@@ -7854,9 +8390,65 @@ export const useGetRuleExecutions = (props: UseGetRuleExecutionsProps) =>
     ResponseRuleExecutionList,
     Failure | Error,
     GetRuleExecutionsQueryParams,
-    CreateRuleExecutionFilterDTO,
+    CreateRuleExecutionFilterDTORequestBody,
     void
   >('POST', `/governance/execution/list`, { base: getConfig('ccm/api'), ...props })
+
+export interface GetRuleLastExecutionQueryParams {
+  accountIdentifier: string
+}
+
+export type GetRuleLastExecutionProps = Omit<
+  MutateProps<
+    ResponseListRuleExecution,
+    Failure | Error,
+    GetRuleLastExecutionQueryParams,
+    AnomalyFilterValuesBodyRequestBody,
+    void
+  >,
+  'path' | 'verb'
+>
+
+/**
+ * Given rules list find last execution for each rule
+ */
+export const GetRuleLastExecution = (props: GetRuleLastExecutionProps) => (
+  <Mutate<
+    ResponseListRuleExecution,
+    Failure | Error,
+    GetRuleLastExecutionQueryParams,
+    AnomalyFilterValuesBodyRequestBody,
+    void
+  >
+    verb="POST"
+    path={`/governance/execution/ruleLastExecution`}
+    base={getConfig('ccm/api')}
+    {...props}
+  />
+)
+
+export type UseGetRuleLastExecutionProps = Omit<
+  UseMutateProps<
+    ResponseListRuleExecution,
+    Failure | Error,
+    GetRuleLastExecutionQueryParams,
+    AnomalyFilterValuesBodyRequestBody,
+    void
+  >,
+  'path' | 'verb'
+>
+
+/**
+ * Given rules list find last execution for each rule
+ */
+export const useGetRuleLastExecution = (props: UseGetRuleLastExecutionProps) =>
+  useMutate<
+    ResponseListRuleExecution,
+    Failure | Error,
+    GetRuleLastExecutionQueryParams,
+    AnomalyFilterValuesBodyRequestBody,
+    void
+  >('POST', `/governance/execution/ruleLastExecution`, { base: getConfig('ccm/api'), ...props })
 
 export interface GetRuleExecutionDetailsQueryParams {
   accountIdentifier: string
@@ -7896,6 +8488,217 @@ export const useGetRuleExecutionDetails = ({ ruleExecutionId, ...props }: UseGet
   useGet<void, Failure | Error, GetRuleExecutionDetailsQueryParams, GetRuleExecutionDetailsPathParams>(
     (paramsInPath: GetRuleExecutionDetailsPathParams) => `/governance/execution/${paramsInPath.ruleExecutionId}`,
     { base: getConfig('ccm/api'), pathParams: { ruleExecutionId }, ...props }
+  )
+
+export interface ExecutionCostDetailsQueryParams {
+  accountIdentifier: string
+}
+
+export type ExecutionCostDetailsProps = Omit<
+  GetProps<ResponseOverviewExecutionCostDetails, Failure | Error, ExecutionCostDetailsQueryParams, void>,
+  'path'
+>
+
+/**
+ * Return rule execution Cost Details
+ */
+export const ExecutionCostDetails = (props: ExecutionCostDetailsProps) => (
+  <Get<ResponseOverviewExecutionCostDetails, Failure | Error, ExecutionCostDetailsQueryParams, void>
+    path={`/governance/overview/executionCostDetails`}
+    base={getConfig('ccm/api')}
+    {...props}
+  />
+)
+
+export type UseExecutionCostDetailsProps = Omit<
+  UseGetProps<ResponseOverviewExecutionCostDetails, Failure | Error, ExecutionCostDetailsQueryParams, void>,
+  'path'
+>
+
+/**
+ * Return rule execution Cost Details
+ */
+export const useExecutionCostDetails = (props: UseExecutionCostDetailsProps) =>
+  useGet<ResponseOverviewExecutionCostDetails, Failure | Error, ExecutionCostDetailsQueryParams, void>(
+    `/governance/overview/executionCostDetails`,
+    { base: getConfig('ccm/api'), ...props }
+  )
+
+export interface GetExecutionDetailsQueryParams {
+  accountIdentifier: string
+}
+
+export type GetExecutionDetailsProps = Omit<
+  MutateProps<
+    ResponseOverviewExecutionDetails,
+    Failure | Error,
+    GetExecutionDetailsQueryParams,
+    CreateRuleExecutionFilterDTORequestBody,
+    void
+  >,
+  'path' | 'verb'
+>
+
+/**
+ * Return rule execution Details
+ */
+export const GetExecutionDetails = (props: GetExecutionDetailsProps) => (
+  <Mutate<
+    ResponseOverviewExecutionDetails,
+    Failure | Error,
+    GetExecutionDetailsQueryParams,
+    CreateRuleExecutionFilterDTORequestBody,
+    void
+  >
+    verb="POST"
+    path={`/governance/overview/executionDetails`}
+    base={getConfig('ccm/api')}
+    {...props}
+  />
+)
+
+export type UseGetExecutionDetailsProps = Omit<
+  UseMutateProps<
+    ResponseOverviewExecutionDetails,
+    Failure | Error,
+    GetExecutionDetailsQueryParams,
+    CreateRuleExecutionFilterDTORequestBody,
+    void
+  >,
+  'path' | 'verb'
+>
+
+/**
+ * Return rule execution Details
+ */
+export const useGetExecutionDetails = (props: UseGetExecutionDetailsProps) =>
+  useMutate<
+    ResponseOverviewExecutionDetails,
+    Failure | Error,
+    GetExecutionDetailsQueryParams,
+    CreateRuleExecutionFilterDTORequestBody,
+    void
+  >('POST', `/governance/overview/executionDetails`, { base: getConfig('ccm/api'), ...props })
+
+export interface GetPromptResourcesQueryParams {
+  accountIdentifier?: string
+  cloudProvider?: 'AWS' | 'AZURE' | 'GCP'
+}
+
+export type GetPromptResourcesProps = Omit<
+  GetProps<ResponseSetString, Failure | Error, GetPromptResourcesQueryParams, void>,
+  'path'
+>
+
+/**
+ * Get supported prompt resources
+ */
+export const GetPromptResources = (props: GetPromptResourcesProps) => (
+  <Get<ResponseSetString, Failure | Error, GetPromptResourcesQueryParams, void>
+    path={`/governance/promptResources`}
+    base={getConfig('ccm/api')}
+    {...props}
+  />
+)
+
+export type UseGetPromptResourcesProps = Omit<
+  UseGetProps<ResponseSetString, Failure | Error, GetPromptResourcesQueryParams, void>,
+  'path'
+>
+
+/**
+ * Get supported prompt resources
+ */
+export const useGetPromptResources = (props: UseGetPromptResourcesProps) =>
+  useGet<ResponseSetString, Failure | Error, GetPromptResourcesQueryParams, void>(`/governance/promptResources`, {
+    base: getConfig('ccm/api'),
+    ...props
+  })
+
+export interface GetPromptRulesQueryParams {
+  accountIdentifier?: string
+  cloudProvider?: 'AWS' | 'AZURE' | 'GCP'
+  resourceType?: string
+}
+
+export type GetPromptRulesProps = Omit<
+  GetProps<ResponseListGovernancePromptRule, Failure | Error, GetPromptRulesQueryParams, void>,
+  'path'
+>
+
+/**
+ * Get sample prompt governance rules
+ */
+export const GetPromptRules = (props: GetPromptRulesProps) => (
+  <Get<ResponseListGovernancePromptRule, Failure | Error, GetPromptRulesQueryParams, void>
+    path={`/governance/promptRules`}
+    base={getConfig('ccm/api')}
+    {...props}
+  />
+)
+
+export type UseGetPromptRulesProps = Omit<
+  UseGetProps<ResponseListGovernancePromptRule, Failure | Error, GetPromptRulesQueryParams, void>,
+  'path'
+>
+
+/**
+ * Get sample prompt governance rules
+ */
+export const useGetPromptRules = (props: UseGetPromptRulesProps) =>
+  useGet<ResponseListGovernancePromptRule, Failure | Error, GetPromptRulesQueryParams, void>(
+    `/governance/promptRules`,
+    { base: getConfig('ccm/api'), ...props }
+  )
+
+export interface GetRuleRecommendationQueryParams {
+  accountIdentifier: string
+}
+
+export interface GetRuleRecommendationPathParams {
+  recommendationId: string
+}
+
+export type GetRuleRecommendationProps = Omit<
+  GetProps<
+    ResponseRuleExecutionList,
+    Failure | Error,
+    GetRuleRecommendationQueryParams,
+    GetRuleRecommendationPathParams
+  >,
+  'path'
+> &
+  GetRuleRecommendationPathParams
+
+/**
+ * Return getRuleRecommendation details
+ */
+export const GetRuleRecommendation = ({ recommendationId, ...props }: GetRuleRecommendationProps) => (
+  <Get<ResponseRuleExecutionList, Failure | Error, GetRuleRecommendationQueryParams, GetRuleRecommendationPathParams>
+    path={`/governance/recommendation/${recommendationId}`}
+    base={getConfig('ccm/api')}
+    {...props}
+  />
+)
+
+export type UseGetRuleRecommendationProps = Omit<
+  UseGetProps<
+    ResponseRuleExecutionList,
+    Failure | Error,
+    GetRuleRecommendationQueryParams,
+    GetRuleRecommendationPathParams
+  >,
+  'path'
+> &
+  GetRuleRecommendationPathParams
+
+/**
+ * Return getRuleRecommendation details
+ */
+export const useGetRuleRecommendation = ({ recommendationId, ...props }: UseGetRuleRecommendationProps) =>
+  useGet<ResponseRuleExecutionList, Failure | Error, GetRuleRecommendationQueryParams, GetRuleRecommendationPathParams>(
+    (paramsInPath: GetRuleRecommendationPathParams) => `/governance/recommendation/${paramsInPath.recommendationId}`,
+    { base: getConfig('ccm/api'), pathParams: { recommendationId }, ...props }
   )
 
 export interface CreateNewRuleQueryParams {
@@ -8072,6 +8875,36 @@ export type UseCloneRuleProps = Omit<
  */
 export const useCloneRule = (props: UseCloneRuleProps) =>
   useMutate<ResponseRule, Failure | Error, CloneRuleQueryParams, CloneRuleDTO, void>('POST', `/governance/ruleClone`, {
+    base: getConfig('ccm/api'),
+    ...props
+  })
+
+export interface RuleSchemaQueryParams {
+  accountIdentifier: string
+  projectIdentifier?: string
+  orgIdentifier?: string
+}
+
+export type RuleSchemaProps = Omit<GetProps<ResponseString, Failure | Error, RuleSchemaQueryParams, void>, 'path'>
+
+/**
+ * Get Schema for entity
+ */
+export const RuleSchema = (props: RuleSchemaProps) => (
+  <Get<ResponseString, Failure | Error, RuleSchemaQueryParams, void>
+    path={`/governance/ruleSchema`}
+    base={getConfig('ccm/api')}
+    {...props}
+  />
+)
+
+export type UseRuleSchemaProps = Omit<UseGetProps<ResponseString, Failure | Error, RuleSchemaQueryParams, void>, 'path'>
+
+/**
+ * Get Schema for entity
+ */
+export const useRuleSchema = (props: UseRuleSchemaProps) =>
+  useGet<ResponseString, Failure | Error, RuleSchemaQueryParams, void>(`/governance/ruleSchema`, {
     base: getConfig('ccm/api'),
     ...props
   })
@@ -8366,12 +9199,12 @@ export interface Execute1QueryParams {
 }
 
 export type Execute1Props = Omit<
-  MutateProps<Execute1Response, unknown, Execute1QueryParams, GraphQLQuery, void>,
+  MutateProps<Execute1Response, unknown, Execute1QueryParams, void, void>,
   'path' | 'verb'
 >
 
 export const Execute1 = (props: Execute1Props) => (
-  <Mutate<Execute1Response, unknown, Execute1QueryParams, GraphQLQuery, void>
+  <Mutate<Execute1Response, unknown, Execute1QueryParams, void, void>
     verb="POST"
     path={`/graphql`}
     base={getConfig('ccm/api')}
@@ -8380,12 +9213,12 @@ export const Execute1 = (props: Execute1Props) => (
 )
 
 export type UseExecute1Props = Omit<
-  UseMutateProps<Execute1Response, unknown, Execute1QueryParams, GraphQLQuery, void>,
+  UseMutateProps<Execute1Response, unknown, Execute1QueryParams, void, void>,
   'path' | 'verb'
 >
 
 export const useExecute1 = (props: UseExecute1Props) =>
-  useMutate<Execute1Response, unknown, Execute1QueryParams, GraphQLQuery, void>('POST', `/graphql`, {
+  useMutate<Execute1Response, unknown, Execute1QueryParams, void, void>('POST', `/graphql`, {
     base: getConfig('ccm/api'),
     ...props
   })
@@ -8452,6 +9285,542 @@ export const useGetCCMLicenseUsage = (props: UseGetCCMLicenseUsageProps) =>
     base: getConfig('ccm/api'),
     ...props
   })
+
+export interface DeleteManagedAccountQueryParams {
+  accountIdentifier?: string
+  managedAccountId?: string
+}
+
+export type DeleteManagedAccountProps = Omit<
+  MutateProps<ResponseBoolean, unknown, DeleteManagedAccountQueryParams, void, void>,
+  'path' | 'verb'
+>
+
+/**
+ * Delete managed account
+ */
+export const DeleteManagedAccount = (props: DeleteManagedAccountProps) => (
+  <Mutate<ResponseBoolean, unknown, DeleteManagedAccountQueryParams, void, void>
+    verb="DELETE"
+    path={`/managed-account`}
+    base={getConfig('ccm/api')}
+    {...props}
+  />
+)
+
+export type UseDeleteManagedAccountProps = Omit<
+  UseMutateProps<ResponseBoolean, unknown, DeleteManagedAccountQueryParams, void, void>,
+  'path' | 'verb'
+>
+
+/**
+ * Delete managed account
+ */
+export const useDeleteManagedAccount = (props: UseDeleteManagedAccountProps) =>
+  useMutate<ResponseBoolean, unknown, DeleteManagedAccountQueryParams, void, void>('DELETE', `/managed-account`, {
+    base: getConfig('ccm/api'),
+    ...props
+  })
+
+export interface GetManagedAccountQueryParams {
+  accountIdentifier?: string
+  managedAccountId?: string
+}
+
+export type GetManagedAccountProps = Omit<
+  GetProps<ResponseManagedAccount, unknown, GetManagedAccountQueryParams, void>,
+  'path'
+>
+
+/**
+ * Get managed account
+ */
+export const GetManagedAccount = (props: GetManagedAccountProps) => (
+  <Get<ResponseManagedAccount, unknown, GetManagedAccountQueryParams, void>
+    path={`/managed-account`}
+    base={getConfig('ccm/api')}
+    {...props}
+  />
+)
+
+export type UseGetManagedAccountProps = Omit<
+  UseGetProps<ResponseManagedAccount, unknown, GetManagedAccountQueryParams, void>,
+  'path'
+>
+
+/**
+ * Get managed account
+ */
+export const useGetManagedAccount = (props: UseGetManagedAccountProps) =>
+  useGet<ResponseManagedAccount, unknown, GetManagedAccountQueryParams, void>(`/managed-account`, {
+    base: getConfig('ccm/api'),
+    ...props
+  })
+
+export interface CreateManagedAccountQueryParams {
+  accountIdentifier?: string
+  managedAccountId?: string
+}
+
+export type CreateManagedAccountProps = Omit<
+  MutateProps<ResponseString, unknown, CreateManagedAccountQueryParams, void, void>,
+  'path' | 'verb'
+>
+
+/**
+ * Create managed account record
+ */
+export const CreateManagedAccount = (props: CreateManagedAccountProps) => (
+  <Mutate<ResponseString, unknown, CreateManagedAccountQueryParams, void, void>
+    verb="POST"
+    path={`/managed-account`}
+    base={getConfig('ccm/api')}
+    {...props}
+  />
+)
+
+export type UseCreateManagedAccountProps = Omit<
+  UseMutateProps<ResponseString, unknown, CreateManagedAccountQueryParams, void, void>,
+  'path' | 'verb'
+>
+
+/**
+ * Create managed account record
+ */
+export const useCreateManagedAccount = (props: UseCreateManagedAccountProps) =>
+  useMutate<ResponseString, unknown, CreateManagedAccountQueryParams, void, void>('POST', `/managed-account`, {
+    base: getConfig('ccm/api'),
+    ...props
+  })
+
+export interface UpdateManagedAccountQueryParams {
+  accountIdentifier?: string
+}
+
+export type UpdateManagedAccountProps = Omit<
+  MutateProps<ResponseManagedAccount, unknown, UpdateManagedAccountQueryParams, ManagedAccount, void>,
+  'path' | 'verb'
+>
+
+/**
+ * Update managed account
+ */
+export const UpdateManagedAccount = (props: UpdateManagedAccountProps) => (
+  <Mutate<ResponseManagedAccount, unknown, UpdateManagedAccountQueryParams, ManagedAccount, void>
+    verb="PUT"
+    path={`/managed-account`}
+    base={getConfig('ccm/api')}
+    {...props}
+  />
+)
+
+export type UseUpdateManagedAccountProps = Omit<
+  UseMutateProps<ResponseManagedAccount, unknown, UpdateManagedAccountQueryParams, ManagedAccount, void>,
+  'path' | 'verb'
+>
+
+/**
+ * Update managed account
+ */
+export const useUpdateManagedAccount = (props: UseUpdateManagedAccountProps) =>
+  useMutate<ResponseManagedAccount, unknown, UpdateManagedAccountQueryParams, ManagedAccount, void>(
+    'PUT',
+    `/managed-account`,
+    { base: getConfig('ccm/api'), ...props }
+  )
+
+export interface GetEntityListQueryParams {
+  accountIdentifier?: string
+  managedAccountId?: string
+  entity?:
+    | 'PERSPECTIVE_ID'
+    | 'ANOMALY_ID'
+    | 'WORKLOAD'
+    | 'WORKLOAD_TYPE'
+    | 'CLUSTER_ID'
+    | 'CLUSTER_NAME'
+    | 'CLUSTER_NAMESPACE'
+    | 'CLUSTER_NAMESPACE_ID'
+    | 'CLUSTER_WORKLOAD'
+    | 'CLUSTER_WORKLOAD_ID'
+    | 'CLUSTER_NODE'
+    | 'CLUSTER_POD'
+    | 'CLUSTER_PARENT_INSTANCE_ID'
+    | 'CLUSTER_STORAGE'
+    | 'CLUSTER_APPLICATION'
+    | 'CLUSTER_ENVIRONMENT'
+    | 'CLUSTER_SERVICE'
+    | 'CLUSTER_CLOUD_PROVIDER'
+    | 'CLUSTER_ECS_SERVICE'
+    | 'CLUSTER_ECS_SERVICE_ID'
+    | 'CLUSTER_ECS_TASK'
+    | 'CLUSTER_ECS_TASK_ID'
+    | 'CLUSTER_ECS_LAUNCH_TYPE'
+    | 'CLUSTER_ECS_LAUNCH_TYPE_ID'
+    | 'NAMESPACE'
+    | 'SERVICE'
+    | 'SERVICE_NAME'
+    | 'GCP_PRODUCT'
+    | 'GCP_PROJECT'
+    | 'GCP_SKU_ID'
+    | 'GCP_SKU_DESCRIPTION'
+    | 'AWS_ACCOUNT'
+    | 'AWS_SERVICE'
+    | 'AWS_INSTANCE_TYPE'
+    | 'AWS_USAGE_TYPE'
+    | 'AWS_BILLING_ENTITY'
+    | 'AWS_LINE_ITEM_TYPE'
+    | 'AZURE_SUBSCRIPTION_GUID'
+    | 'AZURE_METER_NAME'
+    | 'AZURE_METER_CATEGORY'
+    | 'AZURE_METER_SUBCATEGORY'
+    | 'AZURE_RESOURCE_ID'
+    | 'AZURE_RESOURCE_GROUP_NAME'
+    | 'AZURE_RESOURCE_TYPE'
+    | 'AZURE_RESOURCE'
+    | 'AZURE_SERVICE_NAME'
+    | 'AZURE_SERVICE_TIER'
+    | 'AZURE_INSTANCE_ID'
+    | 'AZURE_SUBSCRIPTION_NAME'
+    | 'AZURE_PUBLISHER_NAME'
+    | 'AZURE_PUBLISHER_TYPE'
+    | 'AZURE_RESERVATION_ID'
+    | 'AZURE_RESERVATION_NAME'
+    | 'AZURE_FREQUENCY'
+    | 'COMMON_PRODUCT'
+    | 'COMMON_REGION'
+    | 'COMMON_NONE'
+    | 'CLOUD_PROVIDER'
+    | 'STATUS'
+    | 'REGION'
+    | 'ANOMALY_TIME'
+    | 'ACTUAL_COST'
+    | 'EXPECTED_COST'
+    | 'ANOMALOUS_SPEND'
+    | 'COST_IMPACT'
+    | 'TOTAL_COST'
+    | 'IDLE_COST'
+    | 'UNALLOCATED_COST'
+    | 'ALL'
+    | 'RULE_NAME'
+    | 'RULE_SET_NAME'
+  searchParam?: string
+  limit?: number
+  offset?: number
+}
+
+export type GetEntityListProps = Omit<GetProps<ResponseListString, unknown, GetEntityListQueryParams, void>, 'path'>
+
+/**
+ * Get entity list
+ */
+export const GetEntityList = (props: GetEntityListProps) => (
+  <Get<ResponseListString, unknown, GetEntityListQueryParams, void>
+    path={`/managed-account-data/entity-values`}
+    base={getConfig('ccm/api')}
+    {...props}
+  />
+)
+
+export type UseGetEntityListProps = Omit<
+  UseGetProps<ResponseListString, unknown, GetEntityListQueryParams, void>,
+  'path'
+>
+
+/**
+ * Get entity list
+ */
+export const useGetEntityList = (props: UseGetEntityListProps) =>
+  useGet<ResponseListString, unknown, GetEntityListQueryParams, void>(`/managed-account-data/entity-values`, {
+    base: getConfig('ccm/api'),
+    ...props
+  })
+
+export interface GetTotalMarkupAndSpendQueryParams {
+  accountIdentifier?: string
+  managedAccountId?: string
+  startTime?: number
+  endTime?: number
+}
+
+export type GetTotalMarkupAndSpendProps = Omit<
+  GetProps<ResponseManagedAccountStats, unknown, GetTotalMarkupAndSpendQueryParams, void>,
+  'path'
+>
+
+/**
+ * Get total markup and spend
+ */
+export const GetTotalMarkupAndSpend = (props: GetTotalMarkupAndSpendProps) => (
+  <Get<ResponseManagedAccountStats, unknown, GetTotalMarkupAndSpendQueryParams, void>
+    path={`/managed-account-data/stats`}
+    base={getConfig('ccm/api')}
+    {...props}
+  />
+)
+
+export type UseGetTotalMarkupAndSpendProps = Omit<
+  UseGetProps<ResponseManagedAccountStats, unknown, GetTotalMarkupAndSpendQueryParams, void>,
+  'path'
+>
+
+/**
+ * Get total markup and spend
+ */
+export const useGetTotalMarkupAndSpend = (props: UseGetTotalMarkupAndSpendProps) =>
+  useGet<ResponseManagedAccountStats, unknown, GetTotalMarkupAndSpendQueryParams, void>(`/managed-account-data/stats`, {
+    base: getConfig('ccm/api'),
+    ...props
+  })
+
+export interface GetManagedAccountTimeSeriesDataQueryParams {
+  accountIdentifier?: string
+  managedAccountId?: string
+  startTime?: number
+  endTime?: number
+}
+
+export type GetManagedAccountTimeSeriesDataProps = Omit<
+  GetProps<ResponseManagedAccountTimeSeriesData, unknown, GetManagedAccountTimeSeriesDataQueryParams, void>,
+  'path'
+>
+
+/**
+ * Get timeseries data for managed account
+ */
+export const GetManagedAccountTimeSeriesData = (props: GetManagedAccountTimeSeriesDataProps) => (
+  <Get<ResponseManagedAccountTimeSeriesData, unknown, GetManagedAccountTimeSeriesDataQueryParams, void>
+    path={`/managed-account-data/timeseries`}
+    base={getConfig('ccm/api')}
+    {...props}
+  />
+)
+
+export type UseGetManagedAccountTimeSeriesDataProps = Omit<
+  UseGetProps<ResponseManagedAccountTimeSeriesData, unknown, GetManagedAccountTimeSeriesDataQueryParams, void>,
+  'path'
+>
+
+/**
+ * Get timeseries data for managed account
+ */
+export const useGetManagedAccountTimeSeriesData = (props: UseGetManagedAccountTimeSeriesDataProps) =>
+  useGet<ResponseManagedAccountTimeSeriesData, unknown, GetManagedAccountTimeSeriesDataQueryParams, void>(
+    `/managed-account-data/timeseries`,
+    { base: getConfig('ccm/api'), ...props }
+  )
+
+export interface ListManagedAccountsQueryParams {
+  accountIdentifier?: string
+}
+
+export type ListManagedAccountsProps = Omit<
+  GetProps<ResponseListManagedAccount, unknown, ListManagedAccountsQueryParams, void>,
+  'path'
+>
+
+/**
+ * List managed accounts
+ */
+export const ListManagedAccounts = (props: ListManagedAccountsProps) => (
+  <Get<ResponseListManagedAccount, unknown, ListManagedAccountsQueryParams, void>
+    path={`/managed-account/list`}
+    base={getConfig('ccm/api')}
+    {...props}
+  />
+)
+
+export type UseListManagedAccountsProps = Omit<
+  UseGetProps<ResponseListManagedAccount, unknown, ListManagedAccountsQueryParams, void>,
+  'path'
+>
+
+/**
+ * List managed accounts
+ */
+export const useListManagedAccounts = (props: UseListManagedAccountsProps) =>
+  useGet<ResponseListManagedAccount, unknown, ListManagedAccountsQueryParams, void>(`/managed-account/list`, {
+    base: getConfig('ccm/api'),
+    ...props
+  })
+
+export interface GetMarginDetailsQueryParams {
+  accountIdentifier?: string
+  managedAccountId?: string
+}
+
+export type GetMarginDetailsProps = Omit<
+  GetProps<ResponseMarginDetails, unknown, GetMarginDetailsQueryParams, void>,
+  'path'
+>
+
+/**
+ * Get margin details
+ */
+export const GetMarginDetails = (props: GetMarginDetailsProps) => (
+  <Get<ResponseMarginDetails, unknown, GetMarginDetailsQueryParams, void>
+    path={`/margin-details`}
+    base={getConfig('ccm/api')}
+    {...props}
+  />
+)
+
+export type UseGetMarginDetailsProps = Omit<
+  UseGetProps<ResponseMarginDetails, unknown, GetMarginDetailsQueryParams, void>,
+  'path'
+>
+
+/**
+ * Get margin details
+ */
+export const useGetMarginDetails = (props: UseGetMarginDetailsProps) =>
+  useGet<ResponseMarginDetails, unknown, GetMarginDetailsQueryParams, void>(`/margin-details`, {
+    base: getConfig('ccm/api'),
+    ...props
+  })
+
+export interface CreateMarginDetailsQueryParams {
+  accountIdentifier?: string
+}
+
+export type CreateMarginDetailsProps = Omit<
+  MutateProps<ResponseString, unknown, CreateMarginDetailsQueryParams, MarginDetailsRequestBody, void>,
+  'path' | 'verb'
+>
+
+/**
+ * Create margin details
+ */
+export const CreateMarginDetails = (props: CreateMarginDetailsProps) => (
+  <Mutate<ResponseString, unknown, CreateMarginDetailsQueryParams, MarginDetailsRequestBody, void>
+    verb="POST"
+    path={`/margin-details`}
+    base={getConfig('ccm/api')}
+    {...props}
+  />
+)
+
+export type UseCreateMarginDetailsProps = Omit<
+  UseMutateProps<ResponseString, unknown, CreateMarginDetailsQueryParams, MarginDetailsRequestBody, void>,
+  'path' | 'verb'
+>
+
+/**
+ * Create margin details
+ */
+export const useCreateMarginDetails = (props: UseCreateMarginDetailsProps) =>
+  useMutate<ResponseString, unknown, CreateMarginDetailsQueryParams, MarginDetailsRequestBody, void>(
+    'POST',
+    `/margin-details`,
+    { base: getConfig('ccm/api'), ...props }
+  )
+
+export interface UpdateMarginDetailsQueryParams {
+  accountIdentifier?: string
+}
+
+export type UpdateMarginDetailsProps = Omit<
+  MutateProps<ResponseMarginDetails, unknown, UpdateMarginDetailsQueryParams, MarginDetailsRequestBody, void>,
+  'path' | 'verb'
+>
+
+/**
+ * Update margin details
+ */
+export const UpdateMarginDetails = (props: UpdateMarginDetailsProps) => (
+  <Mutate<ResponseMarginDetails, unknown, UpdateMarginDetailsQueryParams, MarginDetailsRequestBody, void>
+    verb="PUT"
+    path={`/margin-details`}
+    base={getConfig('ccm/api')}
+    {...props}
+  />
+)
+
+export type UseUpdateMarginDetailsProps = Omit<
+  UseMutateProps<ResponseMarginDetails, unknown, UpdateMarginDetailsQueryParams, MarginDetailsRequestBody, void>,
+  'path' | 'verb'
+>
+
+/**
+ * Update margin details
+ */
+export const useUpdateMarginDetails = (props: UseUpdateMarginDetailsProps) =>
+  useMutate<ResponseMarginDetails, unknown, UpdateMarginDetailsQueryParams, MarginDetailsRequestBody, void>(
+    'PUT',
+    `/margin-details`,
+    { base: getConfig('ccm/api'), ...props }
+  )
+
+export interface ListMarginDetailsQueryParams {
+  accountIdentifier?: string
+}
+
+export type ListMarginDetailsProps = Omit<
+  GetProps<ResponseListMarginDetails, unknown, ListMarginDetailsQueryParams, void>,
+  'path'
+>
+
+/**
+ * List margin details
+ */
+export const ListMarginDetails = (props: ListMarginDetailsProps) => (
+  <Get<ResponseListMarginDetails, unknown, ListMarginDetailsQueryParams, void>
+    path={`/margin-details/list`}
+    base={getConfig('ccm/api')}
+    {...props}
+  />
+)
+
+export type UseListMarginDetailsProps = Omit<
+  UseGetProps<ResponseListMarginDetails, unknown, ListMarginDetailsQueryParams, void>,
+  'path'
+>
+
+/**
+ * List margin details
+ */
+export const useListMarginDetails = (props: UseListMarginDetailsProps) =>
+  useGet<ResponseListMarginDetails, unknown, ListMarginDetailsQueryParams, void>(`/margin-details/list`, {
+    base: getConfig('ccm/api'),
+    ...props
+  })
+
+export interface UnsetMarginDetailsQueryParams {
+  accountIdentifier?: string
+  id?: string
+}
+
+export type UnsetMarginDetailsProps = Omit<
+  MutateProps<ResponseMarginDetails, unknown, UnsetMarginDetailsQueryParams, void, void>,
+  'path' | 'verb'
+>
+
+/**
+ * Unset margin details
+ */
+export const UnsetMarginDetails = (props: UnsetMarginDetailsProps) => (
+  <Mutate<ResponseMarginDetails, unknown, UnsetMarginDetailsQueryParams, void, void>
+    verb="PUT"
+    path={`/margin-details/unset-margins`}
+    base={getConfig('ccm/api')}
+    {...props}
+  />
+)
+
+export type UseUnsetMarginDetailsProps = Omit<
+  UseMutateProps<ResponseMarginDetails, unknown, UnsetMarginDetailsQueryParams, void, void>,
+  'path' | 'verb'
+>
+
+/**
+ * Unset margin details
+ */
+export const useUnsetMarginDetails = (props: UseUnsetMarginDetailsProps) =>
+  useMutate<ResponseMarginDetails, unknown, UnsetMarginDetailsQueryParams, void, void>(
+    'PUT',
+    `/margin-details/unset-margins`,
+    { base: getConfig('ccm/api'), ...props }
+  )
 
 export interface TimescaleSqlQueriesStatsQueryParams {
   accountIdentifier?: string
@@ -9231,10 +10600,16 @@ export const useGetForecastCostForPeriod = (props: UseGetForecastCostForPeriodPr
 
 export interface GetAllPerspectivesQueryParams {
   accountIdentifier: string
+  pageSize: number
+  pageNo: number
+  searchKey?: string
+  sortType?: 'TIME' | 'COST' | 'CLUSTER_COST' | 'NAME'
+  sortOrder?: 'ASCENDING' | 'DESCENDING'
+  cloudFilters?: ('AWS' | 'AZURE' | 'GCP' | 'CLUSTER' | 'DEFAULT')[]
 }
 
 export type GetAllPerspectivesProps = Omit<
-  GetProps<ResponseListQLCEView, unknown, GetAllPerspectivesQueryParams, void>,
+  GetProps<ResponsePerspectiveData, unknown, GetAllPerspectivesQueryParams, void>,
   'path'
 >
 
@@ -9242,7 +10617,7 @@ export type GetAllPerspectivesProps = Omit<
  * Get All perspectives
  */
 export const GetAllPerspectives = (props: GetAllPerspectivesProps) => (
-  <Get<ResponseListQLCEView, unknown, GetAllPerspectivesQueryParams, void>
+  <Get<ResponsePerspectiveData, unknown, GetAllPerspectivesQueryParams, void>
     path={`/perspective/getAllPerspectives`}
     base={getConfig('ccm/api')}
     {...props}
@@ -9250,7 +10625,7 @@ export const GetAllPerspectives = (props: GetAllPerspectivesProps) => (
 )
 
 export type UseGetAllPerspectivesProps = Omit<
-  UseGetProps<ResponseListQLCEView, unknown, GetAllPerspectivesQueryParams, void>,
+  UseGetProps<ResponsePerspectiveData, unknown, GetAllPerspectivesQueryParams, void>,
   'path'
 >
 
@@ -9258,7 +10633,7 @@ export type UseGetAllPerspectivesProps = Omit<
  * Get All perspectives
  */
 export const useGetAllPerspectives = (props: UseGetAllPerspectivesProps) =>
-  useGet<ResponseListQLCEView, unknown, GetAllPerspectivesQueryParams, void>(`/perspective/getAllPerspectives`, {
+  useGet<ResponsePerspectiveData, unknown, GetAllPerspectivesQueryParams, void>(`/perspective/getAllPerspectives`, {
     base: getConfig('ccm/api'),
     ...props
   })
@@ -9750,6 +11125,41 @@ export const useUpdateReportSetting = ({ accountIdentifier, ...props }: UseUpdat
     { base: getConfig('ccm/api'), pathParams: { accountIdentifier }, ...props }
   )
 
+export interface AzureVmRecommendationDetailQueryParams {
+  accountIdentifier: string
+  id: string
+}
+
+export type AzureVmRecommendationDetailProps = Omit<
+  GetProps<ResponseAzureVmRecommendationDTO, unknown, AzureVmRecommendationDetailQueryParams, void>,
+  'path'
+>
+
+/**
+ * Azure VM Recommendation Details
+ */
+export const AzureVmRecommendationDetail = (props: AzureVmRecommendationDetailProps) => (
+  <Get<ResponseAzureVmRecommendationDTO, unknown, AzureVmRecommendationDetailQueryParams, void>
+    path={`/recommendation/details/azure-vm`}
+    base={getConfig('ccm/api')}
+    {...props}
+  />
+)
+
+export type UseAzureVmRecommendationDetailProps = Omit<
+  UseGetProps<ResponseAzureVmRecommendationDTO, unknown, AzureVmRecommendationDetailQueryParams, void>,
+  'path'
+>
+
+/**
+ * Azure VM Recommendation Details
+ */
+export const useAzureVmRecommendationDetail = (props: UseAzureVmRecommendationDetailProps) =>
+  useGet<ResponseAzureVmRecommendationDTO, unknown, AzureVmRecommendationDetailQueryParams, void>(
+    `/recommendation/details/azure-vm`,
+    { base: getConfig('ccm/api'), ...props }
+  )
+
 export interface Ec2RecommendationDetailQueryParams {
   accountIdentifier: string
   id: string
@@ -10077,6 +11487,44 @@ export const useCreateRecommendationJira = (props: UseCreateRecommendationJiraPr
     { base: getConfig('ccm/api'), ...props }
   )
 
+export interface ChangeRecommendationStateQueryParams {
+  accountIdentifier: string
+  recommendationId: string
+  state: 'OPEN' | 'APPLIED' | 'IGNORED'
+}
+
+export type ChangeRecommendationStateProps = Omit<
+  MutateProps<ResponseVoid, unknown, ChangeRecommendationStateQueryParams, void, void>,
+  'path' | 'verb'
+>
+
+/**
+ * Mark recommendation as applied/open
+ */
+export const ChangeRecommendationState = (props: ChangeRecommendationStateProps) => (
+  <Mutate<ResponseVoid, unknown, ChangeRecommendationStateQueryParams, void, void>
+    verb="POST"
+    path={`/recommendation/overview/change-state`}
+    base={getConfig('ccm/api')}
+    {...props}
+  />
+)
+
+export type UseChangeRecommendationStateProps = Omit<
+  UseMutateProps<ResponseVoid, unknown, ChangeRecommendationStateQueryParams, void, void>,
+  'path' | 'verb'
+>
+
+/**
+ * Mark recommendation as applied/open
+ */
+export const useChangeRecommendationState = (props: UseChangeRecommendationStateProps) =>
+  useMutate<ResponseVoid, unknown, ChangeRecommendationStateQueryParams, void, void>(
+    'POST',
+    `/recommendation/overview/change-state`,
+    { base: getConfig('ccm/api'), ...props }
+  )
+
 export interface RecommendationsCountQueryParams {
   accountIdentifier: string
 }
@@ -10219,42 +11667,61 @@ export const useListRecommendations = (props: UseListRecommendationsProps) =>
     void
   >('POST', `/recommendation/overview/list`, { base: getConfig('ccm/api'), ...props })
 
-export interface MarkAppliedQueryParams {
+export interface RecommendationResourceTypeStatsQueryParams {
   accountIdentifier: string
-  recommendationId: string
 }
 
-export type MarkAppliedProps = Omit<
-  MutateProps<ResponseVoid, unknown, MarkAppliedQueryParams, void, void>,
+export type RecommendationResourceTypeStatsProps = Omit<
+  MutateProps<
+    ResponseListRecommendationResourceTypeStats,
+    unknown,
+    RecommendationResourceTypeStatsQueryParams,
+    CCMRecommendationFilterPropertiesRequestBody,
+    void
+  >,
   'path' | 'verb'
 >
 
 /**
- * Mark recommendation as applied
+ * Recommendations Statistics Grouped on Resource Type
  */
-export const MarkApplied = (props: MarkAppliedProps) => (
-  <Mutate<ResponseVoid, unknown, MarkAppliedQueryParams, void, void>
+export const RecommendationResourceTypeStats = (props: RecommendationResourceTypeStatsProps) => (
+  <Mutate<
+    ResponseListRecommendationResourceTypeStats,
+    unknown,
+    RecommendationResourceTypeStatsQueryParams,
+    CCMRecommendationFilterPropertiesRequestBody,
+    void
+  >
     verb="POST"
-    path={`/recommendation/overview/mark-applied`}
+    path={`/recommendation/overview/resource-type/stats`}
     base={getConfig('ccm/api')}
     {...props}
   />
 )
 
-export type UseMarkAppliedProps = Omit<
-  UseMutateProps<ResponseVoid, unknown, MarkAppliedQueryParams, void, void>,
+export type UseRecommendationResourceTypeStatsProps = Omit<
+  UseMutateProps<
+    ResponseListRecommendationResourceTypeStats,
+    unknown,
+    RecommendationResourceTypeStatsQueryParams,
+    CCMRecommendationFilterPropertiesRequestBody,
+    void
+  >,
   'path' | 'verb'
 >
 
 /**
- * Mark recommendation as applied
+ * Recommendations Statistics Grouped on Resource Type
  */
-export const useMarkApplied = (props: UseMarkAppliedProps) =>
-  useMutate<ResponseVoid, unknown, MarkAppliedQueryParams, void, void>(
-    'POST',
-    `/recommendation/overview/mark-applied`,
-    { base: getConfig('ccm/api'), ...props }
-  )
+export const useRecommendationResourceTypeStats = (props: UseRecommendationResourceTypeStatsProps) =>
+  useMutate<
+    ResponseListRecommendationResourceTypeStats,
+    unknown,
+    RecommendationResourceTypeStatsQueryParams,
+    CCMRecommendationFilterPropertiesRequestBody,
+    void
+  >('POST', `/recommendation/overview/resource-type/stats`, { base: getConfig('ccm/api'), ...props })
 
 export interface RecommendationStatsQueryParams {
   accountIdentifier: string
@@ -10311,6 +11778,62 @@ export const useRecommendationStats = (props: UseRecommendationStatsProps) =>
     CCMRecommendationFilterPropertiesRequestBody,
     void
   >('POST', `/recommendation/overview/stats`, { base: getConfig('ccm/api'), ...props })
+
+export interface CreateRecommendationServicenowTicketQueryParams {
+  accountIdentifier: string
+}
+
+export type CreateRecommendationServicenowTicketProps = Omit<
+  MutateProps<
+    ResponseCCMServiceNowDetails,
+    unknown,
+    CreateRecommendationServicenowTicketQueryParams,
+    CCMServiceNowCreateDTO,
+    void
+  >,
+  'path' | 'verb'
+>
+
+/**
+ * Create servicenow ticket for recommendation
+ */
+export const CreateRecommendationServicenowTicket = (props: CreateRecommendationServicenowTicketProps) => (
+  <Mutate<
+    ResponseCCMServiceNowDetails,
+    unknown,
+    CreateRecommendationServicenowTicketQueryParams,
+    CCMServiceNowCreateDTO,
+    void
+  >
+    verb="POST"
+    path={`/recommendation/servicenow/create`}
+    base={getConfig('ccm/api')}
+    {...props}
+  />
+)
+
+export type UseCreateRecommendationServicenowTicketProps = Omit<
+  UseMutateProps<
+    ResponseCCMServiceNowDetails,
+    unknown,
+    CreateRecommendationServicenowTicketQueryParams,
+    CCMServiceNowCreateDTO,
+    void
+  >,
+  'path' | 'verb'
+>
+
+/**
+ * Create servicenow ticket for recommendation
+ */
+export const useCreateRecommendationServicenowTicket = (props: UseCreateRecommendationServicenowTicketProps) =>
+  useMutate<
+    ResponseCCMServiceNowDetails,
+    unknown,
+    CreateRecommendationServicenowTicketQueryParams,
+    CCMServiceNowCreateDTO,
+    void
+  >('POST', `/recommendation/servicenow/create`, { base: getConfig('ccm/api'), ...props })
 
 export interface ValidateConnectorQueryParams {
   accountIdentifier?: string

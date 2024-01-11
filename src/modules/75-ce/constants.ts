@@ -185,7 +185,7 @@ export const notificationChannelsList = [
   }
 ]
 
-export type channels = 'EMAIL' | 'SLACK' | 'PAGERDUTY' | 'MSTEAMS'
+export type channels = 'EMAIL' | 'SLACK' | 'PAGERDUTY' | 'MSTEAMS' | 'WEBHOOK'
 
 export const channelNameUrlMapping = {
   SLACK: 'slackWebHookUrl',
