@@ -14,7 +14,6 @@ import {
   Container,
   Layout,
   PageSpinner,
-  SelectOption,
   useConfirmationDialog,
   useToaster,
   VisualYamlSelectedView as SelectedView,
@@ -26,7 +25,7 @@ import { defaultTo, isEmpty, merge } from 'lodash-es'
 import produce from 'immer'
 import { parse } from '@common/utils/YamlHelperMethods'
 import type { Error, PipelineInfoConfig, ResponsePMSPipelineSummaryResponse } from 'services/pipeline-ng'
-import { EntityGitDetails, InputSetSummaryResponse, useGetInputsetYaml } from 'services/pipeline-ng'
+import { EntityGitDetails, useGetInputsetYaml } from 'services/pipeline-ng'
 import { useStrings } from 'framework/strings'
 import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import type {
@@ -86,10 +85,10 @@ interface PipelineWithGitContextFormProps extends PipelineInfoConfig {
   storeType?: string
 }
 
-interface InputSetValue extends SelectOption {
-  type: InputSetSummaryResponse['inputSetType']
-  gitDetails?: EntityGitDetails
-}
+// interface InputSetValue extends SelectOption {
+//   type: InputSetSummaryResponse['inputSetType']
+//   gitDetails?: EntityGitDetails
+// }
 
 const runModalProps: IDialogProps = {
   isOpen: true,
@@ -582,24 +581,6 @@ export function PipelineCanvasY1(): React.ReactElement {
     }
   })
 
-  const getInputSetSelected = (): InputSetValue[] => {
-    if (inputSetType) {
-      const inputSetSelected: InputSetValue[] = [
-        {
-          type: inputSetType as InputSetSummaryResponse['inputSetType'],
-          value: inputSetValue ?? '',
-          label: inputSetLabel ?? '',
-          gitDetails: {
-            repoIdentifier: inputSetRepoIdentifier,
-            branch: inputSetBranch
-          }
-        }
-      ]
-      return inputSetSelected
-    }
-    return []
-  }
-
   React.useEffect(() => {
     if (data) {
       ;(data as unknown as Response).text().then(str => {
@@ -664,8 +645,6 @@ export function PipelineCanvasY1(): React.ReactElement {
               projectIdentifier={projectIdentifier}
               accountId={accountId}
               module={module}
-              inputSetYAML={defaultTo(inputSetYaml, '')}
-              inputSetSelected={getInputSetSelected()}
               connectorRef={connectorRef}
               repoIdentifier={isPipelineRemote ? repoName : repoIdentifier}
               branch={branch}

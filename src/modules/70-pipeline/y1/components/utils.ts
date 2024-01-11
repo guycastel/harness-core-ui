@@ -6,6 +6,7 @@
  */
 
 import { JsonNode } from 'services/cd-ng'
+import { InputsKVPair } from './RunPipelineModal/RunPipelineFormY1'
 
 export const STAGE_REGEX = 'spec.stages'
 export const STEP_REGEX = 'spec.steps'
@@ -43,4 +44,42 @@ export const getStepSanitizedData = (unSanitizedObj: JsonNode): JsonNode => {
   } catch (e) {
     return unSanitizedObj
   }
+}
+
+export const replaceEmptyStringsWithNull = (values: InputsKVPair): [boolean, InputsKVPair] => {
+  let isReplaced = false
+
+  const replacedValues = Object.fromEntries(
+    Object.entries(values).map(([k, v]) => {
+      if (v === '') {
+        isReplaced = true
+        return [k, null]
+      }
+      return [k, v]
+    })
+  )
+
+  return [isReplaced, replacedValues]
+}
+
+export const wrapEmptyStrings = (values: InputsKVPair): InputsKVPair => {
+  return Object.fromEntries(
+    Object.entries(values).map(([k, v]) => {
+      if (v === '') {
+        return [k, '""']
+      }
+      return [k, v]
+    })
+  )
+}
+
+export const unwrapEmptyStrings = (values: InputsKVPair): InputsKVPair => {
+  return Object.fromEntries(
+    Object.entries(values).map(([k, v]) => {
+      if (v === '""') {
+        return [k, '']
+      }
+      return [k, v]
+    })
+  )
 }

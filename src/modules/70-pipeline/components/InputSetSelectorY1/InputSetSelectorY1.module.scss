@@ -6,12 +6,44 @@
  */
 
 .inputSetSelector {
-  width: 325px !important;
+  --selector-width: 325px;
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-small);
+  width: var(--selector-width);
+  transition: width 250ms ease-out;
+
+  &.collapsed {
+    --selector-width: 100px;
+  }
+}
+
+.collapseBtn {
+  --size: 24px;
+  position: absolute;
+  top: 12px;
+  right: 0;
+  transform: translateX(50%);
+  border-radius: var(--size);
+  border: 1px solid var(--grey-200);
+  background: var(--primary-bg);
+  height: var(--size);
+  width: var(--size);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 }
 
 .inputSetItem {
   justify-content: space-between;
   padding: var(--spacing-small) !important;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid rgba(22, 21, 19, 0.1);
+  }
 
   &:hover {
     background: var(--primary-1);

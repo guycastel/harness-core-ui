@@ -1,9 +1,9 @@
-.inputsForm {
-  background-color: var(--white);
-  box-shadow: 0px 0.5px 2px 0px #60617029;
-  border-radius: 4px;
-  padding: var(--spacing-medium);
-}
+/*
+ * Copyright 2023 Harness Inc. All rights reserved.
+ * Use of this source code is governed by the PolyForm Shield 1.0.0 license
+ * that can be found in the licenses directory at the root of this repository, also available at
+ * https://polyformproject.org/wp-content/uploads/2020/06/PolyForm-Shield-1.0.0.txt.
+ */
 
 .inputRow {
   display: grid;
@@ -12,7 +12,7 @@
   padding: var(--spacing-medium) 0;
   padding-right: var(--spacing-medium);
 
-  &:not(:last-child) {
+  &:not(:last-child, .inputRowHeader) {
     border-bottom: 1px solid var(--grey-200);
     margin-bottom: var(--spacing-medium);
   }
@@ -22,5 +22,4 @@
   color: var(--grey-500);
   text-transform: uppercase;
   padding: var(--spacing-small) 0;
-  border-bottom: none !important;
 }

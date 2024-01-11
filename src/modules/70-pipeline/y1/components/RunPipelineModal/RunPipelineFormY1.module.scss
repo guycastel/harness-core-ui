@@ -13,24 +13,10 @@
 }
 
 .run-form {
-  min-height: initial;
-  .editor {
-    width: 100%;
-    // max height is same as the height in visual view
-    max-height: 65vh !important;
-    padding-top: var(--spacing-medium);
-    padding-bottom: var(--spacing-medium);
+  .editorContainer {
+    padding: 0px var(--spacing-xlarge);
   }
-  .content {
-    min-height: calc(100vh - 187px);
-    overflow: auto;
-    display: block;
-    max-height: calc(100vh - 187px);
 
-    & > form {
-      width: 100%;
-    }
-  }
   .pipelineHeader {
     height: 62px;
     width: 100% !important;
@@ -104,11 +90,8 @@
 }
 
 .run-modal-form-content {
-  max-height: 65vh !important;
-  min-height: 30vh;
-  overflow-x: hidden;
-  overflow: auto !important;
   border-top: 1px solid var(--grey-200);
+
   &.noRuntimeInput {
     border-top: none;
     min-height: unset;
@@ -317,6 +300,51 @@
   width: 250px !important;
 }
 
+.splitView {
+  --content-height: 500px;
+
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: var(--spacing-small);
+  height: var(--content-height);
+}
+
+.inputSetSelector {
+  background-color: var(--white);
+  padding: var(--spacing-medium);
+  padding-bottom: 0px;
+  box-shadow: 0px 4px 8px 0px rgba(96, 97, 112, 0.16);
+  clip-path: inset(0px -12px 0px 0px);
+
+  .inputSetListHolder {
+    overflow: auto;
+    margin-right: calc(-1 * var(--spacing-medium));
+    padding-right: var(--spacing-medium);
+  }
+}
+
+.selectedListAndFields {
+  background-color: var(--white);
+  padding: var(--spacing-medium);
+  padding-bottom: 0px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.selectedInputSetList {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.orderBy {
+  text-transform: uppercase;
+}
+
 .inputsForm {
-  margin: var(--spacing-large);
+  overflow: auto;
+  margin-right: calc(-1 * var(--spacing-medium));
+  padding-right: var(--spacing-medium);
 }

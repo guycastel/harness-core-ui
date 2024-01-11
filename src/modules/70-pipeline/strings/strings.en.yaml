@@ -994,6 +994,7 @@ inputSets:
   lastApplied: 'Last Applied: '
   noReconcileOccured: Input set is valid and currently in sync with the Pipeline. No YAML reconciliation occured for the input set.
   inputSetNotFoundInBranch: Input Set not found in branch [{{branch}}]
+  inputSetNotFound: Input set not found
   manageInputSetTooltip: Inputs that are listed below but left as empty value will be null by default. You may manage it here.
   selectedOutOf: Selected {{selected}} out of {{all}}
   manageInputsInProgress: Save is disabled while manage inputs is active. Apply or cancel manage inputs to save input set.

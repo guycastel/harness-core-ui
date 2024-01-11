@@ -9,8 +9,8 @@
 declare const styles: {
   readonly editor: string
   readonly gitForm: string
-  readonly inputSetListHolder: string
   readonly inputSetPreviewHolder: string
+  readonly inputSetSelector: string
   readonly inputsForm: string
   readonly inputsSection: string
   readonly listHolderClassName: string

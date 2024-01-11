@@ -5,10 +5,10 @@
  * https://polyformproject.org/wp-content/uploads/2020/06/PolyForm-Shield-1.0.0.txt.
  */
 
-import { SelectedInputSetListValue } from '../InputSetSelector/SelectedInputSetList'
+import { InputSetListItem } from '../InputSetSelector/SelectedInputSetList'
 
 export const INPUT_SET_SELECTOR_PAGE_SIZE = 100
 
-export const isInputSetItemSelected = (selected: SelectedInputSetListValue[], identifier: string): boolean => {
+export const isInputSetItemSelected = (selected: InputSetListItem[], identifier: string): boolean => {
   return !!selected.find(item => item.value === identifier)
 }

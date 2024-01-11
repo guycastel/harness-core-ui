@@ -6,10 +6,8 @@
  */
 
 import React from 'react'
-import cx from 'classnames'
 import { InputRow, InputRowHeader } from './InputRow'
 import { UIInputs } from './types'
-import css from './InputsForm.module.scss'
 
 export type InputsFormValues = { [key: string]: unknown }
 
@@ -22,7 +20,7 @@ export function InputsForm(props: InputsFormProps): React.ReactElement {
   const { inputs, className } = props //initialValues, onChange,
 
   return (
-    <div className={cx(css.inputsForm, className)}>
+    <div className={className}>
       <InputRowHeader />
       {inputs.inputs.map(input => {
         return <InputRow key={input.name} input={input} />

@@ -40,13 +40,11 @@ import type {
   //AccessControlCheckError,
   useGetPipeline
 } from 'services/pipeline-ng'
-import { useMutateAsGet } from '@common/hooks/useMutateAsGet'
 // TODO start
 import {
   ALL_STAGE_VALUE,
   getAllStageData,
   getAllStageItem,
-  getStageIdentifierFromStageData,
   SelectedStageData,
   StageSelectionData
 } from '@pipeline/utils/runPipelineUtils'
@@ -81,7 +79,6 @@ export interface RunModalHeaderY1Props {
   executionStageList: SelectOption[]
   runModalHeaderTitle: string
   refetchPipeline: ReturnType<typeof useGetPipeline>['refetch']
-  refetchTemplate: ReturnType<typeof useMutateAsGet>['refetch']
   selectedBranch?: string
   onGitBranchChange(selectedFilter: GitFilterScope, defaultSelected?: boolean): void
   remoteFetchError?: GetDataError<Failure | Error> | null
@@ -110,7 +107,6 @@ export default function RunModalHeaderY1(props: RunModalHeaderY1Props): React.Re
     executionStageList,
     runModalHeaderTitle,
     refetchPipeline,
-    refetchTemplate,
     selectedBranch,
     remoteFetchError,
     onGitBranchChange,
@@ -138,12 +134,6 @@ export default function RunModalHeaderY1(props: RunModalHeaderY1Props): React.Re
 
   const handleReloadFromCache = (): void => {
     refetchPipeline({
-      requestOptions: { headers: { 'Load-From-Cache': 'false' } }
-    })
-    refetchTemplate({
-      body: {
-        stageIdentifiers: getStageIdentifierFromStageData(selectedStageData)
-      },
       requestOptions: { headers: { 'Load-From-Cache': 'false' } }
     })
   }

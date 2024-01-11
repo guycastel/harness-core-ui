@@ -9,6 +9,5 @@
 declare const styles: {
   readonly inputRow: string
   readonly inputRowHeader: string
-  readonly inputsForm: string
 }
 export default styles

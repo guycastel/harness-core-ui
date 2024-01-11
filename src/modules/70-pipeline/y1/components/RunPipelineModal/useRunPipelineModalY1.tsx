@@ -11,7 +11,6 @@ import { Dialog, IDialogProps } from '@blueprintjs/core'
 import { Button, ButtonVariation, Layout, PageSpinner } from '@harness/uicore'
 import { useModalHook } from '@harness/use-modal'
 // TODO start
-import { InputSetValue } from '@pipeline/components/InputSetSelector/utils'
 import type { InputSetSelectorProps } from '@pipeline/components/InputSetSelector/InputSetSelector'
 // TODO end
 import type { ExecutionPathProps, GitQueryParams, PipelineType } from '@common/interfaces/RouteInterfaces'
@@ -99,23 +98,6 @@ export const useRunPipelineModalY1 = (
     }
   }, [runPipelineInputsetData])
 
-  const getInputSetSelected = (): InputSetValue[] => {
-    if (inputSetSelected) {
-      return [
-        {
-          type: inputSetSelected[0].type,
-          value: inputSetSelected[0].value ?? '',
-          label: inputSetSelected[0].label ?? '',
-          gitDetails: {
-            repoIdentifier: inputSetSelected[0].gitDetails?.repoIdentifier,
-            branch: inputSetSelected[0].gitDetails?.branch
-          }
-        }
-      ]
-    }
-    return []
-  }
-
   const runModalProps: IDialogProps = {
     isOpen: true,
     autoFocus: true,
@@ -140,13 +122,11 @@ export const useRunPipelineModalY1 = (
               projectIdentifier={projectIdentifier}
               accountId={accountId}
               module={module}
-              inputSetYAML={inputSetYaml || ''}
               repoIdentifier={repoIdentifier}
               source={source}
               branch={branch}
               connectorRef={connectorRef}
               storeType={storeType}
-              inputSetSelected={getInputSetSelected()}
               onClose={() => {
                 hideRunPipelineModal()
               }}

@@ -61,7 +61,7 @@ import useDiffDialog from '@modules/10-common/hooks/useDiffDialog'
 import NoEntityFound from '@modules/70-pipeline/pages/utils/NoEntityFound/NoEntityFound'
 import { PipelineVariablesContextProvider } from '../PipelineVariablesContext/PipelineVariablesContext'
 import { InputSetFormHeader } from '../InputSetFormHeader/InputSetFormHeader'
-import { InputSetMetadataY1, FromikInputSetY1, InputSetY1, SelectedItemsType, InputSetKVPairs } from './types'
+import { InputSetMetadataY1, FromikInputSetY1, InputSetY1, InputSetItem, InputSetKVPairs } from './types'
 import { ErrorsStrip } from '../ErrorsStrip/ErrorsStrip'
 import {
   addRemoveKeysFromInputSet,
@@ -106,10 +106,10 @@ export function InputSetFormY1(props: OverlayInputSetFormY1Props): React.ReactEl
   const formikRef = useRef<FormikProps<FromikInputSetY1>>()
   const [formErrors] = useState<Record<string, unknown>>({})
   const [selectedInputSetItems, setSelectedInputSetItems] = useState<{
-    selected: SelectedItemsType[]
+    selected: InputSetItem[]
     initial?: boolean
   }>({ selected: [] })
-  const [allInputSetItems, setAllInputSetItems] = useState<SelectedItemsType[]>([])
+  const [allInputSetItems, setAllInputSetItems] = useState<InputSetItem[]>([])
   const [mergedInputSetValues, setMergedInputSetValues] = useState<InputSetKVPairs>({}) // undefined
   const [selectedView, setSelectedView] = useState<SelectedView>(SelectedView.VISUAL)
   const [yamlHandler, setYamlHandler] = useState<YamlBuilderHandlerBinding | undefined>()
@@ -337,7 +337,7 @@ export function InputSetFormY1(props: OverlayInputSetFormY1Props): React.ReactEl
 
             // set selected input set
             const inputSetArr = inputSetFromYaml.spec?.input_sets ?? []
-            const isItems: SelectedItemsType[] = inputSetIdsToSelectedItems(inputSetArr, allInputSetItems)
+            const isItems: InputSetItem[] = inputSetIdsToSelectedItems(inputSetArr, allInputSetItems)
             setSelectedInputSetItems({ selected: isItems })
 
             // set visible inputs
@@ -467,7 +467,7 @@ export function InputSetFormY1(props: OverlayInputSetFormY1Props): React.ReactEl
     if (overlayInputSetFormik && allInputSetItems.length > 0 && !initialized) {
       const inputSetArr = overlayInputSetFormik?.spec?.input_sets ?? []
 
-      const isItems: SelectedItemsType[] = inputSetIdsToSelectedItems(inputSetArr, allInputSetItems)
+      const isItems: InputSetItem[] = inputSetIdsToSelectedItems(inputSetArr, allInputSetItems)
 
       setSelectedInputSetItems({ selected: isItems, initial: true })
       setInitialized(true)
@@ -641,24 +641,23 @@ export function InputSetFormY1(props: OverlayInputSetFormY1Props): React.ReactEl
                       </Container>
                       <Layout.Horizontal className={css.manageHolder} spacing={10}></Layout.Horizontal>
                       <Container className={cx(css.section, css.inputsSection)}>
-                        <Container className={css.inputSetListHolder}>
-                          <InputSetSelectorY1
-                            pipelineIdentifier={pipelineIdentifier}
-                            selectedInputSetItems={selectedInputSetItems.selected}
-                            onAdd={inputSetItem => {
-                              const newValue = [...selectedInputSetItems.selected, inputSetItem]
-                              setSelectedInputSetItems({ selected: newValue })
-                              formikProps.setFieldValue(
-                                'spec.input_sets',
-                                newValue.map(item => item.value)
-                              )
-                            }}
-                            listHolderClassName={css.listHolderClassName}
-                            onListChange={inputSetItems => {
-                              setAllInputSetItems(inputSetItems)
-                            }}
-                          />
-                        </Container>
+                        <InputSetSelectorY1
+                          pipelineIdentifier={pipelineIdentifier}
+                          selectedInputSetItems={selectedInputSetItems.selected}
+                          onAdd={inputSetItem => {
+                            const newValue = [...selectedInputSetItems.selected, inputSetItem]
+                            setSelectedInputSetItems({ selected: newValue })
+                            formikProps.setFieldValue(
+                              'spec.input_sets',
+                              newValue.map(item => item.value)
+                            )
+                          }}
+                          className={css.inputSetSelector}
+                          listHolderClassName={css.listHolderClassName}
+                          onListChange={inputSetItems => {
+                            setAllInputSetItems(inputSetItems)
+                          }}
+                        />
                         <div className={css.inputSetPreviewHolder}>
                           <div className={css.selectedInputSetListHolder}>
                             {selectedInputSetItems && selectedInputSetItems.selected.length === 0 ? (

@@ -8,7 +8,7 @@
 import { IconName, SelectOption, MultiTypeInputType } from '@harness/uicore'
 import { clone, remove } from 'lodash-es'
 import type { EntityGitDetails, InputSetSummaryResponse } from 'services/pipeline-ng'
-import { SelectedInputSetListValue } from './SelectedInputSetList'
+import { InputSetListItem } from './SelectedInputSetList'
 import css from './InputSetSelector.module.scss'
 
 export const INPUT_SET_SELECTOR_PAGE_SIZE = 100
@@ -34,7 +34,7 @@ export const getIconByType = (type: 'INPUT_SET' | 'OVERLAY_INPUT_SET' | string |
   return type === 'OVERLAY_INPUT_SET' ? 'step-group' : 'yaml-builder-input-sets'
 }
 
-export const onDragStart = (event: React.DragEvent<HTMLLIElement>, row: SelectedInputSetListValue): void => {
+export const onDragStart = (event: React.DragEvent<HTMLLIElement>, row: InputSetListItem): void => {
   event.dataTransfer.setData('data', JSON.stringify(row))
   event.currentTarget.classList.add(css.dragging)
 }

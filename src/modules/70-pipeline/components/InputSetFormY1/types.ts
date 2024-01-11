@@ -7,7 +7,7 @@
 
 import { GitSyncFormFields } from '@modules/40-gitsync/components/GitSyncForm/GitSyncForm'
 import { InputSetSummaryResponse } from 'services/pipeline-ng'
-import { SelectedInputSetListValue } from '../InputSetSelector/SelectedInputSetList'
+import { InputSetListItem } from '../InputSetSelector/SelectedInputSetList'
 
 export type InputSetsY1 = string[]
 
@@ -34,4 +34,4 @@ export interface InputSetMetadataY1 {
 
 export type FromikInputSetY1 = InputSetY1 & InputSetMetadataY1 & GitSyncFormFields & { storeType?: 'INLINE' | 'REMOTE' }
 
-export type SelectedItemsType = SelectedInputSetListValue<InputSetSummaryResponse>
+export type InputSetItem = InputSetListItem<InputSetSummaryResponse>

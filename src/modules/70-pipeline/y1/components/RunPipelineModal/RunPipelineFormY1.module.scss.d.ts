@@ -16,7 +16,7 @@ declare const styles: {
   readonly disabledStageDropdown: string
   readonly divider: string
   readonly dividerWrapper: string
-  readonly editor: string
+  readonly editorContainer: string
   readonly error: string
   readonly errorHandlerDialog: string
   readonly expressionsTooltip: string
@@ -28,6 +28,8 @@ declare const styles: {
   readonly iconInfo: string
   readonly infoStrip: string
   readonly inputSetFormRunPipeline: string
+  readonly inputSetListHolder: string
+  readonly inputSetSelector: string
   readonly inputSetsUpdatingSpinner: string
   readonly inputsForm: string
   readonly modalContent: string
@@ -39,6 +41,7 @@ declare const styles: {
   readonly noPipelineInputSetForm: string
   readonly noRuntimeInput: string
   readonly optionBtns: string
+  readonly orderBy: string
   readonly pipelineHeader: string
   readonly popoverDisabledTextStyle: string
   readonly preFlightCheckModal: string
@@ -57,6 +60,9 @@ declare const styles: {
   readonly secondaryButton: string
   readonly selectStage: string
   readonly selectStageWrapper: string
+  readonly selectedInputSetList: string
+  readonly selectedListAndFields: string
+  readonly splitView: string
   readonly stageExecutionErrorTooltip: string
   readonly stageName: string
   readonly stageSelectionItem: string

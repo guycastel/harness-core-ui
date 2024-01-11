@@ -13,7 +13,7 @@ import { Color } from '@harness/design-system'
 import { getIconByType, onDragEnd, onDragLeave, onDragOver, onDragStart } from './utils'
 import css from './InputSetSelector.module.scss'
 
-export interface SelectedInputSetListValue<T = unknown> {
+export interface InputSetListItem<T = unknown> {
   type: string
   label: string
   value: string | number | symbol
@@ -21,21 +21,21 @@ export interface SelectedInputSetListValue<T = unknown> {
 }
 
 export interface SelectedInputSetListProps<T> {
-  value: Array<SelectedInputSetListValue<T>>
-  onChange?: (value: Array<SelectedInputSetListValue<T>>) => void
-  isDisabled?: (item: SelectedInputSetListValue<T>) => boolean
+  value: Array<InputSetListItem<T>>
+  onChange?: (value: Array<InputSetListItem<T>>) => void
+  isDisabled?: (item: InputSetListItem<T>) => boolean
 }
 
 export function SelectedInputSetList<T>({ value, onChange, isDisabled }: SelectedInputSetListProps<T>): JSX.Element {
   const onDrop = React.useCallback(
-    (event: React.DragEvent<HTMLLIElement>, droppedLocation: SelectedInputSetListValue<T>) => {
+    (event: React.DragEvent<HTMLLIElement>, droppedLocation: InputSetListItem<T>) => {
       if (event.preventDefault) {
         event.preventDefault()
       }
       const data = event.dataTransfer.getData('data')
       if (data) {
         try {
-          const dropInputSet: SelectedInputSetListValue = JSON.parse(data)
+          const dropInputSet: InputSetListItem = JSON.parse(data)
           const selected = clone(value)
           const droppedItem = selected.filter(item => item.value === dropInputSet.value)[0]
           if (droppedItem) {

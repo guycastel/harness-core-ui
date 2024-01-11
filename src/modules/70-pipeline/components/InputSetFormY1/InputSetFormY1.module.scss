@@ -17,16 +17,15 @@
   display: flex;
 }
 
+.inputSetSelector {
+  padding-right: var(--spacing-medium);
+}
+
 .nameId {
   // style only name field
   [class*='InputWithIdentifier--txtNameContainer'] {
     max-width: 295px;
   }
-}
-
-.inputSetListHolder {
-  flex: 0 0 200px;
-  padding-right: var(--spacing-medium) !important;
 }
 
 .inputSetPreviewHolder {
@@ -46,7 +45,6 @@
 }
 
 .selectedInputSetList {
-  margin-left: var(--spacing-large);
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -55,6 +53,7 @@
 .listHolderClassName {
   max-height: 400px;
   overflow: auto;
+  margin-right: calc(-1 * var(--spacing-medium));
 }
 
 .inputsForm {

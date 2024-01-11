@@ -5,7 +5,7 @@
  * https://polyformproject.org/wp-content/uploads/2020/06/PolyForm-Shield-1.0.0.txt.
  */
 
-import React, { useCallback, useEffect, useMemo, useRef } from 'react'
+import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react'
 import { Layout, Text, TextInput, Container, Icon } from '@harness/uicore'
 import { Color } from '@harness/design-system'
 import cx from 'classnames'
@@ -18,17 +18,18 @@ import { useStrings } from 'framework/strings'
 import { useInfiniteScroll } from '@modules/10-common/hooks/useInfiniteScroll'
 import { INPUT_SET_SELECTOR_PAGE_SIZE, isInputSetItemSelected } from './utils'
 import { InputSetType } from './types'
-import { SelectedInputSetListValue } from '../InputSetSelector/SelectedInputSetList'
+import { InputSetListItem } from '../InputSetSelector/SelectedInputSetList'
 import css from './InputSetSelectorY1.module.scss'
 
 export interface InputSetSelectorProps {
   pipelineIdentifier: string
-  selectedInputSetItems: SelectedInputSetListValue<InputSetSummaryResponse>[]
-  onAdd?: (inputSetItem: SelectedInputSetListValue<InputSetSummaryResponse>) => void
-  onListChange?: (inputSetItems: SelectedInputSetListValue<InputSetSummaryResponse>[]) => void
+  selectedInputSetItems: InputSetListItem<InputSetSummaryResponse>[]
+  onAdd?: (inputSetItem: InputSetListItem<InputSetSummaryResponse>) => void
+  onListChange?: (inputSetItems: InputSetListItem<InputSetSummaryResponse>[]) => void
   onListLoadingChange?: (loading: boolean) => void
   className?: string
   listHolderClassName?: string
+  collapseByDefault?: boolean
 }
 
 export function InputSetSelectorY1(props: InputSetSelectorProps): React.ReactElement {
@@ -39,11 +40,13 @@ export function InputSetSelectorY1(props: InputSetSelectorProps): React.ReactEle
     className,
     listHolderClassName,
     onListChange,
-    onListLoadingChange
+    onListLoadingChange,
+    collapseByDefault = false
   } = props
-  const valueRef = React.useRef<SelectedInputSetListValue<InputSetSummaryResponse>[]>(selectedInputSetItems || [])
+  const valueRef = React.useRef<InputSetListItem<InputSetSummaryResponse>[]>(selectedInputSetItems || [])
   valueRef.current = selectedInputSetItems || []
-  const [searchTerm, setSearchTerm] = React.useState('')
+  const [searchTerm, setSearchTerm] = useState('')
+  const [isCollapsed, setIsCollapsed] = useState(collapseByDefault)
   const { getString } = useStrings()
   const { showError } = useToaster()
 
@@ -62,7 +65,6 @@ export function InputSetSelectorY1(props: InputSetSelectorProps): React.ReactEle
       projectIdentifier: projectIdentifier,
       pipelineIdentifier,
       inputSetType: 'INPUT_SET' as InputSetType,
-      pageSize: INPUT_SET_SELECTOR_PAGE_SIZE,
       searchTerm: searchTerm.trim()
       //...getGitQueryParams() // TODO
     }),
@@ -72,7 +74,7 @@ export function InputSetSelectorY1(props: InputSetSelectorProps): React.ReactEle
   const getItems = useCallback(
     options => {
       return getInputSetsListForPipelinePromise({
-        queryParams: { ...queryParams, pageIndex: options.offset }
+        queryParams: { ...queryParams, pageIndex: options.offset, pageSize: options.limit }
       })
     },
     [queryParams]
@@ -84,7 +86,7 @@ export function InputSetSelectorY1(props: InputSetSelectorProps): React.ReactEle
     error: errorInputSets,
     attachRefToLastElement
   } = useInfiniteScroll<InputSetSummaryResponse>({
-    getItems: getItems,
+    getItems,
     limit: INPUT_SET_SELECTOR_PAGE_SIZE,
     loadMoreRef,
     searchTerm
@@ -107,67 +109,84 @@ export function InputSetSelectorY1(props: InputSetSelectorProps): React.ReactEle
     onListLoadingChange?.(loadingInputSets)
   }, [loadingInputSets])
 
-  const debounceSetSearchTerm = debounce((term: string) => {
-    setSearchTerm(term)
-  }, 300)
+  const debounceSetSearchTerm = useMemo(() => debounce((term: string) => setSearchTerm(term), 300), [])
 
   if (errorInputSets) {
     showError(errorInputSets, undefined, 'pipeline.get.inputsetlist')
   }
 
   return (
-    <Layout.Vertical spacing="small" className={cx(css.inputSetSelector, className)}>
-      <Container border={{ bottom: true }}>
-        <Text color={Color.BLACK} margin={{ bottom: 'large' }}>
-          {getString('pipeline.inputSets.selectInputSet')}
-        </Text>
-        <TextInput
-          leftIcon={'thinner-search'}
-          leftIconProps={{ name: 'thinner-search', size: 14, color: Color.GREY_700 }}
-          placeholder={getString('pipeline.inputSets.searchOrEnterExpression')}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-            debounceSetSearchTerm(e.target.value)
-          }}
-        />
-        <div className={listHolderClassName}>
-          {inputSets?.map((inputSet, index) => {
-            if (isInputSetItemSelected(selectedInputSetItems, inputSet.identifier ?? '')) {
-              return null
-            }
-            return (
-              <Layout.Horizontal
-                ref={attachRefToLastElement(index) ? loadMoreRef : undefined}
-                key={inputSet.identifier}
-                className={css.inputSetItem}
-                onClick={() => {
-                  onAdd?.({
-                    value: defaultTo(inputSet.identifier, ''),
-                    label: defaultTo(inputSet.name, ''),
-                    type: defaultTo(inputSet.inputSetType, 'INPUT_SET'),
-                    data: inputSet
-                  })
-                }}
-                flex={{ alignItems: 'center' }}
-              >
-                <Layout.Vertical spacing={'xsmall'}>
-                  <Text color={Color.BLACK} icon="yaml-builder-input-sets">
-                    {inputSet.name}
-                  </Text>
-                  <Text color={Color.GREY_600} font={{ size: 'small' }}>
-                    ID: {inputSet.identifier}
-                  </Text>
-                </Layout.Vertical>
-                <Icon name="plus" color={Color.PRIMARY_7} />
-              </Layout.Horizontal>
-            )
-          })}
-          {loadingInputSets && (
-            <Container height={30}>
-              <Spinner size={Spinner.SIZE_SMALL} />
-            </Container>
-          )}
-        </div>
-      </Container>
-    </Layout.Vertical>
+    <div className={cx(css.inputSetSelector, isCollapsed && css.collapsed, className)}>
+      <button
+        className={css.collapseBtn}
+        onClick={e => {
+          e.stopPropagation()
+          e.preventDefault()
+
+          setIsCollapsed(p => !p)
+        }}
+      >
+        <Icon size={12} color={Color.GREY_700} name={isCollapsed ? 'main-chevron-right' : 'main-chevron-left'} />
+      </button>
+      <Text color={Color.BLACK} margin={{ bottom: 'large' }}>
+        {getString('pipeline.inputSets.selectInputSet')}
+      </Text>
+      {!isCollapsed && (
+        <>
+          <TextInput
+            leftIcon={'thinner-search'}
+            leftIconProps={{ name: 'thinner-search', size: 14, color: Color.GREY_700 }}
+            placeholder={getString('pipeline.inputSets.searchOrEnterExpression')}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              debounceSetSearchTerm(e.target.value)
+            }}
+          />
+          <div className={listHolderClassName}>
+            {inputSets?.map((inputSet, index) => {
+              if (isInputSetItemSelected(selectedInputSetItems, inputSet.identifier ?? '')) {
+                return null
+              }
+              return (
+                <Layout.Horizontal
+                  ref={attachRefToLastElement(index) ? loadMoreRef : undefined}
+                  key={inputSet.identifier}
+                  className={css.inputSetItem}
+                  onClick={() => {
+                    onAdd?.({
+                      value: defaultTo(inputSet.identifier, ''),
+                      label: defaultTo(inputSet.name, ''),
+                      type: defaultTo(inputSet.inputSetType, 'INPUT_SET'),
+                      data: inputSet
+                    })
+                  }}
+                  flex={{ alignItems: 'center' }}
+                >
+                  <Layout.Vertical spacing={'xsmall'}>
+                    <Text color={Color.BLACK} icon="yaml-builder-input-sets">
+                      {inputSet.name}
+                    </Text>
+                    <Text color={Color.GREY_600} font={{ size: 'small' }}>
+                      ID: {inputSet.identifier}
+                    </Text>
+                  </Layout.Vertical>
+                  <Icon name="plus" color={Color.PRIMARY_7} />
+                </Layout.Horizontal>
+              )
+            })}
+            {loadingInputSets && (
+              <Container height={30}>
+                <Spinner size={Spinner.SIZE_SMALL} />
+              </Container>
+            )}
+            {!loadingInputSets && !inputSets.length && !searchTerm && (
+              <Text>{getString('pipeline.inputSets.noInputSetsCreated')}</Text>
+            )}
+            {!loadingInputSets && !inputSets.length && !!searchTerm && (
+              <Text>{getString('pipeline.inputSets.inputSetNotFound')}</Text>
+            )}
+          </div>
+        </>
+      )}
+    </div>
   )
 }

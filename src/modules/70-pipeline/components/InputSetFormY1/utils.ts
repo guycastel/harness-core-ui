@@ -11,20 +11,13 @@ import { GitDetails } from '@harnessio/react-pipeline-service-client'
 import { CompletionItemInterface } from '@modules/10-common/interfaces/YAMLBuilderProps'
 import { EntityGitDetails } from 'services/pipeline-ng'
 import { StoreMetadata } from '@modules/10-common/constants/GitSyncTypes'
-import {
-  FromikInputSetY1,
-  InputSetKVPairs,
-  InputSetMetadataY1,
-  InputSetY1,
-  InputSetsY1,
-  SelectedItemsType
-} from './types'
-import { SelectedInputSetListValue } from '../InputSetSelector/SelectedInputSetList'
+import { FromikInputSetY1, InputSetKVPairs, InputSetMetadataY1, InputSetY1, InputSetsY1, InputSetItem } from './types'
+import { InputSetListItem } from '../InputSetSelector/SelectedInputSetList'
 
 export const inputSetIdsToSelectedItems = (
   inputSetIds: InputSetsY1,
-  allInputSetItems: SelectedItemsType[]
-): SelectedItemsType[] => {
+  allInputSetItems: InputSetItem[]
+): InputSetItem[] => {
   return allInputSetItems.filter(item => inputSetIds.includes(item.value as string))
 }
 
@@ -139,7 +132,7 @@ export const formikToGitMetadata = (values: FromikInputSetY1): StoreMetadata => 
   }
 }
 
-export const constructInputSetYamlObject = (item: SelectedInputSetListValue): CompletionItemInterface => ({
+export const constructInputSetYamlObject = (item: InputSetListItem): CompletionItemInterface => ({
   label: defaultTo(item.label, ''),
   insertText: defaultTo(item.value as string, ''),
   kind: CompletionItemKind.Field
