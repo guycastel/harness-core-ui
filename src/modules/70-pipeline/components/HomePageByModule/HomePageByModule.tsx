@@ -19,6 +19,7 @@ import type { AccountPathProps, Module } from '@common/interfaces/RouteInterface
 import { useProjectModal } from '@projects-orgs/modals/ProjectModal/useProjectModal'
 import type { Project, GetLicensesAndSummaryQueryParams } from 'services/cd-ng'
 import routes from '@common/RouteDefinitions'
+import routesV2 from '@common/RouteDefinitionsV2'
 import { useQueryParams } from '@common/hooks'
 import { useGetLicensesAndSummary, useGetProjectList } from 'services/cd-ng'
 import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
@@ -80,7 +81,7 @@ function HomePageByModule({ moduleName, bgImageURL, useTrialModal }: HomePageMod
 
   const { accountId } = useParams<AccountPathProps>()
 
-  const { currentUserInfo, selectedProject } = useAppStore()
+  const { currentUserInfo, selectedProject, isNewNavEnabled } = useAppStore()
   const { licenseInformation, updateLicenseStore } = useLicenseStore()
   const module = moduleName.toLowerCase() as Module
 
@@ -260,14 +261,25 @@ function HomePageByModule({ moduleName, bgImageURL, useTrialModal }: HomePageMod
       return
     }
     if (project) {
-      history.push(
-        routes.toProjectOverview({
-          projectIdentifier: project.identifier,
-          orgIdentifier: project.orgIdentifier || '',
-          accountId,
-          module
-        })
-      )
+      if (isNewNavEnabled) {
+        history.push(
+          routesV2.toMode({
+            projectIdentifier: project.identifier,
+            orgIdentifier: project.orgIdentifier || '',
+            accountId,
+            module
+          })
+        )
+      } else {
+        history.push(
+          routes.toProjectOverview({
+            projectIdentifier: project.identifier,
+            orgIdentifier: project.orgIdentifier || '',
+            accountId,
+            module
+          })
+        )
+      }
     }
   }
 

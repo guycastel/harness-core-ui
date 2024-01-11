@@ -126,6 +126,11 @@ export function DefaultLayout(props: React.PropsWithChildren<DefaultLayoutProps>
                 <Text margin={{ right: 'small' }} font={{ variation: FontVariation.SMALL }}>
                   {getString('common.newNavCallout.subtitle')}
                 </Text>
+                <a href="https://youtu.be/KglcP3a9ZaA" rel="noreferrer" target="_blank">
+                  <Text font={{ variation: FontVariation.BODY }} color={Color.PRIMARY_7} margin={{ right: 'small' }}>
+                    {getString('common.learnMore')}
+                  </Text>
+                </a>
                 <Button
                   variation={ButtonVariation.SECONDARY}
                   size={ButtonSize.SMALL}

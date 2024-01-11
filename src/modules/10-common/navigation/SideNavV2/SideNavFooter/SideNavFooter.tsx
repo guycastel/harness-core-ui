@@ -24,7 +24,9 @@ import { SIDE_NAV_STATE, useLayoutV2 } from '@modules/10-common/router/RouteWith
 import { accountPathProps, getRouteParams, modulePathProps, returnUrlParams } from '@common/utils/routeUtils'
 import { getLoginPageURL } from 'framework/utils/SessionUtils'
 import { useUpdateUserSettingValue } from 'services/cd-ng'
+import { getLocationPathName } from 'framework/utils/WindowLocation'
 import { useFeatureFlags } from '@modules/10-common/hooks/useFeatureFlag'
+import { PreferenceScope, usePreferenceStore } from 'framework/PreferenceStore/PreferenceStoreContext'
 import SideNavLink from '../SideNavLink/SideNavLink'
 import { useGetSelectedScope } from '../SideNavV2.utils'
 import css from './SideNavFooter.module.scss'
@@ -38,6 +40,7 @@ export const UserProfilePopoverContent: React.FC = () => {
   const { pathname } = useLocation()
   const { showError } = useToaster()
   const history = useHistory()
+  const { setPreference: dismissNewNavCallout } = usePreferenceStore<boolean>(PreferenceScope.MACHINE, 'newNavCallout')
   const { mutate: updateUserSetting, loading: loaddingUpdateUserSetting } = useUpdateUserSettingValue({
     queryParams: {
       accountIdentifier: accountId
@@ -126,7 +129,10 @@ export const UserProfilePopoverContent: React.FC = () => {
                         updateType: 'UPDATE'
                       }
                     ])
-                    location.href = '/'
+                    if (enabled) {
+                      dismissNewNavCallout(true)
+                    }
+                    location.href = getLocationPathName()
                   } catch (e) {
                     showError(getString('common.toggleNewNavError'))
                   }
