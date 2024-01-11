@@ -29,7 +29,7 @@ import { RedirectToSubscriptionsFactory } from '@modules/10-common/Redirects'
 import { ModuleName } from 'framework/types/ModuleName'
 import { SEICustomMicroFrontendProps } from './SEICustomMicroFrontendProps.types'
 import SEITrialPage from './pages/SEITrialPage/SEITrialPage'
-import { module } from './constants'
+import { NO_SCOPE, module } from './constants'
 
 // eslint-disable-next-line import/no-unresolved
 const SEIMicroFrontend = React.lazy(() => import('sei/MicroFrontendApp'))
@@ -39,9 +39,15 @@ const SEIRedirect: React.FC = () => {
 
   if (scope === Scope.ORGANIZATION) {
     return <Redirect to={routes.toSettings({ orgIdentifier: params?.orgIdentifier, module })} />
-  } else {
-    return <></>
   }
+  if (scope === Scope.PROJECT) {
+    if (params?.projectIdentifier) return <Redirect to={routes.toSEIInsights({ ...params, module })} />
+    return <Redirect to={routes.toSEIHome({ ...params, module })} />
+  }
+  if (scope === Scope.ACCOUNT) {
+    return <Redirect to={routes.toSEIIntegrations({ ...params, module })} />
+  }
+  return <Redirect to={`${routes.toSEIHome({ ...params, module })}${NO_SCOPE}`} />
 }
 
 const TrialRedirect: React.FC = () => {
@@ -66,7 +72,11 @@ const SEIRouteDestinations = (mode = NAV_MODE.MODULE): React.ReactElement => {
   return (
     <Switch>
       <RouteWithContext
-        path={[routes.toMode({ ...orgPathProps, module, mode })]}
+        path={[
+          routes.toMode({ ...orgPathProps, module, mode }),
+          routes.toMode({ ...projectPathProps, module, mode }),
+          routes.toMode({ ...accountPathProps, module, mode })
+        ]}
         licenseRedirectData={licenseRedirectData}
         exact
       >
