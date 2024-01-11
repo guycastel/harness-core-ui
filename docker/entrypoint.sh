@@ -16,7 +16,6 @@ sed -i "s|<\!-- IDPUrl -->|<script>window.IDPUrl = '$IDP_URL'</script>|" index.h
 sed -i "s|HARNESS_ENABLE_NG_AUTH_UI_PLACEHOLDER|$HARNESS_ENABLE_NG_AUTH_UI_PLACEHOLDER|" index.html
 sed -i "s|HARNESS_NO_AUTH_HEADER|$HARNESS_NO_AUTH_HEADER|" index.html
 sed -i "s|HARNESS_ENABLE_APPDY_EUM_PLACEHOLDER|$HARNESS_ENABLE_APPDY_EUM_PLACEHOLDER|" index.html
-sed -i "s|HARNESS_ENABLE_CDN_PLACEHOLDER|$HARNESS_ENABLE_CDN_PLACEHOLDER|" index.html
 sed -i "s|HARNESS_ENABLE_CANNY_PLACEHOLDER|$CANNY_ENABLE|" index.html
 sed -i "s|<\!-- segmentToken -->|<script>window.segmentToken = '$SEGMENT_TOKEN'</script>|" index.html
 sed -i "s|<\!-- bugsnagToken -->|<script>window.bugsnagToken = '$BUGSNAG_TOKEN'</script>|" index.html
@@ -31,6 +30,7 @@ sed -i "s|<\!-- newNavContentfulAccessToken -->|<script>window.newNavContentfulA
 sed -i "s|<\!-- newNavContetfulSpace -->|<script>window.newNavContetfulSpace = '$NEW_NAV_CONTENTFUL_SPACE'</script>|" index.html
 sed -i "s|<\!-- newNavContentfulEnvironment -->|<script>window.newNavContentfulEnvironment = '$NEW_NAV_CONTENTFUL_ENVIRONMENT'</script>|" index.html
 sed -i "s|<\!-- harnessNameSpacePlaceHolder -->|<script>window.harnessNameSpace = '$HARNESS_NAME_SPACE'</script>|" index.html
+sed -i "s|<\!-- harnessStaticFilesPrefixPlaceholder -->|<script>window.harnessStaticFilesPrefix = '$HARNESS_STATIC_FILES_PREFIX'</script>|" index.html
 sed -i "s|<\!-- harnessClusterURLPlaceHolder -->|<script>window.harnessClusterURL = '$HARNESS_CLUSTER_URL'</script>|" index.html
 sed -i "s|<\!-- stripeApiKey -->|<script>window.stripeApiKey = '$STRIPE_API_KEY'</script>|" index.html
 sed -i "s|<\!-- cannyAppId -->|<script>window.cannyAppId = '$CANNY_APP_ID'</script>|" index.html
@@ -59,15 +59,8 @@ then
   sed -i "s|#cspHeadersPlaceholder|add_header Content-Security-Policy-Report-Only \"script-src 'self' 'unsafe-inline' https://canny.io https://*.harness.io https://cdn.segment.com https://js.refiner.io https://widget.intercom.io https://js.intercomcdn.com https://d2wy8f7a9ursnm.cloudfront.net https://cdn.appdynamics.com; style-src 'self' 'unsafe-inline' https://*.harness.io https://fonts.googleapis.com https://js.refiner.io; img-src 'self' data: blob: https://*.harness.io; font-src 'self' https://fonts.gstatic.com;\";|" $NGINX_CONFIG_FILE
 fi
 
-
-if [ "$HARNESS_ENABLE_CDN_PLACEHOLDER" = "true" ]
-then
-  sed -i "s|\"static\/main\.\(.*\)\.js\"|\"//static.harness.io/ng-static/main.\1.js\"|" index.html
-  sed -i "s|\"static\/styles\.\(.*\)\.css\"|\"//static.harness.io/ng-static/styles.\1.css\"|" index.html
-else
-  sed -i "s|\"static\/main\.\(.*\)\.js\"|\"$HARNESS_NAME_SPACE_URL/ng/static/main.\1.js\"|" index.html
-  sed -i "s|\"static\/styles\.\(.*\)\.css\"|\"$HARNESS_NAME_SPACE_URL/ng/static/styles.\1.css\"|" index.html
-fi
+sed -i "s|\"static\/main\.\(.*\)\.js\"|\"$HARNESS_STATIC_FILES_PREFIX$HARNESS_CLUSTER_URL/ng/static/main.\1.js\"|" index.html
+sed -i "s|\"static\/styles\.\(.*\)\.css\"|\"$HARNESS_STATIC_FILES_PREFIX$HARNESS_CLUSTER_URL/ng/static/styles.\1.css\"|" index.html
 
 if [ "$DEPLOYMENT_TYPE" != "ON_PREM" ]
 then

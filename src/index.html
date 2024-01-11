@@ -60,6 +60,7 @@
     <!-- newNavContentfulAccessToken -->
     <!-- newNavContetfulSpace -->
     <!-- newNavContentfulEnvironment -->
+    <!-- harnessStaticFilesPrefixPlaceholder -->
     <!-- harnessNameSpacePlaceHolder -->
     <!-- harnessClusterURLPlaceHolder -->
     <!-- adding bugsnag for SAAS build -->
@@ -146,9 +147,9 @@
           : window.getApiBaseUrl(str)
       }
     </script>
+
     <% if (!__DEV__) { %>
     <script>
-      window.NON_CDN_BASE_PATH = `${window.harnessNameSpace ? '/' + window.harnessNameSpace : ''}/ng/static/`
       if (window.bugsnagToken) {
         var e = document.createElement('script')
         e.setAttribute('type', 'text/javascript')
@@ -165,7 +166,6 @@
     <script>
       window.HARNESS_ENABLE_NG_AUTH_UI = 'HARNESS_ENABLE_NG_AUTH_UI_PLACEHOLDER' === 'true'
       window.HARNESS_ENABLE_APPDY_EUM = 'HARNESS_ENABLE_APPDY_EUM_PLACEHOLDER' === 'true'
-      window.HARNESS_ENABLE_CDN = 'HARNESS_ENABLE_CDN_PLACEHOLDER' === 'true'
       window.HARNESS_ENABLE_CANNY = 'HARNESS_ENABLE_CANNY_PLACEHOLDER' === 'true'
       window.HARNESS_PLG_FF_SDK_KEY = 'HARNESS_PLG_FF_SDK_KEY_PLACEHOLDER'
     </script>
@@ -176,7 +176,7 @@
       window.helpPanelAccessToken = '<%= HELP_PANEL_ACCESS_TOKEN_DEV %>'
       window.helpPanelSpace = '<%= HELP_PANEL_SPACE_DEV %>'
       window.helpPanelEnvironment = '<%= HELP_PANEL_ENVIRONMENT_DEV %>'
-      window.NON_CDN_BASE_PATH = '/'
+      window.harnessStaticFilesPrefix = '<%= HARNESS_STATIC_FILES_PREFIX_DEV %>'
       window.newNavContentfulAccessToken = '<%= NEW_NAV_CONTENTFUL_ACCESS_TOKEN_DEV %>'
       window.newNavContetfulSpace = '<%= NEW_NAV_CONTENTFUL_SPACE_DEV %>'
       window.newNavContentfulEnvironment = '<%= NEW_NAV_CONTENTFUL_ENVIRONMENT_DEV %>'
@@ -190,7 +190,7 @@
     </script>
     <% } %>
 
-    <!-- AppDynamic EUM -->
+    <!-- AppDynamics EUM -->
     <script>
       if (window.HARNESS_ENABLE_APPDY_EUM && window.appDyEUMToken) {
         window['adrum-start-time'] = new Date().getTime()
@@ -210,9 +210,15 @@
         })(window, document, window['adrum-config'] || (window['adrum-config'] = {}))
       }
     </script>
+    <% if (__DEV__) { %>
     <script>
-      window.resourceBasePath = window.HARNESS_ENABLE_CDN ? '//static.harness.io/ng-static/' : window.NON_CDN_BASE_PATH
+      window.resourceBasePath = window.harnessStaticFilesPrefix + (window.harnessClusterURL || '/') + ''
     </script>
+    <% } %> <% if (!__DEV__) { %>
+    <script>
+      window.resourceBasePath = window.harnessStaticFilesPrefix + (window.harnessClusterURL || '/') + 'ng/static/'
+    </script>
+    <% } %>
 
     <!-- Download Canny SDK -->
     <script>
