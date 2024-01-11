@@ -17,6 +17,7 @@ import routes from '@common/RouteDefinitions'
 import type { AccountPathProps } from '@common/interfaces/RouteInterfaces'
 import { HomePageTemplate } from '@projects-orgs/pages/HomePageTemplate/HomePageTemplate'
 import bgImage from '@cet/images/cet.svg'
+import { useAppStore } from 'framework/AppStore/AppStoreContext'
 
 const CETHomePage: React.FC = () => {
   const { getString } = useStrings()
@@ -25,6 +26,7 @@ const CETHomePage: React.FC = () => {
   const { accountId } = useParams<AccountPathProps>()
   const history = useHistory()
   const { licenseInformation, updateLicenseStore } = useLicenseStore()
+  const { selectedProject } = useAppStore()
 
   const { data, error, refetch, loading } = useGetLicensesAndSummary({
     queryParams: { moduleType: ModuleName.CET },
@@ -75,6 +77,16 @@ const CETHomePage: React.FC = () => {
       routes.toModuleTrialHome({
         accountId,
         module
+      })
+    )
+  }
+
+  if (selectedProject) {
+    history.push(
+      routes.toCETMonitoredServices({
+        projectIdentifier: selectedProject.identifier,
+        orgIdentifier: selectedProject.orgIdentifier || '',
+        accountId
       })
     )
   }
