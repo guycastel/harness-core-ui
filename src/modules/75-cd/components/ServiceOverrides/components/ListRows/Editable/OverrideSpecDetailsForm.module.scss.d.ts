@@ -7,6 +7,12 @@
  **/
 // this is an auto-generated file, do not update this manually
 declare const styles: {
-  readonly overrideInfoHeader: string
+  readonly addNewOverrideRowContainer: string
+  readonly editableRow: string
+  readonly flexGrow: string
+  readonly flexWrap: string
+  readonly overrideTypeInputContainer: string
+  readonly specDetailsRow: string
+  readonly specDetailsRowContainer: string
 }
 export default styles

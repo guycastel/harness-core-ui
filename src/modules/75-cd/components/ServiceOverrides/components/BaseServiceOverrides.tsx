@@ -7,25 +7,23 @@
 
 import React from 'react'
 
-import ListRows from './ListRows/ListRows'
-import ListHeaders from './ListHeaders/ListHeaders'
 import NewButtonWithSearchFilter from './NewButtonWithSearchFilter/NewButtonWithSearchFilter'
 import NoServiceOverrides from './NoServiceOverrides'
+import { OverridesCollapsibleTable } from './OverridesCollapsibleTable/OverridesCollapsibleTable'
 
 import { useServiceOverridesContext } from '../context/ServiceOverrideContext'
 
 export default function BaseServiceOverrides(): React.ReactElement {
-  const { listRowItems, loadingServiceOverrideData } = useServiceOverridesContext()
+  const { listSectionItems, loadingServiceOverrideData } = useServiceOverridesContext()
 
-  const showOverridesList = Array.isArray(listRowItems) && listRowItems.length > 0
+  const showOverridesList = Array.isArray(listSectionItems) && listSectionItems.length > 0
 
   return (
     <React.Fragment>
       <NewButtonWithSearchFilter />
       {showOverridesList ? (
         <React.Fragment>
-          <ListHeaders />
-          <ListRows />
+          <OverridesCollapsibleTable />
         </React.Fragment>
       ) : !loadingServiceOverrideData ? (
         <NoServiceOverrides />

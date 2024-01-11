@@ -10,4 +10,27 @@
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   grid-column-gap: var(--spacing-small);
+
+  :global {
+    .bp3-form-content {
+      position: relative;
+    }
+
+    .bp3-form-helper-text {
+      position: absolute !important;
+      margin-top: 0 !important;
+    }
+
+    .FormError--errorDiv {
+      margin-top: var(--spacing-2) !important;
+    }
+
+    .FormError--error {
+      font-size: var(--font-size-small) !important;
+    }
+  }
+}
+
+.overrideVariableInput {
+  justify-content: center;
 }

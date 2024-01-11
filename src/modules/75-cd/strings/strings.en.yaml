@@ -553,6 +553,17 @@ selectRepository: Select a repository
 fetchingRepository: Fetching repositories...
 selectArtifact: Select an artifact
 artifactName: Artifact Name
+override:
+  gitDetails: Override Git Details
+  createdSuccessfully: Successfully created override
+  updatedSuccessfully: Successfully updated override
+overrideEmptySpecError: Override spec cannot be empty
+overrideValidations:
+  overrideTypeIsRequired: Override Type is required
+  overrideInfoIsRequired: Override Info is required
+  overrideTypeAndInfoRequired: Override Type & Info are required
+  overrideGitDetailsRequired: Override Git Details are required
+  overrideFormContainsErrors: Override form contains errors, Please fix them to proceed
 overridesFilter: Overrides Filter
 selectArtifactSource: Select Artifact Source
 artifactFormErrors:
@@ -565,6 +576,9 @@ artifactRepoTooltip: Enter the name of the repository where the artifact source 
 serverlessDeployCommandOptions: Serverless Deploy Command Options
 useConnectorCredentials: 'Use Connector Credentials'
 configurationVariable: Configuration Variable
+deleteOverride: Delete Override
+deleteConfirmationText: Are you sure you want to delete the Override ?
+discardChanges: Discard Changes
 overrideValue: Override Value
 environment:
   delete: '{{ $.common.deleteEnvironment.title }}'

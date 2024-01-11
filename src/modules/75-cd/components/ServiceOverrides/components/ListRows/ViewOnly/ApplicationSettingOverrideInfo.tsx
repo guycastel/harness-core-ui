@@ -29,7 +29,7 @@ export default function ApplicationSettingOverrideInfo({
   return (
     <React.Fragment>
       <Layout.Vertical
-        width={200}
+        width={300}
         height={40}
         flex={{ justifyContent: 'space-between', alignItems: 'flex-start' }}
         margin={{ right: 'small' }}
@@ -40,7 +40,7 @@ export default function ApplicationSettingOverrideInfo({
           {store.type === 'Harness' ? getString('harness') : <ConnectorField connectorRef={connectorRef} />}
         </Layout.Horizontal>
       </Layout.Vertical>
-      <Layout.Vertical width={200} height={40} flex={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
+      <Layout.Vertical width={150} height={40} flex={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <Text font={{ variation: FontVariation.TABLE_HEADERS }}>{getString('location').toLocaleUpperCase()}</Text>
 
         {!!paths?.length && (

@@ -117,9 +117,9 @@ describe('InfrastructureServiceSpecificOverrides test', () => {
 
     userEvent.click(infrastructureServiceSpecificTab)
 
-    await waitFor(() => expect(screen.getAllByText('Env_1')).toHaveLength(3))
-    expect(screen.getAllByText('Svc_1')).toHaveLength(3)
-    expect(screen.getAllByText('Infra_1')).toHaveLength(3)
+    await waitFor(() => expect(screen.getAllByText('Env_1')).toHaveLength(1))
+    expect(screen.getAllByText('Svc_1')).toHaveLength(1)
+    expect(screen.getAllByText('Infra_1')).toHaveLength(1)
     expect(screen.getAllByText('Env_2')).toHaveLength(1)
     expect(screen.getAllByText('Svc_2')).toHaveLength(1)
     expect(screen.getAllByText('Infra_2')).toHaveLength(1)

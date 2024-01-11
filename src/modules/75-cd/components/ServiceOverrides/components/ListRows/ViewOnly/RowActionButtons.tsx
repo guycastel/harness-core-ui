@@ -1,74 +1,79 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
+import { set, cloneDeep } from 'lodash-es'
+import { v4 as uuid } from 'uuid'
 import { ButtonVariation, Layout } from '@harness/uicore'
 import { FontVariation } from '@harness/design-system'
+import { useFormikContext } from 'formik'
+import produce from 'immer'
 
-import { Scope } from '@common/interfaces/SecretsInterface'
-import { getIdentifierFromScopedRef } from '@common/utils/utils'
 import type { PipelinePathProps } from '@common/interfaces/RouteInterfaces'
 
-import { ResourceType } from '@rbac/interfaces/ResourceType'
-import { PermissionIdentifier } from '@rbac/interfaces/PermissionIdentifier'
-import RbacButton, { ButtonProps } from '@rbac/components/Button/Button'
+import RbacButton from '@rbac/components/Button/Button'
+import { ServiceOverrideRowFormState } from '@cd/components/ServiceOverrides/ServiceOverridesUtils'
 
 import { useServiceOverridesContext } from '@cd/components/ServiceOverrides/context/ServiceOverrideContext'
-import { getScopeFromValue } from '@common/components/EntityReference/EntityReference'
-import { ServiceOverridesTab } from '../../../ServiceOverridesUtils'
+import { useServiceOverridesButtonPermission } from '@cd/components/ServiceOverrides/useServiceOverridesButtonPermission'
+import { scrollToOverrideSpecRowByIndex } from '../Editable/editableRowUtils'
 
 export default function RowActionButtons({
   rowIndex,
   environmentRef,
-  serviceRef
+  serviceRef,
+  sectionIndex
 }: {
   rowIndex: number
   environmentRef: string
   serviceRef: string
+  sectionIndex: number
 }): React.ReactElement {
   const { accountId, projectIdentifier, orgIdentifier } = useParams<PipelinePathProps>()
 
-  const { onEdit, onDelete, onClone, serviceOverrideType } = useServiceOverridesContext()
+  const { onEditChildRow, onDeleteChildRow, onCloneChildRow, serviceOverrideType } = useServiceOverridesContext()
+  const { values, setValues } = useFormikContext<ServiceOverrideRowFormState[]>()
 
-  const getScope = () => {
-    if (
-      [ServiceOverridesTab.INFRA_GLOBAL_OVERRIDE, ServiceOverridesTab.ENV_GLOBAL_OVERRIDE].includes(
-        serviceOverrideType as ServiceOverridesTab
-      )
-    )
-      return getScopeFromValue(environmentRef)
-    return getScopeFromValue(serviceRef)
-  }
-  const environmentIdentifier = getIdentifierFromScopedRef(environmentRef)
-  const serviceIdentifier = getIdentifierFromScopedRef(serviceRef)
+  const buttonPermission = useServiceOverridesButtonPermission({
+    accountId,
+    projectIdentifier,
+    orgIdentifier,
+    serviceOverrideType,
+    environmentRef,
+    serviceRef
+  })
 
-  const getPermissionAndResource = () => {
-    if (
-      [ServiceOverridesTab.INFRA_GLOBAL_OVERRIDE, ServiceOverridesTab.ENV_GLOBAL_OVERRIDE].includes(
-        serviceOverrideType as ServiceOverridesTab
-      )
-    )
-      return {
-        permission: PermissionIdentifier.EDIT_ENVIRONMENT,
-        resource: {
-          resourceType: ResourceType.ENVIRONMENT,
-          resourceIdentifier: environmentIdentifier
-        }
-      }
-    return {
-      permission: PermissionIdentifier.EDIT_SERVICE,
-      resource: {
-        resourceType: ResourceType.SERVICE,
-        resourceIdentifier: serviceIdentifier
-      }
-    }
+  const handleOverrideClone = () => {
+    onCloneChildRow(rowIndex, sectionIndex)
+      .then(() => {
+        setValues(
+          produce<ServiceOverrideRowFormState[]>(values, draft => {
+            const valueToBeCloned = cloneDeep(draft[rowIndex])
+            set(valueToBeCloned, 'id', uuid())
+            draft.splice(rowIndex + 1, 0, valueToBeCloned)
+          })
+        )
+        scrollToOverrideSpecRowByIndex(rowIndex + 1)
+      })
+      .catch(() => {
+        // do nothing, warning has already been displayed.
+      })
   }
 
-  const buttonPermission: ButtonProps['permission'] = {
-    resourceScope: {
-      accountIdentifier: accountId,
-      ...(getScope() !== Scope.ACCOUNT && { orgIdentifier }),
-      ...(getScope() === Scope.PROJECT && { projectIdentifier })
-    },
-    ...getPermissionAndResource()
+  const handleOverrideEdit = () => {
+    onEditChildRow(rowIndex, sectionIndex)
+  }
+
+  const handleOverrideDelete = () => {
+    onDeleteChildRow(rowIndex, sectionIndex)
+      .then(() => {
+        setValues(
+          produce(values, draft => {
+            draft.splice(rowIndex, 1)
+          })
+        )
+      })
+      .catch(() => {
+        // do nothing, warning has already been displayed.
+      })
   }
 
   return (
@@ -77,21 +82,21 @@ export default function RowActionButtons({
         icon="duplicate"
         variation={ButtonVariation.ICON}
         font={{ variation: FontVariation.BODY1 }}
-        onClick={() => onClone(rowIndex)}
+        onClick={() => handleOverrideClone()}
         permission={buttonPermission}
       />
       <RbacButton
         icon="Edit"
         variation={ButtonVariation.ICON}
         font={{ variation: FontVariation.BODY1 }}
-        onClick={() => onEdit(rowIndex)}
+        onClick={() => handleOverrideEdit()}
         permission={buttonPermission}
       />
       <RbacButton
         icon="main-trash"
         variation={ButtonVariation.ICON}
         font={{ variation: FontVariation.BODY1 }}
-        onClick={() => onDelete(rowIndex)}
+        onClick={() => handleOverrideDelete()}
         permission={buttonPermission}
       />
     </Layout.Horizontal>

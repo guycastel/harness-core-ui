@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react'
 import { useFormikContext } from 'formik'
+import { get } from 'lodash-es'
 
 import { AllowedTypes, FormInput, MultiTypeInputType } from '@harness/uicore'
 import { useStrings } from 'framework/strings'
@@ -18,10 +19,18 @@ import useConfigFileOverride from './useConfigFileOverride'
 import useApplicationSettingOverride from './useApplicationSettingOverride'
 import useConnectionStringOverride from './useConnectionStringOverride'
 
-export default function OverrideTypeInput({ readonly }: { readonly?: boolean }): React.ReactElement {
+export default function OverrideTypeInput({
+  readonly,
+  overrideDetailIndex
+}: {
+  readonly?: boolean
+  overrideDetailIndex: number
+}): React.ReactElement {
   const { getString } = useStrings()
-  const { setFieldValue, submitForm } = useFormikContext()
+  const { setFieldValue, values } = useFormikContext()
   const { serviceOverrideType } = useServiceOverridesContext()
+
+  const uniqueRowId = get(values, `${overrideDetailIndex}.id`)
 
   const handleOverrideSubmit = useCallback(
     (
@@ -35,14 +44,11 @@ export default function OverrideTypeInput({ readonly }: { readonly?: boolean }):
       switch (type) {
         case 'applicationSettings':
         case 'connectionStrings':
-          setFieldValue(type, overrideObj)
+          setFieldValue(`${overrideDetailIndex}.${type}`, overrideObj)
           break
         default:
-          setFieldValue(`${type}.0`, overrideObj)
+          setFieldValue(`${overrideDetailIndex}.${type}.0`, overrideObj)
       }
-      setTimeout(() => {
-        submitForm()
-      }, 150)
     },
     []
   )
@@ -83,46 +89,49 @@ export default function OverrideTypeInput({ readonly }: { readonly?: boolean }):
   })
 
   return (
-    <FormInput.Select
-      name="overrideType"
-      items={[
-        {
-          label: getString(overridesLabelStringMap[OverrideTypes.VARIABLE]),
-          value: OverrideTypes.VARIABLE
-        },
-        {
-          label: getString(overridesLabelStringMap[OverrideTypes.MANIFEST]),
-          value: OverrideTypes.MANIFEST
-        },
-        { label: getString(overridesLabelStringMap[OverrideTypes.CONFIG]), value: OverrideTypes.CONFIG },
-        ...(serviceOverrideType === 'ENV_GLOBAL_OVERRIDE'
-          ? [
-              {
-                label: getString(overridesLabelStringMap[OverrideTypes.APPLICATIONSETTING]),
-                value: OverrideTypes.APPLICATIONSETTING
-              },
-              {
-                label: getString(overridesLabelStringMap[OverrideTypes.CONNECTIONSTRING]),
-                value: OverrideTypes.CONNECTIONSTRING
-              }
-            ]
-          : [])
-      ]}
-      onChange={item => {
-        if (item.value === OverrideTypes.MANIFEST) {
-          createNewManifestOverride()
-        } else if (item.value === OverrideTypes.CONFIG) {
-          createNewFileOverride()
-        } else if (item.value === OverrideTypes.APPLICATIONSETTING) {
-          showApplicationSettingModal()
-        } else if (item.value === OverrideTypes.CONNECTIONSTRING) {
-          showConnectionStringModal()
-        }
-      }}
-      selectProps={{
-        disabled: readonly
-      }}
-      disabled={readonly}
-    />
+    <React.Fragment key={uniqueRowId}>
+      <FormInput.Select
+        name={`${overrideDetailIndex}.overrideType`}
+        usePortal
+        items={[
+          {
+            label: getString(overridesLabelStringMap[OverrideTypes.VARIABLE]),
+            value: OverrideTypes.VARIABLE
+          },
+          {
+            label: getString(overridesLabelStringMap[OverrideTypes.MANIFEST]),
+            value: OverrideTypes.MANIFEST
+          },
+          { label: getString(overridesLabelStringMap[OverrideTypes.CONFIG]), value: OverrideTypes.CONFIG },
+          ...(serviceOverrideType === 'ENV_GLOBAL_OVERRIDE'
+            ? [
+                {
+                  label: getString(overridesLabelStringMap[OverrideTypes.APPLICATIONSETTING]),
+                  value: OverrideTypes.APPLICATIONSETTING
+                },
+                {
+                  label: getString(overridesLabelStringMap[OverrideTypes.CONNECTIONSTRING]),
+                  value: OverrideTypes.CONNECTIONSTRING
+                }
+              ]
+            : [])
+        ]}
+        onChange={item => {
+          if (item.value === OverrideTypes.MANIFEST) {
+            createNewManifestOverride()
+          } else if (item.value === OverrideTypes.CONFIG) {
+            createNewFileOverride()
+          } else if (item.value === OverrideTypes.APPLICATIONSETTING) {
+            showApplicationSettingModal()
+          } else if (item.value === OverrideTypes.CONNECTIONSTRING) {
+            showConnectionStringModal()
+          }
+        }}
+        selectProps={{
+          disabled: readonly
+        }}
+        disabled={readonly}
+      />
+    </React.Fragment>
   )
 }

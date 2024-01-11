@@ -59,7 +59,6 @@ describe('EnvironmentServiceSpecificOverrides test', () => {
           refetch: jest.fn()
         } as any)
     )
-
     render(
       <TestWrapper
         path={routes.toServiceOverrides({
@@ -96,13 +95,9 @@ describe('EnvironmentServiceSpecificOverrides test', () => {
 
     userEvent.click(environmentServiceSpecificTab)
 
-    await waitFor(() => expect(screen.getAllByText('Env_1')).toHaveLength(3))
-    expect(screen.getAllByText('Svc_1')).toHaveLength(3)
-    expect(screen.getByText('v1')).toBeInTheDocument()
-    expect(screen.getByText('v4')).toBeInTheDocument()
-    expect(screen.getByText('cf1')).toBeInTheDocument()
+    await waitFor(() => expect(screen.getAllByText('Env_1')).toHaveLength(1))
+    expect(screen.getAllByText('Svc_1')).toHaveLength(1)
     expect(screen.getAllByText('Env_2')).toHaveLength(1)
     expect(screen.getAllByText('Svc_2')).toHaveLength(1)
-    expect(screen.getByText('sDsad')).toBeInTheDocument()
   })
 })

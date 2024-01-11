@@ -1,0 +1,99 @@
+.toggleAccordion {
+  // to have better click target area for toggle
+  padding: var(--spacing-large) var(--spacing-medium) !important;
+}
+
+/* 43px is the height of the tabs
+     * 20px is the default top margin of tab panel
+     * 49px is the height of the new override button with bottom padding
+     * 46px is the height of the table header container
+     * 64px is the height of the pagination container
+     */
+.overridesCollapsibleTable {
+  padding: 0 var(--spacing-7);
+  height: calc(100vh - var(--page-header-height) - 43px - 20px - 49px);
+
+  :global {
+    .TableV2--body {
+      height: calc(100vh - var(--page-header-height) - 43px - 20px - 49px - 46px - 64px);
+      overflow-y: scroll;
+    }
+    .TableV2--card {
+      padding: 0 !important;
+    }
+
+    .TableV2--cells {
+      padding: var(--spacing-large) var(--spacing-medium) !important;
+    }
+
+    .TableV2--cell:nth-last-child(1) {
+      flex-grow: 1;
+    }
+
+    .TableV2--rowSubComponent {
+      padding: 0 86px;
+      margin-top: 0 !important;
+      border-top: 1px solid var(--grey-200) !important;
+      background-color: var(--primary-bg);
+    }
+  }
+}
+
+.specDetailsRow {
+  margin: 0 !important;
+  border-top: 1px solid var(--grey-200) !important;
+  padding: var(--spacing-4) 0 !important;
+}
+
+.contentWrapper {
+  max-width: 480px;
+}
+
+.sectionActionBtn {
+  color: var(--primary-7) !important;
+  --text-color: var(--primary-7) !important;
+}
+
+.infraIdentifierInputContainer {
+  :global {
+    .bp3-form-group {
+      margin-bottom: 0 !important;
+    }
+  }
+}
+
+.errorHandler {
+  margin-top: var(--spacing-medium) !important;
+  margin-bottom: var(--spacing-medium) !important;
+}
+
+.newOrEditableRow {
+  border: 1px solid var(--primary-7) !important;
+}
+
+.gitSyncErrorMessage {
+  margin-top: -8px;
+}
+
+.gitSyncForm {
+  :global {
+    .bp3-input-group {
+      input[name='branch'] {
+        background-color: var(--grey-50);
+        color: var(--grey-400);
+        border-color: var(--grey-200);
+        box-shadow: none;
+        pointer-events: none;
+      }
+    }
+  }
+}
+
+.container {
+  border-left: 4px solid var(--red-600);
+  border-radius: 4px;
+}
+
+.shrink {
+  flex-shrink: 1 !important;
+}

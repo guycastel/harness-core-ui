@@ -15,6 +15,7 @@ declare const styles: {
   readonly listRowCard: string
   readonly listRowContainer: string
   readonly newOrEditCard: string
+  readonly overrideTypeInputContainer: string
   readonly roundedCard: string
   readonly topBorderRadius: string
   readonly topMargin: string

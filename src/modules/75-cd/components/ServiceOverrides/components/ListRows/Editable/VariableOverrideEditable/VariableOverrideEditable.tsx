@@ -7,6 +7,7 @@
 
 import React from 'react'
 import { useFormikContext } from 'formik'
+import { get } from 'lodash-es'
 import { Container, FormInput, MultiTypeInputType } from '@harness/uicore'
 
 import { useStrings } from 'framework/strings'
@@ -21,32 +22,40 @@ import type { ServiceOverrideRowFormState } from '@cd/components/ServiceOverride
 import { useServiceOverridesContext } from '@cd/components/ServiceOverrides/context/ServiceOverrideContext'
 import css from './VariableOverrideEditable.module.scss'
 
-export function VariableOverrideEditable(): React.ReactElement {
+export function VariableOverrideEditable({ overrideDetailIndex }: { overrideDetailIndex: number }): React.ReactElement {
   const { getString } = useStrings()
-  const { values } = useFormikContext<ServiceOverrideRowFormState>()
+  const { values } = useFormikContext<ServiceOverrideRowFormState[]>()
   const { serviceOverrideType } = useServiceOverridesContext()
   const { expressions } = useVariablesExpression()
   const { NG_EXPRESSIONS_NEW_INPUT_ELEMENT } = useFeatureFlags()
 
-  const variableType = values.variables?.[0]?.type
+  const variableType = values[overrideDetailIndex]?.variables?.[0]?.type
+
+  const uniqueRowId = get(values, `${overrideDetailIndex}.id`)
 
   return (
-    <Container className={css.variableOverrideContainer}>
-      <FormInput.Text name="variables.0.name" placeholder={getString('name')} />
+    <Container key={uniqueRowId} className={css.variableOverrideContainer}>
+      <FormInput.Text
+        className={css.overrideVariableInput}
+        name={`${overrideDetailIndex}.variables.0.name`}
+        placeholder={getString('name')}
+      />
       <FormInput.Select
-        name="variables.0.type"
+        name={`${overrideDetailIndex}.variables.0.type`}
+        usePortal
         items={[
           { label: getString(labelStringMap[VariableType.String]), value: VariableType.String },
           { label: getString(labelStringMap[VariableType.Number]), value: VariableType.Number },
           { label: getString(labelStringMap[VariableType.Secret]), value: VariableType.Secret }
         ]}
         placeholder={getString('typeLabel')}
+        className={css.overrideVariableInput}
       />
       {variableType === VariableType.Secret ? (
-        <MultiTypeSecretInput small name={'variables.0.value'} label="" disabled={false} />
+        <MultiTypeSecretInput name={`${overrideDetailIndex}.variables.0.value`} label="" disabled={false} />
       ) : (
         <FormInput.MultiTextInput
-          name={'variables.0.value'}
+          name={`${overrideDetailIndex}.variables.0.value`}
           placeholder={getString('valueLabel')}
           label=""
           disabled={false}

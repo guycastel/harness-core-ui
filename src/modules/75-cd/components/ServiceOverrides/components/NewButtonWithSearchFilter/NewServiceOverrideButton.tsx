@@ -10,7 +10,7 @@ import { ServiceOverridesTab } from '../../ServiceOverridesUtils'
 
 export default function NewServiceOverrideButton(): React.ReactElement {
   const { getString } = useStrings()
-  const { handleNewOverride, serviceOverrideType } = useServiceOverridesContext()
+  const { handleNewOverrideSection, serviceOverrideType } = useServiceOverridesContext()
   const { accountId, orgIdentifier, projectIdentifier } = useParams<PipelinePathProps>()
 
   const getPermissionAndResource = () => {
@@ -50,8 +50,8 @@ export default function NewServiceOverrideButton(): React.ReactElement {
       icon="plus"
       text={getString('common.serviceOverrides.newOverride')}
       data-testid="add-service-override"
-      onClick={handleNewOverride}
       permission={buttonPermission}
+      onClick={handleNewOverrideSection}
     />
   )
 }

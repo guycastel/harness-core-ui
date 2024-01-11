@@ -1,3 +1,10 @@
+/*
+ * Copyright 2023 Harness Inc. All rights reserved.
+ * Use of this source code is governed by the PolyForm Shield 1.0.0 license
+ * that can be found in the licenses directory at the root of this repository, also available at
+ * https://polyformproject.org/wp-content/uploads/2020/06/PolyForm-Shield-1.0.0.txt.
+ */
+
 import React from 'react'
 
 import { Icon, Layout, Text } from '@harness/uicore'
@@ -21,7 +28,7 @@ export default function ConfigFileOverrideInfo({
   configFile,
   isServiceOverride
 }: {
-  configFile: ConfigFileWrapper['configFile']
+  configFile?: ConfigFileWrapper['configFile']
   isServiceOverride?: boolean
 }): React.ReactElement {
   const { getString } = useStrings()
@@ -45,17 +52,17 @@ export default function ConfigFileOverrideInfo({
 
   return (
     <React.Fragment>
-      <Layout.Vertical width={160} height={40} flex={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
+      <Layout.Vertical width={180} height={40} flex={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <Text font={{ variation: FontVariation.TABLE_HEADERS }}>{getString('common.ID').toUpperCase()}</Text>
         <Text lineClamp={1}>{configFile?.identifier}</Text>
       </Layout.Vertical>
-      <Layout.Vertical width={160} height={40} flex={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
+      <Layout.Vertical width={180} height={40} flex={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <Text font={{ variation: FontVariation.TABLE_HEADERS }}>
           {getString('pipeline.configFiles.fileType').toUpperCase()}
         </Text>
         <Text lineClamp={1}>{filesType}</Text>
       </Layout.Vertical>
-      <Layout.Vertical width={160} height={40} flex={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
+      <Layout.Vertical width={180} height={40} flex={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <Text font={{ variation: FontVariation.TABLE_HEADERS }}>
           {getString('pipelineSteps.serviceTab.manifestList.manifestStore').toUpperCase()}
         </Text>

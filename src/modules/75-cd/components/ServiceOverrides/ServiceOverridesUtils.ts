@@ -1,4 +1,4 @@
-import { isEmpty } from 'lodash-es'
+import { IconName } from '@harness/uicore'
 import type {
   ApplicationSettingsConfiguration,
   ConfigFileWrapper,
@@ -9,7 +9,6 @@ import type {
 import type { StringKeys } from 'framework/strings'
 import type { AllNGVariables } from '@pipeline/utils/types'
 import type { RequiredField } from '@common/interfaces/RouteInterfaces'
-import { isValueExpression, isValueFixed, isValueRuntimeInput } from '@common/utils/utils'
 
 export enum ServiceOverridesTab {
   ENV_GLOBAL_OVERRIDE = 'ENV_GLOBAL_OVERRIDE',
@@ -34,13 +33,50 @@ export const overridesLabelStringMap: Record<OverrideTypes, StringKeys> = {
   [OverrideTypes.CONNECTIONSTRING]: 'pipeline.appServiceConfig.connectionStrings.name'
 }
 
-export const noOverridesStringMap: Record<Required<ServiceOverridesResponseDTOV2>['type'], StringKeys> = {
+export const overridesTypeIconMap: Record<OverrideTypes, IconName> = {
+  [OverrideTypes.VARIABLE]: 'variables',
+  [OverrideTypes.MANIFEST]: 'list-blue',
+  [OverrideTypes.CONFIG]: 'configure',
+  [OverrideTypes.APPLICATIONSETTING]: 'chaos-cube',
+  [OverrideTypes.CONNECTIONSTRING]: 'explode'
+}
+
+export const noOverridesStringMap: Record<ServiceOverridesTab, StringKeys> = {
   ENV_GLOBAL_OVERRIDE: 'common.serviceOverrides.noOverrides.globalEnvironment',
   ENV_SERVICE_OVERRIDE: 'common.serviceOverrides.noOverrides.environmentServiceSpecific',
   INFRA_GLOBAL_OVERRIDE: 'common.serviceOverrides.noOverrides.globalInfrastructure',
-  INFRA_SERVICE_OVERRIDE: 'common.serviceOverrides.noOverrides.infrastructureServiceSpecific',
-  CLUSTER_GLOBAL_OVERRIDE: 'common.serviceOverrides.noOverrides.globalInfrastructure',
-  CLUSTER_SERVICE_OVERRIDE: 'common.serviceOverrides.noOverrides.globalInfrastructure'
+  INFRA_SERVICE_OVERRIDE: 'common.serviceOverrides.noOverrides.infrastructureServiceSpecific'
+}
+
+export interface ServiceOverrideSectionProps {
+  /**
+   * isNew is set to true when creating a new override section
+   */
+  isNew: boolean
+  /**
+   * Unique id used to reset formik
+   */
+  id: string
+  /**
+   * isEdit is set to true when editing a new override section
+   */
+  isEdit: boolean
+  /**
+   * sectionIndex is used to identify the row in case of any actions
+   */
+  sectionIndex: number
+  /**
+   * overrideDetails contains all the values that form part of 1 override row
+   */
+  overrideSpecDetails?: OverrideDetails[]
+  /**
+   * groupKey is used to identify a group - for display or for actions
+   */
+  groupKey: string
+  /**
+   * overrideResponse is used to handle any operations that require the entire object
+   */
+  overrideResponse?: ServiceOverridesResponseDTOV2
 }
 
 export interface ServiceOverrideRowProps {
@@ -87,6 +123,9 @@ export interface ServiceOverrideRowProps {
 }
 
 interface CommonOverrideDetails extends Omit<ServiceOverridesResponseDTOV2, 'spec'> {
+  isEdit: boolean
+  isNew: boolean
+  isClone: boolean
   overrideType: OverrideTypes
 }
 
@@ -120,6 +159,7 @@ export type OverrideDetails =
 export type PartiallyRequired<T, K extends keyof T> = Partial<T> & Required<Pick<T, K>>
 
 export interface ServiceOverrideRowFormState {
+  id?: string
   overrideType?: OverrideTypes
   environmentRef?: string
   serviceRef?: string
@@ -131,68 +171,19 @@ export interface ServiceOverrideRowFormState {
   connectionStrings?: RequiredField<ConnectionStringsConfiguration, 'store'>
 }
 
+export interface EnvironmentRefFormState {
+  environmentRef: string | undefined
+}
+
+export interface ServiceRefFormState {
+  serviceRef: string | undefined
+}
+
+export interface InfraIdentifierFormState {
+  infraIdentifier: string | undefined
+}
+
 export type ServiceOverridesResponseDTOV2 = RequiredField<
   CDServiceOverridesResponseDTOV2,
   'environmentRef' | 'identifier' | 'spec' | 'type'
 >
-
-export const validateServiceOverrideRow = (
-  values: ServiceOverrideRowFormState,
-  serviceOverrideType: Required<ServiceOverridesResponseDTOV2>['type']
-): StringKeys[] => {
-  const validationArray: StringKeys[] = []
-
-  if (isEmpty(values.environmentRef)) {
-    validationArray.push('environment')
-  }
-
-  if (
-    isEmpty(values.infraIdentifier) &&
-    (serviceOverrideType === 'INFRA_GLOBAL_OVERRIDE' || serviceOverrideType === 'INFRA_SERVICE_OVERRIDE')
-  ) {
-    validationArray.push('infrastructureText')
-  }
-
-  if (
-    isEmpty(values.serviceRef) &&
-    (serviceOverrideType === 'ENV_SERVICE_OVERRIDE' || serviceOverrideType === 'INFRA_SERVICE_OVERRIDE')
-  ) {
-    validationArray.push('service')
-  }
-
-  if (isEmpty(values.overrideType)) {
-    validationArray.push('common.serviceOverrides.overrideType', 'common.serviceOverrides.overrideSpec')
-  }
-
-  const variableName = values.variables?.[0]?.name
-  const variableType = values.variables?.[0]?.type
-  const variableValue = values.variables?.[0]?.value
-
-  if (values.overrideType === OverrideTypes.VARIABLE && isEmpty(variableName)) {
-    validationArray.push('variableNameLabel')
-  }
-
-  if (values.overrideType === OverrideTypes.VARIABLE && isEmpty(variableType)) {
-    validationArray.push('common.variableType')
-  }
-
-  const numberVariableValidation =
-    (isValueFixed(variableValue) && isNaN(variableValue as number)) ||
-    (typeof variableValue === 'string' && isEmpty(variableValue))
-
-  if (
-    values.overrideType === OverrideTypes.VARIABLE &&
-    (isValueRuntimeInput(variableValue)
-      ? false
-      : isValueExpression(variableValue)
-      ? !isEmpty(variableValue)
-        ? false
-        : true
-      : (variableType !== 'Number' && isEmpty(variableValue)) ||
-        (variableType === 'Number' && numberVariableValidation))
-  ) {
-    validationArray.push('cd.overrideValue')
-  }
-
-  return validationArray
-}

@@ -26,7 +26,7 @@ function VariableOverrideInfoCell({ name, value }: { name: StringKeys; value: st
   const { getString } = useStrings()
 
   return (
-    <Layout.Vertical width={160} height={40} flex={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
+    <Layout.Vertical width={180} height={40} flex={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
       <Text font={{ variation: FontVariation.TABLE_HEADERS }}>{getString(name).toUpperCase()}</Text>
       <Text color={Color.GREY_450} lineClamp={1}>
         {value}

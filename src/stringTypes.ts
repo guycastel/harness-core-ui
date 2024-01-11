@@ -6500,11 +6500,14 @@ export interface StringsMap {
   'cd.delegateFailText1': string
   'cd.delegateInstallCommand': string
   'cd.delegateWarning': string
+  'cd.deleteConfirmationText': string
+  'cd.deleteOverride': string
   'cd.deleteSourceBranch': string
   'cd.deletedGitOpsServerSuccessfully': string
   'cd.deletedSuccessfully': string
   'cd.deploymentSteps': string
   'cd.deploymentTemplates': string
+  'cd.discardChanges': string
   'cd.downsizeOldAsg': string
   'cd.duplicateGitOpsServerIdError': string
   'cd.duplicateIdError': string
@@ -7126,6 +7129,15 @@ export interface StringsMap {
   'cd.openTask.openTaskStatusMsgFailed': string
   'cd.openTask.seeOpenTask': string
   'cd.openTask.title': string
+  'cd.override.createdSuccessfully': string
+  'cd.override.gitDetails': string
+  'cd.override.updatedSuccessfully': string
+  'cd.overrideEmptySpecError': string
+  'cd.overrideValidations.overrideFormContainsErrors': string
+  'cd.overrideValidations.overrideGitDetailsRequired': string
+  'cd.overrideValidations.overrideInfoIsRequired': string
+  'cd.overrideValidations.overrideTypeAndInfoRequired': string
+  'cd.overrideValidations.overrideTypeIsRequired': string
   'cd.overrideValue': string
   'cd.overrideYaml': string
   'cd.overridesFilter': string

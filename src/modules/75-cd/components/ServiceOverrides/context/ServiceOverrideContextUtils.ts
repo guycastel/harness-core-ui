@@ -1,4 +1,5 @@
-import { defaultTo, isEmpty, isNil, omit } from 'lodash-es'
+import { defaultTo, isEmpty, omit } from 'lodash-es'
+import { v4 as uuid } from 'uuid'
 import type { ConfigFileWrapper, ManifestConfigWrapper, ServiceOverridesSpec } from 'services/cd-ng'
 import type { RequiredField } from '@common/interfaces/RouteInterfaces'
 import { sanitize } from '@common/utils/JSONUtils'
@@ -9,7 +10,7 @@ import {
   OverrideDetails,
   OverrideTypes,
   ServiceOverrideRowFormState,
-  ServiceOverrideRowProps,
+  ServiceOverrideSectionProps,
   VariableOverrideDetails,
   ServiceOverridesResponseDTOV2
 } from '../ServiceOverridesUtils'
@@ -19,117 +20,102 @@ export const formGroupKey = (dataItem: ServiceOverridesResponseDTOV2): string =>
   return `${environmentRef} - ${infraIdentifier} - ${serviceRef}`
 }
 
-export const formListRowItems = (dataItems: ServiceOverridesResponseDTOV2[]): ServiceOverrideRowProps[] => {
-  const listRowItems: ServiceOverrideRowProps[] = []
-  let rowIndex = 0
-  dataItems.forEach(dataItem => {
-    const spec = dataItem.spec
-    const commonRowProps = {
-      isEdit: false,
-      isNew: false,
-      isClone: false,
-      groupKey: formGroupKey(dataItem),
-      overrideResponse: sanitize(dataItem, {
-        removeEmptyArray: false,
-        removeEmptyObject: false,
-        removeEmptyString: false
-      }) as ServiceOverridesResponseDTOV2
-    }
+export const formListSectionOverrideSpecData = (dataItem: ServiceOverridesResponseDTOV2): OverrideDetails[] => {
+  const spec = dataItem.spec
+  const overrideSpecDetails: OverrideDetails[] = []
 
-    if (Array.isArray(spec?.variables)) {
-      let variableIndex = 0
-      ;(spec?.variables as RequiredField<AllNGVariables, 'name' | 'type'>[]).forEach(variable => {
-        listRowItems.push({
-          ...commonRowProps,
-          rowIndex,
-          variableIndex,
-          overrideDetails: {
-            ...omit(dataItem, 'spec'),
-            overrideType: OverrideTypes.VARIABLE,
-            variableValue: {
-              ...variable
-            }
-          }
-        })
-        variableIndex += 1
-        rowIndex += 1
-      })
-    }
+  const commonOverrideSpecDetailsProps = {
+    isEdit: false,
+    isNew: false,
+    isClone: false
+  }
 
-    if (Array.isArray(spec?.manifests)) {
-      let manifestIndex = 0
-      ;(spec?.manifests as Required<ManifestConfigWrapper>[]).forEach(manifest => {
-        listRowItems.push({
-          ...commonRowProps,
-          rowIndex,
-          manifestIndex,
-          overrideDetails: {
-            ...omit(dataItem, 'spec'),
-            overrideType: OverrideTypes.MANIFEST,
-            manifestValue: {
-              ...manifest
-            }
-          }
-        })
-        manifestIndex += 1
-        rowIndex += 1
-      })
-    }
-
-    if (Array.isArray(spec?.configFiles)) {
-      let configFileIndex = 0
-      ;(spec?.configFiles as Required<ConfigFileWrapper>[]).forEach(configFile => {
-        listRowItems.push({
-          ...commonRowProps,
-          rowIndex,
-          configFileIndex,
-          overrideDetails: {
-            ...omit(dataItem, 'spec'),
-            overrideType: OverrideTypes.CONFIG,
-            configFileValue: {
-              ...configFile
-            }
-          }
-        })
-        configFileIndex += 1
-        rowIndex += 1
-      })
-    }
-
-    if (spec?.applicationSettings && !isEmpty(spec?.applicationSettings)) {
-      listRowItems.push({
-        ...commonRowProps,
-        rowIndex,
-        overrideDetails: {
-          ...omit(dataItem, 'spec'),
-          overrideType: OverrideTypes.APPLICATIONSETTING,
-          applicationSettingsValue: {
-            ...spec.applicationSettings
-          }
+  if (Array.isArray(spec?.variables)) {
+    ;(spec?.variables as RequiredField<AllNGVariables, 'name' | 'type'>[]).forEach(variable => {
+      overrideSpecDetails.push({
+        ...commonOverrideSpecDetailsProps,
+        ...omit(dataItem, 'spec'),
+        overrideType: OverrideTypes.VARIABLE,
+        variableValue: {
+          ...variable
         }
       })
-      rowIndex += 1
-    }
+    })
+  }
 
-    if (spec?.connectionStrings && !isEmpty(spec?.connectionStrings)) {
-      listRowItems.push({
-        ...commonRowProps,
-        rowIndex,
-        overrideDetails: {
-          ...omit(dataItem, 'spec'),
-          overrideType: OverrideTypes.CONNECTIONSTRING,
-          connectionStringsValue: {
-            ...spec.connectionStrings
-          }
+  if (Array.isArray(spec?.manifests)) {
+    ;(spec?.manifests as Required<ManifestConfigWrapper>[]).forEach(manifest => {
+      overrideSpecDetails.push({
+        ...commonOverrideSpecDetailsProps,
+        ...omit(dataItem, 'spec'),
+        overrideType: OverrideTypes.MANIFEST,
+        manifestValue: {
+          ...manifest
         }
       })
-      rowIndex += 1
-    }
+    })
+  }
 
-    return { ...commonRowProps }
-  })
+  if (Array.isArray(spec?.configFiles)) {
+    ;(spec?.configFiles as Required<ConfigFileWrapper>[]).forEach(configFile => {
+      overrideSpecDetails.push({
+        ...commonOverrideSpecDetailsProps,
+        ...omit(dataItem, 'spec'),
+        overrideType: OverrideTypes.CONFIG,
+        configFileValue: {
+          ...configFile
+        }
+      })
+    })
+  }
 
-  return listRowItems
+  if (spec?.applicationSettings && !isEmpty(spec?.applicationSettings)) {
+    overrideSpecDetails.push({
+      ...commonOverrideSpecDetailsProps,
+      ...omit(dataItem, 'spec'),
+      overrideType: OverrideTypes.APPLICATIONSETTING,
+      applicationSettingsValue: {
+        ...spec.applicationSettings
+      }
+    })
+  }
+
+  if (spec?.connectionStrings && !isEmpty(spec?.connectionStrings)) {
+    overrideSpecDetails.push({
+      ...commonOverrideSpecDetailsProps,
+      ...omit(dataItem, 'spec'),
+      overrideType: OverrideTypes.CONNECTIONSTRING,
+      connectionStringsValue: {
+        ...spec.connectionStrings
+      }
+    })
+  }
+  return overrideSpecDetails
+}
+
+export const formListSectionItem = (dataItem: ServiceOverridesResponseDTOV2, dataIndex: number) => {
+  const overrideSpecDetails = formListSectionOverrideSpecData(dataItem)
+  const commonSectionProps = {
+    isNew: false,
+    isEdit: false,
+    groupKey: formGroupKey(dataItem),
+    overrideResponse: sanitize(dataItem, {
+      removeEmptyArray: false,
+      removeEmptyObject: false,
+      removeEmptyString: false
+    }) as ServiceOverridesResponseDTOV2
+  }
+
+  return {
+    ...commonSectionProps,
+    sectionIndex: dataIndex,
+    id: uuid(),
+    overrideSpecDetails
+  }
+}
+
+export const formListSectionItems = (dataItems: ServiceOverridesResponseDTOV2[]): ServiceOverrideSectionProps[] => {
+  return dataItems.map((dataItem, dataIndex) => formListSectionItem(dataItem, dataIndex))
 }
 
 export const shouldDeleteOverrideCompletely = (overrideResponse: ServiceOverridesResponseDTOV2): boolean => {
@@ -189,64 +175,70 @@ export const formDeleteOverrideResponseSpec = (
   return overrideResponseSpec
 }
 
-export const formUpdateOverrideResponseSpec = (
-  overrideResponseSpec: ServiceOverridesSpec,
-  values: RequiredField<ServiceOverrideRowFormState, 'environmentRef'>,
-  rowItemToUpdate: RequiredField<ServiceOverrideRowProps, 'overrideDetails'>
-): ServiceOverridesSpec => {
-  const { variableIndex, manifestIndex, configFileIndex, rowIndex } = rowItemToUpdate
+export const formUpdateOverrideResponseSpec = (values: ServiceOverrideRowFormState[]): ServiceOverridesSpec => {
+  const overrideResponseSpec: ServiceOverridesSpec = {}
 
-  if (values.overrideType === OverrideTypes.VARIABLE && overrideResponseSpec.variables && !isNil(variableIndex)) {
-    if (rowIndex % 1 === 0) {
-      overrideResponseSpec.variables[variableIndex] = {
-        ...values.variables?.[0]
+  values.forEach(formValue => {
+    if (formValue.overrideType === OverrideTypes.VARIABLE) {
+      if (overrideResponseSpec.variables) {
+        overrideResponseSpec.variables.push({
+          ...formValue.variables?.[0]
+        })
+      } else {
+        overrideResponseSpec.variables = []
+        overrideResponseSpec.variables.push({
+          ...formValue.variables?.[0]
+        })
       }
-    } else {
-      overrideResponseSpec.variables.splice(variableIndex, 0, {
-        ...values.variables?.[0]
-      })
     }
-  }
 
-  if (values.overrideType === OverrideTypes.MANIFEST && overrideResponseSpec.manifests && !isNil(manifestIndex)) {
-    if (rowIndex % 1 === 0) {
-      overrideResponseSpec.manifests[manifestIndex] = {
-        ...values.manifests?.[0]
+    if (formValue.overrideType === OverrideTypes.MANIFEST) {
+      if (overrideResponseSpec.manifests) {
+        overrideResponseSpec.manifests.push({
+          ...formValue.manifests?.[0]
+        })
+      } else {
+        overrideResponseSpec.manifests = []
+        overrideResponseSpec.manifests.push({
+          ...formValue.manifests?.[0]
+        })
       }
-    } else {
-      overrideResponseSpec.manifests.splice(manifestIndex, 0, {
-        ...values.manifests?.[0]
-      })
     }
-  }
 
-  if (values.overrideType === OverrideTypes.CONFIG && overrideResponseSpec.configFiles && !isNil(configFileIndex)) {
-    if (rowIndex % 1 === 0) {
-      overrideResponseSpec.configFiles[configFileIndex] = {
-        ...values.configFiles?.[0]
+    if (formValue.overrideType === OverrideTypes.CONFIG) {
+      if (overrideResponseSpec.configFiles) {
+        overrideResponseSpec.configFiles.push({
+          ...formValue.configFiles?.[0]
+        })
+      } else {
+        overrideResponseSpec.configFiles = []
+        overrideResponseSpec.configFiles.push({
+          ...formValue.configFiles?.[0]
+        })
       }
-    } else {
-      overrideResponseSpec.configFiles.splice(configFileIndex, 0, {
-        ...values.configFiles?.[0]
-      })
     }
-  }
 
-  if (
-    values.overrideType === OverrideTypes.APPLICATIONSETTING &&
-    overrideResponseSpec.applicationSettings &&
-    values.applicationSettings
-  ) {
-    overrideResponseSpec.applicationSettings = { ...values.applicationSettings }
-  }
+    if (formValue.overrideType === OverrideTypes.APPLICATIONSETTING && formValue.applicationSettings) {
+      overrideResponseSpec.applicationSettings = { ...formValue.applicationSettings }
+    }
 
-  if (
-    values.overrideType === OverrideTypes.CONNECTIONSTRING &&
-    overrideResponseSpec.connectionStrings &&
-    values.connectionStrings
-  ) {
-    overrideResponseSpec.connectionStrings = { ...values.connectionStrings }
-  }
+    if (formValue.overrideType === OverrideTypes.CONNECTIONSTRING && formValue.connectionStrings) {
+      overrideResponseSpec.connectionStrings = { ...formValue.connectionStrings }
+    }
+  })
 
   return overrideResponseSpec
+}
+
+export const checkIfSectionUpdateOperationIsAllowed = (
+  currentEditableSectionIndex: number | undefined,
+  sectionIndex: number
+) => {
+  if (currentEditableSectionIndex === undefined) {
+    return true
+  } else if (currentEditableSectionIndex === sectionIndex) {
+    return true
+  }
+
+  return false
 }

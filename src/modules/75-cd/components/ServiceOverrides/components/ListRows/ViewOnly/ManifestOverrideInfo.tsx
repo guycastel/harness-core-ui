@@ -1,3 +1,10 @@
+/*
+ * Copyright 2023 Harness Inc. All rights reserved.
+ * Use of this source code is governed by the PolyForm Shield 1.0.0 license
+ * that can be found in the licenses directory at the root of this repository, also available at
+ * https://polyformproject.org/wp-content/uploads/2020/06/PolyForm-Shield-1.0.0.txt.
+ */
+
 import React from 'react'
 import { get, isArray, isEmpty } from 'lodash-es'
 
@@ -22,7 +29,7 @@ import {
 export default function ManifestOverrideInfo({
   manifest
 }: {
-  manifest: ManifestConfigWrapper['manifest']
+  manifest?: ManifestConfigWrapper['manifest']
 }): React.ReactElement {
   const { getString } = useStrings()
   const { openFileStoreModal } = useFileStoreModal({ isReadonly: true })
@@ -36,7 +43,7 @@ export default function ManifestOverrideInfo({
 
   return (
     <React.Fragment>
-      <Layout.Vertical width={160} height={40} flex={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
+      <Layout.Vertical width={180} height={40} flex={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <Text font={{ variation: FontVariation.TABLE_HEADERS }}>{getString('common.ID').toUpperCase()}</Text>
         <Layout.Horizontal spacing={'small'}>
           <Icon inline name={ManifestIcons[manifest?.type as OverrideManifestTypes]} size={20} width={20} />
@@ -45,13 +52,13 @@ export default function ManifestOverrideInfo({
           </Text>
         </Layout.Horizontal>
       </Layout.Vertical>
-      <Layout.Vertical width={160} height={40} flex={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
+      <Layout.Vertical width={180} height={40} flex={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <Text font={{ variation: FontVariation.TABLE_HEADERS }}>
           {getString('pipelineSteps.serviceTab.manifestList.manifestType').toUpperCase()}
         </Text>
         <Text lineClamp={1}>{getString(ManifestLabels[manifest?.type as OverrideManifestTypes])}</Text>
       </Layout.Vertical>
-      <Layout.Vertical width={160} height={40} flex={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
+      <Layout.Vertical width={180} height={40} flex={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <Text font={{ variation: FontVariation.TABLE_HEADERS }}>
           {getString('pipelineSteps.serviceTab.manifestList.manifestStore').toUpperCase()}
         </Text>

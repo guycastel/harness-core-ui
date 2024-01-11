@@ -7,7 +7,17 @@
  **/
 // this is an auto-generated file, do not update this manually
 declare const styles: {
-  readonly overrideVariableInput: string
-  readonly variableOverrideContainer: string
+  readonly container: string
+  readonly contentWrapper: string
+  readonly errorHandler: string
+  readonly gitSyncErrorMessage: string
+  readonly gitSyncForm: string
+  readonly infraIdentifierInputContainer: string
+  readonly newOrEditableRow: string
+  readonly overridesCollapsibleTable: string
+  readonly sectionActionBtn: string
+  readonly shrink: string
+  readonly specDetailsRow: string
+  readonly toggleAccordion: string
 }
 export default styles

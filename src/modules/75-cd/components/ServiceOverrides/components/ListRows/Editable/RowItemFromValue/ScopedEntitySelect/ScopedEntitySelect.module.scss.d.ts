@@ -9,6 +9,9 @@
 declare const styles: {
   readonly container: string
   readonly disabled: string
+  readonly errorBorder: string
+  readonly errorInfraInput: string
+  readonly infraErrorMessageContainer: string
   readonly listContainer: string
   readonly listRow: string
   readonly searchInput: string

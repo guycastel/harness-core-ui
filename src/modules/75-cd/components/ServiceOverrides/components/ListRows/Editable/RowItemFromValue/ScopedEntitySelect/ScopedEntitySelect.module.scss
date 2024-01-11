@@ -60,3 +60,17 @@
     border-color: var(--grey-200) !important;
   }
 }
+
+.errorBorder {
+  border-color: var(--red-500) !important;
+}
+
+.errorInfraInput {
+  border: 1px solid var(--red-500) !important;
+  border-radius: var(--spacing-2);
+}
+
+.infraErrorMessageContainer {
+  position: absolute;
+  top: 34px;
+}
