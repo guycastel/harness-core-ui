@@ -318,6 +318,7 @@ export interface StringsMap {
   'common.deploymentTemplateSteps': string
   'common.deploymentsIn': string
   'common.descriptionPlaceholder': string
+  'common.destinations': string
   'common.directly': string
   'common.disable': string
   'common.disabled': string
@@ -1559,6 +1560,7 @@ export interface StringsMap {
   'common.warning': string
   'common.webhookURL': string
   'common.webhooks': string
+  'common.weight': string
   'common.welcome': string
   'common.welcomePage.allusecases': string
   'common.welcomePage.cd.bodyText': string

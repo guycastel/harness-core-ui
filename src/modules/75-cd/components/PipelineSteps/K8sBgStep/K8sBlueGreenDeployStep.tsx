@@ -39,6 +39,8 @@ import { getNameAndIdentifierSchema } from '@pipeline/components/PipelineSteps/S
 import { TimeoutFieldInputSetView } from '@pipeline/components/InputSetView/TimeoutFieldInputSetView/TimeoutFieldInputSetView'
 import { isExecutionTimeFieldDisabled } from '@pipeline/utils/runPipelineUtils'
 import ProviderSelect from './K8sProvider'
+import TrafficRouteDestinations from './TrafficDestinations/K8sTrafficDestinations'
+import { DestinationsDefault } from './TrafficDestinations/helper'
 import stepCss from '@pipeline/components/PipelineSteps/Steps/Steps.module.scss'
 import pipelineVariablesCss from '@pipeline/components/PipelineStudio/PipelineVariables/PipelineVariables.module.scss'
 
@@ -82,7 +84,38 @@ function K8BGDeployWidget(props: K8BGDeployProps, formikRef: StepFormikFowardRef
         initialValues={initialValues}
         validationSchema={Yup.object().shape({
           ...getNameAndIdentifierSchema(getString, stepViewType),
-          timeout: getDurationValidationSchema({ minimum: '10s' }).required(getString('validation.timeout10SecMinimum'))
+          timeout: getDurationValidationSchema({ minimum: '10s' }).required(
+            getString('validation.timeout10SecMinimum')
+          ),
+
+          spec: Yup.object().when(' ', {
+            is: () => {
+              return CDS_K8S_TRAFFIC_ROUTING_NG
+            },
+            then: Yup.object().shape({
+              trafficRouting: Yup.object().shape({
+                spec: Yup.object().shape({
+                  destinations: Yup.lazy((value): Yup.Schema<unknown> => {
+                    if (getMultiTypeFromValue(value as string[]) === MultiTypeInputType.FIXED) {
+                      return Yup.array()
+                        .of(
+                          Yup.object().shape({
+                            destination: Yup.object().shape({
+                              host: Yup.string()
+                                .min(1)
+                                .required(getString('common.validation.fieldIsRequired', { name: 'Host' }))
+                            })
+                          })
+                        )
+                        .min(1)
+                        .required(getString('common.validation.fieldIsRequired', { name: 'Destinations' }))
+                    }
+                    return Yup.string().required(getString('common.validation.fieldIsRequired'))
+                  })
+                })
+              })
+            })
+          })
         })}
       >
         {(formik: FormikProps<K8sBGDeployData>) => {
@@ -115,10 +148,30 @@ function K8BGDeployWidget(props: K8BGDeployProps, formikRef: StepFormikFowardRef
                 />
               </div>
               {CDS_K8S_TRAFFIC_ROUTING_NG && (
-                <div className={cx(stepCss.formGroup, stepCss.sm)}>
-                  <ProviderSelect name="spec.trafficRouting.provider" />
-                </div>
+                <>
+                  <div className={cx(stepCss.formGroup, stepCss.sm)}>
+                    <ProviderSelect name="spec.trafficRouting.provider" />
+                  </div>
+                  <TrafficRouteDestinations
+                    name="spec.trafficRouting.spec.destinations"
+                    expressions={expressions}
+                    defaultValues={{
+                      stage: DestinationsDefault.STAGE,
+                      host: DestinationsDefault.STABLE
+                    }}
+                    multiTypeFieldSelectorProps={{
+                      label: getString('common.destinations'),
+                      disableTypeSelection: false,
+                      allowedTypes: allowableTypes
+                    }}
+                    configureOptionsProps={{
+                      hideExecutionTimeField: true
+                    }}
+                    disabled={readonly}
+                  />
+                </>
               )}
+
               <Accordion className={stepCss.accordion}>
                 <Accordion.Panel
                   id="optional-config"
@@ -172,6 +225,7 @@ function K8BGDeployWidget(props: K8BGDeployProps, formikRef: StepFormikFowardRef
 const K8BGDeployInputStep: React.FC<K8BGDeployProps> = ({ inputSetData, allowableTypes, stepViewType }) => {
   const { getString } = useStrings()
   const { expressions } = useVariablesExpression()
+  const { CDS_K8S_TRAFFIC_ROUTING_NG } = useFeatureFlags()
 
   return (
     <>
@@ -193,6 +247,32 @@ const K8BGDeployInputStep: React.FC<K8BGDeployProps> = ({ inputSetData, allowabl
           className={cx(stepCss.formGroup, stepCss.md)}
         />
       )}
+      {getMultiTypeFromValue(inputSetData?.template?.spec?.trafficRouting?.spec?.destinations) ===
+        MultiTypeInputType.RUNTIME &&
+        CDS_K8S_TRAFFIC_ROUTING_NG && (
+          <div className={cx(stepCss.formGroup, stepCss.md)}>
+            <TrafficRouteDestinations
+              name={`${
+                isEmpty(inputSetData?.path) ? '' : `${inputSetData?.path}.`
+              }spec.trafficRouting.spec.destinations`}
+              expressions={expressions}
+              defaultValues={{
+                stage: DestinationsDefault.STAGE,
+                host: DestinationsDefault.STABLE
+              }}
+              multiTypeFieldSelectorProps={{
+                label: getString('common.destinations'),
+                disableTypeSelection: false,
+                allowedTypes: allowableTypes
+              }}
+              configureOptionsProps={{
+                hideExecutionTimeField: true
+              }}
+              disabled={inputSetData?.readonly}
+            />
+          </div>
+        )}
+
       {getMultiTypeFromValue(inputSetData?.template?.spec?.skipDryRun) === MultiTypeInputType.RUNTIME && (
         <div className={cx(stepCss.formGroup, stepCss.md)}>
           <FormMultiTypeCheckboxField

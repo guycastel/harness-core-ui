@@ -85,6 +85,8 @@ editYaml: Edit YAML
 provisioner: Provisioner
 templates: Templates
 selectProvider: Provider
+weight: Weight
+destinations: Destinations
 xAndY: '{{x}} and {{y}}'
 refreshDelegateLogs: Refresh Delegate Logs
 noDelegateLogs: Delegate Tasks Logs are not generated for this step
