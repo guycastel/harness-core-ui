@@ -47,6 +47,16 @@ const CFSideNavLinks = (mode: NAV_MODE): React.ReactElement => {
             })}
           />
           <SideNav.Link
+            icon="infrastructure"
+            label={getString('environments')}
+            to={routes.toCFEnvironments({
+              accountId,
+              projectIdentifier: projectIdentifier as string,
+              orgIdentifier: orgIdentifier as string,
+              module
+            })}
+          />
+          <SideNav.Link
             icon="nav-pipeline"
             label={getString('pipelines')}
             to={routes.toPipelines({ accountId, projectIdentifier, orgIdentifier, module })}
@@ -56,16 +66,6 @@ const CFSideNavLinks = (mode: NAV_MODE): React.ReactElement => {
             icon="get-started"
             label={getString('cf.shared.getStarted')}
             to={routes.toCFOnboarding({
-              accountId,
-              projectIdentifier: projectIdentifier as string,
-              orgIdentifier: orgIdentifier as string,
-              module
-            })}
-          />
-          <SideNav.Link
-            icon="infrastructure"
-            label={getString('environments')}
-            to={routes.toCFEnvironments({
               accountId,
               projectIdentifier: projectIdentifier as string,
               orgIdentifier: orgIdentifier as string,
