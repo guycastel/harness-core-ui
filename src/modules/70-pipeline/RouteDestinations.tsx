@@ -87,8 +87,6 @@ import EnvironmentAttributeRenderer from './components/RbacResourceTables/Enviro
 import { BuildCommits } from './pages/execution/ExecutionLandingPage/Commits/BuildCommits'
 import { getPipelineExecutionEventAdditionalDetails } from './utils/auditTrailUtils'
 import ExecutionIACMCostsEstimationView from './pages/execution/ExecutionIACMCostsEstimationView'
-import InputSetResourceModal from './components/RbacResourceModals/InputSetResourceModal/InputSetResourceModal'
-import InputSetResourceRenderer from './components/RbacResourceModals/InputSetResourceRenderer/InputSetResourceRenderer'
 /**
  * Register RBAC resources
  */
@@ -107,20 +105,6 @@ RbacFactory.registerResourceTypeHandler(ResourceType.PIPELINE, {
   addResourceModalBody: props => <PipelineResourceModal {...props} />,
   // eslint-disable-next-line react/display-name
   staticResourceRenderer: props => <PipelineResourceRenderer {...props} />
-})
-
-RbacFactory.registerResourceTypeHandler(ResourceType.INPUT_SET, {
-  icon: 'yaml-builder-input-sets',
-  label: 'inputSetsText',
-  labelSingular: 'inputSets.inputSetLabel',
-  permissionLabels: {
-    [PermissionIdentifier.VIEW_INPUTSET]: <String stringID="rbac.permissionLabels.view" />,
-    [PermissionIdentifier.EDIT_INPUTSET]: <String stringID="rbac.permissionLabels.createEdit" />,
-    [PermissionIdentifier.DELETE_INPUTSET]: <String stringID="rbac.permissionLabels.delete" />
-  },
-  resourceModalSortingEnabled: true,
-  addResourceModalBody: props => <InputSetResourceModal {...props} />,
-  staticResourceRenderer: props => <InputSetResourceRenderer {...props} />
 })
 
 RbacFactory.registerResourceTypeHandler(ResourceType.SERVICE, {

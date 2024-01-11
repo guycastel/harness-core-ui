@@ -73,6 +73,8 @@ import { PipelineDeploymentList } from '@pipeline/pages/pipeline-deployment-list
 import { Webhooks } from '@pipeline/pages/webhooks/Webhooks'
 import WebhookEvents from '@pipeline/pages/webhooks/WebhookEvents/WebhookEvents'
 import WebhookLandingPage from '@pipeline/pages/webhooks/WebhookDetails/WebhookLandingPage'
+import InputSetResourceModal from '@modules/70-pipeline/components/RbacResourceModals/InputSetResourceModal/InputSetResourceModal'
+import InputSetResourceRenderer from '@modules/70-pipeline/components/RbacResourceModals/InputSetResourceRenderer/InputSetResourceRenderer'
 import { Environments } from './components/Environments/Environments'
 import { Environments as EnvironmentsV2 } from './components/EnvironmentsV2/Environments'
 import EnvironmentDetails from './components/EnvironmentsV2/EnvironmentDetails/EnvironmentDetails'
@@ -292,586 +294,607 @@ const ServiceDetails = (): React.ReactElement => {
   return !isCommunity ? <ServiceStudio /> : <Services />
 }
 
-export default (
-  <>
-    <Route licenseRedirectData={licenseRedirectData} path={routes.toCD({ ...accountPathProps })} exact>
-      <RedirectToCDProject />
-    </Route>
-    <RouteWithLayout
-      exact
-      licenseRedirectData={licenseRedirectData}
-      sidebarProps={CDSideNavProps}
-      pageName={PAGE_NAME.GetStartedWithCD}
-      path={routes.toGetStartedWithCD({ ...accountPathProps, ...projectPathProps, ...moduleParams })}
-    >
-      <CDOnboardingFullScreen />
-    </RouteWithLayout>
+export default function CDRoutes(): React.ReactElement {
+  const PIE_INPUTSET_RBAC_PERMISSIONS_ENABLED = useFeatureFlag(FeatureFlag.PIE_INPUTSET_RBAC_PERMISSIONS)
+  if (PIE_INPUTSET_RBAC_PERMISSIONS_ENABLED) {
+    RbacFactory.registerResourceTypeHandler(ResourceType.INPUT_SET, {
+      icon: 'yaml-builder-input-sets',
+      label: 'inputSetsText',
+      labelSingular: 'inputSets.inputSetLabel',
+      permissionLabels: {
+        [PermissionIdentifier.VIEW_INPUTSET]: <LocaleString stringID="rbac.permissionLabels.view" />,
+        [PermissionIdentifier.EDIT_INPUTSET]: <LocaleString stringID="rbac.permissionLabels.createEdit" />,
+        [PermissionIdentifier.DELETE_INPUTSET]: <LocaleString stringID="rbac.permissionLabels.delete" />
+      },
+      resourceModalSortingEnabled: true,
+      addResourceModalBody: props => <InputSetResourceModal {...props} />,
+      staticResourceRenderer: props => <InputSetResourceRenderer {...props} />
+    })
+  }
 
-    <RouteWithLayout
-      exact
-      layout={EmptyLayout}
-      licenseRedirectData={licenseRedirectData}
-      path={routes.toCDOnboardingWizard({ ...accountPathProps, ...projectPathProps, ...moduleParams })}
-      pageName={PAGE_NAME.CDOnboardingWizard}
-    >
-      <CDOnboardingWizardComponent />
-    </RouteWithLayout>
+  return (
+    <>
+      <Route licenseRedirectData={licenseRedirectData} path={routes.toCD({ ...accountPathProps })} exact>
+        <RedirectToCDProject />
+      </Route>
+      <RouteWithLayout
+        exact
+        licenseRedirectData={licenseRedirectData}
+        sidebarProps={CDSideNavProps}
+        pageName={PAGE_NAME.GetStartedWithCD}
+        path={routes.toGetStartedWithCD({ ...accountPathProps, ...projectPathProps, ...moduleParams })}
+      >
+        <CDOnboardingFullScreen />
+      </RouteWithLayout>
 
-    <RouteWithLayout
-      exact
-      licenseRedirectData={licenseRedirectData}
-      sidebarProps={CDSideNavProps}
-      path={routes.toCDOnboardingWizardWithCLI({ ...accountPathProps, ...projectPathProps, ...moduleParams })}
-      pageName={PAGE_NAME.CDOnboardingWizard}
-    >
-      <CDOnboardingWizardWithCLI />
-    </RouteWithLayout>
-    <RouteWithLayout
-      licenseRedirectData={licenseRedirectData}
-      sidebarProps={CDSideNavProps}
-      path={routes.toCDHome({ ...accountPathProps })}
-      exact
-      pageName={PAGE_NAME.CDHomePage}
-    >
-      <CDHomePage />
-    </RouteWithLayout>
-    <RouteWithLayout
-      layout={MinimalLayout}
-      path={routes.toModuleTrialHome({ ...accountPathProps, module: 'cd' })}
-      exact
-      pageName={PAGE_NAME.CDTrialHomePage}
-    >
-      <CDTrialHomePage />
-    </RouteWithLayout>
-    <RouteWithLayout
-      licenseRedirectData={licenseRedirectData}
-      sidebarProps={CDSideNavProps}
-      path={routes.toProjectOverview({ ...accountPathProps, ...projectPathProps, ...moduleParams })}
-      exact
-    >
-      <CDDashboardPageOrRedirect />
-    </RouteWithLayout>
+      <RouteWithLayout
+        exact
+        layout={EmptyLayout}
+        licenseRedirectData={licenseRedirectData}
+        path={routes.toCDOnboardingWizard({ ...accountPathProps, ...projectPathProps, ...moduleParams })}
+        pageName={PAGE_NAME.CDOnboardingWizard}
+      >
+        <CDOnboardingWizardComponent />
+      </RouteWithLayout>
 
-    {/* Services */}
-    <RouteWithLayout
-      exact
-      licenseRedirectData={licenseRedirectData}
-      sidebarProps={CDSideNavProps}
-      path={[routes.toServices({ ...projectPathProps, ...moduleParams })]}
-      pageName={PAGE_NAME.Services}
-    >
-      <Services showServicesDashboard />
-    </RouteWithLayout>
-    <RouteWithLayout
-      exact
-      sidebarProps={ProjectDetailsSideNavProps}
-      path={routes.toServices({ ...projectPathProps })}
-      pageName={PAGE_NAME.Services}
-    >
-      <Services />
-    </RouteWithLayout>
-    <RouteWithLayout
-      exact
-      sidebarProps={AccountSideNavProps}
-      path={routes.toServices({ ...orgPathProps })}
-      pageName={PAGE_NAME.Services}
-    >
-      <Services />
-    </RouteWithLayout>
-    <RouteWithLayout
-      exact
-      sidebarProps={AccountSideNavProps}
-      path={routes.toServices({ ...accountPathProps, accountRoutePlacement: 'settings' })}
-      pageName={PAGE_NAME.Services}
-    >
-      <Services />
-    </RouteWithLayout>
-    <RouteWithLayout
-      exact
-      sidebarProps={MainDashboardSideNavProps}
-      path={routes.toServices({ ...accountPathProps, accountRoutePlacement: 'dashboard' })}
-      pageName={PAGE_NAME.Services}
-    >
-      <Services />
-    </RouteWithLayout>
+      <RouteWithLayout
+        exact
+        licenseRedirectData={licenseRedirectData}
+        sidebarProps={CDSideNavProps}
+        path={routes.toCDOnboardingWizardWithCLI({ ...accountPathProps, ...projectPathProps, ...moduleParams })}
+        pageName={PAGE_NAME.CDOnboardingWizard}
+      >
+        <CDOnboardingWizardWithCLI />
+      </RouteWithLayout>
+      <RouteWithLayout
+        licenseRedirectData={licenseRedirectData}
+        sidebarProps={CDSideNavProps}
+        path={routes.toCDHome({ ...accountPathProps })}
+        exact
+        pageName={PAGE_NAME.CDHomePage}
+      >
+        <CDHomePage />
+      </RouteWithLayout>
+      <RouteWithLayout
+        layout={MinimalLayout}
+        path={routes.toModuleTrialHome({ ...accountPathProps, module: 'cd' })}
+        exact
+        pageName={PAGE_NAME.CDTrialHomePage}
+      >
+        <CDTrialHomePage />
+      </RouteWithLayout>
+      <RouteWithLayout
+        licenseRedirectData={licenseRedirectData}
+        sidebarProps={CDSideNavProps}
+        path={routes.toProjectOverview({ ...accountPathProps, ...projectPathProps, ...moduleParams })}
+        exact
+      >
+        <CDDashboardPageOrRedirect />
+      </RouteWithLayout>
 
-    {/* ServiceDetails */}
-    <RouteWithLayout
-      exact
-      licenseRedirectData={licenseRedirectData}
-      sidebarProps={CDSideNavProps}
-      path={[
-        routes.toServiceStudio({ ...projectPathProps, ...moduleParams, ...environmentPathProps, ...servicePathProps })
-      ]}
-      pageName={PAGE_NAME.ServiceDetails}
-    >
-      <ServiceDetails />
-    </RouteWithLayout>
-    <RouteWithLayout
-      exact
-      sidebarProps={ProjectDetailsSideNavProps}
-      path={routes.toServiceStudio({ ...projectPathProps, ...environmentPathProps, ...servicePathProps })}
-      pageName={PAGE_NAME.ServiceDetails}
-    >
-      <ServiceDetails />
-    </RouteWithLayout>
-    <RouteWithLayout
-      exact
-      sidebarProps={AccountSideNavProps}
-      path={routes.toServiceStudio({ ...orgPathProps, ...environmentPathProps, ...servicePathProps })}
-      pageName={PAGE_NAME.ServiceDetails}
-    >
-      <ServiceDetails />
-    </RouteWithLayout>
-    <RouteWithLayout
-      exact
-      sidebarProps={AccountSideNavProps}
-      path={routes.toServiceStudio({
-        ...accountPathProps,
-        ...environmentPathProps,
-        ...servicePathProps,
-        accountRoutePlacement: 'settings'
-      })}
-      pageName={PAGE_NAME.ServiceDetails}
-    >
-      <ServiceDetails />
-    </RouteWithLayout>
-    <RouteWithLayout
-      exact
-      sidebarProps={MainDashboardSideNavProps}
-      path={routes.toServiceStudio({
-        ...accountPathProps,
-        ...environmentPathProps,
-        ...servicePathProps,
-        accountRoutePlacement: 'dashboard'
-      })}
-      pageName={PAGE_NAME.ServiceDetails}
-    >
-      <ServiceDetails />
-    </RouteWithLayout>
+      {/* Services */}
+      <RouteWithLayout
+        exact
+        licenseRedirectData={licenseRedirectData}
+        sidebarProps={CDSideNavProps}
+        path={[routes.toServices({ ...projectPathProps, ...moduleParams })]}
+        pageName={PAGE_NAME.Services}
+      >
+        <Services showServicesDashboard />
+      </RouteWithLayout>
+      <RouteWithLayout
+        exact
+        sidebarProps={ProjectDetailsSideNavProps}
+        path={routes.toServices({ ...projectPathProps })}
+        pageName={PAGE_NAME.Services}
+      >
+        <Services />
+      </RouteWithLayout>
+      <RouteWithLayout
+        exact
+        sidebarProps={AccountSideNavProps}
+        path={routes.toServices({ ...orgPathProps })}
+        pageName={PAGE_NAME.Services}
+      >
+        <Services />
+      </RouteWithLayout>
+      <RouteWithLayout
+        exact
+        sidebarProps={AccountSideNavProps}
+        path={routes.toServices({ ...accountPathProps, accountRoutePlacement: 'settings' })}
+        pageName={PAGE_NAME.Services}
+      >
+        <Services />
+      </RouteWithLayout>
+      <RouteWithLayout
+        exact
+        sidebarProps={MainDashboardSideNavProps}
+        path={routes.toServices({ ...accountPathProps, accountRoutePlacement: 'dashboard' })}
+        pageName={PAGE_NAME.Services}
+      >
+        <Services />
+      </RouteWithLayout>
 
-    {/* EnvironmentsPage */}
-    <RouteWithLayout
-      exact
-      licenseRedirectData={licenseRedirectData}
-      sidebarProps={CDSideNavProps}
-      path={[routes.toEnvironment({ ...projectPathProps, ...moduleParams })]}
-      pageName={PAGE_NAME.Environments}
-    >
-      <EnvironmentsPage />
-    </RouteWithLayout>
-    <RouteWithLayout
-      exact
-      sidebarProps={ProjectDetailsSideNavProps}
-      path={routes.toEnvironment({ ...projectPathProps })}
-      pageName={PAGE_NAME.Environments}
-    >
-      <EnvironmentsPage />
-    </RouteWithLayout>
-    <RouteWithLayout
-      exact
-      sidebarProps={AccountSideNavProps}
-      path={routes.toEnvironment({ ...orgPathProps })}
-      pageName={PAGE_NAME.Environments}
-    >
-      <EnvironmentsPage />
-    </RouteWithLayout>
-    <RouteWithLayout
-      exact
-      sidebarProps={AccountSideNavProps}
-      path={routes.toEnvironment({ ...accountPathProps, accountRoutePlacement: 'settings' })}
-      pageName={PAGE_NAME.Environments}
-    >
-      <EnvironmentsPage />
-    </RouteWithLayout>
-    <RouteWithLayout
-      exact
-      sidebarProps={MainDashboardSideNavProps}
-      path={routes.toEnvironment({ ...accountPathProps, accountRoutePlacement: 'dashboard' })}
-      pageName={PAGE_NAME.Environments}
-    >
-      <EnvironmentsPage />
-    </RouteWithLayout>
+      {/* ServiceDetails */}
+      <RouteWithLayout
+        exact
+        licenseRedirectData={licenseRedirectData}
+        sidebarProps={CDSideNavProps}
+        path={[
+          routes.toServiceStudio({ ...projectPathProps, ...moduleParams, ...environmentPathProps, ...servicePathProps })
+        ]}
+        pageName={PAGE_NAME.ServiceDetails}
+      >
+        <ServiceDetails />
+      </RouteWithLayout>
+      <RouteWithLayout
+        exact
+        sidebarProps={ProjectDetailsSideNavProps}
+        path={routes.toServiceStudio({ ...projectPathProps, ...environmentPathProps, ...servicePathProps })}
+        pageName={PAGE_NAME.ServiceDetails}
+      >
+        <ServiceDetails />
+      </RouteWithLayout>
+      <RouteWithLayout
+        exact
+        sidebarProps={AccountSideNavProps}
+        path={routes.toServiceStudio({ ...orgPathProps, ...environmentPathProps, ...servicePathProps })}
+        pageName={PAGE_NAME.ServiceDetails}
+      >
+        <ServiceDetails />
+      </RouteWithLayout>
+      <RouteWithLayout
+        exact
+        sidebarProps={AccountSideNavProps}
+        path={routes.toServiceStudio({
+          ...accountPathProps,
+          ...environmentPathProps,
+          ...servicePathProps,
+          accountRoutePlacement: 'settings'
+        })}
+        pageName={PAGE_NAME.ServiceDetails}
+      >
+        <ServiceDetails />
+      </RouteWithLayout>
+      <RouteWithLayout
+        exact
+        sidebarProps={MainDashboardSideNavProps}
+        path={routes.toServiceStudio({
+          ...accountPathProps,
+          ...environmentPathProps,
+          ...servicePathProps,
+          accountRoutePlacement: 'dashboard'
+        })}
+        pageName={PAGE_NAME.ServiceDetails}
+      >
+        <ServiceDetails />
+      </RouteWithLayout>
 
-    {/* EnvironmentDetails */}
-    <RouteWithLayout
-      exact
-      licenseRedirectData={licenseRedirectData}
-      sidebarProps={CDSideNavProps}
-      path={[routes.toEnvironmentDetails({ ...projectPathProps, ...moduleParams, ...environmentPathProps })]}
-      pageName={PAGE_NAME.EnvironmentDetails}
-    >
-      <EnvironmentDetails />
-    </RouteWithLayout>
-    <RouteWithLayout
-      exact
-      sidebarProps={ProjectDetailsSideNavProps}
-      path={routes.toEnvironmentDetails({ ...projectPathProps, ...environmentPathProps })}
-      pageName={PAGE_NAME.EnvironmentDetails}
-    >
-      <EnvironmentDetails />
-    </RouteWithLayout>
-    <RouteWithLayout
-      exact
-      sidebarProps={AccountSideNavProps}
-      path={routes.toEnvironmentDetails({ ...orgPathProps, ...environmentPathProps })}
-      pageName={PAGE_NAME.EnvironmentDetails}
-    >
-      <EnvironmentDetails />
-    </RouteWithLayout>
-    <RouteWithLayout
-      exact
-      sidebarProps={AccountSideNavProps}
-      path={routes.toEnvironmentDetails({
-        ...accountPathProps,
-        ...environmentPathProps,
-        accountRoutePlacement: 'settings'
-      })}
-      pageName={PAGE_NAME.EnvironmentDetails}
-    >
-      <EnvironmentDetails />
-    </RouteWithLayout>
-    <RouteWithLayout
-      exact
-      sidebarProps={MainDashboardSideNavProps}
-      path={routes.toEnvironmentDetails({
-        ...accountPathProps,
-        ...environmentPathProps,
-        accountRoutePlacement: 'dashboard'
-      })}
-      pageName={PAGE_NAME.EnvironmentDetails}
-    >
-      <EnvironmentDetails />
-    </RouteWithLayout>
+      {/* EnvironmentsPage */}
+      <RouteWithLayout
+        exact
+        licenseRedirectData={licenseRedirectData}
+        sidebarProps={CDSideNavProps}
+        path={[routes.toEnvironment({ ...projectPathProps, ...moduleParams })]}
+        pageName={PAGE_NAME.Environments}
+      >
+        <EnvironmentsPage />
+      </RouteWithLayout>
+      <RouteWithLayout
+        exact
+        sidebarProps={ProjectDetailsSideNavProps}
+        path={routes.toEnvironment({ ...projectPathProps })}
+        pageName={PAGE_NAME.Environments}
+      >
+        <EnvironmentsPage />
+      </RouteWithLayout>
+      <RouteWithLayout
+        exact
+        sidebarProps={AccountSideNavProps}
+        path={routes.toEnvironment({ ...orgPathProps })}
+        pageName={PAGE_NAME.Environments}
+      >
+        <EnvironmentsPage />
+      </RouteWithLayout>
+      <RouteWithLayout
+        exact
+        sidebarProps={AccountSideNavProps}
+        path={routes.toEnvironment({ ...accountPathProps, accountRoutePlacement: 'settings' })}
+        pageName={PAGE_NAME.Environments}
+      >
+        <EnvironmentsPage />
+      </RouteWithLayout>
+      <RouteWithLayout
+        exact
+        sidebarProps={MainDashboardSideNavProps}
+        path={routes.toEnvironment({ ...accountPathProps, accountRoutePlacement: 'dashboard' })}
+        pageName={PAGE_NAME.Environments}
+      >
+        <EnvironmentsPage />
+      </RouteWithLayout>
 
-    {/* EnvironmentGroups */}
-    <RouteWithLayout
-      exact
-      licenseRedirectData={licenseRedirectData}
-      sidebarProps={CDSideNavProps}
-      path={[routes.toEnvironmentGroups({ ...projectPathProps, ...moduleParams })]}
-      pageName={PAGE_NAME.EnvironmentGroups}
-    >
-      <EnvironmentGroups />
-    </RouteWithLayout>
-    <RouteWithLayout
-      exact
-      sidebarProps={ProjectDetailsSideNavProps}
-      path={routes.toEnvironmentGroups({ ...projectPathProps })}
-      pageName={PAGE_NAME.EnvironmentGroups}
-    >
-      <EnvironmentGroups />
-    </RouteWithLayout>
-    <RouteWithLayout
-      exact
-      sidebarProps={AccountSideNavProps}
-      path={routes.toEnvironmentGroups({ ...orgPathProps })}
-      pageName={PAGE_NAME.EnvironmentGroups}
-    >
-      <EnvironmentGroups />
-    </RouteWithLayout>
-    <RouteWithLayout
-      exact
-      sidebarProps={AccountSideNavProps}
-      path={routes.toEnvironmentGroups({ ...accountPathProps, accountRoutePlacement: 'settings' })}
-      pageName={PAGE_NAME.EnvironmentGroups}
-    >
-      <EnvironmentGroups />
-    </RouteWithLayout>
-    <RouteWithLayout
-      exact
-      sidebarProps={MainDashboardSideNavProps}
-      path={routes.toEnvironmentGroups({ ...accountPathProps, accountRoutePlacement: 'dashboard' })}
-      pageName={PAGE_NAME.EnvironmentGroups}
-    >
-      <EnvironmentGroups />
-    </RouteWithLayout>
+      {/* EnvironmentDetails */}
+      <RouteWithLayout
+        exact
+        licenseRedirectData={licenseRedirectData}
+        sidebarProps={CDSideNavProps}
+        path={[routes.toEnvironmentDetails({ ...projectPathProps, ...moduleParams, ...environmentPathProps })]}
+        pageName={PAGE_NAME.EnvironmentDetails}
+      >
+        <EnvironmentDetails />
+      </RouteWithLayout>
+      <RouteWithLayout
+        exact
+        sidebarProps={ProjectDetailsSideNavProps}
+        path={routes.toEnvironmentDetails({ ...projectPathProps, ...environmentPathProps })}
+        pageName={PAGE_NAME.EnvironmentDetails}
+      >
+        <EnvironmentDetails />
+      </RouteWithLayout>
+      <RouteWithLayout
+        exact
+        sidebarProps={AccountSideNavProps}
+        path={routes.toEnvironmentDetails({ ...orgPathProps, ...environmentPathProps })}
+        pageName={PAGE_NAME.EnvironmentDetails}
+      >
+        <EnvironmentDetails />
+      </RouteWithLayout>
+      <RouteWithLayout
+        exact
+        sidebarProps={AccountSideNavProps}
+        path={routes.toEnvironmentDetails({
+          ...accountPathProps,
+          ...environmentPathProps,
+          accountRoutePlacement: 'settings'
+        })}
+        pageName={PAGE_NAME.EnvironmentDetails}
+      >
+        <EnvironmentDetails />
+      </RouteWithLayout>
+      <RouteWithLayout
+        exact
+        sidebarProps={MainDashboardSideNavProps}
+        path={routes.toEnvironmentDetails({
+          ...accountPathProps,
+          ...environmentPathProps,
+          accountRoutePlacement: 'dashboard'
+        })}
+        pageName={PAGE_NAME.EnvironmentDetails}
+      >
+        <EnvironmentDetails />
+      </RouteWithLayout>
 
-    {/* EnvironmentGroupDetails */}
-    <RouteWithLayout
-      exact
-      licenseRedirectData={licenseRedirectData}
-      sidebarProps={CDSideNavProps}
-      path={[routes.toEnvironmentGroupDetails({ ...projectPathProps, ...moduleParams, ...environmentGroupPathProps })]}
-      pageName={PAGE_NAME.EnvironmentGroupDetails}
-    >
-      <EnvironmentGroupDetails />
-    </RouteWithLayout>
-    <RouteWithLayout
-      exact
-      sidebarProps={ProjectDetailsSideNavProps}
-      path={routes.toEnvironmentGroupDetails({ ...projectPathProps, ...environmentGroupPathProps })}
-      pageName={PAGE_NAME.EnvironmentGroupDetails}
-    >
-      <EnvironmentGroupDetails />
-    </RouteWithLayout>
-    <RouteWithLayout
-      exact
-      sidebarProps={AccountSideNavProps}
-      path={routes.toEnvironmentGroupDetails({ ...orgPathProps, ...environmentGroupPathProps })}
-      pageName={PAGE_NAME.EnvironmentGroupDetails}
-    >
-      <EnvironmentGroupDetails />
-    </RouteWithLayout>
-    <RouteWithLayout
-      exact
-      sidebarProps={AccountSideNavProps}
-      path={routes.toEnvironmentGroupDetails({
-        ...accountPathProps,
-        ...environmentGroupPathProps,
-        accountRoutePlacement: 'settings'
-      })}
-      pageName={PAGE_NAME.EnvironmentGroupDetails}
-    >
-      <EnvironmentGroupDetails />
-    </RouteWithLayout>
-    <RouteWithLayout
-      exact
-      sidebarProps={MainDashboardSideNavProps}
-      path={routes.toEnvironmentGroupDetails({
-        ...accountPathProps,
-        ...environmentGroupPathProps,
-        accountRoutePlacement: 'dashboard'
-      })}
-      pageName={PAGE_NAME.EnvironmentGroupDetails}
-    >
-      <EnvironmentGroupDetails />
-    </RouteWithLayout>
+      {/* EnvironmentGroups */}
+      <RouteWithLayout
+        exact
+        licenseRedirectData={licenseRedirectData}
+        sidebarProps={CDSideNavProps}
+        path={[routes.toEnvironmentGroups({ ...projectPathProps, ...moduleParams })]}
+        pageName={PAGE_NAME.EnvironmentGroups}
+      >
+        <EnvironmentGroups />
+      </RouteWithLayout>
+      <RouteWithLayout
+        exact
+        sidebarProps={ProjectDetailsSideNavProps}
+        path={routes.toEnvironmentGroups({ ...projectPathProps })}
+        pageName={PAGE_NAME.EnvironmentGroups}
+      >
+        <EnvironmentGroups />
+      </RouteWithLayout>
+      <RouteWithLayout
+        exact
+        sidebarProps={AccountSideNavProps}
+        path={routes.toEnvironmentGroups({ ...orgPathProps })}
+        pageName={PAGE_NAME.EnvironmentGroups}
+      >
+        <EnvironmentGroups />
+      </RouteWithLayout>
+      <RouteWithLayout
+        exact
+        sidebarProps={AccountSideNavProps}
+        path={routes.toEnvironmentGroups({ ...accountPathProps, accountRoutePlacement: 'settings' })}
+        pageName={PAGE_NAME.EnvironmentGroups}
+      >
+        <EnvironmentGroups />
+      </RouteWithLayout>
+      <RouteWithLayout
+        exact
+        sidebarProps={MainDashboardSideNavProps}
+        path={routes.toEnvironmentGroups({ ...accountPathProps, accountRoutePlacement: 'dashboard' })}
+        pageName={PAGE_NAME.EnvironmentGroups}
+      >
+        <EnvironmentGroups />
+      </RouteWithLayout>
 
-    {/* ServiceOverrides Page */}
-    <RouteWithLayout
-      exact
-      licenseRedirectData={licenseRedirectData}
-      sidebarProps={CDSideNavProps}
-      path={routes.toServiceOverrides({ ...projectPathProps, ...moduleParams })}
-      pageName={PAGE_NAME.ServiceOverrides}
-    >
-      <ServiceOverrides />
-    </RouteWithLayout>
-    <RouteWithLayout
-      exact
-      sidebarProps={ProjectDetailsSideNavProps}
-      path={[routes.toServiceOverrides({ ...projectPathProps })]}
-      pageName={PAGE_NAME.ServiceOverrides}
-    >
-      <ServiceOverrides />
-    </RouteWithLayout>
-    <RouteWithLayout
-      exact
-      sidebarProps={AccountSideNavProps}
-      path={routes.toServiceOverrides({ ...orgPathProps })}
-      pageName={PAGE_NAME.ServiceOverrides}
-    >
-      <ServiceOverrides />
-    </RouteWithLayout>
-    <RouteWithLayout
-      exact
-      sidebarProps={AccountSideNavProps}
-      path={routes.toServiceOverrides({ ...accountPathProps, accountRoutePlacement: 'settings' })}
-      pageName={PAGE_NAME.ServiceOverrides}
-    >
-      <ServiceOverrides />
-    </RouteWithLayout>
-    <RouteWithLayout
-      exact
-      sidebarProps={MainDashboardSideNavProps}
-      path={routes.toServiceOverrides({ ...accountPathProps, accountRoutePlacement: 'dashboard' })}
-      pageName={PAGE_NAME.ServiceOverrides}
-    >
-      <ServiceOverrides />
-    </RouteWithLayout>
-    <RouteWithLayout
-      exact
-      sidebarProps={CDSideNavProps}
-      path={routes.toWebhooks({ ...projectPathProps, ...moduleParams })}
-      pageName={PAGE_NAME.Webhooks}
-    >
-      <Webhooks />
-    </RouteWithLayout>
-    <RouteWithLayout
-      exact
-      sidebarProps={ProjectDetailsSideNavProps}
-      path={routes.toWebhooks({ ...projectPathProps })}
-      pageName={PAGE_NAME.Webhooks}
-    >
-      <Webhooks />
-    </RouteWithLayout>
-    <RouteWithLayout
-      exact
-      sidebarProps={AccountSideNavProps}
-      path={routes.toWebhooks({ ...orgPathProps })}
-      pageName={PAGE_NAME.Webhooks}
-    >
-      <Webhooks />
-    </RouteWithLayout>
-    <RouteWithLayout
-      exact
-      sidebarProps={AccountSideNavProps}
-      path={routes.toWebhooks({ ...accountPathProps })}
-      pageName={PAGE_NAME.Webhooks}
-    >
-      <Webhooks />
-    </RouteWithLayout>
-    <RouteWithLayout
-      exact
-      sidebarProps={CDSideNavProps}
-      path={routes.toWebhooksEvents({ ...projectPathProps, ...moduleParams })}
-      pageName={PAGE_NAME.WebhookEvents}
-    >
-      <WebhookEvents />
-    </RouteWithLayout>
-    <RouteWithLayout
-      exact
-      sidebarProps={ProjectDetailsSideNavProps}
-      path={routes.toWebhooksEvents({ ...projectPathProps })}
-      pageName={PAGE_NAME.WebhookEvents}
-    >
-      <WebhookEvents />
-    </RouteWithLayout>
-    <RouteWithLayout
-      exact
-      sidebarProps={AccountSideNavProps}
-      path={routes.toWebhooksEvents({ ...orgPathProps })}
-      pageName={PAGE_NAME.WebhookEvents}
-    >
-      <WebhookEvents />
-    </RouteWithLayout>
-    <RouteWithLayout
-      exact
-      sidebarProps={AccountSideNavProps}
-      path={routes.toWebhooksEvents({ ...accountPathProps })}
-      pageName={PAGE_NAME.WebhookEvents}
-    >
-      <WebhookEvents />
-    </RouteWithLayout>
-    <RouteWithLayout
-      exact
-      sidebarProps={CDSideNavProps}
-      path={routes.toWebhooksDetails({ ...projectPathProps, ...moduleParams, ...webhooksPathProps })}
-      pageName={PAGE_NAME.WebhooksDetails}
-    >
-      <WebhookLandingPage />
-    </RouteWithLayout>
-    <RouteWithLayout
-      exact
-      sidebarProps={ProjectDetailsSideNavProps}
-      path={routes.toWebhooksDetails({ ...projectPathProps, ...webhooksPathProps })}
-      pageName={PAGE_NAME.WebhooksDetails}
-    >
-      <WebhookLandingPage />
-    </RouteWithLayout>
-    <RouteWithLayout
-      exact
-      sidebarProps={AccountSideNavProps}
-      path={routes.toWebhooksDetails({ ...orgPathProps, ...webhooksPathProps })}
-      pageName={PAGE_NAME.WebhooksDetails}
-    >
-      <WebhookLandingPage />
-    </RouteWithLayout>
-    <RouteWithLayout
-      exact
-      sidebarProps={AccountSideNavProps}
-      path={routes.toWebhooksDetails({ ...accountPathProps, ...webhooksPathProps })}
-      pageName={PAGE_NAME.WebhooksDetails}
-    >
-      <WebhookLandingPage />
-    </RouteWithLayout>
+      {/* EnvironmentGroupDetails */}
+      <RouteWithLayout
+        exact
+        licenseRedirectData={licenseRedirectData}
+        sidebarProps={CDSideNavProps}
+        path={[
+          routes.toEnvironmentGroupDetails({ ...projectPathProps, ...moduleParams, ...environmentGroupPathProps })
+        ]}
+        pageName={PAGE_NAME.EnvironmentGroupDetails}
+      >
+        <EnvironmentGroupDetails />
+      </RouteWithLayout>
+      <RouteWithLayout
+        exact
+        sidebarProps={ProjectDetailsSideNavProps}
+        path={routes.toEnvironmentGroupDetails({ ...projectPathProps, ...environmentGroupPathProps })}
+        pageName={PAGE_NAME.EnvironmentGroupDetails}
+      >
+        <EnvironmentGroupDetails />
+      </RouteWithLayout>
+      <RouteWithLayout
+        exact
+        sidebarProps={AccountSideNavProps}
+        path={routes.toEnvironmentGroupDetails({ ...orgPathProps, ...environmentGroupPathProps })}
+        pageName={PAGE_NAME.EnvironmentGroupDetails}
+      >
+        <EnvironmentGroupDetails />
+      </RouteWithLayout>
+      <RouteWithLayout
+        exact
+        sidebarProps={AccountSideNavProps}
+        path={routes.toEnvironmentGroupDetails({
+          ...accountPathProps,
+          ...environmentGroupPathProps,
+          accountRoutePlacement: 'settings'
+        })}
+        pageName={PAGE_NAME.EnvironmentGroupDetails}
+      >
+        <EnvironmentGroupDetails />
+      </RouteWithLayout>
+      <RouteWithLayout
+        exact
+        sidebarProps={MainDashboardSideNavProps}
+        path={routes.toEnvironmentGroupDetails({
+          ...accountPathProps,
+          ...environmentGroupPathProps,
+          accountRoutePlacement: 'dashboard'
+        })}
+        pageName={PAGE_NAME.EnvironmentGroupDetails}
+      >
+        <EnvironmentGroupDetails />
+      </RouteWithLayout>
 
-    {
-      DefaultSettingsRouteDestinations({
-        moduleParams,
-        licenseRedirectData,
-        sidebarProps: CDSideNavProps
-      })?.props.children
-    }
-    {
-      PipelineRouteDestinations({
-        pipelineStudioComponent: PipelineStudio,
-        pipelineStudioPageName: PAGE_NAME.CDPipelineStudio,
-        pipelineDeploymentListComponent: PipelineDeploymentList,
-        pipelineDeploymentListPageName: PAGE_NAME.CDPipelineDeploymentList,
-        moduleParams,
-        licenseRedirectData,
-        sidebarProps: CDSideNavProps
-      })?.props.children
-    }
-    {
-      ConnectorRouteDestinations({
-        moduleParams,
-        licenseRedirectData,
-        sidebarProps: CDSideNavProps
-      })?.props.children
-    }
-    {
-      SecretRouteDestinations({
-        moduleParams,
-        licenseRedirectData,
-        sidebarProps: CDSideNavProps
-      })?.props.children
-    }
-    {
-      VariableRouteDestinations({
-        moduleParams,
-        licenseRedirectData,
-        sidebarProps: CDSideNavProps
-      })?.props.children
-    }
-    {
-      DelegateRouteDestinations({
-        moduleParams,
-        licenseRedirectData,
-        sidebarProps: CDSideNavProps
-      })?.props.children
-    }
-    {
-      TriggersRouteDestinations({
-        moduleParams,
-        licenseRedirectData,
-        sidebarProps: CDSideNavProps
-      })?.props.children
-    }
-    {
-      AccessControlRouteDestinations({
-        moduleParams,
-        licenseRedirectData,
-        sidebarProps: CDSideNavProps
-      })?.props.children
-    }
-    {
-      GitSyncRouteDestinations({
-        moduleParams,
-        licenseRedirectData,
-        sidebarProps: CDSideNavProps
-      })?.props.children
-    }
-    {
-      TemplateRouteDestinations({
-        templateStudioComponent: TemplateStudio,
-        templateStudioPageName: PAGE_NAME.CDTemplateStudioWrapper,
-        moduleParams,
-        licenseRedirectData,
-        sidebarProps: CDSideNavProps
-      })?.props.children
-    }
-    {
-      FreezeWindowRouteDestinations({
-        moduleParams,
-        licenseRedirectData,
-        sidebarProps: CDSideNavProps
-      })?.props.children
-    }
-    {
-      GovernanceRouteDestinations({
-        sidebarProps: CDSideNavProps,
-        pathProps: { ...accountPathProps, ...projectPathProps, ...moduleParams }
-      })?.props.children
-    }
-    {
-      FileStoreRouteDestinations({
-        moduleParams,
-        licenseRedirectData,
-        sidebarProps: CDSideNavProps
-      })?.props.children
-    }
-  </>
-)
+      {/* ServiceOverrides Page */}
+      <RouteWithLayout
+        exact
+        licenseRedirectData={licenseRedirectData}
+        sidebarProps={CDSideNavProps}
+        path={routes.toServiceOverrides({ ...projectPathProps, ...moduleParams })}
+        pageName={PAGE_NAME.ServiceOverrides}
+      >
+        <ServiceOverrides />
+      </RouteWithLayout>
+      <RouteWithLayout
+        exact
+        sidebarProps={ProjectDetailsSideNavProps}
+        path={[routes.toServiceOverrides({ ...projectPathProps })]}
+        pageName={PAGE_NAME.ServiceOverrides}
+      >
+        <ServiceOverrides />
+      </RouteWithLayout>
+      <RouteWithLayout
+        exact
+        sidebarProps={AccountSideNavProps}
+        path={routes.toServiceOverrides({ ...orgPathProps })}
+        pageName={PAGE_NAME.ServiceOverrides}
+      >
+        <ServiceOverrides />
+      </RouteWithLayout>
+      <RouteWithLayout
+        exact
+        sidebarProps={AccountSideNavProps}
+        path={routes.toServiceOverrides({ ...accountPathProps, accountRoutePlacement: 'settings' })}
+        pageName={PAGE_NAME.ServiceOverrides}
+      >
+        <ServiceOverrides />
+      </RouteWithLayout>
+      <RouteWithLayout
+        exact
+        sidebarProps={MainDashboardSideNavProps}
+        path={routes.toServiceOverrides({ ...accountPathProps, accountRoutePlacement: 'dashboard' })}
+        pageName={PAGE_NAME.ServiceOverrides}
+      >
+        <ServiceOverrides />
+      </RouteWithLayout>
+      <RouteWithLayout
+        exact
+        sidebarProps={CDSideNavProps}
+        path={routes.toWebhooks({ ...projectPathProps, ...moduleParams })}
+        pageName={PAGE_NAME.Webhooks}
+      >
+        <Webhooks />
+      </RouteWithLayout>
+      <RouteWithLayout
+        exact
+        sidebarProps={ProjectDetailsSideNavProps}
+        path={routes.toWebhooks({ ...projectPathProps })}
+        pageName={PAGE_NAME.Webhooks}
+      >
+        <Webhooks />
+      </RouteWithLayout>
+      <RouteWithLayout
+        exact
+        sidebarProps={AccountSideNavProps}
+        path={routes.toWebhooks({ ...orgPathProps })}
+        pageName={PAGE_NAME.Webhooks}
+      >
+        <Webhooks />
+      </RouteWithLayout>
+      <RouteWithLayout
+        exact
+        sidebarProps={AccountSideNavProps}
+        path={routes.toWebhooks({ ...accountPathProps })}
+        pageName={PAGE_NAME.Webhooks}
+      >
+        <Webhooks />
+      </RouteWithLayout>
+      <RouteWithLayout
+        exact
+        sidebarProps={CDSideNavProps}
+        path={routes.toWebhooksEvents({ ...projectPathProps, ...moduleParams })}
+        pageName={PAGE_NAME.WebhookEvents}
+      >
+        <WebhookEvents />
+      </RouteWithLayout>
+      <RouteWithLayout
+        exact
+        sidebarProps={ProjectDetailsSideNavProps}
+        path={routes.toWebhooksEvents({ ...projectPathProps })}
+        pageName={PAGE_NAME.WebhookEvents}
+      >
+        <WebhookEvents />
+      </RouteWithLayout>
+      <RouteWithLayout
+        exact
+        sidebarProps={AccountSideNavProps}
+        path={routes.toWebhooksEvents({ ...orgPathProps })}
+        pageName={PAGE_NAME.WebhookEvents}
+      >
+        <WebhookEvents />
+      </RouteWithLayout>
+      <RouteWithLayout
+        exact
+        sidebarProps={AccountSideNavProps}
+        path={routes.toWebhooksEvents({ ...accountPathProps })}
+        pageName={PAGE_NAME.WebhookEvents}
+      >
+        <WebhookEvents />
+      </RouteWithLayout>
+      <RouteWithLayout
+        exact
+        sidebarProps={CDSideNavProps}
+        path={routes.toWebhooksDetails({ ...projectPathProps, ...moduleParams, ...webhooksPathProps })}
+        pageName={PAGE_NAME.WebhooksDetails}
+      >
+        <WebhookLandingPage />
+      </RouteWithLayout>
+      <RouteWithLayout
+        exact
+        sidebarProps={ProjectDetailsSideNavProps}
+        path={routes.toWebhooksDetails({ ...projectPathProps, ...webhooksPathProps })}
+        pageName={PAGE_NAME.WebhooksDetails}
+      >
+        <WebhookLandingPage />
+      </RouteWithLayout>
+      <RouteWithLayout
+        exact
+        sidebarProps={AccountSideNavProps}
+        path={routes.toWebhooksDetails({ ...orgPathProps, ...webhooksPathProps })}
+        pageName={PAGE_NAME.WebhooksDetails}
+      >
+        <WebhookLandingPage />
+      </RouteWithLayout>
+      <RouteWithLayout
+        exact
+        sidebarProps={AccountSideNavProps}
+        path={routes.toWebhooksDetails({ ...accountPathProps, ...webhooksPathProps })}
+        pageName={PAGE_NAME.WebhooksDetails}
+      >
+        <WebhookLandingPage />
+      </RouteWithLayout>
+
+      {
+        DefaultSettingsRouteDestinations({
+          moduleParams,
+          licenseRedirectData,
+          sidebarProps: CDSideNavProps
+        })?.props.children
+      }
+      {
+        PipelineRouteDestinations({
+          pipelineStudioComponent: PipelineStudio,
+          pipelineStudioPageName: PAGE_NAME.CDPipelineStudio,
+          pipelineDeploymentListComponent: PipelineDeploymentList,
+          pipelineDeploymentListPageName: PAGE_NAME.CDPipelineDeploymentList,
+          moduleParams,
+          licenseRedirectData,
+          sidebarProps: CDSideNavProps
+        })?.props.children
+      }
+      {
+        ConnectorRouteDestinations({
+          moduleParams,
+          licenseRedirectData,
+          sidebarProps: CDSideNavProps
+        })?.props.children
+      }
+      {
+        SecretRouteDestinations({
+          moduleParams,
+          licenseRedirectData,
+          sidebarProps: CDSideNavProps
+        })?.props.children
+      }
+      {
+        VariableRouteDestinations({
+          moduleParams,
+          licenseRedirectData,
+          sidebarProps: CDSideNavProps
+        })?.props.children
+      }
+      {
+        DelegateRouteDestinations({
+          moduleParams,
+          licenseRedirectData,
+          sidebarProps: CDSideNavProps
+        })?.props.children
+      }
+      {
+        TriggersRouteDestinations({
+          moduleParams,
+          licenseRedirectData,
+          sidebarProps: CDSideNavProps
+        })?.props.children
+      }
+      {
+        AccessControlRouteDestinations({
+          moduleParams,
+          licenseRedirectData,
+          sidebarProps: CDSideNavProps
+        })?.props.children
+      }
+      {
+        GitSyncRouteDestinations({
+          moduleParams,
+          licenseRedirectData,
+          sidebarProps: CDSideNavProps
+        })?.props.children
+      }
+      {
+        TemplateRouteDestinations({
+          templateStudioComponent: TemplateStudio,
+          templateStudioPageName: PAGE_NAME.CDTemplateStudioWrapper,
+          moduleParams,
+          licenseRedirectData,
+          sidebarProps: CDSideNavProps
+        })?.props.children
+      }
+      {
+        FreezeWindowRouteDestinations({
+          moduleParams,
+          licenseRedirectData,
+          sidebarProps: CDSideNavProps
+        })?.props.children
+      }
+      {
+        GovernanceRouteDestinations({
+          sidebarProps: CDSideNavProps,
+          pathProps: { ...accountPathProps, ...projectPathProps, ...moduleParams }
+        })?.props.children
+      }
+      {
+        FileStoreRouteDestinations({
+          moduleParams,
+          licenseRedirectData,
+          sidebarProps: CDSideNavProps
+        })?.props.children
+      }
+    </>
+  )
+}

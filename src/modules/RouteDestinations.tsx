@@ -102,7 +102,7 @@ export default function RouteDestinations(): React.ReactElement {
       {ChaosRoutes().props.children}
       {CIRoutes.props.children}
       {SEI_ENABLED ? SEIRoutes().props.children : null}
-      {CDRoutes.props.children}
+      {CDRoutes().props.children}
       {isCVModuleEnabled ? SRMRoutes.props.children : null}
       {isCVModuleEnabled ? (
         <Route path="/account/:accountId/:module(cv)">
