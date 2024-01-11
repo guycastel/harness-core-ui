@@ -13,7 +13,6 @@ import { useVariablesExpression } from '@pipeline/components/PipelineStudio/Pipl
 import { isExecutionTimeFieldDisabled } from '@pipeline/utils/runPipelineUtils'
 import MultiTypeSecretInput from '@secrets/components/MutiTypeSecretInput/MultiTypeSecretInput'
 import { useStrings } from 'framework/strings'
-import { TimeoutFieldInputSetView } from '@pipeline/components/InputSetView/TimeoutFieldInputSetView/TimeoutFieldInputSetView'
 import { isValueRuntimeInput } from '@common/utils/utils'
 import { TextFieldInputSetView } from '@pipeline/components/InputSetView/TextFieldInputSetView/TextFieldInputSetView'
 import { FormMultiTypeConnectorField } from '@platform/connectors/components/ConnectorReferenceField/FormMultiTypeConnectorField'
@@ -23,6 +22,7 @@ import { useQueryParams } from '@common/hooks'
 import type { ProjectPathProps, GitQueryParams } from '@common/interfaces/RouteInterfaces'
 import MultiTypePolicySetSelector from '@modules/70-pipeline/components/PipelineSteps/Common/PolicySets/MultiTypePolicySetSelector/MultiTypePolicySetSelector'
 import { SscaStepProps, PolicyEnforcementCdStepData, PolicyEnforcementStepData } from '../common/types'
+import { CommonInputSet } from '../common/CommonInputSet'
 import stepCss from '@pipeline/components/PipelineSteps/Steps/Steps.module.scss'
 
 export function SBOMEnforceStepInputSet(
@@ -36,25 +36,31 @@ export function SBOMEnforceStepInputSet(
   const { accountId, projectIdentifier, orgIdentifier } = useParams<ProjectPathProps>()
   const { repoIdentifier, branch } = useQueryParams<GitQueryParams>()
 
+  const textFieldInputSetViewCommonProps = {
+    disabled: readonly,
+    template,
+    multiTextInputProps: {
+      expressions,
+      allowableTypes
+    },
+    configureOptionsProps: {
+      isExecutionTimeFieldDisabled: isExecutionTimeFieldDisabled(stepViewType)
+    },
+    className: cx(stepCss.formGroup, stepCss.md)
+  }
+
   return (
     <>
-      {isValueRuntimeInput(template?.timeout) && (
-        <TimeoutFieldInputSetView
-          label={getString('pipelineSteps.timeoutLabel')}
-          name={`${prefix}timeout`}
-          disabled={readonly}
-          multiTypeDurationProps={{
-            configureOptionsProps: {
-              isExecutionTimeFieldDisabled: isExecutionTimeFieldDisabled(stepViewType)
-            },
-            allowableTypes,
-            expressions,
-            disabled: readonly
-          }}
-          fieldPath={'timeout'}
-          template={template}
-          className={cx(stepCss.formGroup, stepCss.sm)}
-        />
+      {isValueRuntimeInput(get(template, 'spec.policy.policySets', '')) && (
+        <div className={cx(stepCss.formGroup, stepCss.md)}>
+          <MultiTypePolicySetSelector
+            name={`${prefix}spec.policy.policySets`}
+            label={getString('common.policiesSets.policyset')}
+            expressions={expressions}
+            allowableTypes={allowableTypes}
+            disabled={readonly}
+          />
+        </div>
       )}
 
       {isValueRuntimeInput(get(template, 'spec.verifyAttestation.spec.publicKey', '')) && (
@@ -68,19 +74,6 @@ export function SBOMEnforceStepInputSet(
           />
         </div>
       )}
-
-      {isValueRuntimeInput(get(template, 'spec.policy.policySets', '')) && (
-        <div className={cx(stepCss.formGroup, stepCss.md)}>
-          <MultiTypePolicySetSelector
-            name={`${prefix}spec.policy.policySets`}
-            label={getString('common.policiesSets.policyset')}
-            expressions={expressions}
-            allowableTypes={allowableTypes}
-            disabled={readonly}
-          />
-        </div>
-      )}
-
       {stepType === StepType.PolicyEnforcement ? (
         <>
           {isValueRuntimeInput(get(template, 'spec.infrastructure.spec.connectorRef')) && (
@@ -109,57 +102,30 @@ export function SBOMEnforceStepInputSet(
           {isValueRuntimeInput(get(template, 'spec.infrastructure.spec.namespace')) && (
             <TextFieldInputSetView
               name={`${path}.spec.infrastructure.spec.namespace`}
-              label={getString('common.namespace')}
-              disabled={readonly}
-              multiTextInputProps={{
-                allowableTypes,
-                expressions
-              }}
-              configureOptionsProps={{
-                isExecutionTimeFieldDisabled: isExecutionTimeFieldDisabled(stepViewType)
-              }}
-              placeholder={getString('pipeline.infraSpecifications.namespacePlaceholder')}
               fieldPath="spec.infrastructure.spec.namespace"
-              template={template}
-              className={cx(stepCss.formGroup, stepCss.md)}
+              label={getString('common.namespace')}
+              placeholder={getString('pipeline.infraSpecifications.namespacePlaceholder')}
+              {...textFieldInputSetViewCommonProps}
             />
           )}
 
           {isValueRuntimeInput(get(template, 'spec.infrastructure.spec.resources.limits.cpu')) && (
             <TextFieldInputSetView
               name={`${path}spec.infrastructure.spec.resources.limits.cpu`}
+              fieldPath={'spec.infrastructure.spec.resources.limits.cpu'}
               placeholder={getString('imagePlaceholder')}
               label={getString('pipelineSteps.limitCPULabel')}
-              disabled={readonly}
-              fieldPath={'spec.infrastructure.spec.resources.limits.cpu'}
-              template={template}
-              multiTextInputProps={{
-                expressions,
-                allowableTypes
-              }}
-              configureOptionsProps={{
-                isExecutionTimeFieldDisabled: isExecutionTimeFieldDisabled(stepViewType)
-              }}
-              className={cx(stepCss.formGroup, stepCss.md)}
+              {...textFieldInputSetViewCommonProps}
             />
           )}
 
           {isValueRuntimeInput(get(template, 'spec.infrastructure.spec.resources.limits.memory')) && (
             <TextFieldInputSetView
               name={`${path}spec.infrastructure.spec.resources.limits.memory`}
+              fieldPath={'spec.infrastructure.spec.resources.limits.memory'}
               placeholder={getString('imagePlaceholder')}
               label={getString('pipelineSteps.limitMemoryLabel')}
-              disabled={readonly}
-              fieldPath={'spec.infrastructure.spec.resources.limits.memory'}
-              template={template}
-              multiTextInputProps={{
-                expressions,
-                allowableTypes
-              }}
-              configureOptionsProps={{
-                isExecutionTimeFieldDisabled: isExecutionTimeFieldDisabled(stepViewType)
-              }}
-              className={cx(stepCss.formGroup, stepCss.md)}
+              {...textFieldInputSetViewCommonProps}
             />
           )}
         </>
@@ -168,42 +134,26 @@ export function SBOMEnforceStepInputSet(
           {isValueRuntimeInput(get(template, 'spec.resources.limits.cpu')) && (
             <TextFieldInputSetView
               name={`${path}spec.resources.limits.cpu`}
+              fieldPath={'spec.resources.limits.cpu'}
               placeholder={getString('imagePlaceholder')}
               label={getString('pipelineSteps.limitCPULabel')}
-              disabled={readonly}
-              fieldPath={'spec.resources.limits.cpu'}
-              template={template}
-              multiTextInputProps={{
-                expressions,
-                allowableTypes
-              }}
-              configureOptionsProps={{
-                isExecutionTimeFieldDisabled: isExecutionTimeFieldDisabled(stepViewType)
-              }}
-              className={cx(stepCss.formGroup, stepCss.md)}
+              {...textFieldInputSetViewCommonProps}
             />
           )}
 
           {isValueRuntimeInput(get(template, 'spec.resources.limits.memory')) && (
             <TextFieldInputSetView
               name={`${path}spec.resources.limits.memory`}
+              fieldPath={'spec.resources.limits.memory'}
               placeholder={getString('imagePlaceholder')}
               label={getString('pipelineSteps.limitMemoryLabel')}
-              disabled={readonly}
-              fieldPath={'spec.resources.limits.memory'}
-              template={template}
-              multiTextInputProps={{
-                expressions,
-                allowableTypes
-              }}
-              configureOptionsProps={{
-                isExecutionTimeFieldDisabled: isExecutionTimeFieldDisabled(stepViewType)
-              }}
-              className={cx(stepCss.formGroup, stepCss.md)}
+              {...textFieldInputSetViewCommonProps}
             />
           )}
         </>
       )}
+
+      <CommonInputSet {...props} />
     </>
   )
 }

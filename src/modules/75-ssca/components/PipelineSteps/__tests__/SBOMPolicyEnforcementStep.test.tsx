@@ -39,6 +39,42 @@ const runtimeValues = {
   name: 'SSCA Enforcement Step',
   timeout: RUNTIME_INPUT_VALUE,
   spec: {
+    policy: {
+      policySets: RUNTIME_INPUT_VALUE
+    },
+    resources: {
+      limits: {
+        cpu: RUNTIME_INPUT_VALUE,
+        memory: RUNTIME_INPUT_VALUE
+      }
+    }
+  }
+}
+
+const runtimeValuesImageArtifact = {
+  ...runtimeValues,
+  spec: {
+    ...runtimeValues.spec,
+    source: {
+      type: 'image',
+      spec: {
+        connector: RUNTIME_INPUT_VALUE,
+        image: RUNTIME_INPUT_VALUE
+      }
+    },
+    verifyAttestation: {
+      type: 'cosign',
+      spec: {
+        publicKey: RUNTIME_INPUT_VALUE
+      }
+    }
+  }
+}
+
+const runtimeValuesRepoArtifact = {
+  ...runtimeValues,
+  spec: {
+    ...runtimeValues.spec,
     source: {
       type: 'repository',
       spec: {
@@ -47,21 +83,6 @@ const runtimeValues = {
         variant: 'branch',
         variant_type: RUNTIME_INPUT_VALUE,
         cloned_codebase: RUNTIME_INPUT_VALUE
-      }
-    },
-    verifyAttestation: {
-      type: 'cosign',
-      spec: {
-        publicKey: RUNTIME_INPUT_VALUE
-      }
-    },
-    policy: {
-      policySets: RUNTIME_INPUT_VALUE
-    },
-    resources: {
-      limits: {
-        cpu: RUNTIME_INPUT_VALUE,
-        memory: RUNTIME_INPUT_VALUE
       }
     }
   }
@@ -172,13 +193,13 @@ describe('SBOM Policy Enforcement Step', () => {
     expect(await screen.findByText('fieldRequired')).toBeInTheDocument()
   })
 
-  test('runtime values edit view', async () => {
+  test('runtime values | edit view', async () => {
     const onUpdate = jest.fn()
     const ref = React.createRef<StepFormikRef<unknown>>()
     render(
       <TestStepWidget
-        initialValues={runtimeValues}
-        template={runtimeValues}
+        initialValues={runtimeValuesImageArtifact}
+        template={runtimeValuesImageArtifact}
         type={StepType.PolicyEnforcement}
         stepViewType={StepViewType.Edit}
         onUpdate={onUpdate}
@@ -189,22 +210,23 @@ describe('SBOM Policy Enforcement Step', () => {
       />
     )
     await act(() => ref.current?.submitForm()!)
-    expect(onUpdate).toHaveBeenLastCalledWith(runtimeValues)
+    expect(onUpdate).toHaveBeenLastCalledWith(runtimeValuesImageArtifact)
   })
 
-  test('input set view', async () => {
+  test('runtime values | input set view', async () => {
     render(
       <TestStepWidget
-        initialValues={runtimeValues}
-        template={runtimeValues}
+        initialValues={runtimeValuesRepoArtifact}
+        template={runtimeValuesRepoArtifact}
         type={StepType.PolicyEnforcement}
         stepViewType={StepViewType.InputSet}
         testWrapperProps={{
-          defaultFeatureFlagValues: { SSCA_ENFORCEMENT_OPA: true }
+          defaultFeatureFlagValues: { SSCA_ENFORCEMENT_OPA: true, SSCA_REPO_ARTIFACT: true }
         }}
       />
     )
     expect(await screen.findByText('common.policiesSets.policyset')).toBeInTheDocument()
+    expect(await screen.findByText('repositoryUrlLabel')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Submit' })).toBeInTheDocument()
   })
 
@@ -223,11 +245,11 @@ describe('SBOM Policy Enforcement Step', () => {
     const data = {
       data: {
         type: StepType.PolicyEnforcement,
-        ...runtimeValues
+        ...runtimeValuesImageArtifact
       },
       template: {
         type: StepType.PolicyEnforcement,
-        ...runtimeValues
+        ...runtimeValuesImageArtifact
       },
       viewType: StepViewType.DeploymentForm,
       getString: jest.fn().mockImplementation(val => val)
@@ -236,7 +258,7 @@ describe('SBOM Policy Enforcement Step', () => {
       data as unknown as ValidateInputSetProps<PolicyEnforcementStepData>
     )
     expect(response).toEqual({})
-    expect(new PolicyEnforcement().processFormData(runtimeValues)).toEqual(runtimeValues)
+    expect(new PolicyEnforcement().processFormData(runtimeValuesImageArtifact)).toEqual(runtimeValuesImageArtifact)
   })
 
   test('configure values should work fine for runtime inputs', async () => {
@@ -244,8 +266,8 @@ describe('SBOM Policy Enforcement Step', () => {
     const ref = React.createRef<StepFormikRef<unknown>>()
     const { container } = render(
       <TestStepWidget
-        initialValues={runtimeValues}
-        template={runtimeValues}
+        initialValues={runtimeValuesImageArtifact}
+        template={runtimeValuesImageArtifact}
         type={StepType.PolicyEnforcement}
         stepViewType={StepViewType.Edit}
         onUpdate={onUpdate}

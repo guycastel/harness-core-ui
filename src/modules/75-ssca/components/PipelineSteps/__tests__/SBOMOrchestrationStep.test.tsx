@@ -98,7 +98,7 @@ describe('SBOM Orchestration Step', () => {
         initialValues={{}}
         type={StepType.SBOMOrchestration}
         stepViewType={StepViewType.Edit}
-        isNewStep={true}
+        isNewStep
         testWrapperProps={{
           defaultFeatureFlagValues: { SSCA_SBOM_DRIFT: true }
         }}
@@ -116,19 +116,21 @@ describe('SBOM Orchestration Step', () => {
         type={StepType.SBOMOrchestration}
         stepViewType={StepViewType.Edit}
         testWrapperProps={{
-          defaultFeatureFlagValues: { SSCA_REPO_ARTIFACT: true }
+          defaultFeatureFlagValues: { SSCA_REPO_ARTIFACT: true, SSCA_SBOM_DRIFT: true }
         }}
       />
     )
     expect(screen.getByText('pipelineSteps.stepNameLabel')).toBeInTheDocument()
-    expect(screen.queryByRole('checkbox', { name: 'ssca.orchestrationStep.detectSbomDrift' })).not.toBeInTheDocument()
-
+    expect(screen.getByRole('checkbox', { name: 'ssca.orchestrationStep.detectSbomDrift' })).toBeChecked()
     expect(screen.queryByText('repositoryUrlLabel')).not.toBeInTheDocument()
+    expect(screen.getByText('ssca.orchestrationStep.sbomAttestation')).toBeInTheDocument()
+
     await userEvent.click(screen.getByLabelText('repository'))
     expect(await screen.findByText('repositoryUrlLabel')).toBeInTheDocument()
+    expect(screen.getByRole('checkbox', { name: 'ssca.orchestrationStep.detectSbomDrift' })).toBeChecked()
   })
 
-  test('edit view renders with runtime inputs', async () => {
+  test('runtime inputs | edit view', async () => {
     const onUpdate = jest.fn()
     const ref = React.createRef<StepFormikRef<unknown>>()
     render(
@@ -146,7 +148,7 @@ describe('SBOM Orchestration Step', () => {
     expect(onUpdate).toHaveBeenCalledWith(runtimeValues)
   })
 
-  test('input set view', async () => {
+  test('runtime inputs | inputset view', async () => {
     render(<TestStepWidget initialValues={{}} type={StepType.SBOMOrchestration} stepViewType={StepViewType.InputSet} />)
     expect(screen.getByRole('button', { name: 'Submit' })).toBeInTheDocument()
   })

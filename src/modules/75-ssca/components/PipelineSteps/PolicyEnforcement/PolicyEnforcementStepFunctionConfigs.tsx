@@ -181,8 +181,7 @@ export const editViewValidateFieldsConfig = ({
   {
     name: 'spec.source.spec.cloned_codebase',
     type: ValidationFieldTypes.Text,
-    label: 'pipelineSteps.workspace',
-    isRequired: isRepoArtifact
+    label: 'pipelineSteps.workspace'
   },
   {
     name: 'spec.policy.store.spec.file',

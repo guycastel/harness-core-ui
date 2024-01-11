@@ -5,7 +5,6 @@
  * https://polyformproject.org/wp-content/uploads/2020/06/PolyForm-Shield-1.0.0.txt.
  */
 
-import { Color, FontVariation } from '@harness/design-system'
 import { FormInput, Text } from '@harness/uicore'
 import cx from 'classnames'
 import { get } from 'lodash-es'
@@ -20,9 +19,8 @@ import { ProjectPathProps } from '@modules/10-common/interfaces/RouteInterfaces'
 import { useVariablesExpression } from '@modules/70-pipeline/components/PipelineStudio/PiplineHooks/useVariablesExpression'
 import { useGitScope } from '@modules/70-pipeline/utils/CIUtils'
 import { isExecutionTimeFieldDisabled } from '@modules/70-pipeline/utils/runPipelineUtils'
-import { useFeatureFlags } from '@modules/10-common/hooks/useFeatureFlag'
 import { AllMultiTypeInputTypesForStep } from './default-values'
-import { getArtifactTypes, getGitVariants } from './select-options'
+import { getGitVariants } from './select-options'
 import { SscaStepProps } from './types'
 import css from '../SscaStep.module.scss'
 
@@ -35,7 +33,6 @@ export const ArtifactSourceSection: React.FC<SscaStepProps<unknown>> = props => 
   const { expressions } = useVariablesExpression()
   const gitScope = useGitScope()
   const isExecutionTimeFieldDisabledForStep = isExecutionTimeFieldDisabled(stepViewType)
-  const { SSCA_REPO_ARTIFACT } = useFeatureFlags()
 
   const multiTypeTextFieldCommmonProps: Pick<
     React.ComponentProps<typeof MultiTypeTextField>,
@@ -53,110 +50,89 @@ export const ArtifactSourceSection: React.FC<SscaStepProps<unknown>> = props => 
     }
   }
 
-  return (
+  return get(formik.values, 'spec.source.type') === 'repository' ? (
     <>
-      <Text font={{ variation: FontVariation.FORM_SUB_SECTION }} color={Color.GREY_900} margin={{ top: 'small' }}>
-        {getString('ssca.orchestrationStep.artifactSource')}
-      </Text>
+      <MultiTypeTextField
+        name="spec.source.spec.url"
+        label={
+          <Text className={css.formLabel} tooltipProps={{ dataTooltipId: 'repoUrl' }}>
+            {getString('repositoryUrlLabel')}
+          </Text>
+        }
+      />
+      <MultiTypeTextField
+        name="spec.source.spec.path"
+        label={
+          <Text className={css.formLabel} tooltipProps={{ dataTooltipId: 'sourcePath' }}>
+            {getString('pipelineSteps.sourcePathLabel')}
+          </Text>
+        }
+        {...multiTypeTextFieldCommmonProps}
+      />
 
       <FormInput.RadioGroup
-        items={getArtifactTypes(getString, SSCA_REPO_ARTIFACT)}
-        name="spec.source.type"
-        label={getString('pipeline.artifactsSelection.artifactType')}
+        items={getGitVariants(getString)}
+        name="spec.source.spec.variant_type"
+        label={getString('ssca.variantType')}
         disabled={readonly}
         radioGroup={{ inline: true }}
-        onChange={(e): void => {
-          formik.setFieldValue('spec.source.spec', {
-            variant_type: e.currentTarget.value === 'repository' ? 'git-branch' : undefined
-          })
+        className={cx(css.variantType)}
+      />
+      <MultiTypeTextField
+        name="spec.source.spec.variant"
+        label={
+          <Text className={css.formLabel} tooltipProps={{ dataTooltipId: 'variant' }}>
+            {
+              getGitVariants(getString).find(
+                item => item.value === get(formik?.values, 'spec.source.spec.variant_type')
+              )?.label
+            }
+          </Text>
+        }
+        {...multiTypeTextFieldCommmonProps}
+      />
+      <MultiTypeTextField
+        name="spec.source.spec.cloned_codebase"
+        label={
+          <Text className={css.formLabel} tooltipProps={{ dataTooltipId: 'TargetWorkspace' }}>
+            {getString('pipelineSteps.workspace')}
+            <span style={{ color: 'var(--grey-400)' }}>{getString('common.optionalLabel')}</span>
+          </Text>
+        }
+        {...multiTypeTextFieldCommmonProps}
+      />
+    </>
+  ) : (
+    <>
+      <FormMultiTypeConnectorField
+        label={getString('pipelineSteps.connectorLabel')}
+        type={[Connectors.GCP, Connectors.AWS, Connectors.DOCKER, Connectors.AZURE]}
+        name="spec.source.spec.connector"
+        placeholder={getString('select')}
+        accountIdentifier={accountId}
+        projectIdentifier={projectIdentifier}
+        orgIdentifier={orgIdentifier}
+        multiTypeProps={{
+          expressions,
+          allowableTypes: AllMultiTypeInputTypesForStep,
+          disabled: readonly
+        }}
+        gitScope={gitScope}
+        setRefValue
+        configureOptionsProps={{
+          hideExecutionTimeField: isExecutionTimeFieldDisabledForStep
         }}
       />
 
-      {get(formik.values, 'spec.source.type') === 'image' ? (
-        <>
-          <FormMultiTypeConnectorField
-            label={getString('pipelineSteps.connectorLabel')}
-            type={[Connectors.GCP, Connectors.AWS, Connectors.DOCKER, Connectors.AZURE]}
-            name="spec.source.spec.connector"
-            placeholder={getString('select')}
-            accountIdentifier={accountId}
-            projectIdentifier={projectIdentifier}
-            orgIdentifier={orgIdentifier}
-            multiTypeProps={{
-              expressions,
-              allowableTypes: AllMultiTypeInputTypesForStep,
-              disabled: readonly
-            }}
-            gitScope={gitScope}
-            setRefValue
-            configureOptionsProps={{
-              hideExecutionTimeField: isExecutionTimeFieldDisabledForStep
-            }}
-          />
-
-          <MultiTypeTextField
-            name="spec.source.spec.image"
-            label={
-              <Text className={css.formLabel} tooltipProps={{ dataTooltipId: 'image' }}>
-                {getString('imageLabel')}
-              </Text>
-            }
-            {...multiTypeTextFieldCommmonProps}
-          />
-        </>
-      ) : (
-        <>
-          <MultiTypeTextField
-            name="spec.source.spec.url"
-            label={
-              <Text className={css.formLabel} tooltipProps={{ dataTooltipId: 'repoUrl' }}>
-                {getString('repositoryUrlLabel')}
-              </Text>
-            }
-          />
-          <MultiTypeTextField
-            name="spec.source.spec.path"
-            label={
-              <Text className={css.formLabel} tooltipProps={{ dataTooltipId: 'sourcePath' }}>
-                {getString('pipelineSteps.sourcePathLabel')}
-              </Text>
-            }
-            {...multiTypeTextFieldCommmonProps}
-          />
-
-          <FormInput.RadioGroup
-            items={getGitVariants(getString)}
-            name="spec.source.spec.variant_type"
-            label={getString('ssca.variantType')}
-            disabled={readonly}
-            radioGroup={{ inline: true }}
-            className={cx(css.variantType)}
-          />
-          <MultiTypeTextField
-            name="spec.source.spec.variant"
-            label={
-              <Text className={css.formLabel} tooltipProps={{ dataTooltipId: 'variant' }}>
-                {
-                  getGitVariants(getString).find(
-                    item => item.value === get(formik?.values, 'spec.source.spec.variant_type')
-                  )?.label
-                }
-              </Text>
-            }
-            {...multiTypeTextFieldCommmonProps}
-          />
-          <MultiTypeTextField
-            name="spec.source.spec.cloned_codebase"
-            label={
-              <Text className={css.formLabel} tooltipProps={{ dataTooltipId: 'TargetWorkspace' }}>
-                {getString('pipelineSteps.workspace')}
-                <span style={{ color: 'var(--grey-400)' }}>{getString('common.optionalLabel')}</span>
-              </Text>
-            }
-            {...multiTypeTextFieldCommmonProps}
-          />
-        </>
-      )}
+      <MultiTypeTextField
+        name="spec.source.spec.image"
+        label={
+          <Text className={css.formLabel} tooltipProps={{ dataTooltipId: 'image' }}>
+            {getString('imageLabel')}
+          </Text>
+        }
+        {...multiTypeTextFieldCommmonProps}
+      />
     </>
   )
 }

@@ -27,6 +27,7 @@ const runtimeValues = {
   name: 'SSCA Orchestration Step',
   timeout: RUNTIME_INPUT_VALUE,
   spec: {
+    mode: 'generation',
     tool: {
       type: 'Syft',
       spec: {

@@ -52,8 +52,15 @@ import { SettingType } from '@modules/10-common/constants/Utils'
 import { SettingValueResponseDTO, useGetSettingValue } from 'services/cd-ng'
 import { editViewValidateFieldsConfig, transformValuesFieldsConfig } from './SBOMOrchestrationStepFunctionConfigs'
 import { SBOMOrchestrationStepData, SBOMOrchestrationCdStepData, SscaStepProps } from '../common/types'
-import { AllMultiTypeInputTypesForStep } from '../common/default-values'
-import { sbomFormats, getSbomDriftModes, getSbomSourcingModes, sbomGenerationTools } from '../common/select-options'
+import { AllMultiTypeInputTypesForStep, commonDefaultOrchestrationSpecValues } from '../common/default-values'
+import {
+  sbomFormats,
+  getSbomDriftModes,
+  getSbomSourcingModes,
+  sbomGenerationTools,
+  getGitVariants,
+  getArtifactTypes
+} from '../common/select-options'
 import { ArtifactSourceSection } from '../common/ArtifactSourceSection'
 import css from '../SscaStep.module.scss'
 
@@ -61,19 +68,10 @@ const _SBOMOrchestrationStepBase = <T extends SBOMOrchestrationStepData | SBOMOr
   props: SscaStepProps<T>,
   formikRef: StepFormikFowardRef<T>
 ): JSX.Element => {
-  const {
-    initialValues,
-    onUpdate,
-    isNewStep = true,
-    readonly,
-    stepViewType,
-    onChange,
-    allowableTypes,
-    stepType
-  } = props
+  const { initialValues, onUpdate, isNewStep, readonly, stepViewType, onChange, allowableTypes, stepType } = props
   const { getString } = useStrings()
   const { expressions } = useVariablesExpression()
-  const { SSCA_SBOM_DRIFT } = useFeatureFlags()
+  const { SSCA_SBOM_DRIFT, SSCA_REPO_ARTIFACT } = useFeatureFlags()
 
   const [detectSbomDrift, setDetectSbomDrift] = useState(
     isNewStep ? SSCA_SBOM_DRIFT : SSCA_SBOM_DRIFT && !!get(initialValues, 'spec.sbom_drift.base')
@@ -92,8 +90,9 @@ const _SBOMOrchestrationStepBase = <T extends SBOMOrchestrationStepData | SBOMOr
     transformValuesFieldsConfig(stepType, initialValues)
   )
 
-  if (isNewStep && detectSbomDrift && !get(_initialValues, 'spec.sbom_drift.base')) {
-    set(_initialValues, 'spec.sbom_drift.base', 'last_generated_sbom')
+  if (detectSbomDrift && !get(_initialValues, 'spec.sbom_drift.base')) {
+    const driftBase = get(_initialValues, 'spec.source.type') === 'repository' ? 'repository' : 'last_generated_sbom'
+    set(_initialValues, 'spec.sbom_drift.base', driftBase)
   }
 
   const { data: enableBase64Encoding } = useGetSettingValue({
@@ -136,6 +135,7 @@ const _SBOMOrchestrationStepBase = <T extends SBOMOrchestrationStepData | SBOMOr
       {(formik: FormikProps<T>) => {
         // This is required
         setFormikRef?.(formikRef, formik)
+        const isRepoArtifact = get(formik.values, 'spec.source.type') === 'repository'
 
         return (
           <FormikForm>
@@ -168,6 +168,14 @@ const _SBOMOrchestrationStepBase = <T extends SBOMOrchestrationStepData | SBOMOr
                 label={getString('ssca.orchestrationStep.Mode')}
                 disabled={readonly}
                 radioGroup={{ inline: true }}
+                onChange={(e): void => {
+                  if (e.currentTarget.value === 'ingestion') {
+                    formik.setFieldValue('spec.tool', undefined)
+                  } else {
+                    formik.setFieldValue('spec.ingestion.file', undefined)
+                    formik.setFieldValue('spec.tool', commonDefaultOrchestrationSpecValues.tool)
+                  }
+                }}
               />
 
               {get(formik.values, 'spec.mode') === 'ingestion' ? (
@@ -208,41 +216,69 @@ const _SBOMOrchestrationStepBase = <T extends SBOMOrchestrationStepData | SBOMOr
               )}
 
               <Divider style={{ marginBottom: 'var(--spacing-small)' }} />
-              <ArtifactSourceSection {...props} />
-              <Divider style={{ marginTop: 'var(--spacing-large)' }} />
-
               <Text
                 font={{ variation: FontVariation.FORM_SUB_SECTION }}
                 color={Color.GREY_900}
                 margin={{ top: 'small' }}
               >
-                {getString('ssca.orchestrationStep.sbomAttestation')}
+                {getString('ssca.orchestrationStep.artifactSource')}
               </Text>
 
-              <MultiTypeSecretInput
-                type={getBase64EncodingEnabled(enableBase64Encoding?.data) ? undefined : 'SecretFile'}
-                name="spec.attestation.spec.privateKey"
-                label={getString('platform.connectors.serviceNow.privateKey')}
-                expressions={expressions}
-                allowableTypes={allowableTypes}
-                enableConfigureOptions
-                configureOptionsProps={{
-                  isExecutionTimeFieldDisabled: isExecutionTimeFieldDisabledForStep
-                }}
+              <FormInput.RadioGroup
+                items={getArtifactTypes(getString, SSCA_REPO_ARTIFACT)}
+                name="spec.source.type"
+                label={getString('pipeline.artifactsSelection.artifactType')}
                 disabled={readonly}
+                radioGroup={{ inline: true }}
+                onChange={(e): void => {
+                  const _isRepoArtifact = e.currentTarget.value === 'repository'
+                  formik.setFieldValue('spec.source.spec', { variant_type: _isRepoArtifact ? 'git-branch' : undefined })
+                  formik.setFieldValue('spec.sbom_drift', undefined)
+                  formik.setFieldValue(
+                    'spec.attestation',
+                    _isRepoArtifact ? undefined : commonDefaultOrchestrationSpecValues.attestation
+                  )
+                }}
               />
+              <ArtifactSourceSection {...props} />
 
-              <MultiTypeSecretInput
-                name="spec.attestation.spec.password"
-                label={getString('password')}
-                expressions={expressions}
-                allowableTypes={allowableTypes}
-                enableConfigureOptions
-                configureOptionsProps={{
-                  isExecutionTimeFieldDisabled: isExecutionTimeFieldDisabledForStep
-                }}
-                disabled={readonly}
-              />
+              {!isRepoArtifact && (
+                <>
+                  <Divider style={{ marginTop: 'var(--spacing-large)' }} />
+                  <Text
+                    font={{ variation: FontVariation.FORM_SUB_SECTION }}
+                    color={Color.GREY_900}
+                    margin={{ top: 'small' }}
+                  >
+                    {getString('ssca.orchestrationStep.sbomAttestation')}
+                  </Text>
+
+                  <MultiTypeSecretInput
+                    type={getBase64EncodingEnabled(enableBase64Encoding?.data) ? undefined : 'SecretFile'}
+                    name="spec.attestation.spec.privateKey"
+                    label={getString('platform.connectors.serviceNow.privateKey')}
+                    expressions={expressions}
+                    allowableTypes={allowableTypes}
+                    enableConfigureOptions
+                    configureOptionsProps={{
+                      isExecutionTimeFieldDisabled: isExecutionTimeFieldDisabledForStep
+                    }}
+                    disabled={readonly}
+                  />
+
+                  <MultiTypeSecretInput
+                    name="spec.attestation.spec.password"
+                    label={getString('password')}
+                    expressions={expressions}
+                    allowableTypes={allowableTypes}
+                    enableConfigureOptions
+                    configureOptionsProps={{
+                      isExecutionTimeFieldDisabled: isExecutionTimeFieldDisabledForStep
+                    }}
+                    disabled={readonly}
+                  />
+                </>
+              )}
 
               {SSCA_SBOM_DRIFT && (
                 <>
@@ -263,21 +299,46 @@ const _SBOMOrchestrationStepBase = <T extends SBOMOrchestrationStepData | SBOMOr
                       setDetectSbomDrift(isChecked)
 
                       if (isChecked) {
-                        set(formik.values, 'spec.sbom_drift.base', 'last_generated_sbom')
+                        const driftBase = isRepoArtifact ? 'repository' : 'last_generated_sbom'
+                        set(formik.values, 'spec.sbom_drift.base', driftBase)
                       } else {
                         set(formik.values, 'spec.sbom_drift', undefined)
                       }
                     }}
                   />
-                  {detectSbomDrift && (
-                    <Container margin={{ left: 'xlarge' }}>
-                      <FormInput.RadioGroup
-                        items={getSbomDriftModes(getString)}
-                        name="spec.sbom_drift.base"
-                        disabled={readonly}
+                  {detectSbomDrift &&
+                    (isRepoArtifact ? (
+                      <MultiTypeTextField
+                        name="spec.sbom_drift.spec.variant"
+                        label={
+                          <Text className={css.formLabel} tooltipProps={{ dataTooltipId: 'variant' }}>
+                            {
+                              getGitVariants(getString).find(
+                                item => item.value === get(formik?.values, 'spec.source.spec.variant_type')
+                              )?.label
+                            }
+                          </Text>
+                        }
+                        multiTextInputProps={{
+                          disabled: readonly,
+                          multiTextInputProps: {
+                            expressions,
+                            allowableTypes: AllMultiTypeInputTypesForStep
+                          }
+                        }}
+                        configureOptionsProps={{
+                          hideExecutionTimeField: isExecutionTimeFieldDisabledForStep
+                        }}
                       />
-                    </Container>
-                  )}
+                    ) : (
+                      <Container margin={{ left: 'xlarge' }}>
+                        <FormInput.RadioGroup
+                          items={getSbomDriftModes(getString)}
+                          name="spec.sbom_drift.base"
+                          disabled={readonly}
+                        />
+                      </Container>
+                    ))}
                 </>
               )}
 

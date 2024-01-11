@@ -24,52 +24,8 @@ export function transformValuesFieldsConfig<StepType, T>(stepType?: StepType, da
       type: TransformValuesTypes.Text
     },
     {
-      name: 'spec.attestation.type',
-      type: TransformValuesTypes.Text
-    },
-    {
-      name: 'spec.attestation.spec.privateKey',
-      type: TransformValuesTypes.Text
-    },
-    {
-      name: 'spec.attestation.spec.password',
-      type: TransformValuesTypes.Text
-    },
-    {
-      name: 'spec.source.type',
+      name: 'spec.mode',
       type: TransformValuesTypes.List
-    },
-    {
-      name: 'spec.source.spec.connector',
-      type: TransformValuesTypes.ConnectorRef
-    },
-    {
-      name: 'spec.source.spec.image',
-      type: TransformValuesTypes.Text
-    },
-    {
-      name: 'spec.source.spec.url',
-      type: TransformValuesTypes.Text
-    },
-    {
-      name: 'spec.source.spec.path',
-      type: TransformValuesTypes.Text
-    },
-    {
-      name: 'spec.source.spec.variant_type',
-      type: TransformValuesTypes.Text
-    },
-    {
-      name: 'spec.source.spec.variant',
-      type: TransformValuesTypes.Text
-    },
-    {
-      name: 'spec.source.spec.cloned_codebase',
-      type: TransformValuesTypes.Text
-    },
-    {
-      name: 'spec.sbom_drift.base',
-      type: TransformValuesTypes.Text
     },
     ...(_data?.spec.mode === 'ingestion'
       ? [
@@ -88,6 +44,63 @@ export function transformValuesFieldsConfig<StepType, T>(stepType?: StepType, da
             type: TransformValuesTypes.List
           }
         ]),
+    {
+      name: 'spec.source.type',
+      type: TransformValuesTypes.List
+    },
+    ...(_data?.spec.source?.type === 'image'
+      ? [
+          {
+            name: 'spec.source.spec.connector',
+            type: TransformValuesTypes.ConnectorRef
+          },
+          {
+            name: 'spec.source.spec.image',
+            type: TransformValuesTypes.Text
+          },
+          {
+            name: 'spec.attestation.type',
+            type: TransformValuesTypes.Text
+          },
+          {
+            name: 'spec.attestation.spec.privateKey',
+            type: TransformValuesTypes.Text
+          },
+          {
+            name: 'spec.attestation.spec.password',
+            type: TransformValuesTypes.Text
+          }
+        ]
+      : [
+          {
+            name: 'spec.source.spec.url',
+            type: TransformValuesTypes.Text
+          },
+          {
+            name: 'spec.source.spec.path',
+            type: TransformValuesTypes.Text
+          },
+          {
+            name: 'spec.source.spec.variant_type',
+            type: TransformValuesTypes.Text
+          },
+          {
+            name: 'spec.source.spec.variant',
+            type: TransformValuesTypes.Text
+          },
+          {
+            name: 'spec.source.spec.cloned_codebase',
+            type: TransformValuesTypes.Text
+          }
+        ]),
+    {
+      name: 'spec.sbom_drift.base',
+      type: TransformValuesTypes.Text
+    },
+    {
+      name: 'spec.sbom_drift.spec.variant',
+      type: TransformValuesTypes.Text
+    },
     ...(stepType === StepType.SBOMOrchestrationCd
       ? [
           {
@@ -112,10 +125,6 @@ export function transformValuesFieldsConfig<StepType, T>(stepType?: StepType, da
           }
         ]
       : [
-          {
-            name: 'spec.mode',
-            type: TransformValuesTypes.List
-          },
           {
             name: 'spec.resources.limits.memory',
             type: TransformValuesTypes.Text
@@ -223,13 +232,17 @@ export const editViewValidateFieldsConfig = ({
   {
     name: 'spec.source.spec.cloned_codebase',
     type: ValidationFieldTypes.Text,
-    label: 'pipelineSteps.workspace',
-    isRequired: isRepoArtifact
+    label: 'pipelineSteps.workspace'
   },
   {
     name: 'spec.sbom_drift.base',
     type: ValidationFieldTypes.Text,
     label: 'ssca.orchestrationStep.detectSbomDrift'
+  },
+  {
+    name: 'spec.sbom_drift.spec.variant',
+    type: ValidationFieldTypes.Text,
+    label: 'ssca.variantValue'
   },
   ...(stepType === StepType.SBOMOrchestrationCd
     ? [
@@ -318,6 +331,12 @@ export const getInputSetViewValidateFieldsConfig =
         type: ValidationFieldTypes.Text,
         label: 'password'
       },
+      {
+        name: 'spec.sbom_drift.spec.variant',
+        type: ValidationFieldTypes.Text,
+        label: 'ssca.variantValue'
+      },
+
       ...(stepType === StepType.SBOMOrchestrationCd
         ? [
             {

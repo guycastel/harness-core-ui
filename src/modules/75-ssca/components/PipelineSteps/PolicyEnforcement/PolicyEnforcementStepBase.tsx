@@ -44,6 +44,7 @@ import { editViewValidateFieldsConfig, transformValuesFieldsConfig } from './Pol
 import { PolicyEnforcementCdStepData, PolicyEnforcementStepData, SscaStepProps } from '../common/types'
 import { commonDefaultEnforcementSpecValues } from '../common/default-values'
 import { ArtifactSourceSection } from '../common/ArtifactSourceSection'
+import { getArtifactTypes } from '../common/select-options'
 import css from '../SscaStep.module.scss'
 
 const setFormikField = (formik: FormikProps<any>, field: string) => (value: unknown) => {
@@ -54,20 +55,11 @@ const _PolicyEnforcementStepBase = <T extends PolicyEnforcementStepData | Policy
   props: SscaStepProps<T>,
   formikRef: StepFormikFowardRef<T>
 ): JSX.Element => {
-  const {
-    initialValues,
-    onUpdate,
-    isNewStep = true,
-    readonly,
-    stepViewType,
-    onChange,
-    allowableTypes,
-    stepType
-  } = props
+  const { initialValues, onUpdate, isNewStep, readonly, stepViewType, onChange, allowableTypes, stepType } = props
   const { getString } = useStrings()
   const { expressions } = useVariablesExpression()
   const isExecutionTimeFieldDisabledForStep = isExecutionTimeFieldDisabled(stepViewType)
-  const { SSCA_ENFORCEMENT_OPA } = useFeatureFlags()
+  const { SSCA_ENFORCEMENT_OPA, SSCA_REPO_ARTIFACT } = useFeatureFlags()
 
   const { getStageFromPipeline, state } = usePipelineContext()
   const { stage: currentStage } = getStageFromPipeline<BuildStageElementConfig>(
@@ -122,6 +114,7 @@ const _PolicyEnforcementStepBase = <T extends PolicyEnforcementStepData | Policy
       {(formik: FormikProps<T>) => {
         // This is required
         setFormikRef?.(formikRef, formik)
+        const isRepoArtifact = get(formik.values, 'spec.source.type') === 'repository'
 
         return (
           <FormikForm>
@@ -139,31 +132,58 @@ const _PolicyEnforcementStepBase = <T extends PolicyEnforcementStepData | Policy
                 </div>
               )}
 
-              <ArtifactSourceSection {...props} />
-
-              <Divider style={{ marginTop: 'var(--spacing-large)' }} />
-
               <Text
                 font={{ variation: FontVariation.FORM_SUB_SECTION }}
                 color={Color.GREY_900}
                 margin={{ top: 'small' }}
               >
-                {getString('ssca.enforcementStep.verifyAttestation')}
+                {getString('ssca.orchestrationStep.artifactSource')}
               </Text>
 
-              <MultiTypeSecretInput
-                type={getBase64EncodingEnabled(enableBase64Encoding?.data) ? undefined : 'SecretFile'}
-                name="spec.verifyAttestation.spec.publicKey"
-                label={getString('ssca.publicKey')}
-                expressions={expressions}
-                allowableTypes={allowableTypes}
-                enableConfigureOptions
-                configureOptionsProps={{
-                  isExecutionTimeFieldDisabled: isExecutionTimeFieldDisabledForStep
-                }}
+              <FormInput.RadioGroup
+                items={getArtifactTypes(getString, SSCA_REPO_ARTIFACT)}
+                name="spec.source.type"
+                label={getString('pipeline.artifactsSelection.artifactType')}
                 disabled={readonly}
+                radioGroup={{ inline: true }}
+                onChange={(e): void => {
+                  const _isRepoArtifact = e.currentTarget.value === 'repository'
+                  formik.setFieldValue('spec.source.spec', { variant_type: _isRepoArtifact ? 'git-branch' : undefined })
+                  formik.setFieldValue(
+                    'spec.verifyAttestation',
+                    _isRepoArtifact ? undefined : commonDefaultEnforcementSpecValues.verifyAttestation
+                  )
+                }}
               />
 
+              <ArtifactSourceSection {...props} />
+
+              {!isRepoArtifact && (
+                <>
+                  <Divider style={{ marginTop: 'var(--spacing-large)' }} />
+
+                  <Text
+                    font={{ variation: FontVariation.FORM_SUB_SECTION }}
+                    color={Color.GREY_900}
+                    margin={{ top: 'small' }}
+                  >
+                    {getString('ssca.enforcementStep.verifyAttestation')}
+                  </Text>
+
+                  <MultiTypeSecretInput
+                    type={getBase64EncodingEnabled(enableBase64Encoding?.data) ? undefined : 'SecretFile'}
+                    name="spec.verifyAttestation.spec.publicKey"
+                    label={getString('ssca.publicKey')}
+                    expressions={expressions}
+                    allowableTypes={allowableTypes}
+                    enableConfigureOptions
+                    configureOptionsProps={{
+                      isExecutionTimeFieldDisabled: isExecutionTimeFieldDisabledForStep
+                    }}
+                    disabled={readonly}
+                  />
+                </>
+              )}
               <Divider style={{ marginTop: 'var(--spacing-small)' }} />
 
               <Text

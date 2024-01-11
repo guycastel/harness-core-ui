@@ -93,15 +93,7 @@ export interface SLSAVerificationStepProps {
 }
 
 const _SLSAVerificationStepBase = (
-  {
-    initialValues,
-    onUpdate,
-    isNewStep = true,
-    readonly,
-    stepViewType,
-    onChange,
-    allowableTypes
-  }: SLSAVerificationStepProps,
+  { initialValues, onUpdate, isNewStep, readonly, stepViewType, onChange, allowableTypes }: SLSAVerificationStepProps,
   formikRef: StepFormikFowardRef<SLSAVerificationStepData>
 ): JSX.Element => {
   const { getString } = useStrings()
