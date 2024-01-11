@@ -12,6 +12,7 @@ import type { AllowedTypes } from '@harness/uicore'
 import MultiTypeDelegateSelector from '@common/components/MultiTypeDelegateSelector/MultiTypeDelegateSelector'
 import type { ProjectPathProps } from '@common/interfaces/RouteInterfaces'
 import { useVariablesExpression } from '@pipeline/components/PipelineStudio/PiplineHooks/useVariablesExpression'
+import { MultiTypeFieldSelectorProps } from '@modules/10-common/components/MultiTypeFieldSelector/MultiTypeFieldSelector'
 
 export interface DelegatePanelProps {
   formikProps?: FormikProps<{
@@ -21,19 +22,22 @@ export interface DelegatePanelProps {
   allowableTypes?: AllowedTypes
   inputProps?: { onTagInputChange: (tags: string[]) => void }
   name?: string
+  multiTypeFieldSelectorProps?: Partial<MultiTypeFieldSelectorProps>
+  showLabelText?: boolean
 }
 
 export default function DelegateSelectorPanel(props: DelegatePanelProps): React.ReactElement {
-  const { isReadonly, allowableTypes } = props
+  const { isReadonly, allowableTypes, multiTypeFieldSelectorProps, showLabelText } = props
   const { projectIdentifier, orgIdentifier } = useParams<ProjectPathProps>()
   const { expressions } = useVariablesExpression()
   return (
     <MultiTypeDelegateSelector
       name={props.name || 'delegateSelectors'}
       disabled={isReadonly}
-      inputProps={{ projectIdentifier, orgIdentifier }}
+      inputProps={{ projectIdentifier, orgIdentifier, showLabelText }}
       expressions={expressions}
       allowableTypes={allowableTypes}
+      multiTypeFieldSelectorProps={multiTypeFieldSelectorProps}
     />
   )
 }

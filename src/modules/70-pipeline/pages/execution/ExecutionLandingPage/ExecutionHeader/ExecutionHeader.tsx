@@ -7,7 +7,7 @@
 
 import React from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { defaultTo, isEmpty, noop } from 'lodash-es'
+import { concat, defaultTo, isEmpty, noop } from 'lodash-es'
 import { Button, ButtonSize, ButtonVariation, Icon, IconName, Layout, Popover, Text } from '@harness/uicore'
 import { Color } from '@harness/design-system'
 import { Menu, MenuItem, PopoverInteractionKind, Position } from '@blueprintjs/core'
@@ -49,6 +49,7 @@ import { useTelemetry } from '@common/hooks/useTelemetry'
 import { PipelineExecutionActions } from '@common/constants/TrackingConstants'
 import { getFeaturePropsForRunPipelineButton } from '@pipeline/utils/runPipelineUtils'
 import RbacButton from '@rbac/components/Button/Button'
+import { YamlVersion, isYamlV1 } from '@modules/70-pipeline/common/hooks/useYamlVersion'
 import { useNotesModal } from './NotesModal/useNotesModal'
 import css from './ExecutionHeader.module.scss'
 
@@ -219,6 +220,10 @@ export function ExecutionHeader({ pipelineMetadata }: ExecutionHeaderProps): Rea
       openRetryPipelineModal(fromLastFailedStage)
     }
   }
+
+  const tagsAndExecutionLabels = React.useMemo(() => {
+    return concat(defaultTo(pipelineExecutionSummary?.tags, []), defaultTo(pipelineExecutionSummary?.labels, []))
+  }, [pipelineExecutionSummary])
 
   const commonReRunProps = {
     variation: ButtonVariation.SECONDARY,
@@ -421,13 +426,16 @@ export function ExecutionHeader({ pipelineMetadata }: ExecutionHeaderProps): Rea
             className={css.notesButton}
           />
         </IfPrivateAccess>
-        {!isEmpty(pipelineExecutionSummary?.tags) ? (
+        {!isEmpty(tagsAndExecutionLabels) ? (
           <TagsPopover
             iconProps={{ size: 14 }}
             className={css.tags}
             popoverProps={{ wrapperTagName: 'div', targetTagName: 'div' }}
-            tags={(pipelineExecutionSummary?.tags || []).reduce((val, tag) => {
-              return Object.assign(val, { [tag.key]: tag.value })
+            {...(isYamlV1(pipelineExecutionSummary?.yamlVersion as YamlVersion) && {
+              tagsTitle: getString('pipeline.tagsAndExecutionLabels')
+            })}
+            tags={(tagsAndExecutionLabels || []).reduce((val, tag) => {
+              return Object.assign(val, { [defaultTo(tag.key, '')]: defaultTo(tag.value, '') })
             }, {} as { [key: string]: string })}
           />
         ) : null}

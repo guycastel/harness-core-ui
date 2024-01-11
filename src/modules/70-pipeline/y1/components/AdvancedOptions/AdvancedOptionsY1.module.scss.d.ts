@@ -7,12 +7,7 @@
  **/
 // this is an auto-generated file, do not update this manually
 declare const styles: {
-  readonly gitRemoteDetailsWrapper: string
-  readonly link: string
-  readonly pipelineStudioTitle: string
-  readonly rightMargin: string
-  readonly tagsContainer: string
-  readonly wrapper: string
-  readonly yamlVersionBadge: string
+  readonly container: string
+  readonly uppercase: string
 }
 export default styles

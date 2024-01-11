@@ -9,12 +9,13 @@ import React from 'react'
 import { Button } from '@harness/uicore'
 import { Drawer, Position } from '@blueprintjs/core'
 import produce from 'immer'
-import { set } from 'lodash-es'
+import { cloneDeep, set } from 'lodash-es'
 import { usePipelineContextY1 } from '../PipelineContext/PipelineContextY1'
 import { DrawerSizesY1, DrawerTypesY1 } from '../PipelineContext/PipelineActionsY1'
 import { RuntimeInputs } from '../RuntimeInputs/RuntimeInputs'
 
 import { PipelineInputs } from '../InputsForm/types'
+import { AdvancedOptionsY1 } from '../AdvancedOptions/AdvancedOptionsY1'
 import css from './RightDrawerY1.module.scss'
 
 export function RightDrawerY1(): JSX.Element {
@@ -43,6 +44,28 @@ export function RightDrawerY1(): JSX.Element {
   const content: Record<DrawerTypesY1, JSX.Element> = {
     [DrawerTypesY1.RuntimeInputs]: (
       <RuntimeInputs isReadonly={isReadonly} pipeline={pipeline} onClose={onClose} onUpdateInputs={onUpdateInputs} />
+    ),
+    [DrawerTypesY1.AdvancedOptions]: (
+      <AdvancedOptionsY1
+        pipeline={cloneDeep(pipeline)}
+        onApplyChanges={async updatedPipeline => {
+          await updatePipeline(
+            produce(pipeline, draft => {
+              updatedPipeline?.timeout && set(draft, 'timeout', updatedPipeline.timeout)
+              updatedPipeline?.labels && set(draft, 'labels', updatedPipeline.labels)
+              updatedPipeline?.options && set(draft, 'options', updatedPipeline.options)
+            })
+          )
+          updatePipelineView({
+            ...pipelineView,
+            isDrawerOpened: false,
+            drawerData: {
+              type: DrawerTypesY1.AddStep
+            }
+          })
+        }}
+        onDiscard={onClose}
+      />
     )
   } as Record<DrawerTypesY1, JSX.Element> // TODO: remove when all drawer types are supported
 

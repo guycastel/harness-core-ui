@@ -9,7 +9,7 @@
 import { Classes, Popover, PopoverInteractionKind, Position } from '@blueprintjs/core'
 import { Color, FontVariation } from '@harness/design-system'
 import { Avatar, Button, ButtonVariation, Icon, Layout, TagsPopover, Text, Checkbox } from '@harness/uicore'
-import { get, isEmpty, defaultTo } from 'lodash-es'
+import { get, isEmpty, defaultTo, concat } from 'lodash-es'
 import React, { useMemo } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import type {
@@ -56,6 +56,7 @@ import type { PipelineExecutionSummary, PipelineStageInfo } from 'services/pipel
 import { useQueryParams } from '@common/hooks'
 import { DateTimeContent } from '@common/components/TimeAgoPopover/TimeAgoPopover'
 import { useNotesModal } from '@pipeline/pages/execution/ExecutionLandingPage/ExecutionHeader/NotesModal/useNotesModal'
+import { YamlVersion, isYamlV1 } from '@modules/70-pipeline/common/hooks/useYamlVersion'
 import FrozenExecutionDrawer from './FrozenExecutionDrawer/FrozenExecutionDrawer'
 import { CITriggerInfo, CITriggerInfoProps } from './CITriggerInfoCell'
 import type { ExecutionListColumnActions, ExecutionListExpandedColumnProps } from './ExecutionListTable'
@@ -168,6 +169,8 @@ export const PipelineNameCell: CellType = ({ row }) => {
     e.stopPropagation()
     notesModal.onClick(true)
   }
+  const tagsAndExecutionLabels = concat(defaultTo(data?.tags, []), defaultTo(data?.labels, []))
+
   return (
     <Layout.Vertical>
       <Layout.Horizontal spacing="small" style={{ alignItems: 'center' }}>
@@ -179,10 +182,13 @@ export const PipelineNameCell: CellType = ({ row }) => {
         {!isEmpty(data?.tags) && (
           <TagsPopover
             iconProps={{ size: 12, color: Color.GREY_600 }}
-            popoverProps={{ className: Classes.DARK }}
             className={css.tags}
-            tags={defaultTo(data?.tags, []).reduce((_tags, tag) => {
-              _tags[tag.key] = defaultTo(tag.value, '')
+            {...(isYamlV1(data.yamlVersion as YamlVersion) && {
+              tagsTitle: getString('pipeline.tagsAndExecutionLabels'),
+              containerClassName: css.tagsContainer
+            })}
+            tags={tagsAndExecutionLabels.reduce((_tags, tag) => {
+              _tags[defaultTo(tag.key, '')] = defaultTo(tag.value, '')
               return _tags
             }, {} as { [key: string]: string })}
           />

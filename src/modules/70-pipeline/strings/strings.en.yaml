@@ -2132,6 +2132,7 @@ validations:
 seeDetailsInExecutionView: 'See details in Execution View'
 regionPlaceholderAMI: Select Region
 specifyGitOpsClusters: Specify GitOps Clusters
+executionLabel: Execution Labels
 stepPanel:
   useStepTemplate: Use Step Template
   steps: Steps
@@ -2141,3 +2142,6 @@ stepPanel:
   noPropertiesFound: No properties found for the entity
   runHarnessStep: Run Harness step
   runHarnessStepGroup: Run Harness stepGroup
+executionSettings: Execution Settings
+pipelineTags: Pipeline Tags
+tagsAndExecutionLabels: Tags/Execution Labels

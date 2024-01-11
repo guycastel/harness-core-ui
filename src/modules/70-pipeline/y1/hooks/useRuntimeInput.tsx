@@ -33,15 +33,17 @@ export const useRuntimeInput = (props: UseRuntimeInputProps): UseRuntimeInputRet
 
   const {
     state: { pipeline, yamlHandler },
-    isReadonly
+    isReadonly,
+    updatePipeline
   } = usePipelineContextY1()
 
-  const updateInput = (inputName: string, options: RuntimeInput): void => {
-    yamlHandler?.setLatestYaml?.(
-      produce(pipeline, draft => {
-        set(draft, `spec.inputs.${inputName}`, options)
-      })
-    )
+  const updateInput = async (inputName: string, options: RuntimeInput): Promise<void> => {
+    // Updating both the pipeline state and the yaml pipeline as when drawer opened, implicit update of pipeline does not happen
+    const updatedPipeline = produce(pipeline, draft => {
+      set(draft, `spec.inputs.${inputName}`, options)
+    })
+    yamlHandler?.setLatestYaml?.(updatedPipeline)
+    await updatePipeline(updatedPipeline)
   }
 
   const inputs = get(pipeline, 'spec.inputs') as PipelineInputs | undefined

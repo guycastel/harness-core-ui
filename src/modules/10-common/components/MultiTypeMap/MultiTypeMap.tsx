@@ -14,7 +14,8 @@ import {
   Button,
   getMultiTypeFromValue,
   MultiTypeInputType,
-  MultiTextInputProps
+  MultiTextInputProps,
+  RuntimeTypeComponentProps
 } from '@harness/uicore'
 import { FontVariation } from '@harness/design-system'
 import { FieldArray, connect, FormikContextType } from 'formik'
@@ -57,6 +58,7 @@ export interface MultiTypeMapProps {
   keyValuePlaceholders?: Array<string>
   addButtonLabel?: string
   alwaysShowKeyValueLabel?: boolean
+  renderRuntimeInput?: (props: RuntimeTypeComponentProps) => JSX.Element
 }
 
 const MultiTypeMap = (props: MultiTypeMapProps): React.ReactElement => {
@@ -77,12 +79,13 @@ const MultiTypeMap = (props: MultiTypeMapProps): React.ReactElement => {
     restrictToSingleEntry,
     keyValuePlaceholders,
     addButtonLabel,
+    renderRuntimeInput,
     ...restProps
   } = props
   const { getString } = useStrings()
   const { NG_EXPRESSIONS_NEW_INPUT_ELEMENT } = useFeatureFlags()
 
-  const getDefaultResetValue = () => {
+  const getDefaultResetValue = (): MultiTypeMapValue => {
     return [{ id: uuid('', nameSpace()), key: '', value: '' }]
   }
   const value = get(formik?.values, name, getDefaultResetValue()) as MultiTypeMapValue
@@ -185,6 +188,7 @@ const MultiTypeMap = (props: MultiTypeMapProps): React.ReactElement => {
                                     multiTextInputProps={{
                                       allowableTypes: [MultiTypeInputType.FIXED, MultiTypeInputType.EXPRESSION],
                                       newExpressionComponent: NG_EXPRESSIONS_NEW_INPUT_ELEMENT,
+                                      renderRuntimeInput: multiTypeFieldSelectorProps?.renderRuntimeInput,
                                       ...valueMultiTextInputProps
                                     }}
                                     disabled={disabled}

@@ -71,6 +71,15 @@
     line-height: 1;
   }
 }
+.tagsContainer {
+  padding: var(--spacing-small) !important;
+  & > p {
+    padding-bottom: var(--spacing-xsmall);
+  }
+  & > div {
+    max-width: 250px !important;
+  }
+}
 
 .cdExecutionSummary,
 .gitOpsExecutionSummary {

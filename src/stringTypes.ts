@@ -4607,6 +4607,7 @@ export interface StringsMap {
   'pipeline.executionFrequency': string
   'pipeline.executionId': string
   'pipeline.executionIdLabel': string
+  'pipeline.executionLabel': string
   'pipeline.executionList.EnvironmentsText': string
   'pipeline.executionList.artifactDeployedText': string
   'pipeline.executionList.servicesDeployed': string
@@ -4615,6 +4616,7 @@ export interface StringsMap {
   'pipeline.executionNotes.noteSaved': string
   'pipeline.executionNotes.viewExecutionNotes': string
   'pipeline.executionNotes.viewNote': string
+  'pipeline.executionSettings': string
   'pipeline.executionStartTime': string
   'pipeline.executionStatus.Aborted': string
   'pipeline.executionStatus.AbortedByFreeze': string
@@ -5236,6 +5238,7 @@ export interface StringsMap {
   'pipeline.pipelineSteps.featureStageDescription': string
   'pipeline.pipelineSteps.templateStage': string
   'pipeline.pipelineSteps.templateStageDescription': string
+  'pipeline.pipelineTags': string
   'pipeline.pipelineTimeoutHelpText': string
   'pipeline.pipelineTimeoutSettings': string
   'pipeline.piplineDiffTitle': string
@@ -5654,6 +5657,7 @@ export interface StringsMap {
   'pipeline.syncStep.validation.replaceResources': string
   'pipeline.syncStep.validation.skipSchemaValidation': string
   'pipeline.tagDependencyRequired': string
+  'pipeline.tagsAndExecutionLabels': string
   'pipeline.targets.title': string
   'pipeline.taskOptions.implementation': string
   'pipeline.taskOptions.planning': string

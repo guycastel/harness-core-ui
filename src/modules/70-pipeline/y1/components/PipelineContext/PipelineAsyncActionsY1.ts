@@ -301,8 +301,9 @@ export const processPipelineFromAPIAction = (
 
     const updatedPipelineMetadata = {
       name: pipelineMetaData?.data?.name ?? '',
-      identifier: pipelineId
-      // TODO:: tags, description not present in metadata
+      identifier: pipelineId,
+      tags: pipelineMetaData?.data?.tags,
+      description: pipelineMetaData?.data?.description
     }
 
     if (data && initialLoading) {

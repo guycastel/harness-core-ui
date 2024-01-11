@@ -702,6 +702,7 @@ export type AuditFilterProperties = FilterProperties & {
     | 'ROLE_ASSIGNMENT_CREATED'
     | 'ROLE_ASSIGNMENT_UPDATED'
     | 'ROLE_ASSIGNMENT_DELETED'
+    | 'MOVE'
   )[]
   endTime?: number
   environments?: Environment[]
@@ -1349,8 +1350,7 @@ export interface CriteriaSpecDTO {
 }
 
 export interface CriteriaSpecWrapper {
-  spec: CriteriaSpec
-  type: 'Jexl' | 'KeyValues'
+  expression?: ParameterFieldString
 }
 
 export interface CriteriaSpecWrapperDTO {
@@ -3182,6 +3182,14 @@ export type GitErrorMetadataDTO = ErrorMetadataDTO & {
   repo?: string
 }
 
+export type GithubDeleteSpec = GithubEventSpec & {
+  connectorRef?: string
+  headerConditions?: TriggerEventDataCondition[]
+  jexlCondition?: string
+  payloadConditions?: TriggerEventDataCondition[]
+  repoName?: string
+}
+
 export interface GithubEventSpec {
   [key: string]: any
 }
@@ -3237,7 +3245,7 @@ export type GithubReleaseSpec = GithubEventSpec & {
 
 export type GithubSpec = WebhookTriggerSpecV2 & {
   spec?: GithubEventSpec
-  type?: 'PullRequest' | 'Push' | 'IssueComment' | 'Release'
+  type?: 'PullRequest' | 'Push' | 'IssueComment' | 'Release' | 'Delete'
 }
 
 export interface GitlabEventSpec {
@@ -3741,6 +3749,17 @@ export type JiraApprovalStepInfo = StepSpecType & {
   projectKey?: string
   rejectionCriteria?: CriteriaSpecWrapper
   retryInterval?: string
+}
+
+export type JiraApprovalStepInfoV1 = StepSpecType & {
+  approval_criteria?: CriteriaSpecWrapper
+  connector?: ParameterFieldString
+  delegates?: ParameterFieldListTaskSelectorYaml
+  key?: ParameterFieldString
+  project?: string
+  rejection_criteria?: CriteriaSpecWrapper
+  retry?: ParameterFieldString
+  type?: string
 }
 
 export type JiraCreateStepInfo = StepSpecType & {
@@ -4820,6 +4839,7 @@ export interface PipelineExecutionSummary {
   failureInfo?: FailureInfoDTO
   gitDetails?: EntityGitDetails
   governanceMetadata?: GovernanceMetadata
+  labels?: NGLabel[]
   layoutNodeMap?: {
     [key: string]: GraphLayoutNode
   }
@@ -5650,7 +5670,7 @@ export interface ResponseListGithubPRAction {
 
 export interface ResponseListGithubTriggerEvent {
   correlationId?: string
-  data?: ('PullRequest' | 'Push' | 'IssueComment' | 'Release')[]
+  data?: ('PullRequest' | 'Push' | 'IssueComment' | 'Release' | 'Delete')[]
   metaData?: { [key: string]: any }
   status?: 'SUCCESS' | 'FAILURE' | 'ERROR'
 }
@@ -8552,6 +8572,7 @@ export interface GetFilterListQueryParams {
     | 'RuleExecution'
     | 'Override'
     | 'InputSet'
+  searchTerm?: string
 }
 
 export type GetFilterListProps = Omit<

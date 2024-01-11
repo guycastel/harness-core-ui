@@ -111,12 +111,7 @@ export const PipelineNameCell: CellType = ({ row }) => {
             </Text>
           </Link>
           {data.tags && Object.keys(data.tags || {}).length ? (
-            <TagsPopover
-              tags={data.tags}
-              iconProps={{ size: 12, color: Color.GREY_600 }}
-              popoverProps={{ className: Classes.DARK }}
-              className={css.tags}
-            />
+            <TagsPopover tags={data.tags} iconProps={{ size: 12, color: Color.GREY_600 }} className={css.tags} />
           ) : null}
         </Layout.Horizontal>
         <Text color={Color.GREY_600} font="xsmall" lineClamp={1}>

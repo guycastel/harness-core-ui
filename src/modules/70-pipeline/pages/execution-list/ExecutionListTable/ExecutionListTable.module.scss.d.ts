@@ -42,6 +42,7 @@ declare const styles: {
   readonly stageLink: string
   readonly table: string
   readonly tags: string
+  readonly tagsContainer: string
   readonly toggleAccordion: string
   readonly triggerIcon: string
   readonly triggerInfo: string
