@@ -44,15 +44,15 @@ describe('Pipeline Template creation and assertion', () => {
   const afterUseTemplatePipelineTemplateName =
     '/template/api/templates/testPipelineTemplate?routingId=accountId&accountIdentifier=accountId&projectIdentifier=project1&orgIdentifier=default&versionLabel=v1.0&getDefaultFromOtherRepo=true'
   const afterUseTemplateApplyTemplateEndpoint =
-    '/template/api/templates/applyTemplates?routingId=accountId&accountIdentifier=accountId&projectIdentifier=project1&orgIdentifier=default&pipelineIdentifier=Pipeline_From_Template_Test&getDefaultFromOtherRepo=true'
+    '/template/api/templates/applyTemplates?routingId=accountId&accountIdentifier=accountId&projectIdentifier=project1&orgIdentifier=default&getDefaultFromOtherRepo=true'
   const afterUseTemplatePipelineTemplateInputsEndpoint =
     '/template/api/templates/templateInputs/testPipelineTemplate?routingId=accountId&accountIdentifier=accountId&projectIdentifier=project1&orgIdentifier=default&versionLabel=v1.0&getDefaultFromOtherRepo=true'
   const getResolvedTemplate =
     '/template/api/templates/get-resolved-template/testPipelineTemplate?routingId=accountId&accountIdentifier=accountId&orgIdentifier=default&projectIdentifier=project1&versionLabel=v1.0&getDefaultFromOtherRepo=true'
   beforeEach(() => {
-    cy.intercept('GET', gitSyncEnabledCall, { connectivityMode: null, gitSyncEnabled: false })
+    cy.intercept(gitSyncEnabledCall, { connectivityMode: null, gitSyncEnabled: false })
     cy.fixture('api/users/feature-flags/accountId').then(featureFlagsData => {
-      cy.intercept('GET', featureFlagsCall, {
+      cy.intercept(featureFlagsCall, {
         ...featureFlagsData,
         resource: [
           ...featureFlagsData.resource,
@@ -105,18 +105,20 @@ describe('Pipeline Template creation and assertion', () => {
 
   it('create pipeline with pipeline template', () => {
     cy.intercept('POST', templateMetadataCall, selectedTemplateListFromPipeline).as('templateListCallPipelineTemplate')
-    cy.intercept('GET', templateDetailsCall, selectedPipelineTemplateResponse).as('selectedPipelineTemplateResponse')
+    cy.intercept(templateDetailsCall, selectedPipelineTemplateResponse).as('selectedPipelineTemplateResponse')
     cy.intercept('POST', templateMetadataCallAfterSelection, templateListCallAfterSelectionResponse).as(
       'templateListCallAfterSelection'
     )
     cy.intercept('POST', afterUseTemplateEndPoint, afterUseTemplateEndpointResponse).as('afterUseTemplate')
-    cy.intercept('GET', afterUseTemplatePipelineTemplateName, afterUseTemplatePipelineTemplateNameResponse).as(
+    cy.intercept(afterUseTemplatePipelineTemplateName, afterUseTemplatePipelineTemplateNameResponse).as(
       'afterUseTemplatePipelineTemplateName'
     )
     cy.intercept('POST', afterUseTemplateApplyTemplateEndpoint, afterUseTemplateApplyTemplateResponse).as(
-      'afterUseTemplateApplyTemplate'
+      'afterApplyTemplate'
     )
-    cy.intercept('GET', afterUseTemplatePipelineTemplateInputsEndpoint, afterUseTemplatePipelineTemplateInputsResponse)
+    cy.intercept(afterUseTemplatePipelineTemplateInputsEndpoint, afterUseTemplatePipelineTemplateInputsResponse).as(
+      'afterTemplateInputs'
+    )
     cy.intercept('POST', getResolvedTemplate, getResolvedTemplateResponse).as('getResolvedTemplate')
 
     cy.visit(pipelinesRoute, {

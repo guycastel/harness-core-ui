@@ -6,7 +6,7 @@
  */
 
 import React, { useCallback, useEffect } from 'react'
-import { get, isEmpty, pick, merge, map, isEqual } from 'lodash-es'
+import { get, isEmpty, pick, merge, map, isEqual, omit } from 'lodash-es'
 import {
   AllowedTypes,
   AllowedTypesWithRunTime,
@@ -413,7 +413,9 @@ export function PipelineProvider({
     const templateGitBranches = extractGitBranchUsingTemplateRef(state.pipeline, '')
     getTemplateTypesByRef(
       {
-        ...state.routeState,
+        // pipelineIdentifier is not needed to get template as templates are independent entity
+        // pipelineIdentifier is not there in params: GetTemplateListQueryParams | GetTemplateQueryParams,
+        ...omit(state.routeState, 'pipelineIdentifier'),
         templateListType: 'Stable',
         repoIdentifier: state.gitDetails?.repoIdentifier,
         branch: getBranchForSelectedStage(),

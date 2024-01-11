@@ -5,7 +5,7 @@
  * https://polyformproject.org/wp-content/uploads/2020/06/PolyForm-Shield-1.0.0.txt.
  */
 
-import React from 'react'
+import React, { useMemo } from 'react'
 import { debounce, defaultTo, isEmpty, isEqual, isNil, noop, omit, pick, set } from 'lodash-es'
 import { useParams } from 'react-router-dom'
 import { Container, Formik, FormikForm, Heading, Layout, PageError } from '@harness/uicore'
@@ -33,7 +33,7 @@ import type { PipelineInfoConfig } from 'services/pipeline-ng'
 import { useStrings } from 'framework/strings'
 import { validatePipeline } from '@pipeline/components/PipelineStudio/StepUtil'
 import { ErrorsStrip } from '@pipeline/components/ErrorsStrip/ErrorsStrip'
-import { useMutateAsGet } from '@common/hooks'
+import { useDeepCompareEffect, useMutateAsGet } from '@common/hooks'
 import { parse, stringify, yamlStringify } from '@common/utils/YamlHelperMethods'
 import type { Pipeline } from '@pipeline/utils/types'
 import { getGitQueryParamsWithParentScope } from '@common/utils/gitSyncUtils'
@@ -105,35 +105,42 @@ export function TemplatePipelineSpecifications({
     requestOptions: { headers: { 'Load-From-Cache': 'true' } }
   })
 
+  const { orgIdentifier, accountId, projectIdentifier } = queryParams
+  const { repoIdentifier, branch } = gitDetails
+
+  const useGetYamlWithTemplateRefsResolvedParams = useMemo(() => {
+    return {
+      queryParams: {
+        ...getScopeBasedProjectPathParams({ accountId, orgIdentifier, projectIdentifier }, pipelineScope),
+        ...getGitQueryParamsWithParentScope({
+          storeMetadata,
+          params: { accountId, orgIdentifier, projectIdentifier },
+          repoIdentifier,
+          branch
+        })
+      },
+      requestOptions: { headers: { 'Load-From-Cache': 'true' } },
+      body: { originalEntityYaml }
+    }
+  }, [accountId, orgIdentifier, projectIdentifier, storeMetadata, repoIdentifier, branch, originalEntityYaml])
+
   const {
     data: pipelineResponse,
     error: pipelineError,
     refetch: refetchPipeline,
     loading: pipelineLoading
   } = useMutateAsGet(useGetYamlWithTemplateRefsResolved, {
-    queryParams: {
-      ...getScopeBasedProjectPathParams(queryParams, pipelineScope),
-      pipelineIdentifier: pipeline.identifier,
-      ...getGitQueryParamsWithParentScope({
-        storeMetadata,
-        params: queryParams,
-        repoIdentifier: gitDetails.repoIdentifier,
-        branch: gitDetails.branch
-      })
-    },
-    requestOptions: { headers: { 'Load-From-Cache': 'true' } },
-    body: { originalEntityYaml },
+    ...useGetYamlWithTemplateRefsResolvedParams,
     lazy: true
   })
 
   // All values need to be updated when pipelineResponse changes, even if mergedPipelineYaml is the same - this can happen when
   // version of linked pipeline template is changed. This ensures all values is updated after reset due to version change.
   React.useEffect(() => {
-    if (!pipelineLoading) {
-      setAllValues(parse<Pipeline>(defaultTo(pipelineResponse?.data?.mergedPipelineYaml, ''))?.pipeline)
+    if (pipelineResponse?.data?.mergedPipelineYaml) {
+      setAllValues(parse<Pipeline>(pipelineResponse.data.mergedPipelineYaml)?.pipeline)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pipelineResponse?.data?.mergedPipelineYaml, pipelineLoading])
+  }, [pipelineResponse?.data?.mergedPipelineYaml])
 
   /**
    * This function is used to set the original entity yaml with the newly updated template inputs
@@ -233,12 +240,15 @@ export function TemplatePipelineSpecifications({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [templateInputSetLoading])
 
-  React.useEffect(() => {
-    if (!isEmpty(formValues) && !allValues && !isEmpty(originalEntityYaml)) {
-      refetchPipeline()
+  useDeepCompareEffect(() => {
+    if (
+      !isEmpty(formValues) &&
+      !allValues &&
+      !isEmpty(useGetYamlWithTemplateRefsResolvedParams.body.originalEntityYaml)
+    ) {
+      refetchPipeline(useGetYamlWithTemplateRefsResolvedParams)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [originalEntityYaml])
+  }, [useGetYamlWithTemplateRefsResolvedParams])
 
   React.useEffect(() => {
     if (schemaErrors) {
@@ -277,7 +287,7 @@ export function TemplatePipelineSpecifications({
   }
 
   const refetch = (): void => {
-    refetchPipeline()
+    refetchPipeline(useGetYamlWithTemplateRefsResolvedParams)
     refetchTemplateInputSet()
   }
 
