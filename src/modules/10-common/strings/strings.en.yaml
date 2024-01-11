@@ -1520,7 +1520,7 @@ Stepper:
 # SSCA module
 ssca: Supply Chain Assurance
 sscaText: Software Supply Chain Assurance
-sscaShortLabel: SBOMs
+sscaShortLabel: Supply Chain
 tickets:
   selectConnector: 'Select Ticket Provider Connector'
   selectProjectName: 'Select Project Name'
