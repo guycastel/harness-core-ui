@@ -2823,7 +2823,6 @@ export interface StringsMap {
   'platform.connectors.customSM.templateVersion': string
   'platform.connectors.customSM.timeout': string
   'platform.connectors.customSM.timeoutNumberTypeRequiredError': string
-  'platform.connectors.customSM.timeoutRequiredError': string
   'platform.connectors.customSM.validation.template': string
   'platform.connectors.datadog.encryptedAPPKeyLabel': string
   'platform.connectors.datadog.encryptedAPPKeyValidation': string

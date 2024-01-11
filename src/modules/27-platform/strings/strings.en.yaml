@@ -1911,7 +1911,6 @@ connectors:
     timeout: 'Timeout (in seconds)'
     maxTimeoutExceedError: Timeout cannot be more than {{maximum}} seconds.
     minTimeoutExceedError: Timeout cannot be less than {{minimum}} seconds.
-    timeoutRequiredError: Timeout is required.
     timeoutNumberTypeRequiredError: Timeout should be a number
     details: Custom Secrets Manager Details
     selectTemplate: Select Template

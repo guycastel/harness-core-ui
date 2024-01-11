@@ -193,7 +193,6 @@ const CustomSMConfigStep: React.FC<StepProps<StepCustomSMConfigStepProps> & Step
           onDelegate: Yup.boolean(),
           timeout: Yup.number()
             .integer()
-            .required(getString('platform.connectors.customSM.timeoutRequiredError'))
             .typeError(getString('platform.connectors.customSM.timeoutNumberTypeRequiredError'))
             .min(
               minimumTimeoutInSeconds,
