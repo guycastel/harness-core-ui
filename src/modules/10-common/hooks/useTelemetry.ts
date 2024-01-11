@@ -18,7 +18,7 @@ export interface TelemetryEvent {
   eventName: string
   properties: Record<string, unknown>
 }
-type TrackEvent = (eventName: string, properties: Record<string, unknown>) => void
+export type TrackEvent = (eventName: string, properties: Record<string, unknown>) => void
 type TrackPage = (name: string, properties: Record<string, string>) => void
 type IdentifyUser = (email: string | undefined) => void
 export interface PageParams {

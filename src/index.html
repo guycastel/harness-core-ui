@@ -65,6 +65,7 @@
     <!-- adding bugsnag for SAAS build -->
     <!-- releaseNotesLink -->
     <!-- sscaPathPrefix -->
+    <!-- downtimeStatusEndpoint -->
 
     <% if (!__DEV__) { %>
     <script type="text/javascript">
@@ -181,6 +182,7 @@
       window.newNavContentfulEnvironment = '<%= NEW_NAV_CONTENTFUL_ENVIRONMENT_DEV %>'
       window.harnessNameSpace = ''
       window.segmentToken = '<%= SEGMENT_TOKEN_DEV %>'
+      window.downtimeStatusEndpoint = '<%= DOWNTIME_STATUS_ENDPOINT_DEV %>'
     </script>
     <% } %> <% if (HARNESS_ENABLE_NG_AUTH_UI) { %>
     <script>

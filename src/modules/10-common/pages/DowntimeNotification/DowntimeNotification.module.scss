@@ -67,6 +67,15 @@
 
 .statusLinkBtn {
   font-size: 13px !important;
+  color: var(--primary-7);
+  font-weight: 600;
+  padding-right: var(--spacing-3);
+
+  &:hover {
+    text-decoration: none;
+    color: var(--primary-7);
+    cursor: pointer;
+  }
 }
 
 .incidentStatusTag {

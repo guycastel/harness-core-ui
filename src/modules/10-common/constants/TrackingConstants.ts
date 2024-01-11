@@ -497,3 +497,8 @@ export enum NavActions {
   ModeChange = 'Nav 2.0 mode change',
   moduleConfigChange = 'Change in Module Configuration'
 }
+
+export enum DowntimeNotificationActions {
+  VisibleIncidents = 'List of visible Incident toasters',
+  DismissedIncidents = 'List of dismissed Incidents'
+}

@@ -5,17 +5,21 @@
  * https://polyformproject.org/wp-content/uploads/2020/06/PolyForm-Shield-1.0.0.txt.
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Position, Toaster } from '@blueprintjs/core'
 import React, { useEffect, useState } from 'react'
 import cx from 'classnames'
-import { Button, ButtonVariation, Container, Layout, Text } from '@harness/uicore'
+import { Button, ButtonVariation, Container, Layout, Text, useToaster } from '@harness/uicore'
 import { FontVariation } from '@harness/design-system'
-import { defaultTo, upperCase } from 'lodash-es'
+import { defaultTo, isEqual } from 'lodash-es'
+import { useQuery } from '@tanstack/react-query'
 import { useLicenseStore } from 'framework/LicenseStore/LicenseStoreContext'
 import { useAppStore } from 'framework/AppStore/AppStoreContext'
 import { useFeatureFlag } from '@common/hooks/useFeatureFlag'
 import { FeatureFlag } from '@common/featureFlags'
+import { PreferenceScope, usePreferenceStore } from 'framework/PreferenceStore/PreferenceStoreContext'
+import { TrackEvent, useTelemetry } from '@modules/10-common/hooks/useTelemetry'
+import { DowntimeNotificationActions } from '@modules/10-common/constants/TrackingConstants'
+import { Component, Impact, Incident, IncidentStatus, StatusPage, moduleToLicense } from './downtimeNotificationUtils'
 
 import css from './DowntimeNotification.module.scss'
 
@@ -25,40 +29,37 @@ export const DowntimeToaster = Toaster.create({
   usePortal: false
 })
 
-interface DowntimeStatusPopoverProps {
-  incidentTitle?: string
-  status?: string
-  affectedComponents?: string[]
-  incidentLink?: string
+interface IncidentComposedDataProps {
   uid: string
-  componentName?: string
-  updatedAt?: string
+  incidentTitle: string
+  status: Impact
+  incidentLink?: string
+  affectedComponents: string[]
 }
 
 const statusToIntent: Record<string, string> = {
-  degraded_performance: 'warning',
-  under_maintenance: 'warning',
-  partial_outage: 'partial',
-  major_outage: 'danger',
-  operational: 'success',
-  postmortem: 'warning',
-  none: 'none'
+  [Impact.None]: 'none',
+  [Impact.Minor]: 'warning',
+  [Impact.Major]: 'partial',
+  [Impact.Critical]: 'danger'
 }
 
-const moduleNames: Record<string, string> = {
-  CD: 'Continuous Delivery - Next Generation (CDNG)',
-  CI: 'Continuous Integration Enterprise(CIE) - Cloud Builds',
-  CE: 'Cloud Cost Management (CCM)',
-  CHAOS: 'Chaos Engineering',
-  CF: 'Feature Flags (FF)',
-  SRM: 'Service Reliability Management (SRM)',
-  STO: 'Security Testing Orchestration (STO)',
-  CET: 'Continuous Error Tracking (CET)'
+const statusToOutageLabel: Record<string, string> = {
+  [Impact.None]: 'OPERATIONAL',
+  [Impact.Minor]: 'DEGRADED PERFORMANCE',
+  [Impact.Major]: 'PARTIAL OUTAGE',
+  [Impact.Critical]: 'MAJOR OUTAGE'
 }
 
-const DowntimeStatus = (props: DowntimeStatusPopoverProps): JSX.Element => {
-  const { uid, affectedComponents, incidentLink, incidentTitle, status } = props
+const DowntimeStatus = (props: IncidentComposedDataProps & { trackEvent: TrackEvent }): JSX.Element => {
+  const { uid, affectedComponents, incidentLink, incidentTitle, status, trackEvent } = props
   const statusIntent = statusToIntent[defaultTo(status, 'none')]
+
+  trackEvent(DowntimeNotificationActions.VisibleIncidents, {
+    incidentId: uid,
+    incidentTitle: incidentTitle
+  })
+
   return (
     <Layout.Vertical spacing={'small'} className={css[statusIntent?.toLowerCase() as keyof typeof css]}>
       <Text
@@ -88,57 +89,155 @@ const DowntimeStatus = (props: DowntimeStatusPopoverProps): JSX.Element => {
       </Text>
       <Layout.Horizontal flex={{ justifyContent: 'space-between' }} className={css.actionBtn}>
         <Container className={cx(css.incidentStatusTag, css[statusIntent?.toLowerCase() as keyof typeof css])}>
-          <Text>{upperCase(defaultTo(status?.replace(/_/g, ' '), '-'))}</Text>
+          <Text>{defaultTo(statusToOutageLabel[status], '-')}</Text>
         </Container>
-        <div>
-          <Button
-            variation={ButtonVariation.LINK}
-            text="Incident"
+        <Container flex={{ alignItems: 'center' }}>
+          <a
+            href={defaultTo(incidentLink, window.downtimeStatusEndpoint)}
+            target="_blank"
+            rel="noreferrer"
             className={css.statusLinkBtn}
-            onClick={() => {
-              window.open(defaultTo(incidentLink, 'https://status.harness.io/'), '_blank')
-            }}
-          />
+          >
+            {'View Incident'}
+          </a>
           <Button
             variation={ButtonVariation.LINK}
             text="Dismiss"
             onClick={() => DowntimeToaster.dismiss(uid)}
             className={css.statusLinkBtn}
           />
-        </div>
+        </Container>
       </Layout.Horizontal>
     </Layout.Vertical>
   )
 }
 
-export const handleToasters = (downtimeData?: DowntimeStatusPopoverProps[]): void => {
-  for (const incident of defaultTo(downtimeData, [])) {
-    const uniqueKey = incident.uid + incident.incidentTitle
+export const handleToasters = (
+  dismissedIncidents: string[],
+  setDismissedCollection: React.Dispatch<React.SetStateAction<string[]>>,
+  trackEvent: TrackEvent,
+  downtimeData?: IncidentComposedDataProps[]
+): void => {
+  //getter - hide dismissed toasters
+  const incidents = downtimeData?.filter(incident => !dismissedIncidents.includes(incident.uid))
+
+  for (const incident of defaultTo(incidents, [])) {
     DowntimeToaster.show(
       {
         message: (
           <DowntimeStatus
-            uid={uniqueKey}
+            uid={incident.uid}
             status={incident.status}
             affectedComponents={incident.affectedComponents}
             incidentTitle={incident.incidentTitle}
             incidentLink={incident.incidentLink}
+            trackEvent={trackEvent}
           />
         ),
         timeout: -1,
-        className: css[statusToIntent[defaultTo(incident.status, 'none')]?.toLowerCase() as keyof typeof css]
+        className: css[statusToIntent[defaultTo(incident.status, 'none')]?.toLowerCase() as keyof typeof css],
+        //setter - add current dismissed toast to localStorage collection
+        onDismiss: () => {
+          trackEvent(DowntimeNotificationActions.DismissedIncidents, {
+            incidentId: incident.uid,
+            incidentTitle: incident.incidentTitle
+          })
+          setDismissedCollection([incident.uid])
+        }
       },
-      uniqueKey
+      incident.uid
     )
   }
 }
 
-const DowntimeNotification = (): JSX.Element => {
-  const [downtimeStatusResponse, setDowntimeStatusResponse] = useState<any>()
-  const [downtimeStatusError, setDowntimeStatusError] = useState<any>()
+const getDowntimeNotificationData = async (): Promise<StatusPage> => {
+  if (!window.downtimeStatusEndpoint) {
+    return {}
+  }
+  try {
+    const response = await fetch(window.downtimeStatusEndpoint + 'api/v2/summary.json')
+    if (response.ok) {
+      return response.json()
+    } else {
+      throw response
+    }
+  } catch (error) {
+    return {}
+  }
+}
 
-  const enableDowntimeNotification = useFeatureFlag(FeatureFlag.CDS_HARNESS_DOWNTIME_NOTIFICATION)
-  const [statusData, setStatusData] = useState<DowntimeStatusPopoverProps[]>([])
+type clusterMapType = Record<string, string>
+
+const extractAffectedClusters = (component: Component[]): clusterMapType => {
+  const clusterMap: clusterMapType = {}
+
+  component
+    .filter(item => item.group)
+    .forEach(item => {
+      if (item.id) {
+        clusterMap[item.id] = defaultTo(item.name, '').toLocaleLowerCase().split(' ').join('-')
+      }
+    })
+
+  return clusterMap
+}
+
+const composeIncidents = (
+  activeLicenses: string[],
+  cluster: string,
+  incidents: Incident[],
+  affectedClusters: clusterMapType
+): IncidentComposedDataProps[] => {
+  const unresolvedIncidents = incidents.filter(
+    incident => !(incident.status === IncidentStatus.Postmortem || incident.status === IncidentStatus.Resolved)
+  )
+
+  const getValidAffectedComponents = (incident: Incident): string[] => {
+    const components = defaultTo(incident.components, [])
+      .filter(
+        // filter if the user do not have license for the given component
+        component => component.name && activeLicenses.includes(defaultTo(moduleToLicense[component.name], 'None'))
+      )
+      .filter(
+        component =>
+          component.group_id &&
+          // filter if the affected cluster do not match the current cluster
+          affectedClusters[component.group_id] === cluster.toLocaleLowerCase().split(' ').join('-')
+      )
+      .map(component => defaultTo(component.name, '-'))
+
+    return components
+  }
+
+  const incidentComposedData: IncidentComposedDataProps[] = unresolvedIncidents.map(incident => {
+    return {
+      uid: defaultTo(incident.id, ''),
+      affectedComponents: getValidAffectedComponents(incident),
+      status: defaultTo(incident.impact, Impact.None),
+      incidentLink: defaultTo(incident.shortlink, window.downtimeStatusEndpoint),
+      incidentTitle: defaultTo(incident.name, '-')
+    }
+  })
+  return incidentComposedData.filter(incident => incident.affectedComponents.length > 0)
+}
+
+const DowntimeNotification: React.FC = (): JSX.Element => {
+  const enableDowntimeNotification =
+    useFeatureFlag(FeatureFlag.CDS_HARNESS_DOWNTIME_NOTIFICATION) && window.downtimeStatusEndpoint
+  const [composedIncidentList, setComposedIncidentList] = useState<IncidentComposedDataProps[]>([])
+
+  const { preference: dismissedIncidents = [], setPreference: setDismissedIncidents } = usePreferenceStore<string[]>(
+    PreferenceScope.ACCOUNT,
+    'dismiss_incidents'
+  )
+  const [dismissedCollection, setDismissedCollection] = useState<string[]>([])
+
+  const { trackEvent } = useTelemetry()
+
+  useEffect(() => {
+    const combinedData = new Set([...dismissedIncidents, ...dismissedCollection])
+    setDismissedIncidents([...combinedData])
+  }, [dismissedCollection])
 
   const { accountInfo: accountData } = useAppStore()
   const { licenseInformation } = useLicenseStore()
@@ -146,129 +245,46 @@ const DowntimeNotification = (): JSX.Element => {
   const activeLicenses = Object.keys(licenseInformation).filter(
     moduleName => licenseInformation[moduleName]?.status === 'ACTIVE'
   )
-  const activeLicensesWithFullNames = activeLicenses.map(moduleName => ({
-    abbreviation: moduleName,
-    fullForm: moduleNames[moduleName]
-  }))
-  const fullFormNames = activeLicensesWithFullNames.map(license => license.fullForm)
 
-  const components = downtimeStatusResponse?.components || []
+  const { showError } = useToaster()
 
-  function extractClusterComponents(component: any, parentName: string): DowntimeStatusPopoverProps[] {
-    const name = component.name
-    const fullName = parentName ? `${parentName} > ${name}` : name
-    const cluster = accountData ? accountData.cluster : undefined
-
-    const clusterVariant = cluster?.toLocaleLowerCase().split('-').join(' ')
-
-    if (
-      (fullName.toLocaleLowerCase().startsWith(cluster?.toLocaleLowerCase()) && fullName !== cluster) ||
-      (fullName.toLocaleLowerCase().startsWith(clusterVariant) && fullName.toLocaleLowerCase() !== clusterVariant)
-    ) {
-      const componentData: DowntimeStatusPopoverProps = {
-        componentName: name,
-        status: component?.status,
-        updatedAt: component.updated_at,
-        incidentLink: '',
-        incidentTitle: '',
-        affectedComponents: [],
-        uid: component.id
+  useQuery(['getDowntimeStatus'], getDowntimeNotificationData, {
+    refetchOnWindowFocus: true,
+    enabled: Boolean(enableDowntimeNotification),
+    onSettled: (data, error) => {
+      if (error) {
+        showError(error)
       }
-      if (componentData?.status !== 'operational') {
-        const currentIncidents = downtimeStatusResponse.incidents.filter((incident: any) =>
-          incident.components.some((comp: any) => comp.name === name && comp?.status !== 'operational')
+
+      if (enableDowntimeNotification) {
+        const composedIncidentsList = composeIncidents(
+          activeLicenses,
+          defaultTo(accountData?.cluster, ''),
+          defaultTo(data?.incidents, []),
+          extractAffectedClusters(defaultTo(data?.components, []))
         )
-        if (currentIncidents.length > 0) {
-          const matchingIncidents = currentIncidents.filter((currentIncident: any) => {
-            const affectedComponents = currentIncident.components
-              .filter((comp: any) => comp?.status !== 'operational')
-              .map((comp: any) => comp.name)
-            const hasCILicense = activeLicenses.includes('CI')
-            const includesSelfHostedRunners = affectedComponents.includes(
-              'Continuous Integration Enterprise(CIE) - Self Hosted Runners'
-            )
-            if (hasCILicense && includesSelfHostedRunners) {
-              return true
-            }
-            return affectedComponents.some((item: any) => fullFormNames.includes(item))
-          })
-          if (matchingIncidents.length > 0) {
-            return matchingIncidents.map((matchingIncident: any) => ({
-              ...componentData,
-              incidentLink: matchingIncident.shortlink,
-              incidentTitle: matchingIncident.name,
-              affectedComponents: matchingIncident.components
-                .filter((comp: any) => comp?.status !== 'operational')
-                .map((comp: any) => comp.name)
-            }))
-          }
-        }
+        setComposedIncidentList(composedIncidentsList)
       }
     }
-    if (component.components) {
-      let extractedComponents: DowntimeStatusPopoverProps[] = []
+  })
 
-      for (const subComponentId of component.components) {
-        const subComponent = components.find((subComp: any) => subComp.id === subComponentId)
-        if (subComponent) {
-          extractedComponents = extractedComponents.concat(extractClusterComponents(subComponent, fullName))
-        }
-      }
-      return extractedComponents
+  const cleanLocalStorage = (incidentList: IncidentComposedDataProps[]): void => {
+    const updatedIncidentList = dismissedIncidents.filter(inc => incidentList?.map(item => item.uid).includes(inc))
+    if (!isEqual(dismissedIncidents, updatedIncidentList)) {
+      setDismissedIncidents(updatedIncidentList)
     }
-    return []
   }
 
   useEffect(() => {
-    let apiCallInProgress = false
-
-    function makeAPICall(): void {
-      if (!apiCallInProgress) {
-        apiCallInProgress = true
-        fetch('https://tq9lcrwd1tcn.statuspage.io/api/v2/summary.json')
-          .then(response => response.json())
-          .then(data => {
-            apiCallInProgress = false
-            setDowntimeStatusResponse(data)
-          })
-          .catch(error => {
-            apiCallInProgress = false
-            setDowntimeStatusError(error)
-          })
-      }
-    }
-
-    function handleVisibilityChange(): void {
-      if (document.visibilityState === 'visible') {
-        // Tab is in focus, make the API call
-        makeAPICall()
-      }
-    }
-
     if (enableDowntimeNotification) {
-      document.addEventListener('visibilitychange', handleVisibilityChange)
-      makeAPICall()
-
-      return () => {
-        document.removeEventListener('visibilitychange', handleVisibilityChange)
+      //clean localStorage
+      if (composedIncidentList.length) {
+        cleanLocalStorage(composedIncidentList)
       }
-    }
-  }, [])
 
-  useEffect(() => {
-    const extractedData: DowntimeStatusPopoverProps[] = []
-    for (const component of components) {
-      const extractedComponents = extractClusterComponents(component, '')
-      extractedData.push(...extractedComponents)
+      handleToasters(dismissedIncidents, setDismissedCollection, trackEvent, composedIncidentList)
     }
-    setStatusData(extractedData)
-  }, [downtimeStatusResponse, downtimeStatusError])
-
-  useEffect(() => {
-    if (enableDowntimeNotification) {
-      handleToasters(statusData)
-    }
-  }, [statusData])
+  }, [composedIncidentList])
 
   return <></>
 }
