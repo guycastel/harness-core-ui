@@ -77,7 +77,6 @@ export const OverridesCodeSourceCell: Renderer<CellProps<ServiceOverrideSectionP
     label: getString('inline'),
     value: StoreType.INLINE
   })
-  const [remoteSelectCount, setRemoteSelectCount] = useState(0)
   const { close, open, isOpen } = useToggleOpen()
 
   const envRef = newOverrideEnvironmentInputRef.current?.values?.['environmentRef']
@@ -198,9 +197,8 @@ export const OverridesCodeSourceCell: Renderer<CellProps<ServiceOverrideSectionP
             onChange={val => {
               setCodeSource(val)
               formikRef.current?.setFieldValue('storeType', val.value)
-              if (val.value === StoreType.REMOTE && remoteSelectCount === 0) {
+              if (val.value === StoreType.REMOTE) {
                 open()
-                setRemoteSelectCount(1)
               }
             }}
             value={codeSource}
@@ -210,7 +208,6 @@ export const OverridesCodeSourceCell: Renderer<CellProps<ServiceOverrideSectionP
               icon="Edit"
               variation={ButtonVariation.ICON}
               font={{ variation: FontVariation.BODY1 }}
-              disabled={remoteSelectCount === 0}
               onClick={() => {
                 open()
               }}
