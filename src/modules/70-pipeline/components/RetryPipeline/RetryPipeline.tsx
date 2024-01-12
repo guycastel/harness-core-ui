@@ -268,7 +268,7 @@ function RetryPipeline({
       retryStages: (!isParallelStage
         ? [selectedStage?.value]
         : (selectedStage?.value as string)?.split(' | ')) as string[],
-      runAllStages: true
+      runAllStages: !preSelectLastStage // Alligning as in RunPipelineFormBasic
     },
     queryParamStringifyOptions: {
       arrayFormat: 'repeat'
