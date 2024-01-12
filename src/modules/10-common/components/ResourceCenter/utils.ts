@@ -30,6 +30,7 @@ export const HARNESS_SUPPORT_LINK =
 export const CANNY_SUPPORT_LINK = 'https://ideas.harness.io/'
 export const WHATS_NEW_LINK = `https://docs.harness.io/article/ueeiji09do-what-s-new`
 export const EARLY_ACCESS_LINK = `https://docs.harness.io/article/w4krvu96i3-early-access`
+export const NEW_NAV_FAQS = 'https://developer.harness.io/kb/platform/new-navigation-faqs'
 
 export const openZendeskSupport = (e: React.MouseEvent<Element, MouseEvent>): void => {
   e.stopPropagation()

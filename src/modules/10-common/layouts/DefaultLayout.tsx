@@ -27,6 +27,7 @@ import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
 import { String, useStrings } from 'framework/strings'
 import { PreferenceScope, usePreferenceStore } from 'framework/PreferenceStore/PreferenceStoreContext'
 import { useUpdateUserSettingValue } from 'services/cd-ng'
+import { NEW_NAV_FAQS } from '../components/ResourceCenter/utils'
 import { AccountPathProps, ModePathProps } from '../interfaces/RouteInterfaces'
 import { getRouteParams } from '../utils/routeUtils'
 import { SIDE_NAV_STATE, useLayoutV2 } from '../router/RouteWithLayoutV2'
@@ -126,7 +127,7 @@ export function DefaultLayout(props: React.PropsWithChildren<DefaultLayoutProps>
                 <Text margin={{ right: 'small' }} font={{ variation: FontVariation.SMALL }}>
                   {getString('common.newNavCallout.subtitle')}
                 </Text>
-                <a href="https://youtu.be/KglcP3a9ZaA" rel="noreferrer" target="_blank">
+                <a href={NEW_NAV_FAQS} rel="noreferrer" target="_blank">
                   <Text font={{ variation: FontVariation.BODY }} color={Color.PRIMARY_7} margin={{ right: 'small' }}>
                     {getString('common.learnMore')}
                   </Text>
