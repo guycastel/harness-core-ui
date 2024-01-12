@@ -49,7 +49,6 @@ import { useTelemetry } from '@common/hooks/useTelemetry'
 import { PipelineExecutionActions } from '@common/constants/TrackingConstants'
 import { getFeaturePropsForRunPipelineButton } from '@pipeline/utils/runPipelineUtils'
 import RbacButton from '@rbac/components/Button/Button'
-import { YamlVersion, isYamlV1 } from '@modules/70-pipeline/common/hooks/useYamlVersion'
 import { useNotesModal } from './NotesModal/useNotesModal'
 import css from './ExecutionHeader.module.scss'
 
@@ -157,7 +156,7 @@ export function ExecutionHeader({ pipelineMetadata }: ExecutionHeaderProps): Rea
     storeType: pipelineMetadata?.data?.storeType,
     stagesExecuted: pipelineExecutionSummary?.stagesExecuted
   })
-  const { CI_YAML_VERSIONING } = useFeatureFlags()
+  const { CI_YAML_VERSIONING, CDS_YAML_SIMPLIFICATION } = useFeatureFlags()
 
   const pipelineStudioRoutingProps = {
     orgIdentifier,
@@ -431,7 +430,7 @@ export function ExecutionHeader({ pipelineMetadata }: ExecutionHeaderProps): Rea
             iconProps={{ size: 14 }}
             className={css.tags}
             popoverProps={{ wrapperTagName: 'div', targetTagName: 'div' }}
-            {...(isYamlV1(pipelineExecutionSummary?.yamlVersion as YamlVersion) && {
+            {...(CDS_YAML_SIMPLIFICATION && {
               tagsTitle: getString('pipeline.tagsAndExecutionLabels')
             })}
             tags={(tagsAndExecutionLabels || []).reduce((val, tag) => {

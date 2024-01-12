@@ -56,7 +56,6 @@ import type { PipelineExecutionSummary, PipelineStageInfo } from 'services/pipel
 import { useQueryParams } from '@common/hooks'
 import { DateTimeContent } from '@common/components/TimeAgoPopover/TimeAgoPopover'
 import { useNotesModal } from '@pipeline/pages/execution/ExecutionLandingPage/ExecutionHeader/NotesModal/useNotesModal'
-import { YamlVersion, isYamlV1 } from '@modules/70-pipeline/common/hooks/useYamlVersion'
 import FrozenExecutionDrawer from './FrozenExecutionDrawer/FrozenExecutionDrawer'
 import { CITriggerInfo, CITriggerInfoProps } from './CITriggerInfoCell'
 import type { ExecutionListColumnActions, ExecutionListExpandedColumnProps } from './ExecutionListTable'
@@ -159,6 +158,7 @@ export const PipelineNameCell: CellType = ({ row }) => {
   const { getString } = useStrings()
   const pathParams = useParams<PipelineType<PipelinePathProps>>()
   const queryParams = useQueryParams<GitQueryParams>()
+  const { CDS_YAML_SIMPLIFICATION } = useFeatureFlags()
   const toExecutionPipelineView = getExecutionPipelineViewLink(data, pathParams, queryParams)
   const notesModal = useNotesModal({
     planExecutionId: data.planExecutionId || '',
@@ -183,7 +183,7 @@ export const PipelineNameCell: CellType = ({ row }) => {
           <TagsPopover
             iconProps={{ size: 12, color: Color.GREY_600 }}
             className={css.tags}
-            {...(isYamlV1(data.yamlVersion as YamlVersion) && {
+            {...(CDS_YAML_SIMPLIFICATION && {
               tagsTitle: getString('pipeline.tagsAndExecutionLabels'),
               containerClassName: css.tagsContainer
             })}

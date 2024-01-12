@@ -639,6 +639,7 @@ export function usePipelineContext(): PipelineContextInterface {
 export const savePipeline = (
   params: CreatePipelineQueryParams & PutPipelineQueryParams & { public?: boolean },
   pipeline: PipelineInfoConfig,
+  pipelineIdentifier: string,
   isEdit = false
 ): Promise<Failure | undefined> => {
   const body = yamlStringify({
@@ -647,7 +648,7 @@ export const savePipeline = (
 
   return isEdit
     ? putPipelineV2Promise({
-        pipelineIdentifier: pipeline.identifier,
+        pipelineIdentifier,
         queryParams: {
           ...params
         },

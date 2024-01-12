@@ -276,8 +276,9 @@ function SavePipelinePopoverY1(
           : {})
       },
       omit(latestPipeline, 'repo', 'branch'),
-      isEdit,
-      pipelineMetadata
+      pipelineMetadata,
+      pipelineIdentifier,
+      isEdit
     )
     setLoading(false)
     setSavePipelineError({})

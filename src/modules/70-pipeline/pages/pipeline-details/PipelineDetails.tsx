@@ -39,7 +39,7 @@ import type { GitFilterScope } from '@common/components/GitFilters/GitFilters'
 import { BannerEOL } from '@pipeline/components/BannerEOL/BannerEOL'
 import { isSimplifiedYAMLEnabled } from '@common/utils/utils'
 import { YamlVersionBadge } from '@modules/70-pipeline/common/components/YamlVersionBadge/YamlVersionBadge'
-import { YamlVersion, isYamlV1 } from '@modules/70-pipeline/common/hooks/useYamlVersion'
+import { YamlVersion } from '@modules/70-pipeline/common/hooks/useYamlVersion'
 import NoEntityFound from '../utils/NoEntityFound/NoEntityFound'
 import css from './PipelineDetails.module.scss'
 
@@ -330,16 +330,14 @@ function PipelinePage({ children }: React.PropsWithChildren<unknown>): React.Rea
                 <Heading level={2} color={Color.GREY_800} font={{ weight: 'bold' }}>
                   {pipelineName}
                 </Heading>
-                {isYamlV1(pipeline?.data?.yamlVersion as YamlVersion) &&
-                  pipeline?.data?.tags &&
-                  !isEmpty(pipeline.data.tags) && (
-                    <TagsPopover
-                      iconProps={{ size: 12, color: Color.GREY_600 }}
-                      tagsTitle={getString('pipeline.pipelineTags')}
-                      tags={pipeline?.data?.tags}
-                      containerClassName={css.tagsContainer}
-                    />
-                  )}
+                {CDS_YAML_SIMPLIFICATION && pipeline?.data?.tags && !isEmpty(pipeline.data.tags) && (
+                  <TagsPopover
+                    iconProps={{ size: 12, color: Color.GREY_600 }}
+                    tagsTitle={getString('pipeline.pipelineTags')}
+                    tags={pipeline?.data?.tags}
+                    containerClassName={css.tagsContainer}
+                  />
+                )}
                 {isPipelineRemote ? (
                   <div className={css.gitRemoteDetailsWrapper}>
                     <GitRemoteDetails

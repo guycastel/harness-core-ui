@@ -617,8 +617,9 @@ export function usePipelineContextY1(): PipelineContextInterfaceY1 {
 export const savePipeline = (
   params: CreatePipelineQueryParams & PutPipelineQueryParams,
   pipeline: PipelineInfoConfig,
-  isEdit = false,
-  pipelineMetadata: PipelineMetadata
+  pipelineMetadata: PipelineMetadata,
+  pipelineIdentifier: string,
+  isEdit = false
 ): Promise<Failure | undefined> => {
   const git_details: PipelineUpdateRequestBody['git_details'] = {
     base_branch: params.baseBranch,
@@ -645,7 +646,7 @@ export const savePipeline = (
     ? updatePipelinePromise({
         body: body,
         org: params.orgIdentifier,
-        pipeline: pipelineMetadata?.identifier,
+        pipeline: pipelineIdentifier,
         project: params.projectIdentifier
       })
         .then((response: unknown) => {
