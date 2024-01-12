@@ -113,7 +113,7 @@ const TemplateVariables: React.FC = (): JSX.Element => {
                 {originalTemplate.type === TemplateType.Pipeline && (
                   <PipelineCardPanel
                     variablePipeline={variablesTemplate as PipelineInfoConfig}
-                    pipeline={template.spec as PipelineInfoConfig}
+                    pipeline={templateAtState.spec as PipelineInfoConfig}
                     originalPipeline={originalTemplate.spec as PipelineInfoConfig}
                     metadataMap={metadataMap}
                     allowableTypes={allowableTypes}
