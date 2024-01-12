@@ -65,6 +65,7 @@ export const ServiceField: React.FC<ServiceFieldPropsInterface> = ({
           onChange={item => {
             onMultiSelectChangeForServices(item as SelectOption[])
           }}
+          hideRemoteDetails={true}
         />
         <Text font={{ variation: FontVariation.YAML }} margin={{ rigt: 'xsmall' }} color={Color.GREY_500}>
           {upperCase(getString('or'))}

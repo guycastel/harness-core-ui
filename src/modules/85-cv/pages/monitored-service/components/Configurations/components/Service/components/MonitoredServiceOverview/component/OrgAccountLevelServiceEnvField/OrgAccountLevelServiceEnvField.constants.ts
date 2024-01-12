@@ -30,7 +30,8 @@ export const COMMON_FIELDS_PROPS: Partial<ServiceReferenceFieldProps | Environme
   multiTypeProps: {
     allowableTypes: [MultiTypeInputType.FIXED, MultiTypeInputType.RUNTIME]
   },
-  isNewConnectorLabelVisible: true
+  isNewConnectorLabelVisible: true,
+  hideRemoteDetails: true
 }
 
 export const DefaultShowServiceEnvironment = {

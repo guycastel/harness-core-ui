@@ -82,6 +82,7 @@ export const EnvironmentField: React.FC<EnvironmentFieldPropsInterface> = ({
             onMultiSelectChangeForEnvironments(item as SelectOption[])
           }}
           envTypeFilter={visibleOnlyAtProject ? envTypeFilter : undefined}
+          hideRemoteDetails={true}
         />
         <Text font={{ variation: FontVariation.YAML }} margin={{ rigt: 'xsmall' }} color={Color.GREY_500}>
           {upperCase(getString('or'))}

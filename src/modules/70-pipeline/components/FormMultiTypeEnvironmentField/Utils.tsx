@@ -52,7 +52,8 @@ export function getReferenceFieldProps({
   getString,
   envTypeFilter,
   userSelectedBranches,
-  setUserSelectedBranches
+  setUserSelectedBranches,
+  hideRemoteDetails
 }: any): Omit<
   ReferenceSelectProps<EnvironmentResponseDTO>,
   'onChange' | 'onMultiSelectChange' | 'onCancel' | 'pagination'
@@ -157,7 +158,7 @@ export function getReferenceFieldProps({
               </Text>
             </div>
           </Layout.Horizontal>
-          {item?.record?.storeType === StoreType?.REMOTE ? (
+          {!hideRemoteDetails && item?.record?.storeType === StoreType?.REMOTE ? (
             <Container width={320}>
               <GitRemoteDetails
                 connectorRef={item?.record?.connectorRef}

@@ -83,6 +83,7 @@ export interface EnvironmentReferenceFieldProps extends Omit<IFormGroupProps, 'l
   envTypeFilter?: ('PreProduction' | 'Production')[]
   formikProps?: FormikProps<any>
   parentGitMetadata?: EntitySelectionGitData
+  hideRemoteDetails?: boolean
 }
 
 export function getSelectedRenderer(selected: any): JSX.Element {
@@ -133,6 +134,7 @@ export function MultiTypeEnvironmentField(props: EnvironmentReferenceFieldProps)
     envTypeFilter = [],
     formikProps,
     parentGitMetadata,
+    hideRemoteDetails,
     ...restProps
   } = props
   const formik = useFormikContext() || formikProps
@@ -171,7 +173,8 @@ export function MultiTypeEnvironmentField(props: EnvironmentReferenceFieldProps)
     getString,
     envTypeFilter,
     userSelectedBranches,
-    setUserSelectedBranches
+    setUserSelectedBranches,
+    hideRemoteDetails
   })
   const handleMultiSelectChange = (envs: any): void => {
     const gitMetadata: Record<string, string | undefined> = {}
