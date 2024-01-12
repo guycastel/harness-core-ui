@@ -7368,6 +7368,7 @@ export interface StringsMap {
   'cd.serviceDashboard.updatedTime': string
   'cd.serviceDashboard.webApp': string
   'cd.serviceDashboard.webAppPlaceholder': string
+  'cd.serviceDefinitionDiffTitle': string
   'cd.serviceList.noIdentifier': string
   'cd.serviceName': string
   'cd.serviceOverrides.configFileOverrides': string

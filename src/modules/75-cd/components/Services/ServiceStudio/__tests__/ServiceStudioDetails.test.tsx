@@ -258,4 +258,33 @@ describe('ServiceStudioDetails', () => {
     )
     expect(container).toMatchSnapshot()
   })
+  test('check for unsaved changes to be present', () => {
+    pipelineMockData.state.isUpdated = true
+    pipelineMockData.state.isLoading = false
+    const { getByText } = render(
+      <TestWrapper
+        path="account/:accountId/cd/orgs/:orgIdentifier/projects/:projectIdentifier/services/:serviceIdentifier"
+        pathParams={{
+          accountId: 'dummy',
+          orgIdentifier: 'dummy',
+          projectIdentifier: 'dummy',
+          serviceIdentifier: 'dummy'
+        }}
+        queryParams={{
+          tab: 'configuration'
+        }}
+        defaultAppStoreValues={{
+          featureFlags: { CDS_SERVICE_GITX: false, NG_SVC_ENV_REDESIGN: true, CDC_SERVICE_DASHBOARD_REVAMP_NG: true }
+        }}
+      >
+        <ServiceContext.Provider value={serviceMockData as ServiceContextValues}>
+          <PipelineContext.Provider value={pipelineMockData}>
+            <ServiceStudioDetails {...(servicePropsData as any)} />
+          </PipelineContext.Provider>
+        </ServiceContext.Provider>
+      </TestWrapper>
+    )
+    const unsavedChangesBtn = getByText('unsavedChanges')
+    expect(unsavedChangesBtn).toBeInTheDocument()
+  })
 })

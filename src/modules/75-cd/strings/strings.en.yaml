@@ -1412,3 +1412,4 @@ asgLoadBalancer: ASG Load Balancer
 scopeToSpecificServices: Scope to Specific Services
 selectedPrimaryArtifact: 'Selected Primary Artifact: {{artifactId}}'
 reConfigurePipelineClusters: 'Your cluster setup is out of date, please reselect the cluster(s) you want to deploy to in this PR Pipeline to continue'
+serviceDefinitionDiffTitle: Service-{{serviceId}} (saved) ↔ Service-{{serviceId}} (updated)

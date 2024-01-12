@@ -26,7 +26,7 @@ import { parse } from 'yaml'
 import { Color } from '@harness/design-system'
 import { cloneDeep, defaultTo, get, isEmpty, omit, set, unset } from 'lodash-es'
 import produce from 'immer'
-import { yamlStringify } from '@common/utils/YamlHelperMethods'
+import { yamlStringify, stringify } from '@common/utils/YamlHelperMethods'
 import RbacMenuItem from '@rbac/components/MenuItem/MenuItem'
 import { ResourceType } from '@rbac/interfaces/ResourceType'
 import { PermissionIdentifier } from '@rbac/interfaces/PermissionIdentifier'
@@ -58,6 +58,7 @@ import { CDActions, Category } from '@common/constants/TrackingConstants'
 import { StoreType } from '@common/constants/GitSyncTypes'
 import { useSaveToGitDialog } from '@common/modals/SaveToGitDialog/useSaveToGitDialog'
 import { GitData } from '@common/modals/GitDiffEditor/useGitDiffEditorDialog'
+import useDiffDialog from '@modules/10-common/hooks/useDiffDialog'
 import ServiceConfiguration from './ServiceConfiguration/ServiceConfiguration'
 import { ServiceTabs, setNameIDDescription, ServicePipelineConfig } from '../utils/ServiceUtils'
 import css from '@cd/components/Services/ServiceStudio/ServiceStudio.module.scss'
@@ -76,7 +77,7 @@ function ServiceStudioDetails(props: ServiceStudioDetailsProps): React.ReactElem
   const { tab } = useQueryParams<{ tab: string }>()
   const { updateQueryParams } = useUpdateQueryParams()
   const {
-    state: { pipeline, isUpdated, pipelineView, isLoading, storeMetadata = {} },
+    state: { pipeline, isUpdated, pipelineView, isLoading, storeMetadata = {}, originalPipeline },
     view,
     updatePipelineView,
     fetchPipeline,
@@ -101,6 +102,16 @@ function ServiceStudioDetails(props: ServiceStudioDetailsProps): React.ReactElem
   const [shouldShowOutOfSyncError, setShouldShowOutOfSyncError] = React.useState(false)
   const [validateTemplateInputsResponse, setValidateTemplateInputsResponse] =
     React.useState<ResponseValidateTemplateInputsResponseDTO>()
+
+  const getOriginalServiceData = () => {
+    const oldServiceDefinition = get(originalPipeline, 'stages[0].stage.spec.serviceConfig.serviceDefinition')
+    return produce(props.serviceData, draft => {
+      if (draft) {
+        setNameIDDescription(draft.service as PipelineInfoConfig, originalPipeline as ServicePipelineConfig)
+        set(draft, 'service.serviceDefinition', oldServiceDefinition)
+      }
+    })
+  }
 
   const getFinalServiceData = useCallback(() => {
     let updatedService
@@ -167,6 +178,13 @@ function ServiceStudioDetails(props: ServiceStudioDetailsProps): React.ReactElem
       throw response
     }
   }
+  const { open: openUnsavedChangesDiffModal } = useDiffDialog({
+    originalYaml: stringify(omit(getOriginalServiceData(), ['storeType', 'connectorRef', 'entityGitDetails'])),
+    updatedYaml: stringify(omit(getFinalServiceData(), ['storeType', 'connectorRef', 'entityGitDetails'])),
+    title: getString('cd.serviceDefinitionDiffTitle', {
+      serviceId: props.serviceData.service?.identifier
+    })
+  })
 
   const { openSaveToGitDialog } = useSaveToGitDialog({
     onSuccess: (gitData: GitData, servicePayload?: ServiceRequestDTO): Promise<ResponseServiceResponse> => {
@@ -425,7 +443,15 @@ function ServiceStudioDetails(props: ServiceStudioDetailsProps): React.ReactElem
           <Expander />
           {selectedTabId === ServiceTabs.Configuration && (
             <Layout.Horizontal className={css.btnContainer}>
-              {isUpdated && !isReadonly && <div className={css.tagRender}>{getString('unsavedChanges')}</div>}
+              {isUpdated && !isReadonly && (
+                <Button
+                  variation={ButtonVariation.LINK}
+                  className={css.tagRender}
+                  onClick={openUnsavedChangesDiffModal}
+                >
+                  {getString('unsavedChanges')}
+                </Button>
+              )}
               <Button
                 variation={ButtonVariation.PRIMARY}
                 disabled={!isUpdated || hasYamlValidationErrors}

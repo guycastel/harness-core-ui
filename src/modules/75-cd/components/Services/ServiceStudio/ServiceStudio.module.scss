@@ -33,10 +33,13 @@
     top: 6px;
     right: var(--spacing-xlarge);
     .tagRender {
-      color: var(--orange-600);
-      margin-right: var(--spacing-xlarge);
-      margin-top: var(--spacing-small);
-      font-size: var(--font-size-small);
+      & > :global(.bp3-button-text) {
+        color: var(--orange-600) !important;
+        text-decoration: underline;
+        text-decoration-color: var(--orange-600);
+        font-size: var(--font-size-small) !important;
+      }
+      margin-right: var(--spacing-5);
       line-height: 15px;
       &::before {
         content: '';
