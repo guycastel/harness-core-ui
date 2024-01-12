@@ -15,7 +15,6 @@ import {
   PipelineContext,
   PipelineContextInterface
 } from '@pipeline/components/PipelineStudio/PipelineContext/PipelineContext'
-import * as FeatureFlag from '@common/hooks/useFeatureFlag'
 import pipelineContextMock from '@pipeline/components/PipelineStudio/PipelineCanvas/__tests__/PipelineCanvasGitSyncTestHelper'
 import { StageElementWrapperConfig } from 'services/pipeline-ng'
 import * as allUtils from '@common/utils/utils'
@@ -94,9 +93,6 @@ describe('deploy environment entity widget', () => {
     jest.clearAllMocks()
   })
   test('renders single environment and can toggle empty state to multi environment', async () => {
-    jest.spyOn(FeatureFlag, 'useFeatureFlags').mockReturnValue({
-      CD_NG_DYNAMIC_PROVISIONING_ENV_V2: true
-    })
     render(
       <TestWrapper>
         <DeployEnvironmentEntityWidget
@@ -130,9 +126,6 @@ describe('deploy environment entity widget', () => {
   test('renders single environment and can toggle with state to multi environment', async () => {
     jest.spyOn(allUtils, 'isMultiTypeExpression').mockImplementation((): any => {
       return false
-    })
-    jest.spyOn(FeatureFlag, 'useFeatureFlags').mockReturnValue({
-      CD_NG_DYNAMIC_PROVISIONING_ENV_V2: true
     })
     const { getByText } = render(
       <TestWrapper>

@@ -30,7 +30,6 @@ import { isMultiTypeExpression } from '@common/utils/utils'
 import { useStageErrorContext } from '@pipeline/context/StageErrorContext'
 import { DeployTabs } from '@pipeline/components/PipelineStudio/CommonUtils/DeployStageSetupShellUtils'
 import { usePipelineContext } from '@pipeline/components/PipelineStudio/PipelineContext/PipelineContext'
-import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
 import { DeploymentStageElementConfig } from '@pipeline/utils/pipelineTypes'
 import { StageType } from '@pipeline/utils/stageHelpers'
 
@@ -75,7 +74,6 @@ export default function DeployEnvironmentEntityWidget({
     scope,
     getStageFromPipeline
   } = usePipelineContext()
-  const { CD_NG_DYNAMIC_PROVISIONING_ENV_V2 } = useFeatureFlags()
 
   const formikRef = useRef<FormikProps<DeployEnvironmentEntityFormState> | null>(null)
   const environmentsTypeRef = useRef<MultiTypeInputType | null>(null)
@@ -316,7 +314,7 @@ export default function DeployEnvironmentEntityWidget({
   }
 
   const isSingleEnvEnabled = React.useMemo(() => {
-    return CD_NG_DYNAMIC_PROVISIONING_ENV_V2 && formikRef.current?.values.category === 'single'
+    return formikRef.current?.values.category === 'single'
   }, [formikRef.current?.values.category])
 
   return (

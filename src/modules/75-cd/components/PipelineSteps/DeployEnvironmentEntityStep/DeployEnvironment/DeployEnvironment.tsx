@@ -116,7 +116,7 @@ export default function DeployEnvironment({
   const { refetchPipelineVariable } = usePipelineVariables()
   const uniquePathForEnvironments = React.useRef(`_pseudo_field_${uuid()}`)
   const { getRBACErrorMessage } = useRBACError()
-  const { CD_NG_DYNAMIC_PROVISIONING_ENV_V2, CDS_SERVICE_OVERRIDES_2_0 } = useFeatureFlags()
+  const { CDS_SERVICE_OVERRIDES_2_0 } = useFeatureFlags()
   const { data: enableServiceOverrideSettings, error: enableServiceOverrideSettingsError } = useGetSettingValue({
     identifier: SettingType.ENABLE_SERVICE_OVERRIDE_V2,
     queryParams: {
@@ -462,7 +462,6 @@ export default function DeployEnvironment({
     !(isFixed && isEmpty(selectedEnvironments)) &&
     isNil(values.propagateFrom) &&
     !isMultiEnvironment &&
-    CD_NG_DYNAMIC_PROVISIONING_ENV_V2 &&
     !isDynamicProvisioningRestricted(deploymentType) &&
     !isCustomStage
 

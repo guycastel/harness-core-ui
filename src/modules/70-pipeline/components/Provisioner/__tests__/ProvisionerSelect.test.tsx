@@ -11,7 +11,6 @@ import userEvent from '@testing-library/user-event'
 
 import { Formik } from '@harness/uicore'
 import { TestWrapper, queryByNameAttribute } from '@common/utils/testUtils'
-import * as FeatureFlag from '@common/hooks/useFeatureFlag'
 import type { ExecutionWrapperConfig } from 'services/cd-ng'
 
 import { provisionersMock, stepGroupTemplateProvisioner } from './mock'
@@ -22,9 +21,6 @@ describe('<ProvisionerSelectField /> tests', () => {
   beforeEach(() => jest.clearAllMocks())
 
   test('should render Provisioner select field', async () => {
-    jest.spyOn(FeatureFlag, 'useFeatureFlags').mockReturnValue({
-      CD_NG_DYNAMIC_PROVISIONING_ENV_V2: true
-    })
     const { container } = render(
       <TestWrapper>
         <Formik initialValues={{ provisioner: 'test1' }} onSubmit={() => undefined} formName="TestWrapper">

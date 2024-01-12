@@ -74,8 +74,7 @@ describe('AwsSamInfraSpec tests', () => {
       <TestStepWidget
         testWrapperProps={{
           path: TEST_PATH,
-          pathParams: TEST_PATH_PARAMS as unknown as Record<string, string>,
-          defaultFeatureFlagValues: { CD_NG_DYNAMIC_PROVISIONING_ENV_V2: true }
+          pathParams: TEST_PATH_PARAMS as unknown as Record<string, string>
         }}
         initialValues={emptyInitialValues}
         allValues={emptyInitialValues}

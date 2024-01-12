@@ -101,7 +101,7 @@ describe('AwsSamInfraSpecEditable tests', () => {
     )
 
     const mapDynamicallyProvisionedInfraCheckboxText = screen.queryByText('cd.steps.pdcStep.dynamicProvision')
-    expect(mapDynamicallyProvisionedInfraCheckboxText).not.toBeInTheDocument()
+    expect(mapDynamicallyProvisionedInfraCheckboxText).toBeInTheDocument()
     const provisionerInput = queryByNameAttribute('provisioner', container) as HTMLInputElement
     await waitFor(() => expect(provisionerInput).not.toBeInTheDocument())
 

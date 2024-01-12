@@ -13,7 +13,6 @@ import { MultiTypeSelectField } from '@common/components/MultiTypeSelect/MultiTy
 
 import { useStrings } from 'framework/strings'
 import type { ExecutionWrapperConfig } from 'services/cd-ng'
-import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
 import { StepType } from '@pipeline/components/PipelineSteps/PipelineStepInterface'
 
 interface ProvisionerSelectFieldProps {
@@ -26,7 +25,6 @@ interface ProvisionerSelectFieldProps {
 
 function ProvisionerSelectField(props: ProvisionerSelectFieldProps): React.ReactElement {
   const { name, isReadonly = false, provisioners } = props
-  const { CD_NG_DYNAMIC_PROVISIONING_ENV_V2 } = useFeatureFlags()
 
   const [options, setOptions] = useState<SelectOption[]>([])
 
@@ -72,27 +70,25 @@ function ProvisionerSelectField(props: ProvisionerSelectFieldProps): React.React
 
   return (
     <>
-      {CD_NG_DYNAMIC_PROVISIONING_ENV_V2 && (
-        <MultiTypeSelectField
-          label={
-            <Text color={Color.GREY_600} font={{ size: 'small', weight: 'semi-bold' }} margin={{ bottom: 'xsmall' }}>
-              {getString('common.provisioner')}
-            </Text>
+      <MultiTypeSelectField
+        label={
+          <Text color={Color.GREY_600} font={{ size: 'small', weight: 'semi-bold' }} margin={{ bottom: 'xsmall' }}>
+            {getString('common.provisioner')}
+          </Text>
+        }
+        name={name}
+        useValue
+        data-testid="provisioner-select"
+        enableConfigureOptions={false}
+        multiTypeInputProps={{
+          selectItems: options,
+          placeholder: getString('select'),
+          multiTypeInputProps: {
+            allowableTypes: [MultiTypeInputType.FIXED, MultiTypeInputType.RUNTIME]
           }
-          name={name}
-          useValue
-          data-testid="provisioner-select"
-          enableConfigureOptions={false}
-          multiTypeInputProps={{
-            selectItems: options,
-            placeholder: getString('select'),
-            multiTypeInputProps: {
-              allowableTypes: [MultiTypeInputType.FIXED, MultiTypeInputType.RUNTIME]
-            }
-          }}
-          disabled={isReadonly}
-        />
-      )}
+        }}
+        disabled={isReadonly}
+      />
     </>
   )
 }

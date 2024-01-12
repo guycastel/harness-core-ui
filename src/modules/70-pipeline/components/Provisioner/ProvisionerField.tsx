@@ -10,7 +10,6 @@ import { get } from 'lodash-es'
 import { Checkbox, FormInput, Layout, MultiTypeInputType, RUNTIME_INPUT_VALUE } from '@harness/uicore'
 import { connect } from 'formik'
 import { useStrings } from 'framework/strings'
-import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
 
 import css from './ProvisionerField.module.scss'
 
@@ -24,7 +23,6 @@ function ProvisionerField(props: ProvisionerFieldProps): React.ReactElement {
   const { name, formik, isReadonly } = props
   const { getString } = useStrings()
   const [isProvisioner, setIsProvisioner] = useState<boolean>(false)
-  const { CD_NG_DYNAMIC_PROVISIONING_ENV_V2 } = useFeatureFlags()
 
   React.useEffect(() => {
     if (get(formik.values, name)) {
@@ -34,36 +32,34 @@ function ProvisionerField(props: ProvisionerFieldProps): React.ReactElement {
 
   return (
     <>
-      {CD_NG_DYNAMIC_PROVISIONING_ENV_V2 && (
-        <Layout.Vertical className={css.provisionerField}>
-          <Checkbox
-            margin={{ bottom: 'medium' }}
-            checked={isProvisioner}
-            onChange={(e: React.FormEvent<HTMLInputElement>) => {
-              /* istanbul ignore next */
-              if (!e?.currentTarget.checked) {
-                formik.setFieldValue(name, '')
-              } else {
-                formik.setFieldValue(name, RUNTIME_INPUT_VALUE)
-              }
-              setIsProvisioner(e.currentTarget.checked)
+      <Layout.Vertical className={css.provisionerField}>
+        <Checkbox
+          margin={{ bottom: 'medium' }}
+          checked={isProvisioner}
+          onChange={(e: React.FormEvent<HTMLInputElement>) => {
+            /* istanbul ignore next */
+            if (!e?.currentTarget.checked) {
+              formik.setFieldValue(name, '')
+            } else {
+              formik.setFieldValue(name, RUNTIME_INPUT_VALUE)
+            }
+            setIsProvisioner(e.currentTarget.checked)
+          }}
+          /* eslint-disable */
+          label={getString('cd.steps.pdcStep.dynamicProvision')}
+        />
+        {isProvisioner && (
+          <FormInput.MultiTextInput
+            multiTextInputProps={{
+              allowableTypes: [MultiTypeInputType.RUNTIME]
             }}
-            /* eslint-disable */
-            label={getString('cd.steps.pdcStep.dynamicProvision')}
+            data-testid="provisioner-field"
+            label={getString('common.provisioner')}
+            disabled={isReadonly}
+            name={name}
           />
-          {isProvisioner && (
-            <FormInput.MultiTextInput
-              multiTextInputProps={{
-                allowableTypes: [MultiTypeInputType.RUNTIME]
-              }}
-              data-testid="provisioner-field"
-              label={getString('common.provisioner')}
-              disabled={isReadonly}
-              name={name}
-            />
-          )}
-        </Layout.Vertical>
-      )}
+        )}
+      </Layout.Vertical>
     </>
   )
 }

@@ -130,12 +130,12 @@ const PDCInfrastructureSpecEditable: React.FC<PDCInfrastructureSpecEditableProps
   const delayedOnUpdate = React.useRef(debounce(onUpdate || noop, 300)).current
   const { expressions } = useVariablesExpression()
   const { repoIdentifier, branch } = useQueryParams<GitQueryParams>()
-  const { CD_NG_DYNAMIC_PROVISIONING_ENV_V2, NG_EXPRESSIONS_NEW_INPUT_ELEMENT } = useFeatureFlags()
+  const { NG_EXPRESSIONS_NEW_INPUT_ELEMENT } = useFeatureFlags()
   const { getString } = useStrings()
   const { showError } = useToaster()
   const [formikInitialValues, setFormikInitialValues] = useState<PDCInfrastructureUI>()
   const [selectionType, setSelectionType] = useState<HOSTS_TYPE>(
-    initialValues.provisioner && CD_NG_DYNAMIC_PROVISIONING_ENV_V2
+    initialValues.provisioner
       ? HOSTS_TYPE.DYNAMIC
       : initialValues.hosts
       ? HOSTS_TYPE.SPECIFIED
@@ -487,20 +487,14 @@ const PDCInfrastructureSpecEditable: React.FC<PDCInfrastructureSpecEditableProps
               const type = e.currentTarget.value as HOSTS_TYPE
               setSelectionType(type)
               setShowPreviewHostBtn(!(type === HOSTS_TYPE.DYNAMIC))
-              if (
-                type === HOSTS_TYPE.DYNAMIC &&
-                CD_NG_DYNAMIC_PROVISIONING_ENV_V2 &&
-                !get(formikRef.current?.values, 'provisioner')
-              ) {
+              if (type === HOSTS_TYPE.DYNAMIC && !get(formikRef.current?.values, 'provisioner')) {
                 formikRef.current?.setFieldValue('provisioner', RUNTIME_INPUT_VALUE)
               }
             }}
           >
             <Radio value={HOSTS_TYPE.SPECIFIED} label={getString('cd.steps.pdcStep.specifyHostsOption')} />
             <Radio value={HOSTS_TYPE.PRECONFIGURED} label={getString('cd.steps.pdcStep.preconfiguredHostsOption')} />
-            {CD_NG_DYNAMIC_PROVISIONING_ENV_V2 && (
-              <Radio value={HOSTS_TYPE.DYNAMIC} label={getString('cd.steps.pdcStep.dynamicProvision')} />
-            )}
+            <Radio value={HOSTS_TYPE.DYNAMIC} label={getString('cd.steps.pdcStep.dynamicProvision')} />
           </RadioGroup>
 
           <Formik<PDCInfrastructureUI>
@@ -677,20 +671,18 @@ const PDCInfrastructureSpecEditable: React.FC<PDCInfrastructureSpecEditableProps
                     )}
                     {selectionType === HOSTS_TYPE.DYNAMIC && (
                       <>
-                        {CD_NG_DYNAMIC_PROVISIONING_ENV_V2 && (
-                          <div className={css.inputWrapper}>
-                            <FormInput.MultiTextInput
-                              multiTextInputProps={{
-                                allowableTypes: [MultiTypeInputType.RUNTIME],
-                                newExpressionComponent: NG_EXPRESSIONS_NEW_INPUT_ELEMENT
-                              }}
-                              data-testid="provisioner-field"
-                              label={getString('common.provisioner')}
-                              disabled
-                              name="provisioner"
-                            />
-                          </div>
-                        )}
+                        <div className={css.inputWrapper}>
+                          <FormInput.MultiTextInput
+                            multiTextInputProps={{
+                              allowableTypes: [MultiTypeInputType.RUNTIME],
+                              newExpressionComponent: NG_EXPRESSIONS_NEW_INPUT_ELEMENT
+                            }}
+                            data-testid="provisioner-field"
+                            label={getString('common.provisioner')}
+                            disabled
+                            name="provisioner"
+                          />
+                        </div>
                         <div className={css.inputWrapper}>
                           <FormInput.MultiTextInput
                             name="hostArrayPath"

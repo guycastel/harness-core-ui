@@ -19,7 +19,23 @@ exports[`Test Azure Infrastructure Spec behavior Should call onUpdate if valid v
             <div
               class="Layout--horizontal Layout--layout-spacing-medium StyledProps--main formGroup md inputWrapper provisionerWrapper"
               style="width: 400px;"
-            />
+            >
+              <div
+                class="Layout--vertical StyledProps--main provisionerField"
+              >
+                <label
+                  class="bp3-control bp3-checkbox StyledProps--font Checkbox--checkbox StyledProps--main StyledProps--margin-bottom-medium"
+                >
+                  <input
+                    type="checkbox"
+                  />
+                  <span
+                    class="bp3-control-indicator"
+                  />
+                  cd.steps.pdcStep.dynamicProvision
+                </label>
+              </div>
+            </div>
             <div
               class="Layout--horizontal StyledProps--main formGroup md inputWrapper"
             >
@@ -717,7 +733,23 @@ exports[`Test Azure Infrastructure Spec behavior Should call onUpdate if valid v
             <div
               class="Layout--horizontal Layout--layout-spacing-medium StyledProps--main formGroup md inputWrapper provisionerWrapper"
               style="width: 400px;"
-            />
+            >
+              <div
+                class="Layout--vertical StyledProps--main provisionerField"
+              >
+                <label
+                  class="bp3-control bp3-checkbox StyledProps--font Checkbox--checkbox StyledProps--main StyledProps--margin-bottom-medium"
+                >
+                  <input
+                    type="checkbox"
+                  />
+                  <span
+                    class="bp3-control-indicator"
+                  />
+                  cd.steps.pdcStep.dynamicProvision
+                </label>
+              </div>
+            </div>
             <div
               class="Layout--horizontal StyledProps--main formGroup md inputWrapper"
             >
@@ -2549,7 +2581,23 @@ exports[`Test Azure Infrastructure Spec snapshot Should render edit view with em
             <div
               class="Layout--horizontal Layout--layout-spacing-medium StyledProps--main formGroup md inputWrapper provisionerWrapper"
               style="width: 400px;"
-            />
+            >
+              <div
+                class="Layout--vertical StyledProps--main provisionerField"
+              >
+                <label
+                  class="bp3-control bp3-checkbox StyledProps--font Checkbox--checkbox StyledProps--main StyledProps--margin-bottom-medium"
+                >
+                  <input
+                    type="checkbox"
+                  />
+                  <span
+                    class="bp3-control-indicator"
+                  />
+                  cd.steps.pdcStep.dynamicProvision
+                </label>
+              </div>
+            </div>
             <div
               class="Layout--horizontal StyledProps--main formGroup md inputWrapper"
             >
@@ -3102,7 +3150,23 @@ exports[`Test Azure Infrastructure Spec snapshot Should render edit view with ru
             <div
               class="Layout--horizontal Layout--layout-spacing-medium StyledProps--main formGroup md inputWrapper provisionerWrapper"
               style="width: 400px;"
-            />
+            >
+              <div
+                class="Layout--vertical StyledProps--main provisionerField"
+              >
+                <label
+                  class="bp3-control bp3-checkbox StyledProps--font Checkbox--checkbox StyledProps--main StyledProps--margin-bottom-medium"
+                >
+                  <input
+                    type="checkbox"
+                  />
+                  <span
+                    class="bp3-control-indicator"
+                  />
+                  cd.steps.pdcStep.dynamicProvision
+                </label>
+              </div>
+            </div>
             <div
               class="Layout--horizontal StyledProps--main formGroup md inputWrapper"
             >
@@ -3675,7 +3739,23 @@ exports[`Test Azure Infrastructure Spec snapshot Should render edit view with va
             <div
               class="Layout--horizontal Layout--layout-spacing-medium StyledProps--main formGroup md inputWrapper provisionerWrapper"
               style="width: 400px;"
-            />
+            >
+              <div
+                class="Layout--vertical StyledProps--main provisionerField"
+              >
+                <label
+                  class="bp3-control bp3-checkbox StyledProps--font Checkbox--checkbox StyledProps--main StyledProps--margin-bottom-medium"
+                >
+                  <input
+                    type="checkbox"
+                  />
+                  <span
+                    class="bp3-control-indicator"
+                  />
+                  cd.steps.pdcStep.dynamicProvision
+                </label>
+              </div>
+            </div>
             <div
               class="Layout--horizontal StyledProps--main formGroup md inputWrapper"
             >

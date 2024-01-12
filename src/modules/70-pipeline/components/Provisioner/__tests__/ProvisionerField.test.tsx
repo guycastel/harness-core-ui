@@ -9,7 +9,6 @@ import React from 'react'
 import { render, fireEvent } from '@testing-library/react'
 import { Formik } from '@harness/uicore'
 import { TestWrapper } from '@common/utils/testUtils'
-import * as FeatureFlag from '@common/hooks/useFeatureFlag'
 
 import ProvisionerField from '../ProvisionerField'
 
@@ -17,9 +16,6 @@ describe('<ProvisionerField /> tests', () => {
   beforeEach(() => jest.clearAllMocks())
 
   test('should render Provisioner field', async () => {
-    jest.spyOn(FeatureFlag, 'useFeatureFlags').mockReturnValue({
-      CD_NG_DYNAMIC_PROVISIONING_ENV_V2: true
-    })
     const { container } = render(
       <TestWrapper>
         <Formik initialValues={{ provisioner: '<+input>' }} onSubmit={() => undefined} formName="TestWrapper">

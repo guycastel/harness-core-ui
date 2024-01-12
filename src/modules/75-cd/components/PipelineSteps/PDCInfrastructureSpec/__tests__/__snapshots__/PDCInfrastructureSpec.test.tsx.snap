@@ -40,6 +40,19 @@ exports[`Test PDCInfrastructureSpec behavior - No Preconfigured should call onUp
         />
         cd.steps.pdcStep.preconfiguredHostsOption
       </label>
+      <label
+        class="bp3-control bp3-radio"
+      >
+        <input
+          name="Blueprint3.RadioGroup-2"
+          type="radio"
+          value="dynamic"
+        />
+        <span
+          class="bp3-control-indicator"
+        />
+        cd.steps.pdcStep.dynamicProvision
+      </label>
     </div>
     <div
       class="OverlaySpinner--overlaySpinner"
