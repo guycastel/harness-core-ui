@@ -6,12 +6,14 @@
  */
 
 import React from 'react'
+import { useParams } from 'react-router-dom'
 import cx from 'classnames'
 import { Color, FontVariation } from '@harness/design-system'
 import { Layout, CardSelect, Text, Icon, IconName } from '@harness/uicore'
 import { StringsMap } from 'stringTypes'
 import CommandBlock from '@common/CommandBlock/CommandBlock'
 import { String, useStrings } from 'framework/strings'
+import { PipelineType, ProjectPathProps } from '@modules/10-common/interfaces/RouteInterfaces'
 import { DEPLOYMENT_STRATEGY_TYPES, DEPLOYMENT_TYPE_MAP, SERVICE_TYPES, StrategyVideoByType } from '../../Constants'
 import { CDOnboardingSteps, DeploymentStrategyTypes, WhatToDeployType } from '../../types'
 import { getPipelineCommands } from '../../utils'
@@ -157,7 +159,7 @@ export default function DeploymentStrategySelection({
 
 function PipelineCommandStep({ strategy }: { strategy: DeploymentStrategyTypes }): JSX.Element {
   const { getString } = useStrings()
-
+  const { orgIdentifier, projectIdentifier } = useParams<PipelineType<ProjectPathProps>>()
   const { stepsProgress } = useOnboardingStore()
   const deploymentData = React.useMemo((): WhatToDeployType => {
     return stepsProgress?.[CDOnboardingSteps.WHAT_TO_DEPLOY]?.stepData
@@ -167,7 +169,7 @@ function PipelineCommandStep({ strategy }: { strategy: DeploymentStrategyTypes }
     <Layout.Vertical margin={{ bottom: 'xlarge', top: 'large' }}>
       <CommandBlock
         allowCopy={true}
-        commandSnippet={getPipelineCommands({ getString, strategy, deploymentData })}
+        commandSnippet={getPipelineCommands({ getString, strategy, deploymentData, projectIdentifier, orgIdentifier })}
         ignoreWhiteSpaces={false}
         downloadFileProps={{ downloadFileName: 'harness-cli-setup', downloadFileExtension: 'xdf' }}
         copyButtonText={getString('common.copy')}

@@ -528,30 +528,40 @@ const getTraditionalAppsCommands = ({
 export const getPipelineCommands = ({
   getString,
   deploymentData,
-  strategy
+  strategy,
+  projectIdentifier,
+  orgIdentifier
 }: {
   getString: UseStringsReturn['getString']
   deploymentData: WhatToDeployType
   strategy: DeploymentStrategyTypes
+  projectIdentifier: string
+  orgIdentifier: string
 }): string => {
   switch (deploymentData.svcType?.id) {
     case SERVICE_TYPES.ServerlessFunction.id:
       return getServerlessPipelineCommands({
         getString,
         deploymentData,
-        strategy
+        strategy,
+        projectIdentifier,
+        orgIdentifier
       })
     case SERVICE_TYPES.TraditionalApp.id:
       return getTraditionalAppsPipelineCommands({
         getString,
         deploymentData,
-        strategy
+        strategy,
+        projectIdentifier,
+        orgIdentifier
       })
     default:
       return getK8sPipelineCommands({
         getString,
         deploymentData,
-        strategy
+        strategy,
+        projectIdentifier,
+        orgIdentifier
       })
   }
 }
@@ -559,11 +569,15 @@ export const getPipelineCommands = ({
 export const getK8sPipelineCommands = ({
   getString,
   deploymentData,
-  strategy
+  strategy,
+  projectIdentifier,
+  orgIdentifier
 }: {
   getString: UseStringsReturn['getString']
   deploymentData: WhatToDeployType
   strategy: DeploymentStrategyTypes
+  projectIdentifier: string
+  orgIdentifier: string
 }): string => {
   const dirPath =
     DEPLOYMENT_TYPE_TO_DIR_MAP[
@@ -574,18 +588,23 @@ export const getK8sPipelineCommands = ({
   const pipelineFileName = DEPLOYMENT_TYPE_TO_FILE_MAPS[deploymentData.artifactSubType?.id as string]?.[strategy.id]
   return getString(strategy?.pipelineCommand, {
     type: `${dirPath}/harnesscd-pipeline`,
-    pipeline: pipelineFileName || strategy?.pipelineName
+    pipeline: pipelineFileName || strategy?.pipelineName,
+    ...getProjAndOrgId(projectIdentifier, orgIdentifier)
   })
 }
 
 export const getServerlessPipelineCommands = ({
   getString,
   deploymentData,
-  strategy
+  strategy,
+  projectIdentifier,
+  orgIdentifier
 }: {
   getString: UseStringsReturn['getString']
   deploymentData: WhatToDeployType
   strategy: DeploymentStrategyTypes
+  projectIdentifier: string
+  orgIdentifier: string
 }): string => {
   const isGCP = isGCPFunction(deploymentData?.artifactType?.id)
   const dirPath =
@@ -598,22 +617,28 @@ export const getServerlessPipelineCommands = ({
   return isGCP
     ? getString(strategy?.pipelineCommand, {
         type: dirPath,
-        pipeline: pipelineFileName || strategy?.pipelineName
+        pipeline: pipelineFileName || strategy?.pipelineName,
+        ...getProjAndOrgId(projectIdentifier, orgIdentifier)
       })
     : getString(strategy?.pipelineCommand, {
         type: dirPath,
-        pipeline: pipelineFileName || strategy?.pipelineName
+        pipeline: pipelineFileName || strategy?.pipelineName,
+        ...getProjAndOrgId(projectIdentifier, orgIdentifier)
       })
 }
 
 export const getTraditionalAppsPipelineCommands = ({
   getString,
   deploymentData,
-  strategy
+  strategy,
+  projectIdentifier,
+  orgIdentifier
 }: {
   getString: UseStringsReturn['getString']
   deploymentData: WhatToDeployType
   strategy: DeploymentStrategyTypes
+  projectIdentifier: string
+  orgIdentifier: string
 }): string => {
   const dirPath =
     DEPLOYMENT_TYPE_TO_DIR_MAP[
@@ -624,7 +649,8 @@ export const getTraditionalAppsPipelineCommands = ({
   const pipelineFileName = DEPLOYMENT_TYPE_TO_FILE_MAPS[deploymentData.artifactSubType?.id as string]?.[strategy.id]
   return getString(strategy?.pipelineCommand, {
     type: dirPath,
-    pipeline: pipelineFileName || strategy?.pipelineName
+    pipeline: pipelineFileName || strategy?.pipelineName,
+    ...getProjAndOrgId(projectIdentifier, orgIdentifier)
   })
 }
 export const getProjAndOrgId = (projectIdentifier: string, orgIdentifier: string) => {

@@ -974,10 +974,10 @@ getStartedWithCD:
               blueGreen:
                 subtitle: 'Continuously roll out updates without downtime'
             createpipeline:
-              createcanarycmd: harness pipeline --file {{{type}}}/{{{pipeline}}}.yml apply
-              createbluegreencmd: harness pipeline --file {{{type}}}/{{{pipeline}}}.yml apply
-              createrollingcmd: harness pipeline --file {{{type}}}/{{{pipeline}}}.yml apply
-              createbasiccmd: harness pipeline --file {{{type}}}/{{{pipeline}}}.yml apply
+              createcanarycmd: harness pipeline --file {{{type}}}/{{{pipeline}}}.yml apply{{projId}}{{orgId}}
+              createbluegreencmd: harness pipeline --file {{{type}}}/{{{pipeline}}}.yml apply{{projId}}{{orgId}}
+              createrollingcmd: harness pipeline --file {{{type}}}/{{{pipeline}}}.yml apply{{projId}}{{orgId}}
+              createbasiccmd: harness pipeline --file {{{type}}}/{{{pipeline}}}.yml apply{{projId}}{{orgId}}
         deploymentStrategyStep:
           title: '{{num}} Pick deployment strategy'
           description: Create a pipeline with your preferred deployment strategy. We recommend starting with the Canary strategy as it reduces the probability of failed changes.
