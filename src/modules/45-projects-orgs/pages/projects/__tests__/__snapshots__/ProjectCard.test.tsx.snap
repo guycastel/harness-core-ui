@@ -281,48 +281,6 @@ exports[`Project Card test Preview is ok 1`] = `
                 </g>
               </svg>
             </span>
-            <span
-              class="bp3-icon StyledProps--main"
-              data-icon="cv-main"
-            >
-              <svg
-                height="20"
-                viewBox="0 0 32 32"
-                width="20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <lineargradient
-                  gradientUnits="userSpaceOnUse"
-                  id="cv-main_svg__a"
-                  x1="7.5"
-                  x2="20.926"
-                  y1="3"
-                  y2="28.987"
-                >
-                  <stop
-                    offset="0"
-                    stop-color="#bea1ff"
-                  />
-                  <stop
-                    offset="1"
-                    stop-color="#8a36ff"
-                  />
-                </lineargradient>
-                <g
-                  clip-rule="evenodd"
-                  fill-rule="evenodd"
-                >
-                  <path
-                    d="M25.933 24.357A12.972 12.972 0 0116 28.969a12.972 12.972 0 01-9.933-4.612l6.026-3.834A5.976 5.976 0 0016 21.969a5.977 5.977 0 003.907-1.446zm1.066-1.455l-5.906-3.759a6.001 6.001 0 00-4.193-9.107V3C23.66 3.462 29 9.092 29 15.97a12.94 12.94 0 01-2 6.932zM15.1 3C8.34 3.462 3 9.092 3 15.97c0 2.548.733 4.925 2 6.932l5.907-3.759a6.001 6.001 0 014.192-9.107z"
-                    fill="url(#cv-main_svg__a)"
-                  />
-                  <path
-                    d="M19.558 13.286a.9.9 0 01-.044 1.272l-4.286 4a.9.9 0 01-1.228 0l-1.714-1.6a.9.9 0 011.228-1.316l1.1 1.027 3.672-3.427a.9.9 0 011.272.044z"
-                    fill="#ae82fc"
-                  />
-                </g>
-              </svg>
-            </span>
           </div>
         </div>
       </div>
@@ -708,48 +666,6 @@ exports[`Project Card test initializes ok  1`] = `
                   />
                   <path
                     d="M16.646 13.074c-1.303.34-2.093.316-2.882.29-.79-.024-1.58-.049-2.881.291-.744.216-1.178.592-1.587 1.072a.197.197 0 00-.018.23l2.482 4.069c.064.106.209.13.307.055.374-.283 1.28-.9 2.42-1.198 1.469-.383 2.348-.375 3.273-.366.717.007 1.462.014 2.53-.16a4.454 4.454 0 001.629-.635.347.347 0 00.094-.488L19.472 12.3a.421.421 0 00-.56-.128 9.57 9.57 0 01-2.265.902z"
-                  />
-                </g>
-              </svg>
-            </span>
-            <span
-              class="bp3-icon StyledProps--main"
-              data-icon="cv-main"
-            >
-              <svg
-                height="20"
-                viewBox="0 0 32 32"
-                width="20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <lineargradient
-                  gradientUnits="userSpaceOnUse"
-                  id="cv-main_svg__a"
-                  x1="7.5"
-                  x2="20.926"
-                  y1="3"
-                  y2="28.987"
-                >
-                  <stop
-                    offset="0"
-                    stop-color="#bea1ff"
-                  />
-                  <stop
-                    offset="1"
-                    stop-color="#8a36ff"
-                  />
-                </lineargradient>
-                <g
-                  clip-rule="evenodd"
-                  fill-rule="evenodd"
-                >
-                  <path
-                    d="M25.933 24.357A12.972 12.972 0 0116 28.969a12.972 12.972 0 01-9.933-4.612l6.026-3.834A5.976 5.976 0 0016 21.969a5.977 5.977 0 003.907-1.446zm1.066-1.455l-5.906-3.759a6.001 6.001 0 00-4.193-9.107V3C23.66 3.462 29 9.092 29 15.97a12.94 12.94 0 01-2 6.932zM15.1 3C8.34 3.462 3 9.092 3 15.97c0 2.548.733 4.925 2 6.932l5.907-3.759a6.001 6.001 0 014.192-9.107z"
-                    fill="url(#cv-main_svg__a)"
-                  />
-                  <path
-                    d="M19.558 13.286a.9.9 0 01-.044 1.272l-4.286 4a.9.9 0 01-1.228 0l-1.714-1.6a.9.9 0 011.228-1.316l1.1 1.027 3.672-3.427a.9.9 0 011.272.044z"
-                    fill="#ae82fc"
                   />
                 </g>
               </svg>
