@@ -28,6 +28,7 @@ import { ImagePreview } from '@common/components/ImagePreview/ImagePreview'
 import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
 import { YamlVersionBadge } from '@pipeline/common/components/YamlVersionBadge/YamlVersionBadge'
 import { YamlVersion } from '@modules/70-pipeline/common/hooks/useYamlVersion'
+import { templateTypeToY1TypeMap } from 'framework/utils/templateY1Util'
 import { TemplateColor } from './TemplateColor/TemplateColor'
 import css from './TemplateCard.module.scss'
 
@@ -60,8 +61,9 @@ export function TemplateCard(props: TemplateCardProps): JSX.Element {
   const { gitSyncRepos, loadingRepos } = useGitSyncStore()
   const isTemplateRemote = (template as NGTemplateInfoConfigWithGitDetails)?.storeType === StoreType.REMOTE
 
-  const templateEntityType =
+  const templateType =
     (template as TemplateSummaryResponse)?.templateEntityType || (template as NGTemplateInfoConfig)?.type
+  const templateEntityType = templateTypeToY1TypeMap.get(templateType) || templateType
   const templateEntityLabel = defaultTo(templateFactory.getTemplateLabel(templateEntityType), '')
   const style = templateFactory.getTemplateColorMap(templateEntityType)
   const showMenu = !onPreview && !onOpenEdit && !onOpenSettings && !onDelete

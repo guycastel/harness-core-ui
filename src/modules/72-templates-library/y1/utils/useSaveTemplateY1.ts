@@ -36,6 +36,7 @@ import {
   NGTemplateInfoConfigY1_Tmp,
   TemplateMetadata_Tmp
 } from '@modules/72-templates-library/y1/components/TemplateContext/types'
+import { Status } from '@modules/10-common/utils/Constants'
 
 export interface FetchTemplateUnboundProps {
   forceFetch?: boolean
@@ -182,7 +183,7 @@ export function useSaveTemplateY1({
           break
       }
     } catch (err) {
-      throw response
+      throw response || err
     }
 
     const template: TemplateSummaryResponse = {
@@ -224,8 +225,10 @@ export function useSaveTemplateY1({
       onSuccessCallback(template, updatedGitDetails, storeMetadata, saveAsType)
     }
 
+    const status = response?.content?.identifier ? Status.SUCCESS : undefined
+
     return {
-      status: 'SUCCESS',
+      status: status,
       nextCallback: () => {
         onSuccessCallback(template, updatedGitDetails, storeMetadata, saveAsType)
       }
@@ -241,9 +244,9 @@ export function useSaveTemplateY1({
       updatedGitDetails,
       lastObject,
       storeMetadata,
-      saveAsType
-      // saveAsNewVersionOfExistingTemplate,
-      // isGitSyncOrRemoteTemplate
+      saveAsType,
+      saveAsNewVersionOfExistingTemplate,
+      isGitSyncOrRemoteTemplate
     } = args
 
     if (isEdit) {
@@ -257,11 +260,10 @@ export function useSaveTemplateY1({
         saveAsType
       )
     } else {
-      // TODO: check
-      // const isNewTemplateIdentifierCreation =
-      //  saveAsType !== SaveTemplateAsType.NEW_LABEL_VERSION &&
-      //  !saveAsNewVersionOfExistingTemplate &&
-      //  !isGitSyncOrRemoteTemplate
+      const isNewTemplateIdentifierCreation =
+        saveAsType !== SaveTemplateAsType.NEW_LABEL_VERSION &&
+        !saveAsNewVersionOfExistingTemplate &&
+        !isGitSyncOrRemoteTemplate
 
       const templateYaml = yamlStringify(
         sanitize(latestTemplate, {
@@ -275,6 +277,7 @@ export function useSaveTemplateY1({
         body: {
           template_yaml: templateYaml,
           comments,
+          ...(isNewTemplateIdentifierCreation ? { isNewTemplate: true } : {}),
           git_details: {
             base_branch:
               updatedGitDetails && updatedGitDetails.isNewBranch ? defaultTo(branch, storeMetadata?.branch) : undefined,
@@ -313,7 +316,7 @@ export function useSaveTemplateY1({
             break
         }
       } catch (err) {
-        throw response
+        throw response || err
       }
 
       // const governanceData: GovernanceMetadata | undefined = get(response, 'data.governanceMetadata')

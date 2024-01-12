@@ -61,6 +61,7 @@ import { getDefaultStoreType, getSettingValue } from '@default-settings/utils/ut
 import { isNewTemplate } from '@templates-library/components/TemplateStudio/TemplateStudioUtils'
 import { YamlVersion } from '@pipeline/common/hooks/useYamlVersion'
 import VersionSelector from '@pipeline/components/CreatePipelineButton/VersionSelector/VersionSelector'
+import { templateTypeToY1TypeMap } from 'framework/utils/templateY1Util'
 import {
   DefaultNewTemplateId,
   DefaultNewVersionLabel,
@@ -188,8 +189,9 @@ const BasicTemplateDetails = (
   const [selectedScope, setSelectedScope] = React.useState<Scope>(scope)
   const [savedTemplateConfigValues, setSavedTemplateConfigValues] = React.useState<TemplateConfigValues>()
   const [saveAsNewVersionOfExistingTemplate, setSaveAsNewVersionOfExistingTemplate] = React.useState<boolean>(false)
-  const allowedScopes = templateFactory.getTemplateAllowedScopes(initialValues.type)
-  const isInlineRemoteSelectionApplicable = templateFactory.getTemplateIsRemoteEnabled(initialValues.type)
+  const templateType = templateTypeToY1TypeMap.get(initialValues.type) || initialValues.type
+  const allowedScopes = templateFactory.getTemplateAllowedScopes(templateType)
+  const isInlineRemoteSelectionApplicable = templateFactory.getTemplateIsRemoteEnabled(templateType)
   const formikRef = useRef<FormikProps<TemplateConfigValues>>()
   const scopeOptions = React.useMemo(
     () =>
@@ -489,7 +491,7 @@ const BasicTemplateDetails = (
         initialValues={formInitialValues}
         onSubmit={onSubmit}
         validate={setPreviewValues}
-        formName={`create${initialValues.type}Template`}
+        formName={`create${templateType}Template`}
         validationSchema={Yup.object().shape({
           name: NameSchema(getString, {
             requiredErrorMsg: getString('common.validation.fieldIsRequired', {
@@ -513,7 +515,7 @@ const BasicTemplateDetails = (
                     <Container>
                       <Layout.Vertical>
                         <NameIdDescriptionTags
-                          tooltipProps={{ dataTooltipId: `create${initialValues.type}Template` }}
+                          tooltipProps={{ dataTooltipId: `create${templateType}Template` }}
                           formikProps={formik}
                           identifierProps={{
                             isIdentifierEditable: !disabledFields.includes(Fields.Identifier) && !isReadonly,
@@ -694,7 +696,9 @@ const TemplateConfigModal = (
 ): JSX.Element => {
   const { initialValues, storeMetadata, ...rest } = props
   const { accountId, orgIdentifier, projectIdentifier } = useParams<ProjectPathProps>()
-  const isInlineRemoteSelectionApplicable = templateFactory.getTemplateIsRemoteEnabled(initialValues.type)
+
+  const templateType = templateTypeToY1TypeMap.get(initialValues.type) || initialValues.type
+  const isInlineRemoteSelectionApplicable = templateFactory.getTemplateIsRemoteEnabled(templateType)
   const { showError } = useToaster()
   const [previewValues, setPreviewValues] = useState<NGTemplateInfoConfigWithGitDetails>({
     ...initialValues,
