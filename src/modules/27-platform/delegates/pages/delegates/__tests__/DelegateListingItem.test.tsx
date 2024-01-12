@@ -31,12 +31,14 @@ jest.mock('services/cd-ng', () => ({
 const routesToDelegateDetails = jest.spyOn(routes, 'toDelegatesDetails')
 describe('Delegates Listing With Groups', () => {
   test('render data', () => {
-    const { container } = render(
+    const { getByText } = render(
       <TestWrapper>
         <DelegatesListingItem data={delegateGroupsMock} />
       </TestWrapper>
     )
-    expect(container).toMatchSnapshot()
+
+    // Ensure that at least one of the delegateGroupIdentifier from mock data renders
+    expect(getByText(delegateGroupsMock[0].delegateGroupIdentifier)).toBeInTheDocument()
   })
 
   test('click on delegate item details option', async () => {

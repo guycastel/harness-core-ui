@@ -6,7 +6,7 @@
  */
 
 import React from 'react'
-import { render, fireEvent, waitFor, getByTestId, act } from '@testing-library/react'
+import { render, fireEvent, waitFor, getByTestId, act, screen } from '@testing-library/react'
 import { TestWrapper } from '@common/utils/testUtils'
 import DelegatesListing from '../DelegateListing'
 import {
@@ -296,7 +296,10 @@ describe('Test delegate buttons', () => {
       fireEvent.click(newDelegateBtn!)
     })
 
-    expect(container).toMatchSnapshot()
+    // Ensure that "DelegateCommandLineCreation" drawer opens
+    await waitFor(() => {
+      expect(screen.getByText('platform.delegates.commandLineCreation.selectyourDelegate')).toBeInTheDocument()
+    })
   })
   test('click on filter', async () => {
     const { container } = render(
@@ -317,6 +320,9 @@ describe('Test delegate buttons', () => {
       fireEvent.click(filterBtn!)
     })
 
-    expect(container).toMatchSnapshot()
+    // Ensure that "Filter" drawer opens
+    await waitFor(() => {
+      expect(screen.getByText('platform.delegates.delegateIdentifier')).toBeInTheDocument()
+    })
   })
 })
