@@ -96,11 +96,11 @@ export const useShouldPassSecretManagerIdentifiers = (
 ): {
   shouldPassSecretManagerIdentifiers: boolean
 } => {
-  const { DISABLE_SM_CREDENTIALS_CHECK } = useFeatureFlags()
+  const { PL_DISABLE_SM_CREDENTIALS_CHECK } = useFeatureFlags()
 
   let shouldPassSecretManagerIdentifiers = false
 
-  if (DISABLE_SM_CREDENTIALS_CHECK) {
+  if (PL_DISABLE_SM_CREDENTIALS_CHECK) {
     shouldPassSecretManagerIdentifiers = false
   } else {
     shouldPassSecretManagerIdentifiers = isConnectorContenxtTypeOfSecretManagerAndSecretTypeOfTextAndFile(args)

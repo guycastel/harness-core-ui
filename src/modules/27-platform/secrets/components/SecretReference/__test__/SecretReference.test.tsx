@@ -176,7 +176,7 @@ describe('Secret Reference', () => {
     ;(listSecretsV2Promise as jest.Mock).mockImplementation(listSecretsV2PromiseMock)
 
     const { container } = render(
-      <TestWrapper defaultFeatureFlagValues={{ DISABLE_SM_CREDENTIALS_CHECK: false }}>
+      <TestWrapper defaultFeatureFlagValues={{ PL_DISABLE_SM_CREDENTIALS_CHECK: false }}>
         <SecretReference
           type="SecretText"
           accountIdentifier="testAccount"
@@ -294,7 +294,7 @@ describe('Secret Reference', () => {
     )
   })
 
-  test('it should call secrets v2 api call WITHOUT secretManagerIdentifiers query param when DISABLE_SM_CREDENTIALS_CHECK is true', async () => {
+  test('it should call secrets v2 api call WITHOUT secretManagerIdentifiers query param when PL_DISABLE_SM_CREDENTIALS_CHECK is true', async () => {
     const listSecretsV2PromiseMock = jest.fn(() =>
       Promise.resolve({
         loading: false,
@@ -306,7 +306,7 @@ describe('Secret Reference', () => {
     ;(listSecretsV2Promise as jest.Mock).mockImplementation(listSecretsV2PromiseMock)
 
     const { container } = render(
-      <TestWrapper defaultFeatureFlagValues={{ DISABLE_SM_CREDENTIALS_CHECK: true }}>
+      <TestWrapper defaultFeatureFlagValues={{ PL_DISABLE_SM_CREDENTIALS_CHECK: true }}>
         <SecretReference
           type="SecretText"
           accountIdentifier="testAccount"

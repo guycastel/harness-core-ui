@@ -95,7 +95,7 @@ describe('CreateUpdateSecret', () => {
       <TestWrapper
         path="/account/:accountId/resources/secrets"
         pathParams={{ accountId: 'dummy' }}
-        defaultFeatureFlagValues={{ DISABLE_SM_CREDENTIALS_CHECK: false }}
+        defaultFeatureFlagValues={{ PL_DISABLE_SM_CREDENTIALS_CHECK: false }}
       >
         <CreateUpdateSecret type={'SSHKey'} connectorTypeContext="GcpSecretManager" />
       </TestWrapper>
@@ -105,12 +105,12 @@ describe('CreateUpdateSecret', () => {
     expect(secretManagerField).not.toBeDisabled()
   })
 
-  test('it should NOT disable secret manager field when DISABLE_SM_CREDENTIALS_CHECK is true', async () => {
+  test('it should NOT disable secret manager field when PL_DISABLE_SM_CREDENTIALS_CHECK is true', async () => {
     render(
       <TestWrapper
         path="/account/:accountId/resources/secrets"
         pathParams={{ accountId: 'dummy' }}
-        defaultFeatureFlagValues={{ DISABLE_SM_CREDENTIALS_CHECK: true }}
+        defaultFeatureFlagValues={{ PL_DISABLE_SM_CREDENTIALS_CHECK: true }}
       >
         <CreateUpdateSecret type={'SSHKey'} connectorTypeContext="GcpSecretManager" />
       </TestWrapper>
