@@ -16,10 +16,11 @@ import type { StringsMap } from 'stringTypes'
 import { VariableListTableProps, VariablesListTable } from '@pipeline/components/VariablesListTable/VariablesListTable'
 import { flatObject } from '@pipeline/components/PipelineSteps/Steps/Common/ApprovalCommons'
 import { validateInputSet } from '@pipeline/components/PipelineSteps/Steps/StepsValidateUtils'
-import { RegisterCatalogStepData, RegisterCatalogStepEditWithRef } from './RegisterCatalogStepEdit'
+import { RegisterCatalogStepEditWithRef } from './RegisterCatalogStepEdit'
 import { getInputSetViewValidateFieldsConfig, transformValuesFieldsConfig } from './RegisterCatalogStepFunctionConfigs'
 import RegisterCatalogStepInputSet from './RegisterCatalogStepInputSet'
 import { getFormValuesInCorrectFormat } from '../utils'
+import { RegisterCatalogStepData } from './types'
 
 export class RegisterCatalogStep extends PipelineStep<RegisterCatalogStepData> {
   constructor() {
@@ -37,6 +38,7 @@ export class RegisterCatalogStep extends PipelineStep<RegisterCatalogStepData> {
     type: StepType.RegisterCatalog,
     identifier: '',
     spec: {
+      connectorType: 'Github',
       connectorRef: '',
       repository: '',
       organization: '',

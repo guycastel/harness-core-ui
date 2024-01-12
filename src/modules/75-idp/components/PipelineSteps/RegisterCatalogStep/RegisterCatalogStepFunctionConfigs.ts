@@ -18,11 +18,19 @@ export const transformValuesFieldsConfig = [
     type: TransformValuesTypes.Text
   },
   {
+    name: 'spec.connectorType',
+    type: TransformValuesTypes.Text
+  },
+  {
     name: 'spec.connectorRef',
     type: TransformValuesTypes.ConnectorRef
   },
   {
     name: 'spec.organization',
+    type: TransformValuesTypes.Text
+  },
+  {
+    name: 'spec.project',
     type: TransformValuesTypes.Text
   },
   {

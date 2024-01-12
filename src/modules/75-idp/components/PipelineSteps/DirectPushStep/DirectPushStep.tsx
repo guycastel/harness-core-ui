@@ -16,10 +16,11 @@ import type { StringsMap } from 'stringTypes'
 import { VariableListTableProps, VariablesListTable } from '@pipeline/components/VariablesListTable/VariablesListTable'
 import { flatObject } from '@pipeline/components/PipelineSteps/Steps/Common/ApprovalCommons'
 import { validateInputSet } from '@pipeline/components/PipelineSteps/Steps/StepsValidateUtils'
-import { DirectPushStepData, DirectPushStepEditWithRef } from './DirectPushStepEdit'
+import { DirectPushStepEditWithRef } from './DirectPushStepEdit'
 import { getInputSetViewValidateFieldsConfig, transformValuesFieldsConfig } from './DirectPushStepFunctionConfigs'
 import DirectPushStepInputSet from './DirectPushStepInputSet'
 import { getFormValuesInCorrectFormat } from '../utils'
+import { DirectPushStepData } from './types'
 
 export class DirectPushStep extends PipelineStep<DirectPushStepData> {
   constructor() {
@@ -37,6 +38,7 @@ export class DirectPushStep extends PipelineStep<DirectPushStepData> {
     type: StepType.DirectPush,
     identifier: '',
     spec: {
+      connectorType: 'Github',
       connectorRef: '',
       organization: '',
       repository: '',

@@ -7,6 +7,7 @@
 
 import { v4 as nameSpace, v5 as uuid } from 'uuid'
 import { get, set } from 'lodash-es'
+import { ThumbnailSelectProps } from '@harness/uicore'
 import { isRuntimeInput } from '@pipeline/utils/CIUtils'
 import { ConnectorReferenceFieldProps } from '@modules/27-platform/connectors/components/ConnectorReferenceField/ConnectorReferenceField'
 import { removeEmptyKeys } from '@modules/70-pipeline/components/PipelineSteps/Steps/StepsTransformValuesUtils'
@@ -113,3 +114,26 @@ export function getFormValuesInCorrectFormat<T, U>(
 
   return removeEmptyKeys<U>(values, keysWithAllowedEmptyValues)
 }
+
+export const gitStoreTypes: ThumbnailSelectProps['items'] = [
+  {
+    label: 'GitHub',
+    value: 'Github',
+    icon: 'github'
+  },
+  {
+    label: 'GitLab',
+    value: 'Gitlab',
+    icon: 'service-gotlab'
+  },
+  {
+    label: 'Bitbucket',
+    value: 'Bitbucket',
+    icon: 'bitbucket'
+  },
+  {
+    label: 'Azure Repo',
+    value: 'AzureRepo',
+    icon: 'service-azure'
+  }
+]

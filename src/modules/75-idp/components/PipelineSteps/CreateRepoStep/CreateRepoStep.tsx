@@ -16,10 +16,11 @@ import type { StringsMap } from 'stringTypes'
 import { VariableListTableProps, VariablesListTable } from '@pipeline/components/VariablesListTable/VariablesListTable'
 import { flatObject } from '@pipeline/components/PipelineSteps/Steps/Common/ApprovalCommons'
 import { validateInputSet } from '@pipeline/components/PipelineSteps/Steps/StepsValidateUtils'
-import { CreateRepoStepData, CreateRepoStepEditWithRef } from './CreateRepoStepEdit'
+import { CreateRepoStepEditWithRef } from './CreateRepoStepEdit'
 import { getInputSetViewValidateFieldsConfig, transformValuesFieldsConfig } from './CreateRepoStepFunctionConfigs'
 import CreateRepoStepInputSet from './CreateRepoStepInputSet'
 import { getFormValuesInCorrectFormat } from '../utils'
+import { CreateRepoStepData } from './types'
 
 export class CreateRepoStep extends PipelineStep<CreateRepoStepData> {
   constructor() {
@@ -37,6 +38,7 @@ export class CreateRepoStep extends PipelineStep<CreateRepoStepData> {
     type: StepType.CreateRepo,
     identifier: '',
     spec: {
+      connectorType: 'Github',
       connectorRef: '',
       organization: '',
       repository: '',

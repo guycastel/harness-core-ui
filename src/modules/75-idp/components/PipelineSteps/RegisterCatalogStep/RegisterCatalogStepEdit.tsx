@@ -7,8 +7,7 @@
 
 import React from 'react'
 import { Color, FontVariation } from '@harness/design-system'
-import { AllowedTypes, Card, FormInput, Formik, FormikForm, Text } from '@harness/uicore'
-import { FormikProps } from 'formik'
+import { Card, FormInput, Formik, FormikForm, Text, ThumbnailSelect } from '@harness/uicore'
 import { useParams } from 'react-router-dom'
 import { StepFormikFowardRef, StepViewType, setFormikRef } from '@pipeline/components/AbstractSteps/Step'
 import { useVariablesExpression } from '@pipeline/components/PipelineStudio/PiplineHooks/useVariablesExpression'
@@ -20,37 +19,16 @@ import { usePipelineContext } from '@modules/70-pipeline/components/PipelineStud
 import { BuildStageElementConfig } from '@modules/70-pipeline/utils/pipelineTypes'
 import { ProjectPathProps } from '@modules/10-common/interfaces/RouteInterfaces'
 import { FormMultiTypeConnectorField } from '@modules/27-platform/connectors/components/ConnectorReferenceField/FormMultiTypeConnectorField'
-import { Connectors } from '@modules/27-platform/connectors/constants'
 import { useGitScope } from '@modules/70-pipeline/utils/CIUtils'
+import { ConnectorInfoDTO } from 'services/cd-ng'
 import { editViewValidateFieldsConfig, transformValuesFieldsConfig } from './RegisterCatalogStepFunctionConfigs'
-import { getFormValuesInCorrectFormat, getInitialValuesInCorrectFormat } from '../utils'
+import { getFormValuesInCorrectFormat, getInitialValuesInCorrectFormat, gitStoreTypes } from '../utils'
+import { RegisterCatalogStepData, RegisterCatalogStepEditProps } from './types'
+import GitHubFields from '../GitHubFields'
+import GitLabFields from '../GitLabFields'
+import BitbucketFields from '../BitbucketFields'
+import AzureRepoFields from '../AzureRepoFields'
 import css from '../IDPSteps.module.scss'
-
-export interface RegisterCatalogStepData {
-  name?: string
-  identifier: string
-  type: string
-  spec: {
-    connectorRef: string
-    repository: string
-    organization: string
-    filePath: string
-    branch: string
-  }
-}
-
-export interface RegisterCatalogStepEditProps {
-  initialValues: RegisterCatalogStepData
-  template?: RegisterCatalogStepData
-  path?: string
-  isNewStep?: boolean
-  readonly?: boolean
-  stepViewType: StepViewType
-  onUpdate?: (data: RegisterCatalogStepData) => void
-  onChange?: (data: RegisterCatalogStepData) => void
-  allowableTypes: AllowedTypes
-  formik?: FormikProps<RegisterCatalogStepData>
-}
 
 const RegisterCatalogStepEdit = (
   {
@@ -75,6 +53,27 @@ const RegisterCatalogStepEdit = (
   const { stage: currentStage } = getStageFromPipeline<BuildStageElementConfig>(
     state.selectionState.selectedStageId || ''
   )
+
+  const gitProviderProps = {
+    readonly,
+    stepViewType,
+    allowableTypes
+  }
+
+  function renderGitProviderSpecificFields(connectorType: ConnectorInfoDTO['type']): React.ReactElement {
+    switch (connectorType) {
+      case 'Github':
+        return <GitHubFields {...gitProviderProps} />
+      case 'Gitlab':
+        return <GitLabFields {...gitProviderProps} />
+      case 'Bitbucket':
+        return <BitbucketFields {...gitProviderProps} />
+      case 'AzureRepo':
+        return <AzureRepoFields {...gitProviderProps} />
+      default:
+        return <></>
+    }
+  }
 
   return (
     <Formik<RegisterCatalogStepData>
@@ -131,9 +130,26 @@ const RegisterCatalogStepEdit = (
             </Text>
 
             <Card className={css.repoDetails}>
+              <ThumbnailSelect
+                name="spec.connectorType"
+                items={gitStoreTypes}
+                staticItems
+                onChange={connectorSelected => {
+                  if (connectorSelected !== formik?.values?.spec.connectorType) {
+                    formik?.setFieldValue('spec.connectorRef', undefined)
+                    formik?.setFieldValue('spec.branch', '')
+                    formik?.setFieldValue('spec.filePath', '')
+                    formik?.setFieldValue('spec.organization', '')
+                    formik?.setFieldValue('spec.repository', '')
+                    formik?.setFieldValue('spec.project', '')
+                    formik?.setFieldValue('spec.workspace', '')
+                  }
+                  formik?.setFieldValue('spec.connectorType', connectorSelected)
+                }}
+              />
               <FormMultiTypeConnectorField
                 label={getString('platform.connectors.selectConnector')}
-                type={Connectors.GITHUB}
+                type={formik.values.spec.connectorType}
                 name="spec.connectorRef"
                 placeholder={getString('select')}
                 accountIdentifier={accountId}
@@ -150,56 +166,7 @@ const RegisterCatalogStepEdit = (
                   hideExecutionTimeField: isExecutionTimeFieldDisabledForStep
                 }}
               />
-
-              <MultiTypeTextField
-                name="spec.organization"
-                className={css.publicTemplateUrl}
-                label={
-                  <Text
-                    tooltipProps={{ dataTooltipId: 'organization' }}
-                    className={css.formLabel}
-                    margin={{ bottom: 'medium' }}
-                  >
-                    {getString('orgLabel')}
-                  </Text>
-                }
-                multiTextInputProps={{
-                  disabled: readonly,
-                  placeholder: getString('pipeline.artifactsSelection.organizationPlaceholder'),
-                  multiTextInputProps: {
-                    expressions,
-                    allowableTypes
-                  }
-                }}
-                configureOptionsProps={{
-                  hideExecutionTimeField: isExecutionTimeFieldDisabledForStep
-                }}
-              />
-
-              <MultiTypeTextField
-                name="spec.repository"
-                className={css.publicTemplateUrl}
-                label={
-                  <Text
-                    tooltipProps={{ dataTooltipId: 'repository' }}
-                    className={css.formLabel}
-                    margin={{ bottom: 'medium' }}
-                  >
-                    {getString('common.repositoryName')}
-                  </Text>
-                }
-                multiTextInputProps={{
-                  disabled: readonly,
-                  placeholder: getString('pipeline.manifestType.repoNamePlaceholder'),
-                  multiTextInputProps: {
-                    expressions,
-                    allowableTypes
-                  }
-                }}
-                configureOptionsProps={{
-                  hideExecutionTimeField: isExecutionTimeFieldDisabledForStep
-                }}
-              />
+              {renderGitProviderSpecificFields(formik.values.spec.connectorType)}
 
               <MultiTypeTextField
                 name="spec.branch"

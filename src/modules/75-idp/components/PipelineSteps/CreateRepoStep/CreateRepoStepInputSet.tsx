@@ -18,7 +18,7 @@ import { TextFieldInputSetView } from '@modules/70-pipeline/components/InputSetV
 import { FormMultiTypeConnectorField } from '@modules/27-platform/connectors/components/ConnectorReferenceField/FormMultiTypeConnectorField'
 import { Connectors } from '@modules/27-platform/connectors/constants'
 import { useGitScope } from '@modules/70-pipeline/utils/CIUtils'
-import { CreateRepoStepData, CreateRepoStepEditProps } from './CreateRepoStepEdit'
+import { CreateRepoStepData, CreateRepoStepEditProps } from './types'
 import stepCss from '@pipeline/components/PipelineSteps/Steps/Steps.module.scss'
 
 export default function CreateRepoStepInputSet(
@@ -50,6 +50,42 @@ export default function CreateRepoStepInputSet(
           }}
           placeholder={getString('pipeline.artifactsSelection.organizationPlaceholder')}
           fieldPath="spec.organization"
+          template={template}
+          className={cx(stepCss.formGroup, stepCss.md)}
+        />
+      )}
+      {isValueRuntimeInput(get(template, 'spec.project')) && (
+        <TextFieldInputSetView
+          name={`${path}.spec.project`}
+          label={getString('projectLabel')}
+          disabled={readonly}
+          multiTextInputProps={{
+            allowableTypes,
+            expressions
+          }}
+          configureOptionsProps={{
+            isExecutionTimeFieldDisabled: isExecutionTimeFieldDisabled(stepViewType)
+          }}
+          placeholder={getString('pipeline.artifactsSelection.projectPlaceholder')}
+          fieldPath="spec.project"
+          template={template}
+          className={cx(stepCss.formGroup, stepCss.md)}
+        />
+      )}
+      {isValueRuntimeInput(get(template, 'spec.workspace')) && (
+        <TextFieldInputSetView
+          name={`${path}.spec.workspace`}
+          label={getString('pipelineSteps.workspace')}
+          disabled={readonly}
+          multiTextInputProps={{
+            allowableTypes,
+            expressions
+          }}
+          configureOptionsProps={{
+            isExecutionTimeFieldDisabled: isExecutionTimeFieldDisabled(stepViewType)
+          }}
+          placeholder={getString('pipeline.terraformStep.workspacePlaceholder')}
+          fieldPath="spec.workspace"
           template={template}
           className={cx(stepCss.formGroup, stepCss.md)}
         />
