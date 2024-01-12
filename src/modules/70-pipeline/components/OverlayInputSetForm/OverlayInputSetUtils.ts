@@ -5,7 +5,7 @@
  * https://polyformproject.org/wp-content/uploads/2020/06/PolyForm-Shield-1.0.0.txt.
  */
 
-import { defaultTo } from 'lodash-es'
+import { defaultTo, omit } from 'lodash-es'
 import { CompletionItemKind } from 'vscode-languageserver-types'
 import type { MutateRequestOptions } from 'restful-react/dist/Mutate'
 import type {
@@ -58,26 +58,24 @@ export const getCreateUpdateRequestBodyOptions = ({
     accountIdentifier: accountId,
     orgIdentifier,
     pipelineIdentifier,
-    projectIdentifier
+    projectIdentifier,
+    ...(initialStoreMetadata?.storeType === StoreType.REMOTE ? omit(initialStoreMetadata, 'provider') : {}),
+    ...(gitDetails && gitDetails.isNewBranch ? { baseBranch: initialGitDetails.branch } : {})
   }
   return isEdit
     ? {
         pathParams: { inputSetIdentifier: defaultTo(inputSetObj.identifier, '') },
         queryParams: {
           ...commonQueryParams,
-          ...(initialStoreMetadata?.storeType === StoreType.REMOTE ? initialStoreMetadata : {}),
           ...(gitDetails
             ? { ...gitDetails, lastObjectId: objectId, lastCommitId: conflictCommitId || initialGitDetails.commitId }
-            : {}),
-          ...(gitDetails && gitDetails.isNewBranch ? { baseBranch: initialGitDetails.branch } : {})
+            : {})
         }
       }
     : {
         queryParams: {
           ...commonQueryParams,
-          ...(initialStoreMetadata?.storeType === StoreType.REMOTE ? initialStoreMetadata : {}),
-          ...(gitDetails ?? {}),
-          ...(gitDetails && gitDetails.isNewBranch ? { baseBranch: initialGitDetails.branch } : {})
+          ...(gitDetails ?? {})
         }
       }
 }

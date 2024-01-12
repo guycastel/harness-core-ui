@@ -32,7 +32,7 @@ import type { StoreMetadata } from '@common/constants/GitSyncTypes'
 import type { StringsMap } from 'stringTypes'
 import { isOnPrem } from '@common/utils/utils'
 import RepoBranchSelectV2 from '../RepoBranchSelectV2/RepoBranchSelectV2'
-import { getGitProviderCards } from '../GitProviderSelect/GitProviderSelect'
+import { isHarnessCodeRepoEntity } from '../GitProviderSelect/GitProviderSelect.utils'
 import css from './SaveToGitFormV2.module.scss'
 
 export interface GitResourceInterface {
@@ -70,7 +70,9 @@ const getInitialValues = (
   }),
   createPr: false,
   targetBranch: '',
-  ...(resource.gitDetails?.isHarnessCodeRepo && { isHarnessCodeRepo: resource.gitDetails?.isHarnessCodeRepo })
+  ...(resource.storeMetadata?.provider && {
+    isHarnessCodeRepo: isHarnessCodeRepoEntity(resource.storeMetadata?.provider.type)
+  })
 })
 
 export interface SaveToGitFormV2Interface {
@@ -131,11 +133,7 @@ const SaveToGitFormV2: React.FC<ModalConfigureProps & SaveToGitFormV2Props> = pr
           name="targetBranch"
           noLabel={true}
           disabled={disableBranchSelection}
-          gitProviderType={
-            resource.gitDetails?.isHarnessCodeRepo
-              ? getGitProviderCards(getString)[0].type
-              : getGitProviderCards(getString)[1].type
-          }
+          gitProviderType={resource.storeMetadata?.provider?.type}
           connectorIdentifierRef={resource.storeMetadata?.connectorRef}
           repoName={defaultTo(resource.storeMetadata?.repoName, resource.gitDetails?.repoName)}
           onChange={(selected: SelectOption) => {

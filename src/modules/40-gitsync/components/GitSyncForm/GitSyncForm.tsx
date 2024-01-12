@@ -41,7 +41,7 @@ import {
 import { SettingType } from '@common/constants/Utils'
 import { getIdentifierFromValue, getScopeFromValue } from '@common/components/EntityReference/EntityReference'
 import {
-  CardSelectInterface,
+  ProviderInterface,
   GitProviderSelect,
   getGitProviderCards
 } from '@modules/10-common/components/GitProviderSelect/GitProviderSelect'
@@ -52,7 +52,7 @@ import css from './GitSyncForm.module.scss'
 
 export interface GitSyncFormFields {
   identifier?: string
-  provider?: CardSelectInterface
+  provider?: ProviderInterface
   connectorRef?: ConnectorSelectedValue | string
   repo?: string
   branch?: string

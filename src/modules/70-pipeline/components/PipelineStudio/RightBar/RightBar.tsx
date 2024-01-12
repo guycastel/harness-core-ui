@@ -60,7 +60,7 @@ import { useQueryParams } from '@common/hooks'
 import { useAnyEnterpriseLicense } from '@common/hooks/useModuleLicenses'
 import { isRuntimeInput } from '@pipeline/utils/CIUtils'
 import { getGitProviderCards } from '@modules/10-common/components/GitProviderSelect/GitProviderSelect'
-import { CardSelectInterface } from '@common/components/GitProviderSelect/GitProviderSelect'
+import { ProviderInterface } from '@common/components/GitProviderSelect/GitProviderSelect'
 import { PipelineContextType, usePipelineContext } from '../PipelineContext/PipelineContext'
 import { DrawerTypes } from '../PipelineContext/PipelineActions'
 import { RightDrawer } from '../RightDrawer/RightDrawer'
@@ -81,7 +81,7 @@ interface CodebaseValues {
   prCloneStrategy?: MultiTypeSelectOption
   memoryLimit?: string
   cpuLimit?: string
-  provider?: CardSelectInterface | string
+  provider?: ProviderInterface | string
   repositoryName?: SelectOption | string
 }
 

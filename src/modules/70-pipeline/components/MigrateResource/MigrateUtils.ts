@@ -8,7 +8,7 @@
 import type { StoreMetadata } from '@common/constants/GitSyncTypes'
 import { ResourceType } from '@common/interfaces/GitSyncInterface'
 import type { NameIdDescriptionTagsType } from '@common/utils/Validation'
-import { CardSelectInterface } from '@modules/10-common/components/GitProviderSelect/GitProviderSelect'
+import { ProviderInterface } from '@modules/10-common/components/GitProviderSelect/GitProviderSelect'
 
 export enum MigrationType {
   IMPORT = 'IMPORT',
@@ -30,7 +30,7 @@ export type InitialValuesType = NameIdDescriptionTagsType &
 export type ModifiedInitialValuesType = Omit<InitialValuesType, 'repoName'> & {
   repo?: string
   baseBranch?: string
-  provider?: CardSelectInterface
+  provider?: ProviderInterface
 }
 
 export const getDisableFields = (resourceType: ResourceType): Record<string, boolean> | undefined => {

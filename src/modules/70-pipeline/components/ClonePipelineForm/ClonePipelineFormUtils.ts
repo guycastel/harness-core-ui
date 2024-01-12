@@ -17,7 +17,7 @@ import type {
   PMSPipelineSummaryResponse
 } from 'services/pipeline-ng'
 import { StoreMetadata, StoreType } from '@common/constants/GitSyncTypes'
-import { CardSelectInterface } from '@modules/10-common/components/GitProviderSelect/GitProviderSelect'
+import { ProviderInterface } from '@modules/10-common/components/GitProviderSelect/GitProviderSelect'
 import { isHarnessCodeRepoEntity } from '@modules/10-common/components/GitProviderSelect/GitProviderSelect.utils'
 
 export type OriginalPipeline = Pick<
@@ -28,7 +28,7 @@ export type OriginalPipeline = Pick<
 export interface FormState
   extends Required<ClonePipelineProperties>,
     Omit<OriginalPipeline, 'storeType' | 'gitDetails' | 'connectorRef'> {
-  provider?: CardSelectInterface
+  provider?: ProviderInterface
   connectorRef?: string | SelectOption
   storeType: StoreType
   repo?: string

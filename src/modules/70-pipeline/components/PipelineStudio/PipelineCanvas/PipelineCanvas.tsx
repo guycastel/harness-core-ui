@@ -70,6 +70,7 @@ import useRBACError from '@rbac/utils/useRBACError/useRBACError'
 import { getPipelineUrl } from '@common/hooks/useGetEntityMetadata'
 import { getDefaultStoreType, getSettingValue } from '@default-settings/utils/utils'
 import { PipelineMetadataForRouter } from '@pipeline/components/CreatePipelineButton/useCreatePipelineModalY1'
+import { getProvider } from '@common/components/GitProviderSelect/GitProviderSelect.utils'
 import { usePipelineContext } from '../PipelineContext/PipelineContext'
 import CreatePipelines from '../CreateModal/PipelineCreate'
 import { DefaultNewPipelineId } from '../PipelineContext/PipelineActions'
@@ -704,7 +705,10 @@ export function PipelineCanvas({
     isPipelineRemote &&
       gitDetails.repoName &&
       gitDetails.branch &&
-      updatePipelineStoreMetadata({ connectorRef, storeType }, gitDetails)
+      updatePipelineStoreMetadata(
+        { connectorRef, storeType, provider: getProvider(getString, connectorRef) },
+        gitDetails
+      )
   }, [isPipelineRemote, gitDetails, connectorRef, storeType])
 
   const [openRunPipelineModal, closeRunPipelineModal] = useModalHook(

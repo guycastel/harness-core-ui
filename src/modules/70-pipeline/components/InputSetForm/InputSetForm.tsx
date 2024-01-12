@@ -38,9 +38,8 @@ import { useDocumentTitle } from '@common/hooks/useDocumentTitle'
 import { useStrings } from 'framework/strings'
 import { AppStoreContext } from 'framework/AppStore/AppStoreContext'
 import { useMutateAsGet, useQueryParams } from '@common/hooks'
-import type { GitContextProps } from '@common/components/GitContextForm/GitContextForm'
 import { parse, stringify, yamlParse } from '@common/utils/YamlHelperMethods'
-import { StoreMetadata, StoreType } from '@common/constants/GitSyncTypes'
+import { StoreType } from '@common/constants/GitSyncTypes'
 import type { InputSetDTO, InputSetType, Pipeline, InputSet } from '@pipeline/utils/types'
 import { hasStoreTypeMismatch, isInputSetInvalid } from '@pipeline/utils/inputSetUtils'
 import NoEntityFound from '@pipeline/pages/utils/NoEntityFound/NoEntityFound'
@@ -52,12 +51,12 @@ import useDiffDialog from '@common/hooks/useDiffDialog'
 import { usePermission } from '@rbac/hooks/usePermission'
 import { ConnectorSelectedValue } from '@platform/connectors/components/ConnectorReferenceField/ConnectorReferenceField'
 import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
-import { getGitProvider } from '@modules/10-common/components/GitProviderSelect/GitProviderSelect.utils'
+import { getProvider } from '@modules/10-common/components/GitProviderSelect/GitProviderSelect.utils'
 import { FormikInputSetForm } from './FormikInputSetForm'
 import { useSaveInputSet } from './useSaveInputSet'
 import { PipelineVariablesContextProvider } from '../PipelineVariablesContext/PipelineVariablesContext'
 import { InputSetFormHeader } from '../InputSetFormHeader/InputSetFormHeader'
-import { InputSetFormProps } from './types'
+import { InputSetFormProps, InputSetDTOGitDetails } from './types'
 
 const getDefaultInputSet = (
   template: PipelineInfoConfig,
@@ -324,7 +323,7 @@ export function InputSetForm(props: InputSetFormProps): React.ReactElement {
 
   const [disableVisualView, setDisableVisualView] = React.useState(inputSet.entityValidityDetails?.valid === false)
 
-  const formikRef = React.useRef<FormikProps<InputSetDTO & GitContextProps & StoreMetadata>>()
+  const formikRef = React.useRef<FormikProps<InputSetDTOGitDetails>>()
 
   const inputSetUpdateResponseHandler = (responseData: InputSetResponse): void => {
     setInputSetUpdateResponse({
@@ -466,14 +465,13 @@ export function InputSetForm(props: InputSetFormProps): React.ReactElement {
               repoName: formikRefRepoName
             } = formikRef.current?.values ?? {}
             formikRef.current?.setValues({
-              ...omit(inputSet, 'gitDetails', 'entityValidityDetails', 'outdated', 'inputSetErrorWrapper'),
+              ...omit(inputSet, 'gitDetails', 'provider', 'entityValidityDetails', 'outdated', 'inputSetErrorWrapper'),
               repo: formikRefRepo ?? defaultTo(repoIdentifier || repoName, ''),
               branch: formikRefBranch ?? defaultTo(branch, ''),
               connectorRef: formikRefConnectorRef ?? defaultTo(connectorRef, ''),
               repoName: formikRefRepoName ?? defaultTo(repoName, ''),
               storeType: defaultTo(storeType, StoreType.INLINE),
-              filePath: getFilePath(inputSetYamlVisual),
-              provider: getGitProvider(getString, formikRefConnectorRef)
+              filePath: getFilePath(inputSetYamlVisual)
             })
             setFilePath(getFilePath(inputSetYamlVisual))
           }
@@ -507,18 +505,20 @@ export function InputSetForm(props: InputSetFormProps): React.ReactElement {
         const {
           repo: formikRepo,
           branch: formikBranch,
+          provider: formikProvider,
           connectorRef: formikConnectorRef,
           repoName: formikRepoName,
           filePath: formikFilePath,
           storeType: formikStoreType
-        } = defaultTo(formikRef.current?.values, {}) as InputSetDTO & GitContextProps & StoreMetadata
+        } = defaultTo(formikRef.current?.values, {}) as InputSetDTOGitDetails
         handleSubmit(
-          { ...inputSetDto, provider: formikRef.current?.values.provider },
+          inputSetDto,
           {
             repoIdentifier: formikRepo,
             branch: formikBranch
           },
           {
+            provider: formikProvider,
             connectorRef: (formikConnectorRef as unknown as ConnectorSelectedValue)?.value || formikConnectorRef,
             repoName: formikRepoName,
             branch: formikBranch,
@@ -539,7 +539,14 @@ export function InputSetForm(props: InputSetFormProps): React.ReactElement {
       <PipelineVariablesContextProvider
         pipeline={resolvedMergedPipeline}
         enablePipelineTemplatesResolution={false}
-        storeMetadata={{ storeType, connectorRef, repoName, branch, filePath }}
+        storeMetadata={{
+          storeType,
+          connectorRef,
+          repoName,
+          branch,
+          filePath,
+          provider: getProvider(getString, connectorRef)
+        }}
       >
         <FormikInputSetForm
           inputSet={isNewInModal && inputSetInitialValue ? merge(inputSet, inputSetInitialValue) : inputSet}

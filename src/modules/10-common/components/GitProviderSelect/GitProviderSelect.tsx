@@ -12,7 +12,7 @@ import { UseStringsReturn, useStrings } from 'framework/strings'
 import { AcceptableValue } from '@modules/70-pipeline/components/PipelineInputSetForm/CICodebaseInputSetForm'
 import { SourceCodeTypes } from '../AccessTokenOAuth/AccessTokenOAuth'
 
-export interface CardSelectInterface {
+export interface ProviderInterface {
   type: SourceCodeTypes | string
   title: string
   info: string
@@ -24,7 +24,7 @@ export interface CardSelectInterface {
 export function getGitProviderCards(
   getString: UseStringsReturn['getString'],
   isDisabled?: (current: SourceCodeTypes | string) => boolean
-): CardSelectInterface[] {
+): ProviderInterface[] {
   return [
     {
       type: SourceCodeTypes.HARNESS,
@@ -57,7 +57,7 @@ export const GitProviderSelect = ({
   getCardDisabledStatus = () => false,
   showDescription
 }: {
-  gitProvider?: CardSelectInterface
+  gitProvider?: ProviderInterface
   setFieldValue: (field: string, value: unknown) => void
   providerFieldName?: string
   connectorFieldName: string
@@ -70,7 +70,7 @@ export const GitProviderSelect = ({
 }): JSX.Element => {
   const { getString } = useStrings()
   const [selectedProvider, setSelectedProvider] = useState(getGitProviderCards(getString)[0])
-  const getIconProps = (item: CardSelectInterface, isSelected: boolean): IconProps => ({
+  const getIconProps = (item: ProviderInterface, isSelected: boolean): IconProps => ({
     name: item.icon as IconName,
     size: item.size,
     ...(item.type !== SourceCodeTypes.HARNESS ? { color: isSelected ? Color.PRIMARY_7 : Color.GREY_600 } : {})
@@ -95,7 +95,7 @@ export const GitProviderSelect = ({
         data={cards}
         cornerSelected
         className={className}
-        renderItem={(item: CardSelectInterface) => (
+        renderItem={(item: ProviderInterface) => (
           <Layout.Horizontal flex={{ justifyContent: 'start' }} spacing={showDescription ? 'small' : 'xsmall'}>
             <Icon {...getIconProps(item, selectedProvider.type === item.type)} />
             <Container>

@@ -564,8 +564,8 @@ export const updatePipelineStoreMetadataAction = ({
     const updatedPipeline = latestPipeline || pipeline
     const isUpdated = comparePipelines(originalPipeline, updatedPipeline)
 
-    // In pipeline studio, storeMetadata only contains 2 properties - connectorRef and storeType.
-    // We need all 5 properties in storeMetadata for use in templates, Other 3 are coming from gitDetails
+    // In pipeline studio, storeMetadata only contains 3 properties - provider, connectorRef and storeType.
+    // We need all 6 properties in storeMetadata for use in templates, Other 3 are coming from gitDetails
     const newStoreMetadata: StoreMetadata = {
       ...storeMetadata,
       ...(storeMetadata.storeType === StoreType.REMOTE

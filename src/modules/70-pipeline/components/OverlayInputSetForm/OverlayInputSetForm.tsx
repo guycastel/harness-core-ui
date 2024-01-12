@@ -79,11 +79,8 @@ import type { ConnectorSelectedValue } from '@platform/connectors/components/Con
 import NoEntityFound from '@pipeline/pages/utils/NoEntityFound/NoEntityFound'
 import GitRemoteDetails from '@common/components/GitRemoteDetails/GitRemoteDetails'
 import { isValueExpression } from '@common/utils/utils'
-import { CardSelectInterface } from '@modules/10-common/components/GitProviderSelect/GitProviderSelect'
-import {
-  getGitProvider,
-  isHarnessCodeRepoEntity
-} from '@modules/10-common/components/GitProviderSelect/GitProviderSelect.utils'
+import { ProviderInterface } from '@common/components/GitProviderSelect/GitProviderSelect'
+import { getProvider } from '@common/components/GitProviderSelect/GitProviderSelect.utils'
 import { ErrorsStrip } from '../ErrorsStrip/ErrorsStrip'
 import { InputSetSelector, InputSetSelectorProps } from '../InputSetSelector/InputSetSelector'
 import {
@@ -98,7 +95,7 @@ import css from './OverlayInputSetForm.module.scss'
 export interface OverlayInputSetDTO extends Omit<OverlayInputSetResponse, 'identifier'> {
   pipeline?: PipelineInfoConfig
   identifier?: string
-  provider?: CardSelectInterface
+  provider?: ProviderInterface
   repo?: string
   branch?: string
 }
@@ -591,10 +588,7 @@ export function OverlayInputSetForm({
         'filePath',
         'storeType'
       )
-      const updatedGitDetails = {
-        ...defaultTo(isEdit ? overlayInputSetResponse?.data?.gitDetails : gitDetails, {}),
-        isHarnessCodeRepo: isHarnessCodeRepoEntity(inputSetObjWithGitInfo?.provider?.type)
-      }
+      const updatedGitDetails = defaultTo(isEdit ? overlayInputSetResponse?.data?.gitDetails : gitDetails, {})
 
       // This removes the pseudo fields set for handling multiple fields in the form at once
       set(
@@ -760,7 +754,7 @@ export function OverlayInputSetForm({
                 {isEdit && overlayInputSetResponse?.data?.storeType === StoreType.REMOTE && (
                   <Container>
                     <GitRemoteDetails
-                      gitProviderType={getGitProvider(getString, overlayInputSetResponse?.data?.connectorRef).type}
+                      gitProviderType={getProvider(getString, overlayInputSetResponse?.data?.connectorRef).type}
                       connectorRef={overlayInputSetResponse?.data?.connectorRef}
                       repoName={inputSet?.gitDetails?.repoName}
                       branch={inputSet?.gitDetails?.branch}
@@ -811,7 +805,7 @@ export function OverlayInputSetForm({
                 repoName: defaultTo(repoName, ''),
                 storeType: defaultTo(storeType, StoreType.INLINE),
                 filePath: defaultTo(inputSet.gitDetails?.filePath, `.harness/${inputSet.identifier}.yaml`),
-                provider: getGitProvider(getString, connectorRef)
+                provider: getProvider(getString, connectorRef)
               }}
               formName="overlayInputSet"
               enableReinitialize={true}
@@ -824,6 +818,7 @@ export function OverlayInputSetForm({
                   { ...values, inputSetReferences: selectedInputSetReferences },
                   { repoIdentifier: values.repo, branch: values.branch, repoName: values.repo },
                   {
+                    provider: values.provider,
                     connectorRef:
                       (values.connectorRef as unknown as ConnectorSelectedValue)?.value || values.connectorRef,
                     repoName: values.repo,
@@ -992,16 +987,14 @@ export function OverlayInputSetForm({
                               const latestYaml = defaultTo(yamlHandler?.getLatestYaml(), '')
 
                               handleSubmit(
-                                {
-                                  ...parse<{ overlayInputSet: OverlayInputSetDTO }>(latestYaml)?.overlayInputSet,
-                                  provider: formikProps.values.provider
-                                },
+                                parse<{ overlayInputSet: OverlayInputSetDTO }>(latestYaml)?.overlayInputSet,
                                 {
                                   repoIdentifier: formikProps.values.repo,
                                   branch: formikProps.values.branch,
                                   repoName: formikProps.values.repo
                                 },
                                 {
+                                  provider: formikProps.values.provider,
                                   connectorRef: formikProps.values.connectorRef,
                                   repoName: formikProps.values.repo,
                                   branch: formikProps.values.branch,

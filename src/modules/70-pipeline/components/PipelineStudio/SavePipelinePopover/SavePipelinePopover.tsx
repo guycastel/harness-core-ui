@@ -428,7 +428,7 @@ function SavePipelinePopover(
             type: 'Pipelines',
             name: latestPipeline.name,
             identifier: latestPipeline.identifier,
-            gitDetails: { ...gitDetails, ...(isEditing && { isHarnessCodeRepo: isEmpty(connectorRef) }) } ?? {},
+            gitDetails: gitDetails ?? {},
             storeMetadata: storeMetadata?.storeType ? storeMetadata : undefined
           },
           payload: { pipeline: omit(latestPipeline, 'repo', 'branch') }

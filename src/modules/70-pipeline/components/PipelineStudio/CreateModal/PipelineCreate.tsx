@@ -37,7 +37,7 @@ import { FeatureIdentifier } from 'framework/featureStore/FeatureIdentifier'
 import { errorCheck } from '@common/utils/formikHelpers'
 import VersionSelector from '@pipeline/components/CreatePipelineButton/VersionSelector/VersionSelector'
 import { YamlVersion, useYamlVersion } from '@pipeline/common/hooks/useYamlVersion'
-import { CardSelectInterface } from '@modules/10-common/components/GitProviderSelect/GitProviderSelect'
+import { ProviderInterface } from '@modules/10-common/components/GitProviderSelect/GitProviderSelect'
 import { isHarnessCodeRepoEntity } from '@modules/10-common/components/GitProviderSelect/GitProviderSelect.utils'
 import { DefaultNewPipelineId } from '../PipelineContext/PipelineActions'
 import css from './PipelineCreate.module.scss'
@@ -49,7 +49,7 @@ interface UseTemplate {
 }
 
 interface PipelineInfoConfigWithGitDetails extends PipelineInfoConfig {
-  provider?: CardSelectInterface
+  provider?: ProviderInterface
   repo?: string
   branch: string
   connectorRef?: string
@@ -179,6 +179,7 @@ export default function CreatePipelines({
       omit(values, 'storeType', 'provider', 'connectorRef', 'repo', 'branch', 'filePath', 'useTemplate'),
       {
         storeType: values.storeType as StoreMetadata['storeType'],
+        provider: values.provider,
         connectorRef:
           typeof values.connectorRef !== 'string' ? (values.connectorRef as any)?.value : values.connectorRef
       },

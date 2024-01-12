@@ -56,7 +56,7 @@ import useRBACError from '@rbac/utils/useRBACError/useRBACError'
 import { YamlVersionBadge } from '@pipeline/common/components/YamlVersionBadge/YamlVersionBadge'
 import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
 import { useYamlVersion } from '@pipeline/common/hooks/useYamlVersion'
-import { getGitProvider } from '@modules/10-common/components/GitProviderSelect/GitProviderSelect.utils'
+import { getProvider } from '@common/components/GitProviderSelect/GitProviderSelect.utils'
 import StudioGitPopover from '../StudioGitPopover'
 import { usePipelineContext } from '../PipelineContext/PipelineContext'
 import { DefaultNewPipelineId, DrawerTypes } from '../PipelineContext/PipelineActions'
@@ -357,7 +357,7 @@ export function PipelineCanvasHeader(props: PipelineCanvasHeaderProps): React.Re
             {isPipelineRemote && (
               <div className={css.gitRemoteDetailsWrapper}>
                 <GitRemoteDetails
-                  gitProviderType={getGitProvider(getString, connectorRef).type}
+                  gitProviderType={getProvider(getString, connectorRef).type}
                   connectorRef={connectorRef}
                   repoName={defaultTo(
                     defaultTo(defaultTo(repoName, gitDetails.repoName), gitDetails.repoIdentifier),

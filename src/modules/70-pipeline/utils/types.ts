@@ -18,7 +18,7 @@ import type {
   SecretNGVariable,
   StepElementConfig
 } from 'services/pipeline-ng'
-import { CardSelectInterface } from '@common/components/GitProviderSelect/GitProviderSelect'
+import { ProviderInterface } from '@common/components/GitProviderSelect/GitProviderSelect'
 
 export type AllNGVariables = StringNGVariable | NumberNGVariable | SecretNGVariable
 
@@ -69,7 +69,7 @@ export interface InputSetDTO extends Omit<InputSetResponse, 'identifier' | 'pipe
   identifier?: string
   repo?: string
   branch?: string
-  provider?: CardSelectInterface
+  provider?: ProviderInterface
 }
 
 export interface SaveInputSetDTO {

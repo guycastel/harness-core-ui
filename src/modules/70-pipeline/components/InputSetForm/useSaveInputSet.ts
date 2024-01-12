@@ -31,7 +31,6 @@ import { useStrings } from 'framework/strings'
 import { yamlStringify } from '@common/utils/YamlHelperMethods'
 import { clearNullUndefined } from '@pipeline/utils/inputSetUtils'
 import useRBACError from '@rbac/utils/useRBACError/useRBACError'
-import { isHarnessCodeRepoEntity } from '@modules/10-common/components/GitProviderSelect/GitProviderSelect.utils'
 import { getUpdatedGitDetails } from './utils'
 
 interface UseSaveInputSetReturnType {
@@ -132,7 +131,7 @@ export function useSaveInputSet(inputSetInfo: InputSetInfo): UseSaveInputSetRetu
                       pipelineBranch: branch
                     }
                   : {}),
-                ...initialStoreMetadataPayload,
+                ...omit(initialStoreMetadataPayload, 'provider'),
                 ...updatedGitDetails
               }
             })
@@ -152,7 +151,7 @@ export function useSaveInputSet(inputSetInfo: InputSetInfo): UseSaveInputSetRetu
                     pipelineBranch: branch
                   }
                 : {}),
-              ...initialStoreMetadataPayload,
+              ...omit(initialStoreMetadataPayload, 'provider'),
               ...updatedGitDetails
             }
           })
@@ -225,10 +224,7 @@ export function useSaveInputSet(inputSetInfo: InputSetInfo): UseSaveInputSetRetu
         'storeType',
         'cacheResponse'
       )
-      const updatedGitDetails = {
-        ...defaultTo(isEdit ? inputSetResponse?.data?.gitDetails : gitDetails, {}),
-        isHarnessCodeRepo: isHarnessCodeRepoEntity(inputSetObjWithGitInfo?.provider?.type)
-      }
+      const updatedGitDetails = defaultTo(isEdit ? inputSetResponse?.data?.gitDetails : gitDetails, {})
 
       // This removes the pseudo fields set for handling multiple fields in the form at once
       set(

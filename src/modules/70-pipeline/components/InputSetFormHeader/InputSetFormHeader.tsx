@@ -39,7 +39,7 @@ import { GitQueryParams, InputSetPathProps, PipelineType } from '@modules/10-com
 import { YamlVersionBadge } from '@modules/70-pipeline/common/components/YamlVersionBadge/YamlVersionBadge'
 import { useFeatureFlags } from '@modules/10-common/hooks/useFeatureFlag'
 import { YamlVersion } from '@modules/70-pipeline/common/hooks/useYamlVersion'
-import { getGitProvider } from '@modules/10-common/components/GitProviderSelect/GitProviderSelect.utils'
+import { getProvider } from '@modules/10-common/components/GitProviderSelect/GitProviderSelect.utils'
 import GitPopover from '../GitPopover/GitPopover'
 import { OutOfSyncErrorStrip } from '../InputSetErrorHandling/OutOfSyncErrorStrip/OutOfSyncErrorStrip'
 import {
@@ -154,7 +154,7 @@ export function InputSetFormHeader(props: InputSetFormHeaderProps): React.ReactE
             {isEdit && inputSet.storeType === StoreType.REMOTE && (
               <Container className={cx(css.gitRemoteDetails, inputSet.cacheResponse ? '' : css.noCacheDetails)}>
                 <GitRemoteDetails
-                  gitProviderType={getGitProvider(getString, inputSet.connectorRef).type}
+                  gitProviderType={getProvider(getString, inputSet.connectorRef).type}
                   connectorRef={inputSet.connectorRef}
                   repoName={inputSet.gitDetails?.repoName}
                   branch={inputSet.gitDetails?.branch}

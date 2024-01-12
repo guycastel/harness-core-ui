@@ -16,9 +16,14 @@ import { gitConfigs, sourceCodeManagers, branchStatusMock } from '@platform/conn
 import { gitHubMock } from '@gitsync/components/gitSyncRepoForm/__tests__/mockData'
 import routes from '@common/RouteDefinitions'
 import { modulePathProps, pipelinePathProps, projectPathProps } from '@common/utils/routeUtils'
+import { getGitProviderCards } from '@modules/10-common/components/GitProviderSelect/GitProviderSelect'
 import PipelineCreate from '../CreateModal/PipelineCreate'
 import type { PipelineCreateProps } from '../CreateModal/PipelineCreate'
 import { DefaultNewPipelineId } from '../PipelineContext/PipelineActions'
+
+const getString = (key: any): any => {
+  return key
+}
 
 const afterSave = jest.fn()
 const closeModal = jest.fn()
@@ -276,7 +281,7 @@ describe('PipelineCreate test', () => {
         name: 'pipeline',
         stages: []
       },
-      { connectorRef: 'testConnector', storeType: 'REMOTE' },
+      { connectorRef: 'testConnector', storeType: 'REMOTE', provider: getGitProviderCards(getString)[1] },
       { repoName: 'sunnykesh-gitSync', branch: 'master', filePath: './test.yaml', isHarnessCodeRepo: false },
       undefined,
       '1'
@@ -450,7 +455,8 @@ describe('PipelineCreate test', () => {
       },
       {
         connectorRef: 'testConn',
-        storeType: StoreType.REMOTE
+        storeType: StoreType.REMOTE,
+        provider: getGitProviderCards(getString)[1]
       },
       {
         repoName: 'testRepo',

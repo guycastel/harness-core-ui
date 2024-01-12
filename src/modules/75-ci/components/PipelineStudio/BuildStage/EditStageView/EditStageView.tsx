@@ -54,10 +54,7 @@ import {
   blankspacesRegex
 } from '@pipeline/components/PipelineStudio/RightBar/RightBarUtils'
 import CloneCodebaseForm from '@modules/70-pipeline/components/PipelineStudio/CloneCodebaseForm/CloneCodebaseForm'
-import {
-  CardSelectInterface,
-  getGitProviderCards
-} from '@modules/10-common/components/GitProviderSelect/GitProviderSelect'
+import { ProviderInterface, getGitProviderCards } from '@common/components/GitProviderSelect/GitProviderSelect'
 import css from './EditStageView.module.scss'
 
 export interface EditStageView {
@@ -78,7 +75,7 @@ interface Values {
   description?: string
   tags?: { [key: string]: string }
   cloneCodebase?: boolean
-  provider?: CardSelectInterface
+  provider?: ProviderInterface
   connectorRef?: ConnectorReferenceFieldProps['selected']
   repoName?: string
 }

@@ -11,18 +11,17 @@ import { defaultTo, isEmpty, omit, isUndefined, get, omitBy, isEqual } from 'lod
 import { Container, Formik, FormikForm, Layout, VisualYamlSelectedView as SelectedView } from '@harness/uicore'
 import { useParams } from 'react-router-dom'
 import cx from 'classnames'
-import type { FormikErrors, FormikProps } from 'formik'
+import type { FormikErrors } from 'formik'
 import { Callout } from '@blueprintjs/core'
 import type {
   PipelineInfoConfig,
   ResponsePMSPipelineResponseDTO,
-  EntityGitDetails,
   ResponseInputSetTemplateWithReplacedExpressionsResponse
 } from 'services/pipeline-ng'
 import { useGetSettingValue } from 'services/cd-ng'
 import { useToaster } from '@common/exports'
 import useRBACError from '@rbac/utils/useRBACError/useRBACError'
-import type { YamlBuilderHandlerBinding, YamlBuilderProps } from '@common/interfaces/YAMLBuilderProps'
+import type { YamlBuilderProps } from '@common/interfaces/YAMLBuilderProps'
 import type { InputSetGitQueryParams, InputSetPathProps, PipelineType } from '@common/interfaces/RouteInterfaces'
 import { NameIdDescriptionTags } from '@common/components'
 import { StoreMetadata, StoreType } from '@common/constants/GitSyncTypes'
@@ -35,7 +34,7 @@ import { useQueryParams } from '@common/hooks'
 import GitContextForm, { GitContextProps } from '@common/components/GitContextForm/GitContextForm'
 import { IdentifierSchema, NameSchema } from '@common/utils/Validation'
 import { GitSyncForm } from '@gitsync/components/GitSyncForm/GitSyncForm'
-import type { InputSetDTO, InputSetType, Pipeline } from '@pipeline/utils/types'
+import type { InputSetDTO, Pipeline } from '@pipeline/utils/types'
 import {
   isCloneCodebaseEnabledAtLeastOneStage,
   isCodebaseFieldsRuntimeInputs,
@@ -53,12 +52,13 @@ import {
 import { SettingType } from '@common/constants/Utils'
 import { ConnectorSelectedValue } from '@connectors/components/ConnectorReferenceField/ConnectorReferenceField'
 import { useFeatureFlags } from '@common/hooks/useFeatureFlag'
-import { getGitProvider } from '@modules/10-common/components/GitProviderSelect/GitProviderSelect.utils'
+import { getProvider } from '@modules/10-common/components/GitProviderSelect/GitProviderSelect.utils'
 import { PipelineInputSetForm } from '../PipelineInputSetForm/PipelineInputSetForm'
 import { validatePipeline } from '../PipelineStudio/StepUtil'
 import factory from '../PipelineSteps/PipelineStepFactory'
 import { ErrorsStrip } from '../ErrorsStrip/ErrorsStrip'
 import { StepViewType } from '../AbstractSteps/Step'
+import { FormikInputSetFormProps } from './types'
 import css from './InputSetForm.module.scss'
 
 export const showPipelineInputSetForm = (
@@ -92,34 +92,6 @@ const OMITTED_FIELDS = [
   'inputSetErrorWrapper',
   'cacheResponse'
 ]
-
-type InputSetDTOGitDetails = InputSetDTO & GitContextProps & StoreMetadata
-interface FormikInputSetFormProps {
-  inputSet: InputSetDTO | InputSetType
-  template: ResponseInputSetTemplateWithReplacedExpressionsResponse | null
-  pipeline: ResponsePMSPipelineResponseDTO | null
-  resolvedPipeline?: PipelineInfoConfig
-  handleSubmit: (
-    inputSetObjWithGitInfo: InputSetDTO,
-    gitDetails?: EntityGitDetails,
-    storeMetadata?: StoreMetadata
-  ) => Promise<void>
-  formErrors: Record<string, unknown>
-  setFormErrors: React.Dispatch<React.SetStateAction<Record<string, unknown>>>
-  formikRef: React.MutableRefObject<FormikProps<InputSetDTOGitDetails> | undefined>
-  selectedView: SelectedView
-  executionView?: boolean
-  isEdit: boolean
-  isGitSyncEnabled?: boolean
-  supportingGitSimplification?: boolean
-  yamlHandler?: YamlBuilderHandlerBinding
-  setYamlHandler: React.Dispatch<React.SetStateAction<YamlBuilderHandlerBinding | undefined>>
-  className?: string
-  onCancel?: () => void
-  filePath?: string
-  handleFormDirty: (dirty: boolean) => void
-  setIsSaveEnabled: (enabled: boolean) => void
-}
 
 const yamlBuilderReadOnlyModeProps: YamlBuilderProps = {
   fileName: 'input-set.yaml',
@@ -345,7 +317,7 @@ export function FormikInputSetForm(props: FormikInputSetFormProps): React.ReactE
     formikRef.current?.setValues({
       ...initialValues,
       ...storeMetadata,
-      provider: getGitProvider(getString, connectorRef)
+      provider: getProvider(getString, connectorRef)
     })
   }, [inputSet, isEdit, resolvedPipeline])
 
@@ -387,6 +359,7 @@ export function FormikInputSetForm(props: FormikInputSetFormProps): React.ReactE
                 repoName: values.repo
               },
               {
+                provider: values.provider,
                 connectorRef: (values.connectorRef as unknown as ConnectorSelectedValue)?.value || values.connectorRef,
                 repoName: values.repo,
                 branch: values.branch,

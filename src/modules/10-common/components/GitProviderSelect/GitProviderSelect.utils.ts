@@ -8,10 +8,10 @@
 import { isEmpty } from 'lodash-es'
 import { UseStringsReturn } from 'framework/strings'
 import { SourceCodeTypes } from '../AccessTokenOAuth/AccessTokenOAuth'
-import { CardSelectInterface, getGitProviderCards } from './GitProviderSelect'
+import { ProviderInterface, getGitProviderCards } from './GitProviderSelect'
 
 export const isHarnessCodeRepoEntity = (gitProviderType?: string): boolean =>
   gitProviderType === SourceCodeTypes.HARNESS
 
-export const getGitProvider = (getString: UseStringsReturn['getString'], connectorRef?: string): CardSelectInterface =>
+export const getProvider = (getString: UseStringsReturn['getString'], connectorRef?: string): ProviderInterface =>
   isEmpty(connectorRef) ? getGitProviderCards(getString)[0] : getGitProviderCards(getString)[1]

@@ -8,7 +8,7 @@
 import React from 'react'
 import type { IconName, MultiTypeInputType } from '@harness/uicore'
 import type { FormikErrors } from 'formik'
-import { CardSelectInterface } from '@modules/10-common/components/GitProviderSelect/GitProviderSelect'
+import { ProviderInterface } from '@common/components/GitProviderSelect/GitProviderSelect'
 import type { StepProps, ValidateInputSetProps } from '@pipeline/components/AbstractSteps/Step'
 import { StepViewType } from '@pipeline/components/AbstractSteps/Step'
 import { StepType } from '@pipeline/components/PipelineSteps/PipelineStepInterface'
@@ -47,7 +47,7 @@ export interface GitCloneStepData {
   type: string
   timeout?: string
   spec: GitCloneStepSpec
-  provider?: CardSelectInterface | string
+  provider?: ProviderInterface | string
 }
 
 export interface GitCloneStepSpecUI

@@ -30,7 +30,7 @@ import type { Error as TemplateError } from 'services/template-ng'
 import GenericErrorHandler from '@common/pages/GenericErrorHandler/GenericErrorHandler'
 import { usePipelineContext } from '@pipeline/components/PipelineStudio/PipelineContext/PipelineContext'
 import { FetchPipelineProps } from '@modules/70-pipeline/components/PipelineStudio/PipelineContext/PipelineAsyncActions'
-import { getGitProvider } from '@modules/10-common/components/GitProviderSelect/GitProviderSelect.utils'
+import { getProvider } from '@common/components/GitProviderSelect/GitProviderSelect.utils'
 import noEntityFoundImage from './images/no-entity-found.svg'
 import css from './NoEntityFound.module.scss'
 
@@ -206,7 +206,7 @@ function NoEntityFound(props: NoEntityFoundProps): JSX.Element {
         </Text>
         {supportingGitSimplification ? (
           <GitRemoteDetails
-            gitProviderType={getGitProvider(getString, repoSelectorConnectorRef).type}
+            gitProviderType={getProvider(getString, repoSelectorConnectorRef).type}
             connectorRef={repoSelectorConnectorRef}
             repoName={gitDetails?.repoName || repoName}
             branch={gitDetails?.branch || branch}
