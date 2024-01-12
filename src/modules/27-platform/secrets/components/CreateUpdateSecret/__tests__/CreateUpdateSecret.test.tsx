@@ -92,7 +92,26 @@ describe('CreateUpdateSecret', () => {
 
   test('it should NOT disable secret manager field when secret type is of SSHKey type', async () => {
     render(
-      <TestWrapper path="/account/:accountId/resources/secrets" pathParams={{ accountId: 'dummy' }}>
+      <TestWrapper
+        path="/account/:accountId/resources/secrets"
+        pathParams={{ accountId: 'dummy' }}
+        defaultFeatureFlagValues={{ DISABLE_SM_CREDENTIALS_CHECK: false }}
+      >
+        <CreateUpdateSecret type={'SSHKey'} connectorTypeContext="GcpSecretManager" />
+      </TestWrapper>
+    )
+    const secretManagerField = await screen.findByTestId(/secretManagerIdentifier/)
+    expect(secretManagerField).toBeInTheDocument()
+    expect(secretManagerField).not.toBeDisabled()
+  })
+
+  test('it should NOT disable secret manager field when DISABLE_SM_CREDENTIALS_CHECK is true', async () => {
+    render(
+      <TestWrapper
+        path="/account/:accountId/resources/secrets"
+        pathParams={{ accountId: 'dummy' }}
+        defaultFeatureFlagValues={{ DISABLE_SM_CREDENTIALS_CHECK: true }}
+      >
         <CreateUpdateSecret type={'SSHKey'} connectorTypeContext="GcpSecretManager" />
       </TestWrapper>
     )

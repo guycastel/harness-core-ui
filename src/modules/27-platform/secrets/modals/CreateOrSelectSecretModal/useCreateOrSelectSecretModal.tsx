@@ -21,10 +21,7 @@ import type { ConnectorInfoDTO, ResponsePageSecretResponseWrapper, SecretRespons
 import { ReferenceSelectDialogTitle } from '@common/components/ReferenceSelect/ReferenceSelect'
 import { getScopeFromDTO } from '@common/components/EntityReference/EntityReference'
 import type { SecretFormData } from '@secrets/components/CreateUpdateSecret/CreateUpdateSecret'
-import {
-  SecretMultiSelectProps,
-  isConnectorContenxtTypeOfSecretManagerAndSecretTypeOfTextAndFile
-} from '@secrets/utils/SecretField'
+import { SecretMultiSelectProps, useShouldPassSecretManagerIdentifiers } from '@secrets/utils/SecretField'
 import type { ScopedObjectDTO } from '@common/components/EntityReference/EntityReference'
 import type { ScopeAndIdentifier } from '@common/components/MultiSelectEntityReference/MultiSelectEntityReference'
 import useCreateUpdateSecretModal from '../CreateSecretModal/useCreateUpdateSecretModal'
@@ -53,6 +50,11 @@ const useCreateOrSelectSecretModal = (
 ): UseCreateOrSelectSecretModalReturn => {
   const { isMultiSelect = false, selectedSecrets = [], onMultiSelect, identifiersFilter, connectorTypeContext } = props
   const { getString } = useStrings()
+
+  const { shouldPassSecretManagerIdentifiers } = useShouldPassSecretManagerIdentifiers({
+    connectorTypeContext,
+    secretType: props.type
+  })
 
   const secretTypeOptions: SelectOption[] = [
     {
@@ -107,12 +109,7 @@ const useCreateOrSelectSecretModal = (
   }
 
   const getDisclaimerMessage = (): JSX.Element | undefined => {
-    if (
-      isConnectorContenxtTypeOfSecretManagerAndSecretTypeOfTextAndFile({
-        connectorTypeContext: props.connectorTypeContext,
-        secretType: props.type
-      })
-    ) {
+    if (shouldPassSecretManagerIdentifiers) {
       return (
         <Text font={{ variation: FontVariation.SMALL }} color={Color.GREY_500}>
           {getString('platform.secretManagerConnectorSecretSelectorDisclaimer')}

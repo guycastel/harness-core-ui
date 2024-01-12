@@ -11,6 +11,7 @@ import { Color } from '@harness/design-system'
 import { Select } from '@blueprintjs/select'
 import { MenuItem } from '@blueprintjs/core'
 import cx from 'classnames'
+
 import {
   ListSecretsV2QueryParams,
   Failure,
@@ -19,6 +20,7 @@ import {
   ResponsePageSecretResponseWrapper,
   ConnectorInfoDTO
 } from 'services/cd-ng'
+import { useStrings } from 'framework/strings'
 import { EntityReference } from '@common/exports'
 import {
   EntityReferenceResponse,
@@ -29,12 +31,8 @@ import {
 import { Scope } from '@common/interfaces/SecretsInterface'
 import type { ScopeAndIdentifier } from '@common/components/MultiSelectEntityReference/MultiSelectEntityReference'
 import { getIdentifierWithScopedPrefix } from '@modules/10-common/utils/utils'
-import { useStrings } from 'framework/strings'
 import useCreateUpdateSecretModal from '@secrets/modals/CreateSecretModal/useCreateUpdateSecretModal'
-import {
-  SecretMultiSelectProps,
-  isConnectorContenxtTypeOfSecretManagerAndSecretTypeOfTextAndFile
-} from '@secrets/utils/SecretField'
+import { SecretMultiSelectProps, useShouldPassSecretManagerIdentifiers } from '@secrets/utils/SecretField'
 import { ResourceType } from '@rbac/interfaces/ResourceType'
 import { PermissionIdentifier } from '@rbac/interfaces/PermissionIdentifier'
 import RbacButton from '@rbac/components/Button/Button'
@@ -88,6 +86,7 @@ const fetchRecords = (
   done: (records: EntityReferenceResponse<SecretRef>[]) => void,
   type: ListSecretsV2QueryParams['type'],
   accountIdentifier: string,
+  shouldPassSecretManagerIdentifiers: boolean,
   projectIdentifier?: string,
   scope?: Scope,
   orgIdentifier?: string,
@@ -111,12 +110,8 @@ const fetchRecords = (
     sourceCategory = 'SECRET_MANAGER'
   }
 
-  const shouldPassSecretManagerIdentifiers = (): boolean => {
-    return isConnectorContenxtTypeOfSecretManagerAndSecretTypeOfTextAndFile({ connectorTypeContext, secretType: type })
-  }
-
   let secretManagerIdentifiers: ListSecretsV2QueryParams['secretManagerIdentifiers'] | undefined
-  if (shouldPassSecretManagerIdentifiers()) {
+  if (shouldPassSecretManagerIdentifiers) {
     if (allTabSelected) {
       secretManagerIdentifiers = [
         getIdentifierWithScopedPrefix('harnessSecretManager', Scope.PROJECT),
@@ -228,6 +223,11 @@ const SecretReference: React.FC<SecretReferenceProps> = props => {
   const [pagedSecretData, setPagedSecretData] = useState<ResponsePageSecretResponseWrapper>({})
   const [pageNo, setPageNo] = useState(0)
 
+  const { shouldPassSecretManagerIdentifiers } = useShouldPassSecretManagerIdentifiers({
+    connectorTypeContext,
+    secretType: type
+  })
+
   const { openCreateSecretModal } = useCreateUpdateSecretModal({
     onSuccess: data => {
       if (isMultiSelect) return
@@ -289,6 +289,7 @@ const SecretReference: React.FC<SecretReferenceProps> = props => {
             done,
             selectedType,
             accountIdentifier,
+            shouldPassSecretManagerIdentifiers,
             projectIdentifier,
             scope,
             orgIdentifier,

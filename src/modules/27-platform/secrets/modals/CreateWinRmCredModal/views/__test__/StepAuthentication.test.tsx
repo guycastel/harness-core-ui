@@ -13,7 +13,6 @@ import { TestWrapper } from '@common/utils/testUtils'
 import StepAuthentication from '@secrets/modals/CreateWinRmCredModal/views/StepAuthentication'
 import { clickSubmit } from '@common/utils/JestFormHelper'
 import { usePutSecret, usePostSecret, WinRmAuthDTO } from 'services/cd-ng'
-import { useFeatureFlag } from '@common/hooks/useFeatureFlag'
 
 jest.mock('services/cd-ng')
 
@@ -31,23 +30,6 @@ usePostSecretMock.mockImplementation(() => {
     mutate: jest.fn(() => Promise.resolve({ data: { governanceMetadata: {} } })),
     cancel: jest.fn(),
     loading: false
-  }
-})
-
-jest.mock('@common/exports', () => ({
-  useToaster: () => ({
-    showError: jest.fn(),
-    showSuccess: jest.fn()
-  })
-}))
-
-jest.mock('@common/hooks/useFeatureFlag')
-
-const useFeatureFlagMock = useFeatureFlag as jest.MockedFunction<any>
-
-useFeatureFlagMock.mockImplementation(() => {
-  return {
-    mutate: jest.fn()
   }
 })
 

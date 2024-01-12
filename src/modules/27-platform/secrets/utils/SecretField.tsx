@@ -6,9 +6,11 @@
  */
 
 import { clone } from 'lodash-es'
+
+import { ConnectorInfoDTO, getSecretV2Promise, GetSecretV2QueryParams, ListSecretsV2QueryParams } from 'services/cd-ng'
 import type { ScopeAndIdentifier } from '@common/components/MultiSelectEntityReference/MultiSelectEntityReference'
 import { Scope } from '@common/interfaces/SecretsInterface'
-import { ConnectorInfoDTO, getSecretV2Promise, GetSecretV2QueryParams, ListSecretsV2QueryParams } from 'services/cd-ng'
+import { useFeatureFlags } from '@modules/10-common/hooks/useFeatureFlag'
 
 export interface SecretReferenceInterface {
   identifier: string
@@ -59,13 +61,15 @@ export interface SecretMultiSelectProps {
   onMultiSelect?: (selected: ScopeAndIdentifier[]) => void
 }
 
-export const isConnectorContenxtTypeOfSecretManagerAndSecretTypeOfTextAndFile = ({
-  connectorTypeContext,
-  secretType
-}: {
+interface ShouldPassSecretManagerIdentifiersArgs {
   connectorTypeContext?: ConnectorInfoDTO['type']
   secretType: ListSecretsV2QueryParams['type']
-}): boolean => {
+}
+
+const isConnectorContenxtTypeOfSecretManagerAndSecretTypeOfTextAndFile = ({
+  connectorTypeContext,
+  secretType
+}: ShouldPassSecretManagerIdentifiersArgs): boolean => {
   const secretManagerTypesForIdentifiers = [
     'AwsKms',
     'AzureKeyVault',
@@ -85,4 +89,24 @@ export const isConnectorContenxtTypeOfSecretManagerAndSecretTypeOfTextAndFile = 
     return true
   }
   return false
+}
+
+export const useShouldPassSecretManagerIdentifiers = (
+  args: ShouldPassSecretManagerIdentifiersArgs
+): {
+  shouldPassSecretManagerIdentifiers: boolean
+} => {
+  const { DISABLE_SM_CREDENTIALS_CHECK } = useFeatureFlags()
+
+  let shouldPassSecretManagerIdentifiers = false
+
+  if (DISABLE_SM_CREDENTIALS_CHECK) {
+    shouldPassSecretManagerIdentifiers = false
+  } else {
+    shouldPassSecretManagerIdentifiers = isConnectorContenxtTypeOfSecretManagerAndSecretTypeOfTextAndFile(args)
+  }
+
+  return {
+    shouldPassSecretManagerIdentifiers
+  }
 }

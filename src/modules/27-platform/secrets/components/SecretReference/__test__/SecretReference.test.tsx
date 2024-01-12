@@ -164,7 +164,7 @@ describe('Secret Reference', () => {
     expect(secretName).not.toBeInTheDocument()
   })
 
-  test('it should call secrets v2 api call with secretManagerIdentifiers query param when connectorTypeContext is of secret manager type', async () => {
+  test('it should call secrets v2 api call WITH secretManagerIdentifiers query param when connectorTypeContext is of secret manager type', async () => {
     const listSecretsV2PromiseMock = jest.fn(() =>
       Promise.resolve({
         loading: false,
@@ -176,7 +176,7 @@ describe('Secret Reference', () => {
     ;(listSecretsV2Promise as jest.Mock).mockImplementation(listSecretsV2PromiseMock)
 
     const { container } = render(
-      <TestWrapper>
+      <TestWrapper defaultFeatureFlagValues={{ DISABLE_SM_CREDENTIALS_CHECK: false }}>
         <SecretReference
           type="SecretText"
           accountIdentifier="testAccount"
@@ -287,6 +287,59 @@ describe('Secret Reference', () => {
           projectIdentifier: 'testProject',
           searchTerm: '',
           secretManagerIdentifiers: ['harnessSecretManager'],
+          source_category: undefined,
+          type: 'SecretText'
+        }
+      })
+    )
+  })
+
+  test('it should call secrets v2 api call WITHOUT secretManagerIdentifiers query param when DISABLE_SM_CREDENTIALS_CHECK is true', async () => {
+    const listSecretsV2PromiseMock = jest.fn(() =>
+      Promise.resolve({
+        loading: false,
+        error: null,
+        data: mockData.data,
+        refetch: jest.fn().mockReturnValue(mockData.data)
+      })
+    )
+    ;(listSecretsV2Promise as jest.Mock).mockImplementation(listSecretsV2PromiseMock)
+
+    const { container } = render(
+      <TestWrapper defaultFeatureFlagValues={{ DISABLE_SM_CREDENTIALS_CHECK: true }}>
+        <SecretReference
+          type="SecretText"
+          accountIdentifier="testAccount"
+          orgIdentifier="testOrg"
+          projectIdentifier="testProject"
+          onSelect={noop}
+          connectorTypeContext="GcpSecretManager"
+        />
+      </TestWrapper>
+    )
+    await waitFor(() => getByText(container, 'entityReference.apply'))
+
+    const projectTab = screen.getByText('projectLabel')
+    expect(projectTab).toBeInTheDocument()
+
+    const secretName = screen.getByText('text1')
+    expect(secretName).toBeInTheDocument()
+
+    // By default, All tab is selected
+    await waitFor(() =>
+      expect(listSecretsV2PromiseMock).toHaveBeenLastCalledWith({
+        queryParamStringifyOptions: {
+          arrayFormat: 'repeat'
+        },
+        queryParams: {
+          accountIdentifier: 'testAccount',
+          identifiers: undefined,
+          includeAllSecretsAccessibleAtScope: true,
+          orgIdentifier: 'testOrg',
+          pageIndex: 0,
+          pageSize: 10,
+          projectIdentifier: 'testProject',
+          searchTerm: '',
           source_category: undefined,
           type: 'SecretText'
         }
