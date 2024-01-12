@@ -13,7 +13,7 @@ import { Color, FontVariation } from '@harness/design-system'
 import type { UseStringsReturn } from 'framework/strings'
 import { String, useStrings } from 'framework/strings'
 import { V1Agent } from 'services/gitops'
-import type { AccountPathProps } from '@common/interfaces/RouteInterfaces'
+import type { AccountPathProps, PipelineType, ProjectPathProps } from '@common/interfaces/RouteInterfaces'
 import CommandBlock from '@common/CommandBlock/CommandBlock'
 import { getCommandsByDeploymentType, isGitopsFlow } from '../../utils'
 import {
@@ -188,6 +188,7 @@ function CLISteps({
   agentInfo?: V1Agent
 }): JSX.Element {
   const { accountId } = useParams<AccountPathProps>()
+  const { orgIdentifier, projectIdentifier } = useParams<PipelineType<ProjectPathProps>>()
   const commandSnippet = React.useMemo((): string => {
     const dirPath = artifactSubtype
       ? DEPLOYMENT_TYPE_TO_DIR_MAP[artifactSubtype]
@@ -203,7 +204,9 @@ function CLISteps({
       artifactType,
       serviceType,
       isGitops: !isEmpty(agentInfo?.identifier),
-      agentId: agentInfo?.identifier
+      agentId: agentInfo?.identifier,
+      projectIdentifier,
+      orgIdentifier
     })
   }, [state])
 

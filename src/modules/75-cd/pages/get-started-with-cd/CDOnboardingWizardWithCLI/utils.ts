@@ -1,4 +1,4 @@
-import { StringKeys, UseStringsReturn } from 'framework/strings'
+import { UseStringsReturn, StringKeys } from 'framework/strings'
 import { StringsMap } from 'stringTypes'
 import {
   DEPLOYMENT_FLOW_ENUMS,
@@ -19,6 +19,7 @@ import {
   WhatToDeployType,
   WhereAndHowToDeployType
 } from './types'
+
 interface GetCommandsParam {
   getString: UseStringsReturn['getString']
   dirPath: string
@@ -30,6 +31,8 @@ interface GetCommandsParam {
   artifactType?: string
   isGitops?: boolean
   agentId?: string
+  projectIdentifier: string
+  orgIdentifier: string
 }
 export const getCommandStrWithNewline = (cmd: string[]): string => cmd.join(' \n')
 const DEFAULT_ORG = 'default'
@@ -44,7 +47,9 @@ export const getCommandsByDeploymentType = ({
   serviceType,
   artifactType,
   isGitops,
-  agentId
+  agentId,
+  projectIdentifier,
+  orgIdentifier
 }: GetCommandsParam): string => {
   switch (serviceType) {
     case SERVICE_TYPES?.KubernetesService?.id:
@@ -58,7 +63,9 @@ export const getCommandsByDeploymentType = ({
         artifactType,
         serviceType,
         isGitops,
-        agentId
+        agentId,
+        projectIdentifier,
+        orgIdentifier
       })
     case SERVICE_TYPES.ServerlessFunction.id:
       return getServerLessCommands({
@@ -69,7 +76,9 @@ export const getCommandsByDeploymentType = ({
         delegateName,
         artifactSubtype,
         serviceType,
-        artifactType
+        artifactType,
+        projectIdentifier,
+        orgIdentifier
       })
     case SERVICE_TYPES.TraditionalApp.id:
       return getTraditionalAppsCommands({
@@ -80,7 +89,9 @@ export const getCommandsByDeploymentType = ({
         delegateName,
         artifactSubtype,
         serviceType,
-        artifactType
+        artifactType,
+        projectIdentifier,
+        orgIdentifier
       })
     default:
       return ''
@@ -96,7 +107,9 @@ const getK8sCommands = ({
   artifactSubtype,
   artifactType,
   isGitops,
-  agentId
+  agentId,
+  projectIdentifier,
+  orgIdentifier
 }: GetCommandsParam): string => {
   const loginCommands = [
     getString(
@@ -119,7 +132,6 @@ const getK8sCommands = ({
   ]
   if (isGitops) {
     const folderPath = GITOPS_DIRECTORY_PATH[artifactSubtype ? artifactSubtype : (artifactType as string)]
-
     return getCommandStrWithNewline([
       ...loginCommands,
       getString(
@@ -127,21 +139,21 @@ const getK8sCommands = ({
       ),
       getString(
         'cd.getStartedWithCD.flowByQuestions.deploymentSteps.steps.pipelineSetupStep.commands.gitops.createRepo',
-        { agentId, dirPath: folderPath }
+        { agentId, dirPath: folderPath, ...getProjAndOrgId(projectIdentifier, orgIdentifier) }
       ),
       getString(
         'cd.getStartedWithCD.flowByQuestions.deploymentSteps.steps.pipelineSetupStep.commands.comments.createGitopsCluster'
       ),
       getString(
         'cd.getStartedWithCD.flowByQuestions.deploymentSteps.steps.pipelineSetupStep.commands.gitops.createCluster',
-        { agentId, dirPath: folderPath }
+        { agentId, dirPath: folderPath, ...getProjAndOrgId(projectIdentifier, orgIdentifier) }
       ),
       getString(
         'cd.getStartedWithCD.flowByQuestions.deploymentSteps.steps.pipelineSetupStep.commands.comments.createGitopsApp'
       ),
       getString(
         'cd.getStartedWithCD.flowByQuestions.deploymentSteps.steps.pipelineSetupStep.commands.gitops.createApplication',
-        { agentId, dirPath: folderPath }
+        { agentId, dirPath: folderPath, ...getProjAndOrgId(projectIdentifier, orgIdentifier) }
       )
     ])
   }
@@ -157,7 +169,8 @@ const getK8sCommands = ({
         getString(
           'cd.getStartedWithCD.flowByQuestions.deploymentSteps.steps.pipelineSetupStep.commands.gitpatPlaceholder'
         ),
-      type: dirPath
+      type: dirPath,
+      ...getProjAndOrgId(projectIdentifier, orgIdentifier)
     }),
 
     getString(
@@ -188,14 +201,16 @@ const getK8sCommands = ({
     ),
     getString('cd.getStartedWithCD.flowByQuestions.deploymentSteps.steps.pipelineSetupStep.commands.k8s.createsvccmd', {
       type: dirPath,
-      service: service || 'service'
+      service: service || 'service',
+      ...getProjAndOrgId(projectIdentifier, orgIdentifier)
     }),
     getString(
       'cd.getStartedWithCD.flowByQuestions.deploymentSteps.steps.pipelineSetupStep.commands.comments.createEnv'
     ),
     getString('cd.getStartedWithCD.flowByQuestions.deploymentSteps.steps.pipelineSetupStep.commands.k8s.createenvcmd', {
       type: dirPath,
-      environment: env || 'environment'
+      environment: env || 'environment',
+      ...getProjAndOrgId(projectIdentifier, orgIdentifier)
     }),
     getString(
       'cd.getStartedWithCD.flowByQuestions.deploymentSteps.steps.pipelineSetupStep.commands.comments.createInfra'
@@ -204,7 +219,8 @@ const getK8sCommands = ({
       'cd.getStartedWithCD.flowByQuestions.deploymentSteps.steps.pipelineSetupStep.commands.k8s.createinfracmd',
       {
         type: dirPath,
-        infrastructureDefinition: infrastructure || 'infrastructure-definition'
+        infrastructureDefinition: infrastructure || 'infrastructure-definition',
+        ...getProjAndOrgId(projectIdentifier, orgIdentifier)
       }
     )
   ])
@@ -219,7 +235,9 @@ const getServerLessCommands = ({
   state,
   delegateName,
   artifactSubtype = '',
-  artifactType = ''
+  artifactType = '',
+  projectIdentifier,
+  orgIdentifier
 }: GetCommandsParam): string => {
   const directory = dirPath
   const isGCP = isGCPFunction(artifactType)
@@ -228,12 +246,11 @@ const getServerLessCommands = ({
     [CLOUD_FUNCTION_TYPES.GCPGen1]: '1st_gen',
     [CLOUD_FUNCTION_TYPES.GCPGen2]: '2nd_gen'
   }
-
   const subDirName = gcpTypes[artifactSubtype] || undefined
 
   const { infrastructure, env } = DEPLOYMENT_TYPE_TO_FILE_MAPS[artifactSubtype as string] || {}
 
-  const infraSecret: Record<string, StringKeys> = {
+  const infraSecret: Record<string, string | StringKeys> = {
     command: isGCP
       ? 'cd.getStartedWithCD.flowByQuestions.deploymentSteps.steps.pipelineSetupStep.commands.serverless.gcp.createGcpSecret'
       : 'cd.getStartedWithCD.flowByQuestions.deploymentSteps.steps.pipelineSetupStep.commands.serverless.aws.createAwsSecret',
@@ -270,10 +287,11 @@ const getServerLessCommands = ({
         getString(
           'cd.getStartedWithCD.flowByQuestions.deploymentSteps.steps.pipelineSetupStep.commands.gitpatPlaceholder'
         ),
-      type: directory
+      type: directory,
+      ...getProjAndOrgId(projectIdentifier, orgIdentifier)
     }),
-    getString(infraSecret.comment),
-    getString(infraSecret.command, {
+    getString(infraSecret.comment as StringKeys),
+    getString(infraSecret.command as StringKeys, {
       gitPat:
         state?.githubPat ||
         getString(
@@ -281,7 +299,8 @@ const getServerLessCommands = ({
         ),
       type: directory,
       cloudType,
-      secret
+      secret,
+      ...getProjAndOrgId(projectIdentifier, orgIdentifier)
     }),
     getString(
       'cd.getStartedWithCD.flowByQuestions.deploymentSteps.steps.pipelineSetupStep.commands.comments.createGitcon'
@@ -294,7 +313,8 @@ const getServerLessCommands = ({
           getString(
             'cd.getStartedWithCD.flowByQuestions.deploymentSteps.steps.pipelineSetupStep.commands.gitusernamePlaceholder'
           ),
-        type: directory
+        type: directory,
+        ...getProjAndOrgId(projectIdentifier, orgIdentifier)
       }
     ),
 
@@ -312,7 +332,8 @@ const getServerLessCommands = ({
         type: directory,
         region: state.infraInfo?.region,
         rolearn: state.infraInfo?.awsArn,
-        accessKey: state.infraInfo?.accessKey
+        accessKey: state.infraInfo?.accessKey,
+        ...getProjAndOrgId(projectIdentifier, orgIdentifier)
       }
     ),
 
@@ -325,7 +346,8 @@ const getServerLessCommands = ({
         type: isGCP ? `${directory}/${subDirName}` : directory,
         bucket: state.infraInfo?.bucketName,
         project: state.infraInfo?.projectName,
-        region: state.infraInfo?.region
+        region: state.infraInfo?.region,
+        ...getProjAndOrgId(projectIdentifier, orgIdentifier)
       }
     ),
     getString(
@@ -335,7 +357,8 @@ const getServerLessCommands = ({
       `cd.getStartedWithCD.flowByQuestions.deploymentSteps.steps.pipelineSetupStep.commands.serverless.${cloudType}.createenvcmd`,
       {
         type: directory,
-        environment: env || 'environment'
+        environment: env || 'environment',
+        ...getProjAndOrgId(projectIdentifier, orgIdentifier)
       }
     ),
     getString(
@@ -347,7 +370,8 @@ const getServerLessCommands = ({
         type: directory,
         infrastructureDefinition: infrastructure || 'infrastructure-definition',
         region: state.infraInfo?.region,
-        project: state.infraInfo?.projectName
+        project: state.infraInfo?.projectName,
+        ...getProjAndOrgId(projectIdentifier, orgIdentifier)
       }
     )
   ])
@@ -360,17 +384,19 @@ const getTraditionalAppsCommands = ({
   state,
   delegateName,
   artifactSubtype = '',
-  artifactType = ''
+  artifactType = '',
+  projectIdentifier,
+  orgIdentifier
 }: GetCommandsParam): string => {
   const directory = dirPath
   const isAWS = artifactType === INFRA_TYPES.TraditionalApp.TraditionalAWS.id
   const isSSH = artifactSubtype.includes('SSH')
   const { infrastructure, env } = DEPLOYMENT_TYPE_TO_FILE_MAPS[artifactSubtype as string] || {}
-
-  const infraSecret: Record<string, StringKeys> = {
+  const infraSecret: Record<string, string | StringKeys> = {
     command: isSSH
       ? 'cd.getStartedWithCD.flowByQuestions.deploymentSteps.steps.pipelineSetupStep.commands.traditional.pdc.createSSHSecret'
       : 'cd.getStartedWithCD.flowByQuestions.deploymentSteps.steps.pipelineSetupStep.commands.traditional.pdc.createWINRMSecret',
+
     comment: isSSH
       ? 'cd.getStartedWithCD.flowByQuestions.deploymentSteps.steps.pipelineSetupStep.commands.comments.createSSHSecret'
       : 'cd.getStartedWithCD.flowByQuestions.deploymentSteps.steps.pipelineSetupStep.commands.comments.createWINRMSecret'
@@ -395,12 +421,13 @@ const getTraditionalAppsCommands = ({
       apiKey: state?.apiKey
     }),
 
-    getString(infraSecret.comment),
-    getString(infraSecret.command, {
+    getString(infraSecret.comment as StringKeys),
+    getString(infraSecret.command as StringKeys, {
       secret: state.infraInfo?.privateKeyFile || state.infraInfo?.password,
       username: state.infraInfo?.username,
       port: state.infraInfo?.port,
-      domain: state.infraInfo?.domain
+      domain: state.infraInfo?.domain,
+      ...getProjAndOrgId(projectIdentifier, orgIdentifier)
     }),
 
     ...(isAWS
@@ -414,7 +441,8 @@ const getTraditionalAppsCommands = ({
             {
               type: directory,
               cloudType: 'aws',
-              secret: state.infraInfo?.svcKeyOrSecretKey
+              secret: state.infraInfo?.svcKeyOrSecretKey,
+              ...getProjAndOrgId(projectIdentifier, orgIdentifier)
             }
           )
         ]
@@ -438,7 +466,8 @@ const getTraditionalAppsCommands = ({
         rolearn: state.infraInfo?.awsArn,
         accessKey: state.infraInfo?.accessKey,
         port: state.infraInfo?.port,
-        hostIp: state.infraInfo?.hostIP
+        hostIp: state.infraInfo?.hostIP,
+        ...getProjAndOrgId(projectIdentifier, orgIdentifier)
       }
     ),
     getString(
@@ -447,7 +476,8 @@ const getTraditionalAppsCommands = ({
     getString(
       'cd.getStartedWithCD.flowByQuestions.deploymentSteps.steps.pipelineSetupStep.commands.traditional.pdc.createArtifactoryCon',
       {
-        type: directory
+        type: directory,
+        ...getProjAndOrgId(projectIdentifier, orgIdentifier)
       }
     ),
 
@@ -460,7 +490,8 @@ const getTraditionalAppsCommands = ({
         type: directory,
         bucket: state.infraInfo?.bucketName,
         project: state.infraInfo?.projectName,
-        region: state.infraInfo?.region
+        region: state.infraInfo?.region,
+        ...getProjAndOrgId(projectIdentifier, orgIdentifier)
       }
     ),
     getString(
@@ -470,7 +501,8 @@ const getTraditionalAppsCommands = ({
       'cd.getStartedWithCD.flowByQuestions.deploymentSteps.steps.pipelineSetupStep.commands.traditional.pdc.createenvcmd',
       {
         type: directory,
-        environment: env || 'environment'
+        environment: env || 'environment',
+        ...getProjAndOrgId(projectIdentifier, orgIdentifier)
       }
     ),
     getString(
@@ -485,7 +517,8 @@ const getTraditionalAppsCommands = ({
         infrastructureDefinition: infrastructure || 'infrastructure-definition',
         region: state.infraInfo?.region,
         project: state.infraInfo?.projectName,
-        instanceName: state.infraInfo?.instanceName
+        instanceName: state.infraInfo?.instanceName,
+        ...getProjAndOrgId(projectIdentifier, orgIdentifier)
       }
     )
   ])

@@ -902,7 +902,7 @@ getStartedWithCD:
             cddir: cd harnesscd-example-apps
             logincmd: 'harness login --api-key {{apiKey}} --account-id {{accId}}'
             downloadedFileApplycmd: 'helm install gitops-agent ./gitops-agent.tgz --namespace harness-gitops --create-namespace'
-            createsecret: 'harness secret  --token {{gitPat}} apply{{projId}}{{orgjId}}'
+            createsecret: 'harness secret apply --token {{gitPat}} --secret-name "harness_gitpat"{{projId}}{{orgjId}}'
             k8s:
               createGithubcon: 'harness connector --file {{{type}}}/harnesscd-pipeline/github-connector.yml apply --git-user {{gitUser}}{{projId}}{{orgjId}}'
               createk8scon: 'harness connector --file {{{type}}}/harnesscd-pipeline/kubernetes-connector.yml apply --delegate-name {{delegateName}}{{projId}}{{orgjId}}'
@@ -911,39 +911,39 @@ getStartedWithCD:
               createinfracmd: harness infrastructure  --file {{{type}}}/harnesscd-pipeline/{{infrastructureDefinition}}.yml apply{{projId}}{{orgjId}}
             serverless:
               gcp:
-                createGcpSecret: 'harness secret --file {{{secret}}} apply --secret-type {{cloudType}}'
-                createGithubcon: 'harness connector --file {{{type}}}/github-connector.yml apply --git-user {{gitUser}} '
-                creategcpcon: 'harness connector --file {{{type}}}/gcp-connector.yml apply'
-                createsvccmd: 'harness service --file {{{type}}}/service.yml apply --cloud-project {{project}} --cloud-bucket {{bucket}}'
-                createenvcmd: harness environment --file {{{type}}}/environment.yml apply
-                createinfracmd: 'harness infrastructure  --file {{{type}}}/infrastructure-definition.yml apply --cloud-project {{{project}}} --cloud-region {{{region}}}'
+                createGcpSecret: 'harness secret --file {{{secret}}} apply --secret-type {{cloudType}}{{projId}}{{orgjId}}'
+                createGithubcon: 'harness connector --file {{{type}}}/github-connector.yml apply --git-user {{gitUser}}{{projId}}{{orgjId}} '
+                creategcpcon: 'harness connector --file {{{type}}}/gcp-connector.yml apply{{projId}}{{orgjId}}'
+                createsvccmd: 'harness service --file {{{type}}}/service.yml apply --cloud-project {{project}} --cloud-bucket {{bucket}}{{projId}}{{orgjId}}'
+                createenvcmd: harness environment --file {{{type}}}/environment.yml apply{{projId}}{{orgjId}}
+                createinfracmd: 'harness infrastructure  --file {{{type}}}/infrastructure-definition.yml apply --cloud-project {{{project}}} --cloud-region {{{region}}}{{projId}}{{orgjId}}'
               aws:
-                createAwsSecret: 'harness secret --token {{{secret}}} apply --secret-type {{cloudType}}'
-                createGithubcon: 'harness connector --file {{{type}}}/github-connector.yml apply --git-user {{gitUser}} '
-                createawscon: 'harness connector --file {{{type}}}/aws-connector.yml apply --delegate-name {{delegateName}} --aws-cross-account-role-arn {{{rolearn}}} --aws-access-key {{accessKey}} --cloud-region {{{region}}}'
-                createsvccmd: 'harness service --file {{{type}}}/service.yml apply --cloud-bucket {{bucket}} --cloud-region {{{region}}}'
-                createenvcmd: harness environment --file {{{type}}}/environment.yml apply
-                createinfracmd: 'harness infrastructure  --file {{{type}}}/infrastructure-definition.yml apply --cloud-region {{{region}}}'
+                createAwsSecret: 'harness secret --token {{{secret}}} apply --secret-type {{cloudType}}{{projId}}{{orgjId}}'
+                createGithubcon: 'harness connector --file {{{type}}}/github-connector.yml apply --git-user {{gitUser}}{{projId}}{{orgjId}} '
+                createawscon: 'harness connector --file {{{type}}}/aws-connector.yml apply --delegate-name {{delegateName}} --aws-cross-account-role-arn {{{rolearn}}} --aws-access-key {{accessKey}} --cloud-region {{{region}}}{{projId}}{{orgjId}}'
+                createsvccmd: 'harness service --file {{{type}}}/service.yml apply --cloud-bucket {{bucket}} --cloud-region {{{region}}}{{projId}}{{orgjId}}'
+                createenvcmd: harness environment --file {{{type}}}/environment.yml apply{{projId}}{{orgjId}}
+                createinfracmd: 'harness infrastructure  --file {{{type}}}/infrastructure-definition.yml apply --cloud-region {{{region}}}{{projId}}{{orgjId}}'
             traditional:
               pdc:
-                createSSHSecret: 'harness secret --file {{{secret}}} apply --secret-type SSHKey --username {{username}} --port {{port}}'
-                createWINRMSecret: 'harness secret --password "{{{secret}}}" apply --secret-type WinRmCredentials --username {{username}} --port {{port}} --domain {{{domain}}}'
-                createGithubcon: 'harness connector --file {{{type}}}/github-connector.yml apply --git-user {{gitUser}} '
-                createArtifactoryCon: 'harness connector --file {{{type}}}/artifactory-connector.yml apply'
-                createPDCCon: 'harness connector --file {{{type}}}/pdc-connector.yml apply --delegate-name {{delegateName}} --host-ip {{hostip}}'
-                createPDCConWinRM: 'harness connector --file {{{type}}}/pdc-connector.yml apply --delegate-name {{delegateName}} --host-ip {{hostIp}} --port {{port}}'
-                createsvccmd: 'harness service --file {{{type}}}/service.yml apply'
-                createenvcmd: harness environment --file {{{type}}}/environment.yml apply
-                createinfracmd: 'harness infrastructure  --file {{{type}}}/infrastructure-definition.yml apply'
+                createSSHSecret: 'harness secret --file {{{secret}}} apply --secret-type SSHKey --username {{username}} --port {{port}}{{projId}}{{orgjId}}'
+                createWINRMSecret: 'harness secret --password "{{{secret}}}" apply --secret-type WinRmCredentials --username {{username}} --port {{port}} --domain {{{domain}}}{{projId}}{{orgjId}}'
+                createGithubcon: 'harness connector --file {{{type}}}/github-connector.yml apply --git-user {{gitUser}}{{projId}}{{orgjId}} '
+                createArtifactoryCon: 'harness connector --file {{{type}}}/artifactory-connector.yml apply{{projId}}{{orgjId}}'
+                createPDCCon: 'harness connector --file {{{type}}}/pdc-connector.yml apply --delegate-name {{delegateName}} --host-ip {{hostip}}{{projId}}{{orgjId}}'
+                createPDCConWinRM: 'harness connector --file {{{type}}}/pdc-connector.yml apply --delegate-name {{delegateName}} --host-ip {{hostIp}} --port {{port}}{{projId}}{{orgjId}}'
+                createsvccmd: 'harness service --file {{{type}}}/service.yml apply{{projId}}{{orgjId}}'
+                createenvcmd: harness environment --file {{{type}}}/environment.yml apply{{projId}}{{orgjId}}
+                createinfracmd: 'harness infrastructure  --file {{{type}}}/infrastructure-definition.yml apply{{projId}}{{orgjId}}'
               cloud:
-                createinfraAWScmd: 'harness infrastructure  --file {{{type}}}/infrastructure-definition.yml apply --cloud-region {{{region}}} --instance-name {{instanceName}}'
-                createSSHAwsSecret: 'harness secret --token {{{secret}}} apply --secret-type SSHKey  --username {{username}} --port {{port}}'
-                createWINRMAwsSecret: 'harness secret --password "{{{secret}}}" apply --secret-type WinRmCredentials --username {{username}} --port {{port}} --domain {{{domain}}}'
-                createinfracmdaws: 'harness infrastructure  --file {{{type}}}/infrastructure-definition.yml apply --cloud-region {{{region}}} --instance-name {{instanceName}}'
+                createinfraAWScmd: 'harness infrastructure  --file {{{type}}}/infrastructure-definition.yml apply --cloud-region {{{region}}} --instance-name {{instanceName}}{{projId}}{{orgjId}}'
+                createSSHAwsSecret: 'harness secret --token {{{secret}}} apply --secret-type SSHKey  --username {{username}} --port {{port}}{{projId}}{{orgjId}}'
+                createWINRMAwsSecret: 'harness secret --password "{{{secret}}}" apply --secret-type WinRmCredentials --username {{username}} --port {{port}} --domain {{{domain}}}{{projId}}{{orgjId}}'
+                createinfracmdaws: 'harness infrastructure  --file {{{type}}}/infrastructure-definition.yml apply --cloud-region {{{region}}} --instance-name {{instanceName}}{{projId}}{{orgjId}}'
             gitops:
-              createRepo: harness gitops-repository --file {{{dirPath}}}/harness-gitops/repository.yml apply --agent-identifier {{agentId}}
-              createCluster: harness gitops-cluster --file {{{dirPath}}}/harness-gitops/cluster.yml apply --agent-identifier {{agentId}}
-              createApplication: harness gitops-application --file {{{dirPath}}}/harness-gitops/application.yml apply --agent-identifier {{agentId}}
+              createRepo: harness gitops-repository --file {{{dirPath}}}/harness-gitops/repository.yml apply --agent-identifier {{agentId}}{{projId}}{{orgjId}}
+              createCluster: harness gitops-cluster --file {{{dirPath}}}/harness-gitops/cluster.yml apply --agent-identifier {{agentId}}{{projId}}{{orgjId}}
+              createApplication: harness gitops-application --file {{{dirPath}}}/harness-gitops/application.yml apply --agent-identifier {{agentId}}{{projId}}{{orgjId}}
 
             comments:
               cloneRepo: '# Clone the repository'

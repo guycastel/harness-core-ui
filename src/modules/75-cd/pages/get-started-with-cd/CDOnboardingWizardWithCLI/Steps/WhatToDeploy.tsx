@@ -52,6 +52,7 @@ function WhatToDeploy({ saveProgress }: WhatToDeployProps): JSX.Element {
         answer: selected.label
       })
     }
+    resetDeploymentFlowType(selected)
   }
   const setInfra = (selected: EntityType): void => {
     setState({ ...state, artifactType: selected, artifactSubType: undefined })
@@ -60,7 +61,7 @@ function WhatToDeploy({ saveProgress }: WhatToDeployProps): JSX.Element {
       question: getString(ARTIFACT_STRINGS_MAP_BY_TYPE[state?.svcType?.id as string]?.svcrep),
       answer: selected.label
     })
-    resetDeploymentFlowType()
+    resetDeploymentFlowType(state.svcType as EntityType)
   }
 
   const setInfraSubType = (selected: EntityType): void => {
@@ -70,13 +71,19 @@ function WhatToDeploy({ saveProgress }: WhatToDeployProps): JSX.Element {
       question: getString(ARTIFACT_STRINGS_MAP_BY_TYPE[state?.artifactType?.id as string]?.artifact),
       answer: selected.label
     })
-    resetDeploymentFlowType()
+    resetDeploymentFlowType(state.svcType as EntityType)
   }
 
-  const resetDeploymentFlowType = (): void => {
-    saveProgress(CDOnboardingSteps.HOW_N_WHERE_TO_DEPLOY, {
-      type: DEPLOYMENT_FLOW_TYPES[DEPLOYMENT_FLOW_ENUMS.Gitops]
-    })
+  const resetDeploymentFlowType = (selected: EntityType): void => {
+    if (selected.id === SERVICE_TYPES.KubernetesService.id) {
+      saveProgress(CDOnboardingSteps.HOW_N_WHERE_TO_DEPLOY, {
+        type: DEPLOYMENT_FLOW_TYPES[DEPLOYMENT_FLOW_ENUMS.Gitops]
+      })
+    } else {
+      saveProgress(CDOnboardingSteps.HOW_N_WHERE_TO_DEPLOY, {
+        type: DEPLOYMENT_FLOW_TYPES[DEPLOYMENT_FLOW_ENUMS.CDPipeline]
+      })
+    }
   }
 
   const svcTypes = React.useMemo((): EntityType[] => {

@@ -9,7 +9,7 @@ import { Layout, Text } from '@harness/uicore'
 import { useParams } from 'react-router-dom'
 import { Color } from '@harness/design-system'
 import CommandBlock from '@modules/10-common/CommandBlock/CommandBlock'
-import { AccountPathProps } from '@modules/10-common/interfaces/RouteInterfaces'
+import { AccountPathProps, PipelineType, ProjectPathProps } from '@modules/10-common/interfaces/RouteInterfaces'
 import { String, useStrings } from 'framework/strings'
 import { KubernetesType } from '@modules/27-platform/delegates/constants'
 import { DEPLOYMENT_TYPE_TO_DIR_MAP } from '../../Constants'
@@ -18,7 +18,7 @@ import ApiKeySetup from './ApiKeySetup'
 import { CDOnboardingSteps, PipelineSetupState, WhereAndHowToDeployType } from '../../types'
 import VerifyGitopsEntities from '../VerificationComponents/VerifyGitopsEntities'
 import { useOnboardingStore } from '../../Store/OnboardingStore'
-import { getCommandStrWithNewline } from '../../utils'
+import { getCommandStrWithNewline, getProjAndOrgId } from '../../utils'
 import css from '../../CDOnboardingWizardWithCLI.module.scss'
 
 interface GitopsDeploymentSetupProps {
@@ -33,7 +33,7 @@ export default function GitopsDeploymentSetup({
 }: GitopsDeploymentSetupProps): JSX.Element {
   const { getString } = useStrings()
   const { accountId } = useParams<AccountPathProps>()
-
+  const { orgIdentifier, projectIdentifier } = useParams<PipelineType<ProjectPathProps>>()
   const { stepsProgress } = useOnboardingStore()
   const deploymentData = stepsProgress?.[CDOnboardingSteps.WHAT_TO_DEPLOY]?.stepData
   const agentInfo = stepsProgress?.[CDOnboardingSteps.HOW_N_WHERE_TO_DEPLOY]?.stepData as WhereAndHowToDeployType
@@ -128,7 +128,8 @@ export default function GitopsDeploymentSetup({
                 accId: accountId,
                 apiKey: state?.apiKey,
                 dirPath,
-                agentId: agentInfo?.agentInfo?.identifier
+                agentId: agentInfo?.agentInfo?.identifier,
+                ...getProjAndOrgId(projectIdentifier, orgIdentifier)
               }
             )}
             downloadFileProps={{ downloadFileName: 'harness-cli-install-steps', downloadFileExtension: 'xdf' }}
@@ -150,7 +151,8 @@ export default function GitopsDeploymentSetup({
                 accId: accountId,
                 apiKey: state?.apiKey,
                 dirPath,
-                agentId: agentInfo?.agentInfo?.identifier
+                agentId: agentInfo?.agentInfo?.identifier,
+                ...getProjAndOrgId(projectIdentifier, orgIdentifier)
               }
             )}
             downloadFileProps={{ downloadFileName: 'harness-cli-install-steps', downloadFileExtension: 'xdf' }}
@@ -172,7 +174,8 @@ export default function GitopsDeploymentSetup({
                 accId: accountId,
                 apiKey: state?.apiKey,
                 dirPath,
-                agentId: agentInfo?.agentInfo?.identifier
+                agentId: agentInfo?.agentInfo?.identifier,
+                ...getProjAndOrgId(projectIdentifier, orgIdentifier)
               }
             )}
             downloadFileProps={{ downloadFileName: 'harness-cli-install-steps', downloadFileExtension: 'xdf' }}
