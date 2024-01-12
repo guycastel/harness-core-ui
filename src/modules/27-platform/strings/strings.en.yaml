@@ -60,11 +60,11 @@ defaultSettings:
   addMsTeamsNotificationFilterValues: '{{ $.platform.defaultSettings.notifications.msTeam}} Notification URL Filters'
   addPagerdutyNotificationFilterValues: '{{ $.platform.defaultSettings.notifications.pagerDuty }} Notification Integration Key Filters'
   addWebhookNotificationFilterValues: '{{ $.execution.triggerType.WEBHOOK }} Notification URL Filters'
-  emailPlaceholder: 'Example: @harness.io'
-  slackPlaceholder: 'Example: webhook.slack.com'
-  msteamsPlaceholder: 'Example: webhook.office.com'
-  pagerdutyPlaceholder: 'Example: abc123xyz'
-  webhooksPlaceholder: 'Example: webhook.company.com'
+  emailPlaceholder: 'Eg: abc@harness.io'
+  slackPlaceholder: 'Eg: https://hooks.slack.com/services/A/B/C'
+  msteamsPlaceholder: 'Eg: https://abc.webhook.office.com/abc'
+  pagerdutyPlaceholder: 'Eg: abc123xyz'
+  webhooksPlaceholder: 'Eg: https://webhook.company.com/abc'
   notifications:
     msTeam: MS Teams
     pagerDuty: Pager Duty
