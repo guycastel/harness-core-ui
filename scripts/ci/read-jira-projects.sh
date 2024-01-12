@@ -10,7 +10,12 @@ then
   mkdir "$HOME/tmp"
   CREATED="true"
 fi
-resp=$(curl -s https://raw.githubusercontent.com/harness/harness-core/develop/jira-projects.txt --write-out '%{http_code}' --output "$HOME/tmp/jira-projects.txt")
+
+if [[ "$GHTOK" == "" ]]; then
+  resp=$(curl -s https://raw.githubusercontent.com/harness/harness-core/develop/jira-projects.txt --write-out '%{http_code}' --output "$HOME/tmp/jira-projects.txt")
+else
+  resp=$(curl -H "Authorization: Bearer $GHTOK" -s https://raw.githubusercontent.com/harness/harness-core/develop/jira-projects.txt --write-out '%{http_code}' --output "$HOME/tmp/jira-projects.txt")
+fi
 if [ "$?" -eq 0 ]
 then
   if [ "$resp" -ne 200 ]
