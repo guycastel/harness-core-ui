@@ -8,6 +8,8 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
 import { Callout } from '@blueprintjs/core'
+import { defaultTo } from 'lodash-es'
+
 import { Page } from '@common/exports'
 import RBACTooltip from '@rbac/components/RBACTooltip/RBACTooltip'
 import { useStrings } from 'framework/strings'
@@ -155,7 +157,11 @@ const Authentication: React.FC = () => {
             )}
             <SessionTimeOut
               sessionInactivityTimeout={data.resource.sessionTimeoutInMinutes}
-              absoluteSessionTimeout={data.resource.absoluteSessionTimeoutInMinutes}
+              absoluteSessionTimeout={
+                /* Explicitly passed props, even "null", take precedence over default values.
+                 * "absoluteSessionTimeoutInMinutes" is passed as "null" when unset */
+                defaultTo(data.resource.absoluteSessionTimeoutInMinutes, 0)
+              }
             />
           </React.Fragment>
         )}

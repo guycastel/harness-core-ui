@@ -18,7 +18,8 @@ import {
   TextInput,
   FormError,
   PageSpinner,
-  Container
+  Container,
+  HarnessDocTooltip
 } from '@harness/uicore'
 import { Color, FontVariation } from '@harness/design-system'
 import React, { useEffect } from 'react'
@@ -69,7 +70,7 @@ const SessionTimeOut: React.FC<SessionTimeOutProps> = ({ sessionInactivityTimeou
     if (values.sessionInactivityTimeout) {
       const { resource } = await saveSessionTimeout({
         sessionTimeOutInMinutes: values.sessionInactivityTimeout,
-        absoluteSessionTimeOutInMinutes: values.absoluteSessionTimeout
+        absoluteSessionTimeOutInMinutes: values.absoluteSessionTimeout || 0
       })
       if (resource) {
         showSuccess(getString('common.savedSuccessfully'))
@@ -143,6 +144,7 @@ const SessionTimeOut: React.FC<SessionTimeOutProps> = ({ sessionInactivityTimeou
                           {getString('platform.authSettings.sessionTimeoutLabel', {
                             timeoutType: getString('platform.authSettings.sessionInactivityTimeout')
                           })}
+                          <HarnessDocTooltip tooltipId="sessionInactivityTimeout" useStandAlone={true} />
                         </Text>
                       </Layout.Vertical>
                       <Layout.Vertical spacing="small">
@@ -173,6 +175,7 @@ const SessionTimeOut: React.FC<SessionTimeOutProps> = ({ sessionInactivityTimeou
                           {getString('platform.authSettings.sessionTimeoutLabel', {
                             timeoutType: getString('platform.authSettings.absoluteSessionTimeout')
                           })}
+                          <HarnessDocTooltip tooltipId="absoluteSessionTimeout" useStandAlone={true} />
                         </Text>
                         <Text color={Color.BLACK} font={{ variation: FontVariation.LEAD }}>
                           {getString('common.optionalLabel')}
